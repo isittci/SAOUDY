@@ -550,7 +550,7 @@ class LotAppelOffreController extends Controller
 
             return redirect()->route('lots-appels-offres.show', [$appelOffreId, $id])->with('success', 'Lot attribué avec succès');
 
-            
+
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de l\'attribution: ' . $e->getMessage());

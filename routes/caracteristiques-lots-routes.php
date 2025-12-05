@@ -40,7 +40,7 @@ Route::middleware(['auth'])->prefix('lots')->name('lots.')->group(function () {
     Route::put('/{id}', [LotController::class, 'update'])->name('update');
     Route::delete('/{id}', [LotController::class, 'destroy'])->name('destroy');
 
-    // Actions spécifiques
+
     // Route::post('/{id}/attribuer', [LotController::class, 'attribuer'])->name('attribuer');
     Route::post('/{id}/retirer', [LotController::class, 'retirer'])->name('retirer');
     Route::get('/{id}/historique', [LotController::class, 'historique'])->name('historique');

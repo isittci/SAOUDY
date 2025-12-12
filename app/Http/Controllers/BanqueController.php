@@ -25,6 +25,7 @@ class BanqueController extends Controller
      */
     public function index(Request $request, string $prestataireId)
     {
+        
         try {
             // Récupérer le prestataire
             $prestataire = Prestataire::findOrFail($prestataireId);
@@ -197,8 +198,11 @@ class BanqueController extends Controller
     public function show(Request $request, string $prestataireId, Banque $banque)
     {
         try {
+
             // Vérifier que la banque appartient bien au prestataire
             $this->verifierAppartenancePrestataire($banque, $prestataireId);
+
+
 
             $prestataire = Prestataire::findOrFail($prestataireId);
 

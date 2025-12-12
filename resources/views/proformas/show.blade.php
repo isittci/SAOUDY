@@ -319,41 +319,10 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        {{-- <div class="text-right">
-                                            @php
-                                                $statutClass = match($attribution->statut_attribution) {
-                                                    \App\Models\PrestataireLot::STATUT_ATTRIBUE => 'bg-blue-100 text-blue-800',
-                                                    \App\Models\PrestataireLot::STATUT_TERMINE => 'bg-green-100 text-green-800',
-                                                    \App\Models\PrestataireLot::STATUT_SUSPENDU => 'bg-yellow-100 text-yellow-800',
-                                                    \App\Models\PrestataireLot::STATUT_RETIRE => 'bg-red-100 text-red-800',
-                                                    default => 'bg-gray-100 text-gray-800'
-                                                };
-                                                $statutLabel = \App\Models\PrestataireLot::STATUT_LABELS[$attribution->statut_attribution] ?? 'Inconnu';
-                                            @endphp
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $statutClass }}">
-                                                {{ $statutLabel }}
-                                            </span>
-                                        </div> --}}
-
 
                                         <div class="text-right">
-                                            @php
-                                                $statutClass = match ($attribution->statut_attribution) {
-                                                    \App\Models\PrestataireLot::STATUT_ATTRIBUE
-                                                        => 'bg-blue-100 text-blue-800',
-                                                    \App\Models\PrestataireLot::STATUT_TERMINE
-                                                        => 'bg-green-100 text-green-800',
-                                                    \App\Models\PrestataireLot::STATUT_SUSPENDU
-                                                        => 'bg-yellow-100 text-yellow-800',
-                                                    \App\Models\PrestataireLot::STATUT_RETIRE
-                                                        => 'bg-red-100 text-red-800',
-                                                    default => 'bg-gray-100 text-gray-800',
-                                                };
-                                            @endphp
-
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $statutClass }}">
-                                                {{ $attribution->getLibelleStatut() }}
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
+                                                {{ $attribution->getStatutLabelAttribute() }}
                                             </span>
 
                                             <p class="text-xs text-gray-500 mt-1">

@@ -254,9 +254,9 @@
                             <!-- Date début prévue -->
                             <div>
                                 <label for="date_debut_prevue" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de début prévue
+                                    Date de début prévue <span class="text-red-500"> *</span>
                                 </label>
-                                <input type="date"
+                                <input type="date" required
                                     name="date_debut_prevue"
                                     id="date_debut_prevue"
                                     value="{{ old('date_debut_prevue', $lot->date_debut_prevue ? \Carbon\Carbon::parse($lot->date_debut_prevue)->format('Y-m-d') : '') }}"
@@ -269,9 +269,9 @@
                             <!-- Date fin prévue -->
                             <div>
                                 <label for="date_fin_prevue" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de fin prévue
+                                    Date de fin prévue <span class="text-red-500"> *</span>
                                 </label>
-                                <input type="date"
+                                <input type="date" required
                                     name="date_fin_prevue"
                                     id="date_fin_prevue"
                                     value="{{ old('date_fin_prevue', $lot->date_fin_prevue ? \Carbon\Carbon::parse($lot->date_fin_prevue)->format('Y-m-d') : '') }}"

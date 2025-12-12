@@ -136,6 +136,7 @@ class Lot extends Model
 
     public function attributionActive()
     {
+        // dd(25);
         return $this->hasOne(PrestataireLot::class, 'lot_id', 'id_lot')
             ->whereIn('statut_attribution', [
                 PrestataireLot::STATUT_ATTRIBUE,
@@ -258,7 +259,6 @@ class Lot extends Model
 
     public function retirer($motif, $userId = null)
     {
-        dd($this);
         $this->date_retrait = now();
         $this->motif_retrait = $motif;
         $this->statut_retrait = 1;

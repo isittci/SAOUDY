@@ -490,17 +490,17 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Date de début prévue
+                                                Date de début prévue <span class="text-red-500"> *</span>
                                             </label>
-                                            <input type="datet" name="date_debut_prevue" id="lot_date_debut"
+                                            <input type="datet" name="date_debut_prevue" id="lot_date_debut" required
                                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
                                         </div>
 
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Date de fin prévue
+                                                Date de fin prévue <span class="text-red-500"> *</span>
                                             </label>
-                                            <input type="datetime-local" name="date_fin_prevue" id="lot_date_fin"
+                                            <input type="datetime-local" name="date_fin_prevue" id="lot_date_fin" required
                                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
                                             <div id="error_lot_date_fin" class="hidden text-red-500 text-sm mt-1"></div>
                                         </div>

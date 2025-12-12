@@ -517,236 +517,157 @@
             </div>
         </div>
 
-        <!-- Historique des attributions -->
-        {{-- <div class="mt-6 bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div
-                class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                    <i class="fas fa-history text-indigo-500 mr-2"></i>
-                    Historique des attributions
-                </h2>
-                <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
-                    {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
-                </span>
-            </div>
 
-            <div class="p-6">
-                @if ($prestataire->attributions()->count() > 0)
-                    <div class="space-y-4">
-                        @foreach ($prestataire->attributions()->with('lot')->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
-                            <div
-                                class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-box text-indigo-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-900">
-                                            {{ $attribution->lot->libelle ?? 'Lot inconnu' }}</p>
-                                        <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
-                                    </div>
-                                </div>
 
-                                <div class="text-right">
-                                    @php
-                                        $statutClass = match ($attribution->statut_attribution) {
-                                            \App\Models\PrestataireLot::STATUT_ATTRIBUE => 'bg-blue-100 text-blue-800',
-                                            \App\Models\PrestataireLot::STATUT_TERMINE => 'bg-green-100 text-green-800',
-                                            \App\Models\PrestataireLot::STATUT_SUSPENDU
-                                                => 'bg-yellow-100 text-yellow-800',
-                                            \App\Models\PrestataireLot::STATUT_RETIRE => 'bg-red-100 text-red-800',
-                                            default => 'bg-gray-100 text-gray-800',
-                                        };
-                                    @endphp
+<div class="mt-6 bg-white rounded-2xl shadow-lg">
+    {{-- En-tête - Retirer overflow-hidden du conteneur parent --}}
+    <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200 rounded-t-2xl flex items-center justify-between">
+        <h2 class="text-lg font-bold text-gray-800 flex items-center">
+            <i class="fas fa-history text-indigo-500 mr-2"></i>
+            Historique des attributions
+        </h2>
+        <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
+                {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
+            </span>
+            <a href="{{ route('prestataires.lots.index', $prestataire) }}"
+                class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <i class="fas fa-list mr-2"></i>
+                Voir tous les lots
+            </a>
+        </div>
+    </div>
 
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $statutClass }}">
-                                        {{ $attribution->getLibelleStatut() }}
-                                    </span>
-
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        {{ $attribution->created_at->format('d/m/Y') }}
-                                    </p>
-                                </div>
+    <div class="p-6">
+        @if ($prestataire->attributions()->count() > 0)
+            <div class="space-y-4">
+                @foreach ($prestataire->attributions()->with('lot')->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
+                    {{-- IMPORTANT: Ajouter relative et z-index ici pour créer un nouveau contexte d'empilement --}}
+                    <div class="relative flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-box text-indigo-600"></i>
                             </div>
-                        @endforeach
-                    </div>
-
-                    @if ($prestataire->attributions()->count() > 5)
-                        <div class="mt-4 text-center">
-                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                                Voir tout l'historique <i class="fas fa-arrow-right ml-1"></i>
-                            </button>
+                            <div>
+                                <p class="font-medium text-gray-900">
+                                    {{ $attribution->lot->libelle ?? 'Lot inconnu' }}
+                                </p>
+                                <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
+                            </div>
                         </div>
-                    @endif
-                @else
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-inbox text-gray-400 text-2xl"></i>
-                        </div>
-                        <p class="text-gray-500 font-medium">Aucune attribution pour ce prestataire</p>
-                        <p class="text-sm text-gray-400 mt-1">Les attributions de lots apparaîtront ici</p>
-                    </div>
-                @endif
-            </div>
-        </div> --}}
 
-        <div class="mt-6 bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div
-                class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                    <i class="fas fa-history text-indigo-500 mr-2"></i>
-                    Historique des attributions
-                </h2>
-                <div class="flex items-center space-x-3">
-                    <span
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
-                        {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
-                    </span>
-                    <a href="{{ route('prestataires.lots.index', $prestataire) }}"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-list mr-2"></i>
-                        Voir tous les lots
-                    </a>
-                </div>
-            </div>
+                        <div class="flex items-center space-x-4">
+                            {{-- Statut --}}
+                            <div class="text-right">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
+                                    {{ $attribution->getStatutLabelAttribute() }}
+                                </span>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    {{ $attribution->created_at->format('d/m/Y') }}
+                                </p>
+                            </div>
 
-            <div class="p-6">
-                @if ($prestataire->attributions()->count() > 0)
-                    <div class="space-y-4">
-                        @foreach ($prestataire->attributions()->with('lot')->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
-                            <div
-                                class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-box text-indigo-600"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-900">
-                                            {{ $attribution->lot->libelle ?? 'Lot inconnu' }}
-                                        </p>
-                                        <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
-                                    </div>
-                                </div>
+                            {{-- Actions --}}
+                            <div class="flex items-center space-x-2">
+                                {{-- Bouton Voir détails --}}
+                                <a href="{{ route('prestataires.lots.show', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
+                                    class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                    title="Voir les détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
 
-                                <div class="flex items-center space-x-4">
-                                    {{-- Statut --}}
-                                    <div class="text-right">
-                                        @php
-                                            $statutClass = match ($attribution->statut_attribution) {
-                                                \App\Models\PrestataireLot::STATUT_ATTRIBUE
-                                                    => 'bg-blue-100 text-blue-800',
-                                                \App\Models\PrestataireLot::STATUT_TERMINE
-                                                    => 'bg-green-100 text-green-800',
-                                                \App\Models\PrestataireLot::STATUT_SUSPENDU
-                                                    => 'bg-yellow-100 text-yellow-800',
-                                                \App\Models\PrestataireLot::STATUT_RETIRE => 'bg-red-100 text-red-800',
-                                                default => 'bg-gray-100 text-gray-800',
-                                            };
-                                        @endphp
+                                {{-- Bouton Retirer --}}
+                                @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+                                    <button type="button"
+                                        onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                        class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        title="Retirer l'attribution">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                @endif
 
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $statutClass }}">
-                                            {{ $attribution->getLibelleStatut() }}
-                                        </span>
+                                {{-- Menu déroulant pour plus d'actions --}}
+                                <div x-data="{ open: false }" class="relative">
+                                    <button @click="open = !open"
+                                        class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
 
-                                        <p class="text-xs text-gray-500 mt-1">
-                                            {{ $attribution->created_at->format('d/m/Y') }}
-                                        </p>
-                                    </div>
+                                    {{-- Menu dropdown avec z-index élevé et positionnement fixe --}}
+                                    <div x-show="open"
+                                        @click.away="open = false"
+                                        x-transition:enter="transition ease-out duration-100"
+                                        x-transition:enter-start="transform opacity-0 scale-95"
+                                        x-transition:enter-end="transform opacity-100 scale-100"
+                                        x-transition:leave="transition ease-in duration-75"
+                                        x-transition:leave-start="transform opacity-100 scale-100"
+                                        x-transition:leave-end="transform opacity-0 scale-95"
+                                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"
+                                        style="position: absolute;">
 
-                                    {{-- Actions --}}
-                                    <div class="flex items-center space-x-2">
-                                        {{-- Bouton Voir détails --}}
                                         <a href="{{ route('prestataires.lots.show', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
-                                            class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                            title="Voir les détails">
-                                            <i class="fas fa-eye"></i>
+                                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <i class="fas fa-eye mr-3 text-gray-400"></i>
+                                            Voir détails
                                         </a>
 
-                                        
-                                        {{-- Bouton Retirer (uniquement si le statut permet le retrait) --}}
                                         @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
-                                            <button type="button"
-                                                onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
-                                                class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Retirer l'attribution">
-                                                <i class="fas fa-times-circle"></i>
+                                            {{-- <a href="{{ route('prestataires.lots.edit', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
+                                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-edit mr-3 text-gray-400"></i>
+                                                Modifier
+                                            </a> --}}
+
+                                            <hr class="my-1 border-gray-100">
+
+                                            <button onclick="confirmerSuspension('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                class="w-full flex items-center px-4 py-2 text-sm text-amber-700 hover:bg-amber-50">
+                                                <i class="fas fa-pause-circle mr-3 text-amber-500"></i>
+                                                Suspendre
+                                            </button>
+
+                                            <button onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                class="w-full flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
+                                                <i class="fas fa-times-circle mr-3 text-red-500"></i>
+                                                Retirer
                                             </button>
                                         @endif
 
-                                        {{-- Menu déroulant pour plus d'actions --}}
-                                        <div class="relative" x-data="{ open: false }">
-                                            <button @click="open = !open"
-                                                class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-                                                <i class="fas fa-ellipsis-v"></i>
+                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_SUSPENDU)
+                                            <button onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
+                                                class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">
+                                                <i class="fas fa-play-circle mr-3 text-green-500"></i>
+                                                Réactiver
                                             </button>
-
-                                            <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-
-                                                <a href="{{ route('prestataires.lots.show', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
-                                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    <i class="fas fa-eye mr-3 text-gray-400"></i>
-                                                    Voir détails
-                                                </a>
-
-                                                @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
-                                                    <a href="{{ route('prestataires.lots.edit', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
-                                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        <i class="fas fa-edit mr-3 text-gray-400"></i>
-                                                        Modifier
-                                                    </a>
-
-                                                    <button onclick="confirmerSuspension('{{ $attribution->id_prestataire }}')"
-                                                        class="w-full flex items-center px-4 py-2 text-sm text-yellow-700 hover:bg-yellow-50">
-                                                        <i class="fas fa-pause-circle mr-3 text-yellow-500"></i>
-                                                        Suspendre
-                                                    </button>
-
-                                                    <button
-                                                        onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
-                                                        class="w-full flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
-                                                        <i class="fas fa-times-circle mr-3 text-red-500"></i>
-                                                        Retirer
-                                                    </button>
-                                                @endif
-
-                                                @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_SUSPENDU)
-                                                    <button onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
-                                                        class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">
-                                                        <i class="fas fa-play-circle mr-3 text-green-500"></i>
-                                                        Réactiver
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-
-                    @if ($prestataire->attributions()->count() > 5)
-                        <div class="mt-4 text-center">
-                            <a href="{{ route('prestataires.lots.index', $prestataire) }}"
-                                class="inline-flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-colors">
-                                Voir tout l'historique ({{ $prestataire->attributions()->count() - 5 }} de plus)
-                                <i class="fas fa-arrow-right ml-2"></i>
-                            </a>
                         </div>
-                    @endif
-                @else
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-inbox text-gray-400 text-2xl"></i>
-                        </div>
-                        <p class="text-gray-500 font-medium">Aucune attribution pour ce prestataire</p>
-                        <p class="text-sm text-gray-400 mt-1">Les attributions de lots apparaîtront ici</p>
                     </div>
-                @endif
+                @endforeach
             </div>
-        </div>
+
+            @if ($prestataire->attributions()->count() > 5)
+                <div class="mt-4 text-center">
+                    <a href="{{ route('prestataires.lots.index', $prestataire) }}"
+                        class="inline-flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-colors">
+                        Voir tout l'historique ({{ $prestataire->attributions()->count() - 5 }} de plus)
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            @endif
+        @else
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                </div>
+                <p class="text-gray-500 font-medium">Aucune attribution pour ce prestataire</p>
+                <p class="text-sm text-gray-400 mt-1">Les attributions de lots apparaîtront ici</p>
+            </div>
+        @endif
+    </div>
+</div>
 
         {{-- Modal de confirmation de retrait --}}
         <div id="modalRetrait" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -795,11 +716,57 @@
             </div>
         </div>
 
+        <div id="modalSuspension" class="fixed inset-0 z-50 hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="fermerModalSuspension()">
+                </div>
+
+                <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suspension</h3>
+                        <p class="text-gray-500 mb-6">
+                            Êtes-vous sûr de vouloir suspendre l'attribution du lot
+                            <span id="nomLotSuspension" class="font-semibold text-gray-700"></span> ?
+                        </p>
+
+                        <form id="formSuspension" method="POST">
+                            @csrf
+                            @method('PATCH')
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Motif de la suspension <span class="text-red-500">*</span>
+                                </label>
+                                <textarea name="motif_suspension" rows="3" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="Indiquez le motif du retrait..."></textarea>
+                            </div>
+
+                            <div class="flex space-x-3">
+                                <button type="button" onclick="fermerModalSuspension()"
+                                    class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                                    Annuler
+                                </button>
+                                <button type="submit"
+                                    class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
+                                    <i class="fas fa-times-circle mr-2"></i>
+                                    Suspendre
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             function confirmerRetrait(attributionId, nomLot) {
                 document.getElementById('nomLotRetrait').textContent = nomLot;
-                document.getElementById('formRetrait').action =
-                    `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/retirer`;
+                document.getElementById('formRetrait').action = "{{ route('attributions.retirer', ':id') }}".replace(':id', attributionId);
+                    // `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/retirer`;
                 document.getElementById('modalRetrait').classList.remove('hidden');
             }
 
@@ -808,18 +775,31 @@
                 document.getElementById('formRetrait').reset();
             }
 
-            function confirmerSuspension(attributionId) {
-                if (confirm('Êtes-vous sûr de vouloir suspendre cette attribution ?')) {
-                    // Implémenter la logique de suspension
-                    window.location.href = `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/suspendre`;
-                }
+            function confirmerSuspension(attributionId, nomLot) {
+                document.getElementById('nomLotSuspension').textContent = nomLot;
+                document.getElementById('formSuspension').action = "{{ route('attributions.suspendre', ':id') }}".replace(':id', attributionId);
+                    // `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/retirer`;
+                document.getElementById('modalSuspension').classList.remove('hidden');
             }
 
+            function fermerModalSuspension() {
+                document.getElementById('modalSuspension').classList.add('hidden');
+                document.getElementById('formSuspension').reset();
+            }
+
+            // function confirmerSuspension(attributionId) {
+            //     // if (confirm('Êtes-vous sûr de vouloir suspendre cette attribution ?')) {
+            //     //     // Implémenter la logique de suspension
+            //     //     window.location.href = "{{ route('attributions.suspendre', ':id') }}".replace(':id', attributionId);
+            //     //     // /`/prestataires/{{ $prestataire->id }}/lots/${attributionId}/suspendre`;
+            //     // }
+            // }
+
             function confirmerReactivation(attributionId) {
-                if (confirm('Êtes-vous sûr de vouloir réactiver cette attribution ?')) {
-                    // Implémenter la logique de réactivation
-                    window.location.href = `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/reactiver`;
-                }
+                // if (confirm('Êtes-vous sûr de vouloir réactiver cette attribution ?')) {
+                //     // Implémenter la logique de réactivation
+                //     // window.location.href = `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/reactiver`;
+                // }
             }
         </script>
 

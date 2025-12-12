@@ -13,7 +13,7 @@ use Exception;
 
 class AppelOffreController extends Controller
 {
-    
+
     /**
      * Affiche la liste des appels d'offres
      */
@@ -122,6 +122,7 @@ class AppelOffreController extends Controller
         $validator = Validator::make($request->all(), [
             'type_appel_offre_id' => 'required|exists:types_appels_offres,id_type_appel_offre',
             'libelle_critere_appel_offre' => 'required|string|max:160',
+            'numero_appel_offre' => 'required|string|unique:appels_offres,numero_appel_offre',
             'objet_critere_appel_offre' => 'required|string',
             'montant_global_appel_offre' => 'required|numeric|min:0',
             'description_critere_critere_appel_offre' => 'required|string',
@@ -134,6 +135,8 @@ class AppelOffreController extends Controller
             'type_appel_offre_id.required' => 'Le type d\'appel d\'offres est obligatoire',
             'type_appel_offre_id.exists' => 'Type d\'appel d\'offres invalide',
             'libelle_critere_appel_offre.required' => 'Le libellé est obligatoire',
+            'numero_appel_offre.required' => 'Le numéro est obligatoire',
+            'numero_appel_offre.unique' => 'Le numéro est déjà utilisé.',
             'objet_critere_appel_offre.required' => 'L\'objet est obligatoire',
             'montant_global_appel_offre.required' => 'Le montant global est obligatoire',
             'date_limite_depot_critere_appel_offre.required' => 'La date limite de dépôt est obligatoire',
@@ -172,7 +175,7 @@ class AppelOffreController extends Controller
             // Créer l'appel d'offres
             $appelOffre = AppelOffre::create([
                 'type_appel_offre_id' => $request->type_appel_offre_id,
-                'numero_appel_offre' => $numeroAO,
+                'numero_appel_offre' => $request->numero_appel_offre,
                 'libelle_critere_appel_offre' => $request->libelle_critere_appel_offre,
                 'objet_critere_appel_offre' => $request->objet_critere_appel_offre,
                 'montant_global_appel_offre' => $request->montant_global_appel_offre,

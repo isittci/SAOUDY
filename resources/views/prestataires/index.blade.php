@@ -445,7 +445,7 @@
             }
 
             window.viewBanques = function(id) {
-                window.location.href = `/prestataires/${id}/banques`;
+                window.location.href = "{{ route('banques.index', ':prestataireId') }}".replace(':prestataireId', id);
             }
 
             window.viewCapacites = function(id) {

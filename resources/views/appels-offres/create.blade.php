@@ -111,6 +111,24 @@
                             </div>
 
 
+                            <!-- Libellé -->
+                            <div>
+                                <label for="numero_appel_offre" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Numéro de l'appel d'offre <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="numero_appel_offre" id="numero_appel_offre" required
+                                    maxlength="35" value="{{ old('numero_appel_offre') }}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                    placeholder="Ex: AOCO-2025-001">
+                                <div class="flex justify-between mt-1">
+                                    @error('numero_appel_offre')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
+                                    <p class="text-xs text-gray-500 ml-auto"><span id="numeroCount">0</span>/35</p>
+                                </div>
+                            </div>
+
+
 
 
                             <!-- Libellé -->
@@ -118,10 +136,7 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Libellé <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="libelle_critere_appel_offre" id="libelle" required
-                                    maxlength="160" value="{{ old('libelle_critere_appel_offre') }}"
-                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                    placeholder="Ex: Construction d'un immeuble administratif">
+                                <input type="text" name="libelle_critere_appel_offre" id="libelle" required maxlength="160" value="{{ old('libelle_critere_appel_offre') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent" placeholder="Ex: Construction d'un immeuble administratif">
                                 <div class="flex justify-between mt-1">
                                     @error('libelle_critere_appel_offre')
                                         <p class="text-red-500 text-sm">{{ $message }}</p>

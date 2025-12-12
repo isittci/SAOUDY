@@ -17,8 +17,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Titre et retour -->
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
                     <div>
@@ -33,16 +32,49 @@
                                     <i class="fas fa-times-circle mr-1"></i> Inactif
                                 </span>
                             @endif
-                            @if ($lot->attribution_lot)
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                    <i class="fas fa-user-check mr-1"></i> Attribué
+                            {{-- {{ dd($lot->attributionActive) }} --}}
+
+                            {{-- Statut d'attribution du lot --}}
+                            @if ($lot->attribution_lot || $lot->attributionActive)
+                                <div class="flex flex-wrap items-center gap-2">
+
+                                    {{-- Statut: Attribué (actif, pas de suspension ni retrait) --}}
+                                    @if (!$lot->attributionActive->date_suspension && !$lot->attributionActive->date_retrait)
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                                            <i class="fas fa-check-circle mr-1.5 text-emerald-500"></i>
+                                            Attribué
+                                        </span>
+
+                                    {{-- Statut: Retiré (pas de suspension mais date de retrait présente) --}}
+                                    @elseif (!$lot->attributionActive->date_suspension && $lot->attributionActive->date_retrait)
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 shadow-sm">
+                                            <i class="fas fa-times-circle mr-1.5 text-red-500"></i>
+                                            Retiré
+                                        </span>
+
+                                    {{-- Statut: Suspendu --}}
+                                    @elseif ($lot->attributionActive->date_suspension)
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 shadow-sm">
+                                            <i class="fas fa-pause-circle mr-1.5 text-amber-500"></i>
+                                            Suspendu
+                                        </span>
+                                    @endif
+
+                                    {{-- Bouton Détails attribution --}}
+                                    <a href="{{ route('attributions.show', $lot->attributionActive) }}"
+                                        class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 shadow-sm">
+                                        <i class="fas fa-info-circle mr-1.5"></i>
+                                        Détails attribution
+                                    </a>
+                                </div>
+                            @else
+                                {{-- Lot non attribué --}}
+                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                                    <i class="fas fa-user-slash mr-1.5 text-gray-400"></i>
+                                    Non attribué
                                 </span>
                             @endif
-                            @if ($lot->isRetire())
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                    <i class="fas fa-ban mr-1"></i> Retiré
-                                </span>
-                            @endif
+
                         </div>
                         <p class="text-gray-600 mt-1">{{ $lot->libelle }}</p>
                     </div>
@@ -51,29 +83,36 @@
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 flex-wrap">
 
+                {{-- Boutons d'action pour les lots non attribués --}}
+                <div class="flex flex-wrap items-center gap-3">
+
+                    {{-- {{ dd($lot->criteresEvaluation->count()) }} --}}
+                    {{-- Bouton Critère d'évaluation --}}
                     @if (!$lot->attribution_lot)
-                    <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
-                        class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-user-check text-sm"></i>
-                        <span class="text-sm font-medium">Critère d'évaluation</span>
-                    </a>
+                        <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
+                            class="px-4 py-2.5 bg-white border border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm group">
+                            <i class="fas fa-clipboard-check text-sm group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium">Critères d'évaluation</span>
+                        </a>
                     @endif
 
-
-                    @if (!$lot->attribution_lot && !$lot->isRetire())
+                    {{-- Bouton Attribuer --}}
+                    @if (!$lot->attribution_lot && !$lot->isRetire() && $lot->criteresEvaluation->count() > 0 && $lot->criteresEvaluation->sum('note_reference_critere_evaluation') == 100)
                         <button onclick="openAttributionModal()"
-                            class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-user-check text-sm"></i>
+                            class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:from-emerald-600 hover:to-green-600 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md group">
+                            <i class="fas fa-user-plus text-sm group-hover:scale-110 transition-transform"></i>
                             <span class="text-sm font-medium">Attribuer</span>
                         </button>
                     @endif
 
+                </div>
+
                     @if (!$lot->attribution_lot)
-                    <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                        class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-edit text-sm"></i>
-                        <span class="text-sm font-medium">Modifier</span>
-                    </button>
+                        <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
+                            class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                            <i class="fas fa-edit text-sm"></i>
+                            <span class="text-sm font-medium">Modifier</span>
+                        </button>
                     @endif
 
                     <!-- Menu dropdown -->
@@ -783,7 +822,7 @@
                                                         <i class="fas fa-coins mr-2"></i>
                                                         Montants et calculs
                                                     </h4>
-
+{{-- {{ dd($lot->appelOffre->caracteristiqueActive, $lot->appelOffre) }} --}}
                                                     <div class="space-y-4">
                                                         <!-- Montant retenu HT -->
                                                         <div>
@@ -795,6 +834,7 @@
                                                                     name="new_montant_retenu"
                                                                     id="new_montant_retenu"
                                                                     min="0"
+                                                                    max=""
                                                                     step="0.01"
                                                                     class="proforma-required w-full px-4 py-2.5 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
                                                                     placeholder="0.00"
@@ -1253,12 +1293,13 @@
                 clearAttributionErrors();
 
                 const formData = new FormData(this);
+                formData.append('lot_id', lotId);
 
                 // Ajouter le mode proforma
                 const proformaMode = document.querySelector('input[name="proforma_mode"]:checked').value;
                 formData.append('proforma_mode', proformaMode);
 
-                fetch("{{route('api.lots-appels-offres.attribuer', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
+                fetch("{{ route('attributions.store') }}", {
                     method: 'POST',
                     body: formData,
                     headers: {

@@ -390,12 +390,14 @@
                                                 title="Voir détails">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button
-                                                onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appel_offre_id, $lot->id_lot]) }}'"
-                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                                                title="Modifier">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                            @if(!$lot->attributionActive)
+                                                <button
+                                                    onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appel_offre_id, $lot->id_lot]) }}'"
+                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                                                    title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -664,9 +666,9 @@
                                     <div class="group">
                                         <label for="lot_date_debut" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                             <i class="fas fa-calendar-plus text-green-500 mr-2 text-xs"></i>
-                                            Date de début prévue
+                                            Date de début prévue <span class="text-red-500"> *</span>
                                         </label>
-                                        <input type="datetime-local"
+                                        <input type="datetime-local" required
                                             name="date_debut_prevue"
                                             id="lot_date_debut"
                                             class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">
@@ -679,9 +681,9 @@
                                     <div class="group">
                                         <label for="lot_date_fin" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                             <i class="fas fa-calendar-check text-red-500 mr-2 text-xs"></i>
-                                            Date de fin prévue
+                                            Date de fin prévue <span class="text-red-500"> *</span>
                                         </label>
-                                        <input type="datetime-local"
+                                        <input type="datetime-local" required
                                             name="date_fin_prevue"
                                             id="lot_date_fin"
                                             class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">

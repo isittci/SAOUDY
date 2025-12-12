@@ -228,7 +228,7 @@ class PrestataireLot extends Model
             });
     }
 
-    // ==================== ACCESSEURS ====================
+    // ==================== ACCESSEURS ==================== 
 
     public function getStatutLabelAttribute(): string
     {

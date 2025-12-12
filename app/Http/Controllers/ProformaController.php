@@ -49,7 +49,7 @@ class ProformaController extends Controller
             // Tri
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
-            $allowedSortFields = ['numero_proforma', 'created_at', 'updated_at', 'date_proforma_proforma', 'montant_retenu_proforma', 'version_proforma'];
+            $allowedSortFields = ['numero_proforma', 'created_at', 'updated_at', 'date_proforma', 'montant_retenu_proforma', 'version_proforma'];
 
             if (in_array($sortBy, $allowedSortFields)) {
                 $query->orderBy($sortBy, $sortOrder);
@@ -154,7 +154,7 @@ class ProformaController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'numero_proforma' => 'nullable|string|max:20|unique:proformas,numero_proforma',
-                'date_proforma_proforma' => 'required|date',
+                'date_proforma' => 'required|date',
                 'montant_retenu_proforma' => 'required|numeric|min:0',
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
@@ -364,7 +364,7 @@ class ProformaController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'numero_proforma' => 'required|string|max:20',
-                'date_proforma_proforma' => 'required|date',
+                'date_proforma' => 'required|date',
                 'montant_retenu_proforma' => 'required|numeric|min:0',
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
@@ -421,7 +421,7 @@ class ProformaController extends Controller
 
             // Préparer les données pour la nouvelle version
             $donneesNouvelleVersion = [
-                'date_proforma_proforma' => $validatedData['date_proforma_proforma'],
+                'date_proforma' => $validatedData['date_proforma'],
                 'montant_retenu_proforma' => $validatedData['montant_retenu_proforma'],
                 'taxe_montant' => $validatedData['taxe_montant'] ?? 0,
                 'remise_montant_proforma' => $validatedData['remise_montant_proforma'] ?? 0,
@@ -494,7 +494,7 @@ class ProformaController extends Controller
     private function detectChanges(Proforma $proforma, array $newData): bool
     {
         $fieldsToCompare = [
-            'date_proforma_proforma',
+            'date_proforma',
             'montant_retenu_proforma',
             'taxe_montant',
             'remise_montant_proforma',
@@ -507,7 +507,7 @@ class ProformaController extends Controller
             $newValue = $newData[$field] ?? null;
 
             // Gérer les dates
-            if ($field === 'date_proforma_proforma') {
+            if ($field === 'date_proforma') {
                 $oldValue = $oldValue ? $oldValue->format('Y-m-d') : null;
             }
 
@@ -561,8 +561,8 @@ class ProformaController extends Controller
         }
 
         // Comparer la date
-        $oldDate = $proforma->date_proforma_proforma ? $proforma->date_proforma_proforma->format('Y-m-d') : null;
-        if ($oldDate != ($newData['date_proforma_proforma'] ?? null)) {
+        $oldDate = $proforma->date_proforma ? $proforma->date_proforma->format('Y-m-d') : null;
+        if ($oldDate != ($newData['date_proforma'] ?? null)) {
             $modifications[] = "Date modifiée";
         }
 
@@ -706,7 +706,7 @@ class ProformaController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'motif_modification_proforma' => 'required|string|max:1000',
-                'date_proforma_proforma' => 'nullable|date',
+                'date_proforma' => 'nullable|date',
                 'montant_retenu_proforma' => 'nullable|numeric|min:0',
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
@@ -790,7 +790,7 @@ class ProformaController extends Controller
             $nouvelleProforma->version_proforma = 1;
             $nouvelleProforma->parent_id = null;
             $nouvelleProforma->actif_proforma = true;
-            $nouvelleProforma->date_proforma_proforma = now();
+            $nouvelleProforma->date_proforma = now();
             $nouvelleProforma->motif_modification_proforma = null;
             $nouvelleProforma->created_by = Auth::id();
             $nouvelleProforma->updated_by = null;
@@ -873,8 +873,8 @@ class ProformaController extends Controller
             'numero_proforma.required' => 'Le numéro de proforma est obligatoire.',
             'numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
             'numero_proforma.max' => 'Le numéro ne peut pas dépasser 20 caractères.',
-            'date_proforma_proforma.required' => 'La date de la proforma est obligatoire.',
-            'date_proforma_proforma.date' => 'La date n\'est pas valide.',
+            'date_proforma.required' => 'La date de la proforma est obligatoire.',
+            'date_proforma.date' => 'La date n\'est pas valide.',
             'montant_retenu_proforma.required' => 'Le montant retenu est obligatoire.',
             'montant_retenu_proforma.numeric' => 'Le montant doit être un nombre.',
             'montant_retenu_proforma.min' => 'Le montant ne peut pas être négatif.',

@@ -41,7 +41,7 @@ Route::middleware(['auth'])->prefix('lots')->name('lots.')->group(function () {
     Route::delete('/{id}', [LotController::class, 'destroy'])->name('destroy');
 
 
-    // Route::post('/{id}/attribuer', [LotController::class, 'attribuer'])->name('attribuer');
+    Route::post('/{id}/attribuer', [LotController::class, 'attribuer'])->name('attribuer');
     Route::post('/{id}/retirer', [LotController::class, 'retirer'])->name('retirer');
     Route::get('/{id}/historique', [LotController::class, 'historique'])->name('historique');
     Route::get('/{id}/statistiques', [LotController::class, 'statistiques'])->name('statistiques');

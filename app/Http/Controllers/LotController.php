@@ -211,7 +211,7 @@ class LotController extends Controller
 
             // Génération du numéro complet
             $numeroLot = 'LOT-' . $numeroTypeAO . '-' . $numeroAO . '-' . $concatAuto;
-
+// return response()->json($numeroLot);
             // return response()->json($numeroLot);
 
             $maxVersion = Lot::where('appel_offre_id', $request->appel_offre_id)->max('version_lot');

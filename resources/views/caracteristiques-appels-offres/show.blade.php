@@ -452,7 +452,7 @@
                                 if (v.motif_modification_caracteristique_appel_offre) {
                                     message += `Motif: ${v.motif_modification_caracteristique_appel_offre}\n`;
                                 }
-                                message += `Créé par: ${v.creator?.name || 'N/A'}\n\n`;
+                                message += `Créé par: ${v.creator?.nom_complet || 'N/A'}\n\n`;
                             });
                             alert(message);
                         } else {

@@ -200,7 +200,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
-                                        {{ $proforma->date_proforma_proforma ? $proforma->date_proforma_proforma->format('d/m/Y') : '-' }}
+                                        {{ $proforma->date_proforma ? $proforma->date_proforma->format('d/m/Y') : '-' }}
                                     </div>
                                     <div class="text-xs text-gray-500">
                                         {{ $proforma->created_at->diffForHumans() }}

@@ -26,6 +26,9 @@
         </div>
     </div>
 
+    <!-- Container pour les notifications Toast -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 lg:p-6">
 
@@ -62,26 +65,35 @@
                         </div>
 
                         <div class="p-6 space-y-5">
-                            <!-- Type d'AO avec bouton d'ajout -->
+
+                            <!-- Type d'AO avec bouton d'ajout et recherche -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Type d'Appel d'Offres <span class="text-red-500">*</span>
                                 </label>
                                 <div class="flex gap-2">
-                                    <select name="type_appel_offre_id" id="type_appel_offre_id" required
-                                        class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-                                        <option value="">-- Sélectionner un type --</option>
-                                        @foreach ($typesAO as $type)
-                                            <option value="{{ $type->id_type_appel_offre }}"
-                                                data-min="{{ $type->valeur_minimuim_type_appel_offre }}"
-                                                data-max="{{ $type->valeur_maximuim_type_appel_offre }}"
-                                                {{ old('type_appel_offre_id') == $type->id_type_appel_offre ? 'selected' : '' }}>
-                                                {{ $type->code_type_appel_offre }} - {{ $type->libelle_type_appel_offre }}
-                                                ({{ number_format($type->valeur_minimuim_type_appel_offre, 0, ',', ' ') }} -
-                                                {{ number_format($type->valeur_maximuim_type_appel_offre, 0, ',', ' ') }} FCFA)
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <div class="flex-1">
+                                        <select name="type_appel_offre_id" id="type_appel_offre_id" required
+                                            class="type-ao-select w-full"
+                                            placeholder="Rechercher un type d'appel d'offres...">
+                                            <option value="">-- Sélectionner un type --</option>
+                                            @foreach ($typesAO as $type)
+                                                <option value="{{ $type->id_type_appel_offre }}"
+                                                    data-min="{{ $type->valeur_minimuim_type_appel_offre }}"
+                                                    data-max="{{ $type->valeur_maximuim_type_appel_offre }}"
+                                                    data-code="{{ $type->code_type_appel_offre }}"
+                                                    data-libelle="{{ $type->libelle_type_appel_offre }}"
+                                                    {{ old('type_appel_offre_id') == $type->id_type_appel_offre ? 'selected' : '' }}>
+                                                    {{ $type->code_type_appel_offre }} -
+                                                    {{ $type->libelle_type_appel_offre }}
+                                                    ({{ number_format($type->valeur_minimuim_type_appel_offre, 0, ',', ' ') }}
+                                                    -
+                                                    {{ number_format($type->valeur_maximuim_type_appel_offre, 0, ',', ' ') }}
+                                                    FCFA)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <button type="button" onclick="window.openAddTypeModal()"
                                         class="px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap">
                                         <i class="fas fa-plus"></i>
@@ -97,6 +109,9 @@
                                     <span id="typeInfoText"></span>
                                 </div>
                             </div>
+
+
+
 
                             <!-- Libellé -->
                             <div>
@@ -127,10 +142,26 @@
                                 @error('montant_global_appel_offre')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
+
+                                <!-- Info sur le type sélectionné automatiquement -->
+                                <div id="autoSelectInfo"
+                                    class="hidden mt-2 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+                                    <i class="fas fa-magic mr-1"></i>
+                                    <span id="autoSelectInfoText"></span>
+                                </div>
+
+                                <!-- Warning si montant hors fourchette -->
                                 <div id="montantWarning"
                                     class="hidden mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
                                     <i class="fas fa-exclamation-triangle mr-1"></i>
                                     <span id="montantWarningText"></span>
+                                </div>
+
+                                <!-- Aucun type correspondant -->
+                                <div id="noMatchWarning"
+                                    class="hidden mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                                    <i class="fas fa-times-circle mr-1"></i>
+                                    <span id="noMatchWarningText"></span>
                                 </div>
                             </div>
 
@@ -178,7 +209,8 @@
                                         Date de Publication <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" name="date_publication_critere_appel_offre"
-                                        id="date_publication" required value="{{ old('date_publication_critere_appel_offre', date('Y-m-d')) }}"
+                                        id="date_publication" required
+                                        value="{{ old('date_publication_critere_appel_offre', date('Y-m-d')) }}"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                                 </div>
 
@@ -186,8 +218,8 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         Date Limite de Dépôt <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" name="date_limite_depot_appel_offre" id="date_limite"
-                                        required value="{{ old('date_limite_depot_appel_offre') }}"
+                                    <input type="date" name="date_limite_depot_critere_appel_offre" id="date_limite"
+                                        required value="{{ old('date_limite_depot_critere_appel_offre') }}"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                                 </div>
 
@@ -195,8 +227,9 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         Date d'Ouverture <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" name="date_ouverture_plis_appel_offre"
-                                        id="date_ouverture" required value="{{ old('date_ouverture_plis_appel_offre') }}"
+                                    <input type="date" name="date_ouverture_plis_critere_appel_offre"
+                                        id="date_ouverture" required
+                                        value="{{ old('date_ouverture_plis_critere_appel_offre') }}"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                                 </div>
                             </div>
@@ -243,8 +276,26 @@
 
                         <div class="space-y-2 text-sm text-gray-600">
                             <p><i class="fas fa-check text-green-500 mr-1"></i> Le numéro sera généré automatiquement</p>
-                            <p><i class="fas fa-check text-green-500 mr-1"></i> Vérifiez que le montant correspond au type</p>
+                            <p><i class="fas fa-check text-green-500 mr-1"></i> Le type peut être auto-sélectionné selon le montant</p>
                             <p><i class="fas fa-check text-green-500 mr-1"></i> Les dates doivent être cohérentes</p>
+                        </div>
+                    </div>
+
+                    <!-- Récapitulatif Type sélectionné -->
+                    <div id="typeRecap" class="hidden bg-white rounded-2xl shadow-lg p-6 border-l-4 border-orange-500">
+                        <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-file-contract text-orange-500 mr-2"></i>
+                            Type sélectionné
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <p class="font-semibold text-gray-800" id="recapCode"></p>
+                            <p class="text-gray-600" id="recapLibelle"></p>
+                            <div class="pt-2 border-t border-gray-200 mt-2">
+                                <p class="text-gray-500">
+                                    <i class="fas fa-coins mr-1"></i>
+                                    Fourchette : <span id="recapFourchette" class="font-medium text-gray-700"></span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -256,10 +307,12 @@
     <div id="addTypeModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <!-- Overlay -->
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="window.closeAddTypeModal()"></div>
+            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="window.closeAddTypeModal()">
+            </div>
 
             <!-- Modal -->
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div
+                class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-green-50 to-white px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
@@ -267,7 +320,8 @@
                             <i class="fas fa-plus-circle text-green-500 mr-2"></i>
                             Nouveau Type d'Appel d'Offres
                         </h3>
-                        <button onclick="window.closeAddTypeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <button onclick="window.closeAddTypeModal()"
+                            class="text-gray-400 hover:text-gray-600 transition-colors">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
@@ -283,7 +337,8 @@
                             <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3 mt-0.5"></i>
                             <div class="flex-1">
                                 <p class="text-red-700 font-medium mb-2">Erreurs de validation :</p>
-                                <ul id="typeFormErrorsList" class="list-disc list-inside text-red-600 text-sm space-y-1"></ul>
+                                <ul id="typeFormErrorsList" class="list-disc list-inside text-red-600 text-sm space-y-1">
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -293,7 +348,8 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Libellé <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="libelle_type_appel_offre" id="modal_libelle" required maxlength="160"
+                        <input type="text" name="libelle_type_appel_offre" id="modal_libelle" required
+                            maxlength="160"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
                             placeholder="Ex: Appel d'Offres Ouvert">
                     </div>
@@ -371,6 +427,367 @@
 
     @push('scripts')
         <script>
+            // =====================================================
+            // CONFIGURATION ET DONNÉES DES TYPES D'APPEL D'OFFRES
+            // =====================================================
+
+            // Stocker les données des types pour la recherche automatique
+            const typesAOData = [
+                @foreach ($typesAO as $type)
+                {
+                    id: '{{ $type->id_type_appel_offre }}',
+                    code: '{{ $type->code_type_appel_offre }}',
+                    libelle: '{{ addslashes($type->libelle_type_appel_offre) }}',
+                    min: {{ $type->valeur_minimuim_type_appel_offre }},
+                    max: {{ $type->valeur_maximuim_type_appel_offre }}
+                },
+                @endforeach
+            ];
+
+            // Variable pour tracker si l'utilisateur a manuellement sélectionné un type
+            let typeSelectionneManuelement = false;
+
+            // =====================================================
+            // FONCTIONS DE NOTIFICATION TOAST
+            // =====================================================
+
+            function showToast(message, type = 'info', duration = 5000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+
+                // Définir les styles selon le type
+                const styles = {
+                    success: {
+                        bg: 'bg-green-500',
+                        icon: 'fa-check-circle',
+                        border: 'border-green-600'
+                    },
+                    warning: {
+                        bg: 'bg-yellow-500',
+                        icon: 'fa-exclamation-triangle',
+                        border: 'border-yellow-600'
+                    },
+                    error: {
+                        bg: 'bg-red-500',
+                        icon: 'fa-times-circle',
+                        border: 'border-red-600'
+                    },
+                    info: {
+                        bg: 'bg-blue-500',
+                        icon: 'fa-info-circle',
+                        border: 'border-blue-600'
+                    },
+                    auto: {
+                        bg: 'bg-gradient-to-r from-green-500 to-teal-500',
+                        icon: 'fa-magic',
+                        border: 'border-teal-600'
+                    }
+                };
+
+                const style = styles[type] || styles.info;
+
+                toast.className = `${style.bg} text-white px-6 py-4 rounded-lg shadow-xl border-l-4 ${style.border} transform transition-all duration-300 ease-out translate-x-full opacity-0 max-w-md`;
+                toast.innerHTML = `
+                    <div class="flex items-start">
+                        <i class="fas ${style.icon} mr-3 mt-0.5 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="font-medium">${message}</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white/80 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(toast);
+
+                // Animation d'entrée
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                });
+
+                // Auto-suppression
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+
+            // =====================================================
+            // FONCTIONS DE GESTION DU TYPE D'APPEL D'OFFRES
+            // =====================================================
+
+            /**
+             * Trouver le type d'AO correspondant à un montant
+             */
+            function trouverTypeParMontant(montant) {
+                return typesAOData.find(type => montant >= type.min && montant <= type.max);
+            }
+
+            /**
+             * Vérifier si un montant est dans la fourchette d'un type
+             */
+            function estDansFourchette(montant, typeId) {
+                const type = typesAOData.find(t => t.id === typeId);
+                if (!type) return false;
+                return montant >= type.min && montant <= type.max;
+            }
+
+            /**
+             * Mettre à jour le récapitulatif du type sélectionné
+             */
+            function updateTypeRecap(typeId) {
+                const recap = document.getElementById('typeRecap');
+                const type = typesAOData.find(t => t.id === typeId);
+
+                if (type) {
+                    document.getElementById('recapCode').textContent = type.code;
+                    document.getElementById('recapLibelle').textContent = type.libelle;
+                    document.getElementById('recapFourchette').textContent =
+                        `${type.min.toLocaleString('fr-FR')} - ${type.max.toLocaleString('fr-FR')} FCFA`;
+                    recap.classList.remove('hidden');
+                } else {
+                    recap.classList.add('hidden');
+                }
+            }
+
+            /**
+             * Masquer tous les messages d'info/warning du montant
+             */
+            function masquerTousLesMessages() {
+                document.getElementById('autoSelectInfo').classList.add('hidden');
+                document.getElementById('montantWarning').classList.add('hidden');
+                document.getElementById('noMatchWarning').classList.add('hidden');
+            }
+
+            /**
+             * Gérer le changement de montant
+             */
+            function gererChangementMontant() {
+                const montantInput = document.getElementById('montant_global');
+                const typeSelect = document.getElementById('type_appel_offre_id');
+                const montant = parseFloat(montantInput.value);
+
+                masquerTousLesMessages();
+
+                if (!montant || isNaN(montant)) return;
+
+                const typeSelectionne = typeSelect.value;
+
+                // CAS 1: Aucun type sélectionné - Sélection automatique
+                if (!typeSelectionne) {
+                    const typeCorrespondant = trouverTypeParMontant(montant);
+
+                    if (typeCorrespondant) {
+                        // Sélectionner automatiquement le type
+                        if (window.typeSelectInstance) {
+                            window.typeSelectInstance.setValue(typeCorrespondant.id);
+                        } else {
+                            typeSelect.value = typeCorrespondant.id;
+                        }
+
+                        // Afficher le message d'auto-sélection
+                        const autoSelectInfo = document.getElementById('autoSelectInfo');
+                        const autoSelectInfoText = document.getElementById('autoSelectInfoText');
+                        autoSelectInfoText.textContent =
+                            `Type "${typeCorrespondant.code} - ${typeCorrespondant.libelle}" sélectionné automatiquement (fourchette: ${typeCorrespondant.min.toLocaleString('fr-FR')} - ${typeCorrespondant.max.toLocaleString('fr-FR')} FCFA)`;
+                        autoSelectInfo.classList.remove('hidden');
+
+                        // Notification toast
+                        showToast(
+                            `Type d'AO sélectionné automatiquement : ${typeCorrespondant.code} - ${typeCorrespondant.libelle}`,
+                            'auto',
+                            6000
+                        );
+
+                        // Mettre à jour le récapitulatif
+                        updateTypeRecap(typeCorrespondant.id);
+                        afficherInfoType(typeCorrespondant.id);
+
+                    } else {
+                        // Aucun type correspondant trouvé
+                        const noMatchWarning = document.getElementById('noMatchWarning');
+                        const noMatchWarningText = document.getElementById('noMatchWarningText');
+                        noMatchWarningText.textContent =
+                            `Aucun type d'appel d'offres ne correspond à ce montant (${montant.toLocaleString('fr-FR')} FCFA). Veuillez sélectionner manuellement ou créer un nouveau type.`;
+                        noMatchWarning.classList.remove('hidden');
+
+                        showToast(
+                            'Aucun type d\'AO ne correspond à ce montant. Sélection manuelle requise.',
+                            'warning',
+                            5000
+                        );
+                    }
+                }
+                // CAS 2: Type déjà sélectionné - Vérifier la conformité
+                else {
+                    const type = typesAOData.find(t => t.id === typeSelectionne);
+
+                    if (type) {
+                        if (!estDansFourchette(montant, typeSelectionne)) {
+                            // Le montant n'est pas dans la fourchette
+                            const montantWarning = document.getElementById('montantWarning');
+                            const montantWarningText = document.getElementById('montantWarningText');
+                            montantWarningText.innerHTML =
+                                `<strong>Attention :</strong> Le montant saisi (${montant.toLocaleString('fr-FR')} FCFA) n'est pas conforme à la fourchette du type sélectionné "${type.code}" (${type.min.toLocaleString('fr-FR')} - ${type.max.toLocaleString('fr-FR')} FCFA). <br><em>Le type d'AO actuel est conservé.</em>`;
+                            montantWarning.classList.remove('hidden');
+
+                            // Chercher s'il existe un type plus approprié
+                            const typeRecommande = trouverTypeParMontant(montant);
+                            if (typeRecommande && typeRecommande.id !== typeSelectionne) {
+                                showToast(
+                                    `Montant hors fourchette ! Type recommandé : ${typeRecommande.code} - ${typeRecommande.libelle}`,
+                                    'warning',
+                                    7000
+                                );
+                            } else {
+                                showToast(
+                                    'Le montant n\'est pas conforme au type d\'AO sélectionné',
+                                    'warning',
+                                    5000
+                                );
+                            }
+                        } else {
+                            // Le montant est dans la fourchette - tout est OK
+                            showToast(
+                                'Montant conforme au type d\'AO sélectionné',
+                                'success',
+                                3000
+                            );
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Afficher les informations du type sélectionné
+             */
+            function afficherInfoType(value) {
+                const typeInfo = document.getElementById('typeInfo');
+                const typeInfoText = document.getElementById('typeInfoText');
+
+                if (!value) {
+                    typeInfo.classList.add('hidden');
+                    document.getElementById('typeRecap').classList.add('hidden');
+                    return;
+                }
+
+                const type = typesAOData.find(t => t.id === value);
+                if (type) {
+                    typeInfoText.textContent = `Intervalle de valeur : ${type.min.toLocaleString('fr-FR')} - ${type.max.toLocaleString('fr-FR')} FCFA`;
+                    typeInfo.classList.remove('hidden');
+                    updateTypeRecap(value);
+                }
+            }
+
+            // =====================================================
+            // INITIALISATION DU DOM
+            // =====================================================
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const typeSelect = document.getElementById('type_appel_offre_id');
+                const montantInput = document.getElementById('montant_global');
+
+                // Initialiser Tom Select
+                const tomSelectInstance = new TomSelect('#type_appel_offre_id', {
+                    create: false,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    },
+                    placeholder: 'Rechercher un type d\'appel d\'offres...',
+                    allowEmptyOption: true,
+                    render: {
+                        option: function(data, escape) {
+                            const option = data.$option;
+                            if (!option || !data.value) {
+                                return '<div class="py-2 px-3 text-gray-500">-- Sélectionner un type --</div>';
+                            }
+
+                            const code = option.dataset.code || '';
+                            const libelle = option.dataset.libelle || '';
+                            const min = option.dataset.min ? Number(option.dataset.min).toLocaleString('fr-FR') : '0';
+                            const max = option.dataset.max ? Number(option.dataset.max).toLocaleString('fr-FR') : '0';
+
+                            return `
+                                <div class="py-2 px-3">
+                                    <div class="font-semibold text-gray-800">
+                                        <span class="text-orange-600">${escape(code)}</span> - ${escape(libelle)}
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        <i class="fas fa-coins mr-1"></i>
+                                        ${min} - ${max} FCFA
+                                    </div>
+                                </div>
+                            `;
+                        },
+                        item: function(data, escape) {
+                            const option = data.$option;
+                            if (!option || !data.value) {
+                                return '<div>-- Sélectionner un type --</div>';
+                            }
+
+                            const code = option.dataset.code || '';
+                            const libelle = option.dataset.libelle || '';
+
+                            return `<div><span class="font-semibold text-orange-600">${escape(code)}</span> - ${escape(libelle)}</div>`;
+                        }
+                    },
+                    onChange: function(value) {
+                        typeSelectionneManuelement = true;
+                        afficherInfoType(value);
+
+                        // Revalider le montant si déjà saisi
+                        const montant = parseFloat(montantInput.value);
+                        if (montant && !isNaN(montant) && value) {
+                            masquerTousLesMessages();
+                            if (!estDansFourchette(montant, value)) {
+                                const type = typesAOData.find(t => t.id === value);
+                                if (type) {
+                                    const montantWarning = document.getElementById('montantWarning');
+                                    const montantWarningText = document.getElementById('montantWarningText');
+                                    montantWarningText.innerHTML =
+                                        `<strong>Attention :</strong> Le montant actuel (${montant.toLocaleString('fr-FR')} FCFA) n'est pas conforme à la fourchette du type sélectionné "${type.code}" (${type.min.toLocaleString('fr-FR')} - ${type.max.toLocaleString('fr-FR')} FCFA).`;
+                                    montantWarning.classList.remove('hidden');
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Stocker l'instance globalement
+                window.typeSelectInstance = tomSelectInstance;
+
+                // Écouter les changements de montant avec debounce
+                let debounceTimer;
+                montantInput.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(gererChangementMontant, 500);
+                });
+
+                // Écouter aussi le blur pour une validation immédiate
+                montantInput.addEventListener('blur', function() {
+                    clearTimeout(debounceTimer);
+                    gererChangementMontant();
+                });
+
+                // Initialiser si des valeurs existent
+                const currentValue = typeSelect.value;
+                if (currentValue) {
+                    afficherInfoType(currentValue);
+                    typeSelectionneManuelement = true;
+                }
+
+                // Vérifier le montant initial si présent
+                if (montantInput.value) {
+                    gererChangementMontant();
+                }
+            });
+
+            // =====================================================
+            // FONCTIONS DU MODAL ET AUTRES
+            // =====================================================
+
             // Fonctions globales pour le modal
             window.openAddTypeModal = function() {
                 document.getElementById('addTypeModal').classList.remove('hidden');
@@ -388,100 +805,91 @@
                 e.preventDefault();
 
                 const saveBtn = document.getElementById('saveTypeBtn');
-                // const saveText = document.getElementById('saveTypeText');
+                const saveText = document.getElementById('saveTypeText');
                 const errorsDiv = document.getElementById('typeFormErrors');
                 const errorsList = document.getElementById('typeFormErrorsList');
 
-                // Désactiver le bouton
                 saveBtn.disabled = true;
-                // saveText.textContent = 'Enregistrement...';
+                saveText.textContent = 'Enregistrement...';
                 errorsDiv.classList.add('hidden');
                 errorsList.innerHTML = '';
 
-                // Préparer les données
                 const formData = new FormData(this);
 
-                // Envoyer la requête AJAX
-                fetch('{{ route("types-appels-offres.store") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Succès : ajouter le nouveau type au select
-                        const typeSelect = document.getElementById('type_appel_offre_id');
-                        const newOption = document.createElement('option');
-                        newOption.value = data.data.id_type_appel_offre;
-                        newOption.setAttribute('data-min', data.data.valeur_minimuim_type_appel_offre);
-                        newOption.setAttribute('data-max', data.data.valeur_maximuim_type_appel_offre);
-                        newOption.textContent = `${data.data.code_type_appel_offre} - ${data.data.libelle_type_appel_offre} (${Number(data.data.valeur_minimuim_type_appel_offre).toLocaleString('fr-FR')} - ${Number(data.data.valeur_maximuim_type_appel_offre).toLocaleString('fr-FR')} FCFA)`;
-                        newOption.selected = true;
-
-                        // Ajouter l'option au select
-                        typeSelect.appendChild(newOption);
-
-                        // Déclencher l'événement change pour mettre à jour les infos
-                        typeSelect.dispatchEvent(new Event('change'));
-
-                        // Fermer le modal
-                        window.closeAddTypeModal();
-
-                        // Afficher un message de succès
-                        showNotification('Type d\'appel d\'offres créé avec succès', 'success');
-                    } else {
-                        // Erreur : afficher les messages
-                        if (data.errors) {
-                            Object.values(data.errors).forEach(errorArray => {
-                                errorArray.forEach(error => {
-                                    const li = document.createElement('li');
-                                    li.textContent = error;
-                                    errorsList.appendChild(li);
-                                });
+                fetch('{{ route('types-appels-offres.store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json',
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Ajouter aux données locales
+                            typesAOData.push({
+                                id: data.data.id_type_appel_offre,
+                                code: data.data.code_type_appel_offre,
+                                libelle: data.data.libelle_type_appel_offre,
+                                min: parseFloat(data.data.valeur_minimuim_type_appel_offre),
+                                max: parseFloat(data.data.valeur_maximuim_type_appel_offre)
                             });
+
+                            // Ajouter l'option au select natif
+                            const typeSelect = document.getElementById('type_appel_offre_id');
+                            const newOption = document.createElement('option');
+                            newOption.value = data.data.id_type_appel_offre;
+                            newOption.setAttribute('data-min', data.data.valeur_minimuim_type_appel_offre);
+                            newOption.setAttribute('data-max', data.data.valeur_maximuim_type_appel_offre);
+                            newOption.setAttribute('data-code', data.data.code_type_appel_offre);
+                            newOption.setAttribute('data-libelle', data.data.libelle_type_appel_offre);
+                            newOption.textContent =
+                                `${data.data.code_type_appel_offre} - ${data.data.libelle_type_appel_offre} (${Number(data.data.valeur_minimuim_type_appel_offre).toLocaleString('fr-FR')} - ${Number(data.data.valeur_maximuim_type_appel_offre).toLocaleString('fr-FR')} FCFA)`;
+                            typeSelect.appendChild(newOption);
+
+                            // Rafraîchir Tom Select
+                            if (window.typeSelectInstance) {
+                                window.typeSelectInstance.addOption({
+                                    value: data.data.id_type_appel_offre,
+                                    text: newOption.textContent,
+                                    $option: newOption
+                                });
+                                window.typeSelectInstance.setValue(data.data.id_type_appel_offre);
+                            }
+
+                            window.closeAddTypeModal();
+                            showToast('Type d\'appel d\'offres créé avec succès', 'success');
                         } else {
-                            const li = document.createElement('li');
-                            li.textContent = data.message || 'Une erreur est survenue';
-                            errorsList.appendChild(li);
+                            if (data.errors) {
+                                Object.values(data.errors).forEach(errorArray => {
+                                    errorArray.forEach(error => {
+                                        const li = document.createElement('li');
+                                        li.textContent = error;
+                                        errorsList.appendChild(li);
+                                    });
+                                });
+                            } else {
+                                const li = document.createElement('li');
+                                li.textContent = data.message || 'Une erreur est survenue';
+                                errorsList.appendChild(li);
+                            }
+                            errorsDiv.classList.remove('hidden');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        const li = document.createElement('li');
+                        li.textContent = 'Une erreur technique est survenue. Veuillez réessayer.';
+                        errorsList.appendChild(li);
                         errorsDiv.classList.remove('hidden');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    const li = document.createElement('li');
-                    li.textContent = 'Une erreur technique est survenue. Veuillez réessayer.';
-                    errorsList.appendChild(li);
-                    errorsDiv.classList.remove('hidden');
-                })
-                .finally(() => {
-                    // Réactiver le bouton
-                    saveBtn.disabled = false;
-                    saveText.textContent = 'Enregistrer';
-                });
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                        saveText.textContent = 'Enregistrer';
+                    });
             });
-
-            // Fonction pour afficher une notification
-            function showNotification(message, type = 'success') {
-                const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg animate-fadeIn ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
-                notification.innerHTML = `
-                    <div class="flex items-center">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-3"></i>
-                        <span>${message}</span>
-                    </div>
-                `;
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
 
             // Compteur de caractères
             const libelleInput = document.getElementById('libelle');
@@ -491,59 +899,6 @@
                 libelleCount.textContent = this.value.length;
             });
             libelleCount.textContent = libelleInput.value.length;
-
-            // Validation du type et montant
-            const typeSelect = document.getElementById('type_appel_offre_id');
-            const montantInput = document.getElementById('montant_global');
-            const typeInfo = document.getElementById('typeInfo');
-            const typeInfoText = document.getElementById('typeInfoText');
-            const montantWarning = document.getElementById('montantWarning');
-            const montantWarningText = document.getElementById('montantWarningText');
-
-            typeSelect.addEventListener('change', function() {
-                const option = this.options[this.selectedIndex];
-
-                if (option.value) {
-                    const min = parseFloat(option.dataset.min);
-                    const max = parseFloat(option.dataset.max);
-
-                    typeInfo.classList.remove('hidden');
-                    typeInfoText.textContent =
-                        `Intervalle de valeur : ${min.toLocaleString('fr-FR')} - ${max.toLocaleString('fr-FR')} FCFA`;
-
-                    // Valider le montant si déjà saisi
-                    if (montantInput.value) {
-                        validateMontant(parseFloat(montantInput.value), min, max);
-                    }
-                } else {
-                    typeInfo.classList.add('hidden');
-                    montantWarning.classList.add('hidden');
-                }
-            });
-
-            montantInput.addEventListener('input', function() {
-                const option = typeSelect.options[typeSelect.selectedIndex];
-
-                if (option.value && this.value) {
-                    const min = parseFloat(option.dataset.min);
-                    const max = parseFloat(option.dataset.max);
-                    const montant = parseFloat(this.value);
-
-                    validateMontant(montant, min, max);
-                } else {
-                    montantWarning.classList.add('hidden');
-                }
-            });
-
-            function validateMontant(montant, min, max) {
-                if (montant < min || montant > max) {
-                    montantWarning.classList.remove('hidden');
-                    montantWarningText.textContent =
-                        `Le montant doit être entre ${min.toLocaleString('fr-FR')} et ${max.toLocaleString('fr-FR')} FCFA`;
-                } else {
-                    montantWarning.classList.add('hidden');
-                }
-            }
 
             // Validation des dates
             const datePublication = document.getElementById('date_publication');
@@ -573,7 +928,7 @@
             dateLimite.addEventListener('change', validateDates);
             dateOuverture.addEventListener('change', validateDates);
 
-            // Soumission du formulaire
+            // Soumission du formulaire principal
             document.getElementById('aoForm').addEventListener('submit', function(e) {
                 const submitBtn = document.getElementById('submitBtn');
                 const submitText = document.getElementById('submitText');
@@ -582,12 +937,6 @@
                 submitText.textContent = 'Enregistrement...';
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + submitText.textContent;
             });
-
-            // Initialiser les validations si des valeurs existent
-            if (typeSelect.value) {
-                typeSelect.dispatchEvent(new Event('change'));
-            }
-            validateDates();
 
             // Fermer le modal avec Escape
             document.addEventListener('keydown', function(e) {
@@ -598,9 +947,57 @@
                     }
                 }
             });
+
+            // Initialiser les validations si des valeurs existent
+            validateDates();
         </script>
 
         <style>
+            /* Personnalisation Tom Select pour correspondre au thème orange */
+            .ts-wrapper.single .ts-control {
+                padding: 0.625rem 1rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                background: white;
+                min-height: 44px;
+            }
+
+            .ts-wrapper.single .ts-control:focus,
+            .ts-wrapper.single.focus .ts-control {
+                outline: none;
+                border-color: transparent;
+                box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.5);
+            }
+
+            .ts-dropdown {
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                margin-top: 4px;
+            }
+
+            .ts-dropdown .option.active {
+                background-color: #fff7ed;
+                color: #ea580c;
+            }
+
+            .ts-dropdown .option:hover {
+                background-color: #ffedd5;
+            }
+
+            .ts-wrapper .ts-control input {
+                font-size: 0.875rem;
+            }
+
+            .ts-dropdown .ts-dropdown-content {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .ts-wrapper.single.input-active .ts-control {
+                background: white;
+            }
+
             @keyframes fadeIn {
                 from {
                     opacity: 0;
@@ -617,7 +1014,6 @@
                 animation: fadeIn 0.3s ease-out;
             }
 
-            /* Style pour le modal */
             #addTypeModal {
                 backdrop-filter: blur(4px);
             }

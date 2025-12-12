@@ -51,11 +51,13 @@
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 flex-wrap">
 
+                    @if (!$lot->attribution_lot)
                     <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
-                            class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-user-check text-sm"></i>
-                            <span class="text-sm font-medium">Critère d'évaluation</span>
-                        </a>
+                        class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                        <i class="fas fa-user-check text-sm"></i>
+                        <span class="text-sm font-medium">Critère d'évaluation</span>
+                    </a>
+                    @endif
 
 
                     @if (!$lot->attribution_lot && !$lot->isRetire())
@@ -66,19 +68,13 @@
                         </button>
                     @endif
 
-                    @if ($lot->isAttribue() && !$lot->isRetire())
-                        <button onclick="openRetraitModal()"
-                            class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-ban text-sm"></i>
-                            <span class="text-sm font-medium">Retirer</span>
-                        </button>
-                    @endif
-
+                    @if (!$lot->attribution_lot)
                     <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
                         class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                         <i class="fas fa-edit text-sm"></i>
                         <span class="text-sm font-medium">Modifier</span>
                     </button>
+                    @endif
 
                     <!-- Menu dropdown -->
                     <div class="relative">
@@ -89,12 +85,6 @@
                         <div id="actionMenu"
                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
                             <div class="py-1">
-                                {{-- <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-history mr-2 text-blue-500"></i>
-                                    Critère d'évaluation
-                                </a> --}}
-
                                 <a href="{{ route('lots-appels-offres.historique', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                     <i class="fas fa-history mr-2 text-blue-500"></i>
@@ -307,7 +297,7 @@
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-bold text-gray-900 mb-2">
-                                        {{ $lot->attributionActive->prestataire->nom_prestataire ?? 'N/A' }}
+                                        {{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A' }}
                                     </h3>
 
                                     @if($lot->attributionActive->proforma)
@@ -343,99 +333,13 @@
                                                 <p class="text-xs text-gray-500">Avancement</p>
                                                 <div class="flex items-center space-x-2">
                                                     <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                                        <div class="bg-green-500 h-2 rounded-full"
-                                                             style="width: {{ $lot->attributionActive->pourcentage_avancement }}%"></div>
+                                                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $lot->attributionActive->pourcentage_avancement }}%"></div>
                                                     </div>
-                                                    <span class="text-sm font-semibold text-gray-900">
-                                                        {{ $lot->attributionActive->pourcentage_avancement }}%
-                                                    </span>
+                                                    <span class="text-sm font-semibold text-gray-900">{{ $lot->attributionActive->pourcentage_avancement }}%</span>
                                                 </div>
                                             </div>
                                         @endif
-
-                                        @if($lot->attributionActive->jours_retard)
-                                            <div>
-                                                <p class="text-xs text-gray-500">Retard</p>
-                                                <p class="text-sm font-semibold text-red-600">
-                                                    {{ $lot->attributionActive->jours_retard }} jour(s)
-                                                </p>
-                                            </div>
-                                        @endif
                                     </div>
-
-                                    @if($lot->attributionActive->observations)
-                                        <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                                            <p class="text-xs text-gray-500 mb-1">Observations</p>
-                                            <p class="text-sm text-gray-700">{{ $lot->attributionActive->observations }}</p>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <span class="ml-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                                    {{ $lot->attributionActive->statut_attribution == 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ $lot->attributionActive->statut_attribution == 1 ? 'Attribué' : 'Suspendu' }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Historique des attributions -->
-                @if($lot->historiqueAttributions->count() > 1)
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
-                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-history text-purple-500 mr-2"></i>
-                                Historique des attributions
-                            </h2>
-                        </div>
-
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                @foreach($lot->historiqueAttributions->take(5) as $attribution)
-                                    <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-user text-purple-600"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-1">
-                                            <h4 class="text-sm font-semibold text-gray-900">
-                                                {{ $attribution->prestataire->nom_prestataire ?? 'N/A' }}
-                                            </h4>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                {{ $attribution->created_at->format('d/m/Y à H:i') }}
-                                            </p>
-                                            @if($attribution->trashed())
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800 mt-2">
-                                                    Retiré
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <span class="text-xs
-                                            {{ $attribution->statut_attribution == 1 ? 'text-green-600' : 'text-gray-600' }} font-medium">
-                                            {{ $attribution->statut_attribution == 1 ? 'Actif' : 'Inactif' }}
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Informations de retrait -->
-                @if($lot->isRetire())
-                    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
-                        <div class="flex items-start">
-                            <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3 mt-1"></i>
-                            <div class="flex-1">
-                                <h3 class="text-lg font-bold text-red-800 mb-2">Lot retiré</h3>
-                                <div class="text-sm text-red-700 space-y-2">
-                                    <p><strong>Date de retrait:</strong> {{ $lot->date_retrait->format('d/m/Y') }}</p>
-                                    @if($lot->motif_retrait)
-                                        <p><strong>Motif:</strong></p>
-                                        <p class="bg-red-100 p-3 rounded mt-1">{{ $lot->motif_retrait }}</p>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -454,13 +358,23 @@
                     </h3>
 
                     <div class="space-y-4">
-                        <!-- Durée -->
+                        <!-- Version -->
+                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-transparent rounded-lg border-l-4 border-purple-500">
+                            <div>
+                                <p class="text-sm text-gray-600 font-medium">Version</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ $lot->version ?? 1 }}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-code-branch text-purple-600"></i>
+                            </div>
+                        </div>
+
+                        <!-- Durée prévue -->
                         @if($lot->calculerDuree())
                             <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-transparent rounded-lg border-l-4 border-blue-500">
                                 <div>
                                     <p class="text-sm text-gray-600 font-medium">Durée prévue</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ $lot->calculerDuree() }}</p>
-                                    <p class="text-xs text-gray-500">jour(s)</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ $lot->calculerDuree() }} <span class="text-sm font-normal">jour(s)</span></p>
                                 </div>
                                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                                     <i class="fas fa-calendar-day text-blue-600"></i>
@@ -468,27 +382,18 @@
                             </div>
                         @endif
 
-                        <!-- Critères d'évaluation -->
-                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-transparent rounded-lg border-l-4 border-purple-500">
-                            <div>
-                                <p class="text-sm text-gray-600 font-medium">Critères</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ $lot->criteresEvaluation->count() }}</p>
+                        <!-- Taux pénalités -->
+                        @if($lot->taux_penalites)
+                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-transparent rounded-lg border-l-4 border-orange-500">
+                                <div>
+                                    <p class="text-sm text-gray-600 font-medium">Taux pénalités</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ number_format($lot->taux_penalites, 2) }}%</p>
+                                </div>
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-percentage text-orange-600"></i>
+                                </div>
                             </div>
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-list-check text-purple-600"></i>
-                            </div>
-                        </div>
-
-                        <!-- Versions -->
-                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-transparent rounded-lg border-l-4 border-orange-500">
-                            <div>
-                                <p class="text-sm text-gray-600 font-medium">Versions</p>
-                                <p class="text-2xl font-bold text-gray-900">{{ $lot->versions->count() + 1 }}</p>
-                            </div>
-                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-code-branch text-orange-600"></i>
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -529,8 +434,6 @@
                                 </a>
                             </div>
                         @endif
-
-
                     </div>
                 </div>
 
@@ -582,162 +485,539 @@
     </main>
 
     <!-- Modal Confirmation Suppression -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                <div class="text-center">
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
-                    <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-hidden" onclick="if(event.target === this) closeDeleteModal()">
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
+                        <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
 
-                    <div class="flex items-center justify-center space-x-3">
-                        <button onclick="closeDeleteModal()"
-                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                            Annuler
-                        </button>
-                        <button onclick="executeDelete()"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+                        <div class="flex items-center justify-center space-x-3">
+                            <button onclick="closeDeleteModal()"
+                                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
+                                Annuler
+                            </button>
+                            <button onclick="executeDelete()"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Attribution -->
-    <div id="attributionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 class="text-xl font-bold text-gray-900">Attribuer le lot</h3>
-                    <button onclick="closeAttributionModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
+    <!-- ========================================== -->
+    <!-- MODAL ATTRIBUTION - AMÉLIORÉ -->
+    <!-- ========================================== -->
+    <div id="attributionModal" class="hidden fixed inset-0 z-50 overflow-hidden" aria-labelledby="attribution-modal-title" role="dialog" aria-modal="true">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-300" onclick="closeAttributionModal()"></div>
+
+        <!-- Container -->
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 sm:p-6">
+
+                <!-- Contenu du modal -->
+                <div id="attributionModalContent" class="relative w-full max-w-3xl transform rounded-2xl bg-white shadow-2xl transition-all duration-300 ease-out opacity-0 scale-95 translate-y-4">
+
+                    <!-- Header -->
+                    <div class="relative bg-gradient-to-r from-green-600 to-emerald-600 rounded-t-2xl px-6 py-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center justify-center w-10 h-10 bg-white/20 rounded-lg">
+                                    <i class="fas fa-user-check text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 id="attribution-modal-title" class="text-xl font-bold text-white">Attribuer le lot</h3>
+                                    <p class="text-green-100 text-sm">Associer un prestataire et une proforma</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="closeAttributionModal()" class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200 group">
+                                <i class="fas fa-times text-white group-hover:rotate-90 transition-transform duration-200"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Corps du formulaire -->
+                    <form id="attributionForm">
+                        @csrf
+                        <div class="px-6 py-6 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
+
+                            <!-- Info Lot -->
+                            <div class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-box text-indigo-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-indigo-800">{{ $lot->numero }} - {{ Str::limit($lot->libelle, 50) }}</p>
+                                        <p class="text-xs text-indigo-600 mt-0.5">AO: {{ $lot->appelOffre->numero_appel_offre }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+
+                                <!-- ================================ -->
+                                <!-- SECTION PRESTATAIRE -->
+                                <!-- ================================ -->
+                                <div class="space-y-3">
+                                    <label class="flex items-center text-sm font-semibold text-gray-700">
+                                        <i class="fas fa-building text-green-500 mr-2 text-xs"></i>
+                                        Prestataire
+                                        <span class="text-red-500 ml-1">*</span>
+                                    </label>
+
+                                    <!-- Champ de recherche prestataire -->
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400"></i>
+                                        </div>
+                                        <input type="text"
+                                            id="searchPrestataire"
+                                            class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                            placeholder="Rechercher un prestataire par nom ou numéro..."
+                                            autocomplete="off">
+                                    </div>
+
+                                    <!-- Liste des prestataires -->
+                                    <div id="prestataireListContainer" class="relative">
+                                        <select name="prestataire_id"
+                                            id="prestataire_id"
+                                            required
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all duration-200 text-gray-800 appearance-none bg-white cursor-pointer"
+                                            size="4">
+                                            @forelse ($prestataires as $prestataire)
+                                                <option value="{{ $prestataire->id_prestataire }}"
+                                                    data-numero="{{ $prestataire->numero_identification_prestataire }}"
+                                                    data-raison="{{ $prestataire->raison_sociale_prestataire }}">
+                                                    ({{ $prestataire->numero_identification_prestataire }}) - {{ $prestataire->raison_sociale_prestataire }}
+                                                </option>
+                                            @empty
+                                                <option value="" disabled>Aucun prestataire disponible</option>
+                                            @endforelse
+                                        </select>
+                                    </div>
+
+                                    <!-- Prestataire sélectionné -->
+                                    <div id="selectedPrestataire" class="hidden p-3 bg-green-50 border border-green-200 rounded-xl">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-check-circle text-green-500"></i>
+                                                <span id="selectedPrestataireName" class="text-sm font-medium text-green-800"></span>
+                                            </div>
+                                            <button type="button" onclick="clearPrestataireSelection()" class="text-green-600 hover:text-green-800">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="error_prestataire_id" class="hidden mt-2 text-red-500 text-sm flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        <span></span>
+                                    </div>
+                                </div>
+
+                                <!-- ================================ -->
+                                <!-- SECTION PROFORMA -->
+                                <!-- ================================ -->
+                                <div class="space-y-4">
+                                    <label class="flex items-center text-sm font-semibold text-gray-700">
+                                        <i class="fas fa-file-invoice-dollar text-blue-500 mr-2 text-xs"></i>
+                                        Proforma
+                                        <span class="text-red-500 ml-1">*</span>
+                                    </label>
+
+                                    <!-- Toggle choix proforma -->
+                                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                        <label class="flex items-center cursor-pointer group">
+                                            <input type="radio" name="proforma_mode" value="select" checked
+                                                class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                                onchange="toggleProformaMode('select')">
+                                            <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors">
+                                                <i class="fas fa-list mr-1"></i> Sélectionner une proforma existante
+                                            </span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer group">
+                                            <input type="radio" name="proforma_mode" value="create"
+                                                class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                                onchange="toggleProformaMode('create')">
+                                            <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors">
+                                                <i class="fas fa-plus mr-1"></i> Créer une nouvelle proforma
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <!-- ================================ -->
+                                    <!-- MODE SELECTION PROFORMA -->
+                                    <!-- ================================ -->
+                                    <div id="proformaSelectMode" class="space-y-3">
+                                        <!-- Champ de recherche proforma -->
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <i class="fas fa-search text-gray-400"></i>
+                                            </div>
+                                            <input type="text"
+                                                id="searchProforma"
+                                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                                placeholder="Rechercher une proforma par numéro..."
+                                                autocomplete="off">
+                                        </div>
+
+                                        <!-- Liste des proformas -->
+                                        <select name="proforma_id"
+                                            id="proforma_id"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 text-gray-800 appearance-none bg-white cursor-pointer"
+                                            size="3">
+                                            @forelse ($proformas as $proforma)
+                                                <option value="{{ $proforma->id_proforma }}"
+                                                    data-numero="{{ $proforma->numero_proforma }}"
+                                                    data-montant="{{ $proforma->montant_retenu_proforma }}">
+                                                    {{ $proforma->numero_proforma }} - {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }} FCFA
+                                                </option>
+                                            @empty
+                                                <option value="" disabled>Aucune proforma disponible</option>
+                                            @endforelse
+                                        </select>
+
+                                        <!-- Proforma sélectionnée -->
+                                        <div id="selectedProforma" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-check-circle text-blue-500"></i>
+                                                    <span id="selectedProformaName" class="text-sm font-medium text-blue-800"></span>
+                                                </div>
+                                                <button type="button" onclick="clearProformaSelection()" class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div id="error_proforma_id" class="hidden mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- ================================ -->
+                                    <!-- MODE CREATION PROFORMA (ACCORDEON) -->
+                                    <!-- ================================ -->
+                                    <div id="proformaCreateMode" class="hidden">
+                                        <div class="border-2 border-dashed border-blue-300 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50/50 to-white">
+                                            <!-- Header accordéon -->
+                                            <div class="px-5 py-4 bg-gradient-to-r from-blue-100 to-blue-50 border-b border-blue-200">
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-file-medical text-blue-600"></i>
+                                                    <span class="font-semibold text-blue-800">Informations de la nouvelle proforma</span>
+                                                </div>
+                                                <p class="text-xs text-blue-600 mt-1">Tous les champs marqués * sont obligatoires</p>
+                                            </div>
+
+                                            <!-- Contenu accordéon -->
+                                            <div class="p-5 space-y-5">
+
+                                                <!-- Dates de la proforma -->
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                            <i class="fas fa-calendar text-blue-500 mr-2 text-xs"></i>
+                                                            Date proforma <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <input type="date"
+                                                            name="new_date_proforma"
+                                                            id="new_date_proforma"
+                                                            value="{{ date('Y-m-d') }}"
+                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
+                                                        <div id="error_new_date_proforma" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                            <i class="fas fa-calendar-check text-green-500 mr-2 text-xs"></i>
+                                                            Date début validée <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <input type="date"
+                                                            name="new_date_debut_validee"
+                                                            id="new_date_debut_validee"
+                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
+                                                        <div id="error_new_date_debut_validee" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                            <i class="fas fa-redo text-orange-500 mr-2 text-xs"></i>
+                                                            Date redémarrage <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <input type="date"
+                                                            name="new_date_redemarrage"
+                                                            id="new_date_redemarrage"
+                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
+                                                        <div id="error_new_date_redemarrage" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                            <i class="fas fa-calendar-times text-red-500 mr-2 text-xs"></i>
+                                                            Date fin validée <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <input type="date"
+                                                            name="new_date_fin_validee"
+                                                            id="new_date_fin_validee"
+                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
+                                                        <div id="error_new_date_fin_validee" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Montants -->
+                                                <div class="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
+                                                    <h4 class="text-sm font-bold text-emerald-800 mb-4 flex items-center">
+                                                        <i class="fas fa-coins mr-2"></i>
+                                                        Montants et calculs
+                                                    </h4>
+
+                                                    <div class="space-y-4">
+                                                        <!-- Montant retenu HT -->
+                                                        <div>
+                                                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                Montant retenu (HT) <span class="text-red-500 ml-1">*</span>
+                                                            </label>
+                                                            <div class="relative">
+                                                                <input type="number"
+                                                                    name="new_montant_retenu"
+                                                                    id="new_montant_retenu"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    class="proforma-required w-full px-4 py-2.5 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
+                                                                    placeholder="0.00"
+                                                                    oninput="calculerMontants()">
+                                                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                            </div>
+                                                            <div id="error_new_montant_retenu" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                        </div>
+
+                                                        <!-- TVA -->
+                                                        <div class="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Taux TVA <span class="text-red-500 ml-1">*</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                    <input type="number"
+                                                                        name="new_taux_tva"
+                                                                        id="new_taux_tva"
+                                                                        min="0"
+                                                                        max="100"
+                                                                        step="0.01"
+                                                                        value="18"
+                                                                        class="proforma-required w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
+                                                                        oninput="calculerMontants()">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Montant TVA
+                                                                    <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                    <input type="number"
+                                                                        name="new_taxe_montant"
+                                                                        id="new_taxe_montant"
+                                                                        readonly
+                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium"
+                                                                        placeholder="0.00">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Remise -->
+                                                        <div class="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Taux remise
+                                                                </label>
+                                                                <div class="relative">
+                                                                    <input type="number"
+                                                                        name="new_taux_remise"
+                                                                        id="new_taux_remise"
+                                                                        min="0"
+                                                                        max="100"
+                                                                        step="0.01"
+                                                                        value="0"
+                                                                        class="w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
+                                                                        oninput="calculerMontants()">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Montant remise
+                                                                    <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                    <input type="number"
+                                                                        name="new_remise_montant"
+                                                                        id="new_remise_montant"
+                                                                        readonly
+                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium"
+                                                                        placeholder="0.00">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Pénalités -->
+                                                        <div>
+                                                            <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                Pénalités
+                                                            </label>
+                                                            <div class="relative">
+                                                                <input type="number"
+                                                                    name="new_penalites"
+                                                                    id="new_penalites"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    value="0"
+                                                                    class="w-full px-4 py-2.5 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
+                                                                    placeholder="0.00"
+                                                                    oninput="calculerMontants()">
+                                                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Total TTC -->
+                                                        <div class="pt-4 border-t-2 border-emerald-200">
+                                                            <div class="flex items-center justify-between p-4 bg-emerald-100 rounded-xl">
+                                                                <span class="font-bold text-emerald-800">TOTAL TTC</span>
+                                                                <div class="flex items-center space-x-2">
+                                                                    <span id="displayTotalTTC" class="text-2xl font-bold text-emerald-700">0</span>
+                                                                    <span class="text-emerald-600 font-medium">FCFA</span>
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" name="new_total_ttc" id="new_total_ttc" value="0">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Modalités de paiement -->
+                                                <div>
+                                                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                        <i class="fas fa-credit-card text-purple-500 mr-2 text-xs"></i>
+                                                        Modalités de paiement <span class="text-red-500 ml-1">*</span>
+                                                    </label>
+                                                    <textarea name="new_modalite_paiement"
+                                                        id="new_modalite_paiement"
+                                                        rows="2"
+                                                        class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 resize-none"
+                                                        placeholder="Ex: 30% à la commande, 70% à la livraison"></textarea>
+                                                    <div id="error_new_modalite_paiement" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ================================ -->
+                                <!-- DATE D'ATTRIBUTION -->
+                                <!-- ================================ -->
+                                <div>
+                                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-calendar-day text-indigo-500 mr-2 text-xs"></i>
+                                        Date d'attribution
+                                    </label>
+                                    <input type="date"
+                                        name="date_attribution"
+                                        id="date_attribution"
+                                        value="{{ date('Y-m-d') }}"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all duration-200 text-gray-800">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <p class="text-xs text-gray-500 flex items-center">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Les champs marqués <span class="text-red-500 mx-1">*</span> sont obligatoires
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button type="button" onclick="closeAttributionModal()"
+                                        class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-medium text-sm">
+                                        <i class="fas fa-times mr-2"></i>Annuler
+                                    </button>
+                                    <button type="submit" id="submitAttributionBtn"
+                                        class="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all duration-200 font-medium text-sm shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                        <i class="fas fa-check mr-2" id="submitAttributionIcon"></i>
+                                        <span id="submitAttributionText">Attribuer le lot</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <form id="attributionForm" class="p-6">
-                    @csrf
-                    <div class="space-y-5">
-                        <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-                            <p class="text-sm text-indigo-700">
-                                <i class="fas fa-info-circle mr-1"></i>
-                                <strong>Lot:</strong> {{ $lot->numero }} - {{ $lot->libelle }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Prestataire <span class="text-red-500">*</span>
-                            </label>
-                            <select name="prestataire_id" id="prestataire_id" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent">
-                                <option value="">Sélectionner un prestataire</option>
-                                @if ($prestataires->count() > 0)
-                                    @foreach ($prestataires as $prestataire)
-                                        <option value="{{ $prestataire->id_prestataire }}">
-                                            ({{ $prestataire->numero_identification_prestataire }}) - {{ Str::limit($prestataire->raison_sociale_prestataire, 50) }}
-                                        </option>
-                                    @endforeach
-                                @else
-                                    <option value="" disabled>Aucun prestataire disponible</option>
-
-                                @endif
-                            </select>
-                            <div id="error_prestataire_id" class="hidden text-red-500 text-sm mt-1"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Proforma <span class="text-red-500">*</span>
-                            </label>
-                            <select name="proforma_id" id="proforma_id" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent">
-                                <option value="">Sélectionner une proforma</option>
-                                @if( $proformas->count() > 0)
-                                    @foreach ( $proformas as $proforma)
-                                        <option value="{{ $proforma->id_proforma }}">
-                                            {{ $proforma->numero_proforma }} - {{ Str::limit($proforma->objet_proforma, 50) }}
-                                        </option>
-                                    @endforeach
-                                @else
-                                    <option value="" disabled>Aucune proforma disponible</option>
-                                @endif
-                            </select>
-                            <div id="error_proforma_id" class="hidden text-red-500 text-sm mt-1"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Date d'attribution
-                            </label>
-                            <input type="date" name="date_attribution" id="date_attribution"
-                                value="{{ date('Y-m-d') }}"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent">
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closeAttributionModal()"
-                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                            Annuler
-                        </button>
-                        <button type="submit" id="submitAttributionBtn"
-                            class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                            <i class="fas fa-check mr-2"></i>
-                            <span id="submitAttributionText">Attribuer</span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 
     <!-- Modal Retrait -->
-    <div id="retraitModal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 class="text-xl font-bold text-gray-900">Retirer le lot</h3>
-                    <button onclick="closeRetraitModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
+    <div id="retraitModal" class="hidden fixed inset-0 z-50 overflow-hidden" onclick="if(event.target === this) closeRetraitModal()">
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full relative">
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900">Retirer le lot</h3>
+                        <button onclick="closeRetraitModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <form id="retraitForm" class="p-6">
+                        @csrf
+                        <div class="space-y-5">
+                            <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="text-sm text-red-700">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Cette action retirera le lot du prestataire actuel.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Motif du retrait <span class="text-red-500">*</span>
+                                </label>
+                                <textarea name="motif_retrait" id="motif_retrait" rows="4" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent resize-none"
+                                    placeholder="Veuillez indiquer la raison du retrait..."></textarea>
+                                <div id="error_motif_retrait" class="hidden text-red-500 text-sm mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+                            <button type="button" onclick="closeRetraitModal()"
+                                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
+                                Annuler
+                            </button>
+                            <button type="submit" id="submitRetraitBtn"
+                                class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
+                                <i class="fas fa-ban mr-2"></i>
+                                <span id="submitRetraitText">Retirer</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form id="retraitForm" class="p-6">
-                    @csrf
-                    <div class="space-y-5">
-                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p class="text-sm text-red-700">
-                                <i class="fas fa-exclamation-triangle mr-1"></i>
-                                Cette action retirera le lot du prestataire actuel.
-                            </p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Motif du retrait <span class="text-red-500">*</span>
-                            </label>
-                            <textarea name="motif_retrait" id="motif_retrait" rows="4" required
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent resize-none"
-                                placeholder="Veuillez indiquer la raison du retrait..."></textarea>
-                            <div id="error_motif_retrait" class="hidden text-red-500 text-sm mt-1"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closeRetraitModal()"
-                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                            Annuler
-                        </button>
-                        <button type="submit" id="submitRetraitBtn"
-                            class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                            <i class="fas fa-ban mr-2"></i>
-                            <span id="submitRetraitText">Retirer</span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -747,19 +1027,298 @@
             const lotId = '{{ $lot->id_lot }}';
             const appelOffreId = '{{ $lot->appel_offre_id }}';
 
-            // Toggle menu
+            // ==========================================
+            // DONNÉES POUR LA RECHERCHE
+            // ==========================================
+            const prestatairesData = @json($prestataires->map(function($p) {
+                return [
+                    'id' => $p->id_prestataire,
+                    'numero' => $p->numero_identification_prestataire,
+                    'raison' => $p->raison_sociale_prestataire
+                ];
+            }));
+
+            const proformasData = @json($proformas->map(function($p) {
+                return [
+                    'id' => $p->id_proforma,
+                    'numero' => $p->numero_proforma,
+                    'montant' => $p->montant_retenu_proforma
+                ];
+            }));
+
+            // ==========================================
+            // GESTION DU MODAL ATTRIBUTION
+            // ==========================================
+            function openAttributionModal() {
+                const modal = document.getElementById('attributionModal');
+                const content = document.getElementById('attributionModalContent');
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                requestAnimationFrame(() => {
+                    content.classList.remove('opacity-0', 'scale-95', 'translate-y-4');
+                    content.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                });
+            }
+
+            function closeAttributionModal() {
+                const modal = document.getElementById('attributionModal');
+                const content = document.getElementById('attributionModalContent');
+
+                content.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                content.classList.add('opacity-0', 'scale-95', 'translate-y-4');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    resetAttributionForm();
+                }, 200);
+            }
+
+            function resetAttributionForm() {
+                document.getElementById('attributionForm').reset();
+                clearAttributionErrors();
+
+                // Reset mode proforma
+                document.querySelector('input[name="proforma_mode"][value="select"]').checked = true;
+                toggleProformaMode('select');
+
+                // Reset sélections
+                document.getElementById('selectedPrestataire').classList.add('hidden');
+                document.getElementById('selectedProforma').classList.add('hidden');
+
+                // Reset calculs
+                calculerMontants();
+            }
+
+            function clearAttributionErrors() {
+                const errorDivs = document.querySelectorAll('[id^="error_"]');
+                errorDivs.forEach(div => {
+                    div.classList.add('hidden');
+                    const span = div.querySelector('span');
+                    if (span) span.textContent = '';
+                    else div.textContent = '';
+                });
+            }
+
+            // ==========================================
+            // RECHERCHE PRESTATAIRE
+            // ==========================================
+            document.getElementById('searchPrestataire').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const select = document.getElementById('prestataire_id');
+                const options = select.options;
+
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+                    const numero = (option.dataset.numero || '').toLowerCase();
+                    const raison = (option.dataset.raison || '').toLowerCase();
+                    const text = option.text.toLowerCase();
+
+                    if (text.includes(searchTerm) || numero.includes(searchTerm) || raison.includes(searchTerm)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
+
+            document.getElementById('prestataire_id').addEventListener('change', function(e) {
+                const selected = this.options[this.selectedIndex];
+                if (selected && selected.value) {
+                    document.getElementById('selectedPrestataireName').textContent = selected.text;
+                    document.getElementById('selectedPrestataire').classList.remove('hidden');
+                }
+            });
+
+            function clearPrestataireSelection() {
+                document.getElementById('prestataire_id').value = '';
+                document.getElementById('selectedPrestataire').classList.add('hidden');
+                document.getElementById('searchPrestataire').value = '';
+                // Réafficher toutes les options
+                const options = document.getElementById('prestataire_id').options;
+                for (let i = 0; i < options.length; i++) {
+                    options[i].style.display = '';
+                }
+            }
+
+            // ==========================================
+            // RECHERCHE PROFORMA
+            // ==========================================
+            document.getElementById('searchProforma').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const select = document.getElementById('proforma_id');
+                const options = select.options;
+
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+                    const numero = (option.dataset.numero || '').toLowerCase();
+                    const text = option.text.toLowerCase();
+
+                    if (text.includes(searchTerm) || numero.includes(searchTerm)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
+
+            document.getElementById('proforma_id').addEventListener('change', function(e) {
+                const selected = this.options[this.selectedIndex];
+                if (selected && selected.value) {
+                    document.getElementById('selectedProformaName').textContent = selected.text;
+                    document.getElementById('selectedProforma').classList.remove('hidden');
+                }
+            });
+
+            function clearProformaSelection() {
+                document.getElementById('proforma_id').value = '';
+                document.getElementById('selectedProforma').classList.add('hidden');
+                document.getElementById('searchProforma').value = '';
+                // Réafficher toutes les options
+                const options = document.getElementById('proforma_id').options;
+                for (let i = 0; i < options.length; i++) {
+                    options[i].style.display = '';
+                }
+            }
+
+            // ==========================================
+            // TOGGLE MODE PROFORMA
+            // ==========================================
+            function toggleProformaMode(mode) {
+                const selectMode = document.getElementById('proformaSelectMode');
+                const createMode = document.getElementById('proformaCreateMode');
+                const proformaIdField = document.getElementById('proforma_id');
+                const proformaRequiredFields = document.querySelectorAll('.proforma-required');
+
+                if (mode === 'select') {
+                    selectMode.classList.remove('hidden');
+                    createMode.classList.add('hidden');
+                    proformaIdField.required = true;
+
+                    // Retirer required des champs de création
+                    proformaRequiredFields.forEach(field => {
+                        field.required = false;
+                    });
+                } else {
+                    selectMode.classList.add('hidden');
+                    createMode.classList.remove('hidden');
+                    proformaIdField.required = false;
+
+                    // Ajouter required aux champs de création
+                    proformaRequiredFields.forEach(field => {
+                        field.required = true;
+                    });
+                }
+            }
+
+            // ==========================================
+            // CALCULS AUTOMATIQUES
+            // ==========================================
+            function calculerMontants() {
+                const montantRetenu = parseFloat(document.getElementById('new_montant_retenu').value) || 0;
+                const tauxTVA = parseFloat(document.getElementById('new_taux_tva').value) || 0;
+                const tauxRemise = parseFloat(document.getElementById('new_taux_remise').value) || 0;
+                const penalites = parseFloat(document.getElementById('new_penalites').value) || 0;
+
+                // Calcul TVA
+                const montantTVA = montantRetenu * (tauxTVA / 100);
+                document.getElementById('new_taxe_montant').value = montantTVA.toFixed(2);
+
+                // Calcul Remise
+                const montantRemise = montantRetenu * (tauxRemise / 100);
+                document.getElementById('new_remise_montant').value = montantRemise.toFixed(2);
+
+                // Calcul Total TTC
+                const totalTTC = montantRetenu + montantTVA - montantRemise - penalites;
+                document.getElementById('new_total_ttc').value = totalTTC.toFixed(2);
+                document.getElementById('displayTotalTTC').textContent = new Intl.NumberFormat('fr-FR').format(totalTTC.toFixed(0));
+            }
+
+            // ==========================================
+            // SOUMISSION FORMULAIRE ATTRIBUTION
+            // ==========================================
+            document.getElementById('attributionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitBtn = document.getElementById('submitAttributionBtn');
+                const submitIcon = document.getElementById('submitAttributionIcon');
+                const submitText = document.getElementById('submitAttributionText');
+
+                submitBtn.disabled = true;
+                submitIcon.className = 'fas fa-spinner fa-spin mr-2';
+                submitText.textContent = 'Attribution en cours...';
+
+                clearAttributionErrors();
+
+                const formData = new FormData(this);
+
+                // Ajouter le mode proforma
+                const proformaMode = document.querySelector('input[name="proforma_mode"]:checked').value;
+                formData.append('proforma_mode', proformaMode);
+
+                fetch("{{route('api.lots-appels-offres.attribuer', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        submitIcon.className = 'fas fa-check mr-2';
+                        submitText.textContent = 'Attribution réussie !';
+                        submitBtn.classList.remove('from-green-600', 'to-emerald-600');
+                        submitBtn.classList.add('from-emerald-500', 'to-green-500');
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 500);
+                    } else {
+                        if (data.errors) {
+                            Object.keys(data.errors).forEach(key => {
+                                const errorDiv = document.getElementById(`error_${key}`);
+                                if (errorDiv) {
+                                    const span = errorDiv.querySelector('span');
+                                    if (span) span.textContent = data.errors[key][0];
+                                    else errorDiv.textContent = data.errors[key][0];
+                                    errorDiv.classList.remove('hidden');
+                                }
+                            });
+                        } else {
+                            alert(data.message || 'Une erreur est survenue');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue');
+                })
+                .finally(() => {
+                    if (!submitBtn.classList.contains('from-emerald-500')) {
+                        submitBtn.disabled = false;
+                        submitIcon.className = 'fas fa-check mr-2';
+                        submitText.textContent = 'Attribuer le lot';
+                    }
+                });
+            });
+
+            // ==========================================
+            // AUTRES FONCTIONS
+            // ==========================================
             function toggleMenu() {
                 document.getElementById('actionMenu').classList.toggle('hidden');
             }
 
-            // Fermer le menu en cliquant ailleurs
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#menuBtn') && !e.target.closest('#actionMenu')) {
                     document.getElementById('actionMenu').classList.add('hidden');
                 }
             });
 
-            // Dupliquer
             function duplicate() {
                 if (confirm('Voulez-vous dupliquer ce lot ?')) {
                     fetch("{{route('api.lots-appels-offres.duplicate', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
@@ -785,36 +1344,6 @@
                 }
             }
 
-            // Voir historique
-            function viewHistorique() {
-                fetch("{{route('api.lots-appels-offres.historique', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Créer un affichage simple de l'historique
-                        let message = 'Historique des versions:\n\n';
-                        data.data.forEach((version, index) => {
-                            message += `Version ${index + 1}:\n`;
-                            message += `- Créée le: ${new Date(version.created_at).toLocaleString('fr-FR')}\n`;
-                            if (version.creator) {
-                                message += `- Par: ${version.creator.nom_complet}\n`;
-                            }
-                            message += '\n';
-                        });
-                        alert(message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    alert('Erreur lors de la récupération de l\'historique');
-                });
-            }
-
-            // Voir statistiques
             function viewStatistiques() {
                 fetch("{{route('api.lots-appels-offres.statistiques', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
                     headers: {
@@ -842,14 +1371,12 @@
                 });
             }
 
-            // Confirmer suppression
             function confirmDelete() {
                 const message = `Êtes-vous sûr de vouloir supprimer le lot "{{ $lot->numero }}" ?`;
                 document.getElementById('deleteMessage').textContent = message;
                 document.getElementById('deleteModal').classList.remove('hidden');
             }
 
-            // Exécuter suppression
             function executeDelete() {
                 fetch("{{route('api.lots-appels-offres.destroy', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
                     method: 'DELETE',
@@ -875,79 +1402,9 @@
                 });
             }
 
-            // Fermer modal suppression
             function closeDeleteModal() {
                 document.getElementById('deleteModal').classList.add('hidden');
             }
-
-            // Gestion modal attribution
-            function openAttributionModal() {
-                document.getElementById('attributionModal').classList.remove('hidden');
-                // TODO: Charger les prestataires et proformas via AJAX
-            }
-
-            function closeAttributionModal() {
-                document.getElementById('attributionModal').classList.add('hidden');
-                document.getElementById('attributionForm').reset();
-                clearAttributionErrors();
-            }
-
-            function clearAttributionErrors() {
-                const errorDivs = document.querySelectorAll('[id^="error_"]');
-                errorDivs.forEach(div => {
-                    div.classList.add('hidden');
-                    div.textContent = '';
-                });
-            }
-
-            // Soumettre attribution
-            document.getElementById('attributionForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const submitBtn = document.getElementById('submitAttributionBtn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Attribution en cours...';
-
-                clearAttributionErrors();
-
-                const formData = new FormData(this);
-
-                fetch("{{route('api.lots-appels-offres.attribuer', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        if (data.errors) {
-                            Object.keys(data.errors).forEach(key => {
-                                const errorDiv = document.getElementById(`error_${key}`);
-                                if (errorDiv) {
-                                    errorDiv.textContent = data.errors[key][0];
-                                    errorDiv.classList.remove('hidden');
-                                }
-                            });
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    alert('Une erreur est survenue');
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                });
-            });
 
             // Gestion modal retrait
             function openRetraitModal() {
@@ -1005,6 +1462,11 @@
                     document.getElementById('actionMenu').classList.add('hidden');
                 }
             });
+
+            // Initialiser les calculs au chargement
+            document.addEventListener('DOMContentLoaded', function() {
+                calculerMontants();
+            });
         </script>
 
         <style>
@@ -1021,6 +1483,46 @@
 
             .animate-fadeIn {
                 animation: fadeIn 0.3s ease-out;
+            }
+
+            /* Custom scrollbar */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+            /* Style pour les selects multi-lignes */
+            select[size] {
+                overflow-y: auto;
+            }
+
+            select[size] option {
+                padding: 10px 12px;
+                border-bottom: 1px solid #e5e7eb;
+                cursor: pointer;
+            }
+
+            select[size] option:hover {
+                background-color: #f3f4f6;
+            }
+
+            select[size] option:checked {
+                background: linear-gradient(to right, #dcfce7, #d1fae5);
+                color: #166534;
+                font-weight: 600;
             }
 
             @media print {

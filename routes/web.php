@@ -11,6 +11,8 @@ require __DIR__ . '/caracteristiques-lots-routes.php';
 require __DIR__ . '/routes_criteres_evaluations.php';
 require __DIR__ . '/routes_proformas.php';
 require __DIR__ . '/prestataires.php';
+require __DIR__ . '/banques.php';
+require __DIR__.'/attributions.php';
 
 Route::get('/test', function () {
     return view('test');

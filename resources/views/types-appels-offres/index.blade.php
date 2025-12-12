@@ -101,7 +101,9 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Intervalle de valeur</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Nb AO</th>
+                                Appels d'Offre</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Version</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -124,7 +126,7 @@
                                     </div>
                                     @if ($type->description_critere_type_appel_offre)
                                         <div class="text-xs text-gray-500 mt-1 line-clamp-1">
-                                            {{ Str::limit($type->description_critere_type_appel_offre, 60) }}</div>
+                                            {{ Str::limit($type->description_critere_type_appel_offre, 50) }}</div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -137,10 +139,48 @@
                                         </div>
                                     </div>
                                 </td>
+                                {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @php
+                                        $count = $type->appel_offres_count;
+                                        $badgeClass = match(true) {
+                                            $count == 0 => 'bg-gray-100 text-gray-500',
+                                            $count <= 5 => 'bg-blue-100 text-blue-800',
+                                            $count <= 20 => 'bg-orange-100 text-orange-800',
+                                            default => 'bg-green-100 text-green-800',
+                                        };
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $badgeClass }}" title="{{ $count }} appel(s) d'offres">
+                                        <i class="fas fa-file-contract mr-1"></i>
+                                        {{ $count }}
+                                    </span>
+                                </td> --}}
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @php
+                                        $count = $type->appel_offres_count;
+                                        $badgeClass = match(true) {
+                                            $count == 0 => 'bg-gray-100 text-gray-500',
+                                            $count <= 5 => 'bg-blue-100 text-blue-800',
+                                            $count <= 20 => 'bg-orange-100 text-orange-800',
+                                            default => 'bg-green-100 text-green-800',
+                                        };
+                                    @endphp
+
+{{-- {{ $type }} --}}
+                                    {{-- Lien vers les appels d'offres --}}
+                                    <a href="{{ $count > 0 ? route('types-appels-offres.appels-offres.index',  $type->id_type_appel_offre) : '#' }}"
+                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $badgeClass }} hover:underline"
+                                    title="{{ $count }} appel(s) d'offres">
+                                        <i class="fas fa-file-contract mr-1"></i>
+                                        {{ $count }}
+                                    </a>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+
                                     <span
-                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {{ $type->appel_offres_count }}
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 border border-purple-200">
+                                        <i class="fas fa-code-branch mr-1"></i>
+                                        {{ 'V.' . $type->version_type_appel_offre }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -294,6 +334,15 @@
                                 placeholder="Description détaillée du type d'appel d'offres..."></textarea>
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Motif de modification
+                            </label>
+                            <textarea name="motif_modification_type_appel_offre" id="description" rows="2"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
+                                placeholder="Pourquoi voulez-vous modifier du type d'appel d'offres..."></textarea>
+                        </div>
+
                         <!-- Statut -->
                         <div class="flex items-center space-x-3">
                             <input type="checkbox" name="actif_type_appel_offre" id="actif" value="1" checked
@@ -351,7 +400,7 @@
                 let deleteTypeId = null;
 
                 // Ouvrir modal création
-                window.openCreateModal = function () {
+                window.openCreateModal = function() {
                     document.getElementById('modalTitle').textContent = 'Nouveau Type d\'Appel d\'Offres';
                     document.getElementById('typeForm').action = "{{ route('types-appels-offres.store') }}";
                     document.getElementById('formMethod').value = 'POST';
@@ -371,6 +420,8 @@
 
                     document.getElementById('libelle').value = type.libelle_type_appel_offre;
                     document.getElementById('code').value = type.code_type_appel_offre;
+                    document.getElementById('code').readOnly = true;
+                    document.getElementById('code').disabled = true;
                     document.getElementById('valeur_min').value = type.valeur_minimuim_type_appel_offre;
                     document.getElementById('valeur_max').value = type.valeur_maximuim_type_appel_offre;
                     document.getElementById('description').value = type.description_critere_type_appel_offre || '';
@@ -434,11 +485,12 @@
                     let message = `Êtes-vous sûr de vouloir supprimer le type "${libelle}" ?`;
 
                     if (nbAO > 0) {
-                        message = `Impossible de supprimer ce type car il est utilisé dans ${nbAO} appel(s) d'offres.`;
+                        message =
+                            `Impossible de supprimer ce type car il est utilisé dans ${nbAO} appel(s) d'offres.`;
                         document.getElementById('deleteMessage').innerHTML =
                             `<strong class="text-red-600">${message}</strong>`;
                         document.querySelector('#deleteModal button[onclick="executeDelete()"]').classList.add(
-                        'hidden');
+                            'hidden');
                     } else {
                         document.getElementById('deleteMessage').textContent = message;
                         document.querySelector('#deleteModal button[onclick="executeDelete()"]').classList.remove(

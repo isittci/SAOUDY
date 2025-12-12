@@ -386,6 +386,8 @@ class AuthController extends Controller
     {
         $userName = Auth::user()->nom_complet;
 
+        // dd($userName);
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
@@ -398,7 +400,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->route('public.home')->with('success', "Au revoir {$userName} !");
+        return redirect()->route('auth.index')->with('success', "Au revoir {$userName} !");
     }
 
     /**

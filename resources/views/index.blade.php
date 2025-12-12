@@ -207,21 +207,21 @@
             </h2>
 
             <div class="space-y-3">
-                <button class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-transparent hover:from-orange-100 border-l-4 border-orange-500 rounded-lg transition-all duration-200 group">
+                <a href="{{ route('appels-offres.create') }}" class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-orange-50 to-transparent hover:from-orange-100 border-l-4 border-orange-500 rounded-lg transition-all duration-200 group">
                     <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
                         <i class="fas fa-plus text-orange-600"></i>
                     </div>
                     <span class="text-sm font-semibold text-gray-700">Créer un appel d'offres</span>
-                </button>
+                </a>
 
-                <button class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 border-l-4 border-blue-500 rounded-lg transition-all duration-200 group">
+                <a href="{{ route('prestataires.create') }}" class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 border-l-4 border-blue-500 rounded-lg transition-all duration-200 group">
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                         <i class="fas fa-user-plus text-blue-600"></i>
                     </div>
                     <span class="text-sm font-semibold text-gray-700">Ajouter un prestataire</span>
-                </button>
+                </a>
 
-                <button class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-transparent hover:from-green-100 border-l-4 border-green-500 rounded-lg transition-all duration-200 group">
+                {{-- <button class="w-full flex items-center space-x-3 p-4 bg-gradient-to-r from-green-50 to-transparent hover:from-green-100 border-l-4 border-green-500 rounded-lg transition-all duration-200 group">
                     <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                         <i class="fas fa-file-alt text-green-600"></i>
                     </div>
@@ -233,7 +233,7 @@
                         <i class="fas fa-chart-bar text-purple-600"></i>
                     </div>
                     <span class="text-sm font-semibold text-gray-700">Voir les statistiques</span>
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>

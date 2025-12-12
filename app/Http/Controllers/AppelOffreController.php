@@ -13,6 +13,7 @@ use Exception;
 
 class AppelOffreController extends Controller
 {
+    
     /**
      * Affiche la liste des appels d'offres
      */

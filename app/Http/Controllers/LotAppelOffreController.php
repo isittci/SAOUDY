@@ -151,7 +151,6 @@ class LotAppelOffreController extends Controller
             'appel_offre_id.required' => 'L\'appel d\'offres est obligatoire',
             'appel_offre_id.exists' => 'Appel d\'offres invalide',
             'numero.required' => 'Le numéro est obligatoire',
-            // 'numero.unique' => 'Ce numéro de lot existe déjà pour cet appel d\'offres',
             'libelle.required' => 'Le libellé est obligatoire',
             'date_fin_prevue.after' => 'La date de fin doit être après la date de début',
             'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%',
@@ -215,8 +214,6 @@ class LotAppelOffreController extends Controller
             // Génération du numéro complet
             $numeroLot = 'LOT-' . $numeroTypeAO . '-' . $numeroAO . '-' . $concatAuto;
 
-            // return response()->json($numeroLot);
-
             // Créer le lot
             $lot = Lot::create([
                 'appel_offre_id' => $request->appel_offre_id,
@@ -228,29 +225,19 @@ class LotAppelOffreController extends Controller
                 'date_fin_prevue' => $request->date_fin_prevue,
                 'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
-                'attribution_lot' => 0,
                 'created_by' => auth()->id(),
             ]);
 
             DB::commit();
 
-            Log::info("Lot créé avec succès", [
-                'id' => $lot->id_lot,
-                'appel_offre_id' => $request->appel_offre_id
-            ]);
+            Log::info("Lot créé", ['id' => $lot->id_lot]);
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
-                    'data' => $lot->load(['appelOffre', 'creator']),
+                    'data' => $lot->load('appelOffre'),
                     'message' => 'Lot créé avec succès'
                 ], 201);
-            }
-
-            // Rediriger vers la page de l'appel d'offres ou du lot selon le contexte
-            if ($request->has('redirect_to_ao')) {
-                return redirect()->route('appels-offres.show', $request->appel_offre_id)
-                    ->with('success', 'Lot créé avec succès');
             }
 
             return redirect()->route('lots-appels-offres.show', [$appelOffreId, $lot->id_lot])
@@ -267,7 +254,7 @@ class LotAppelOffreController extends Controller
                 ], 500);
             }
 
-            return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Erreur lors de la création: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -277,46 +264,26 @@ class LotAppelOffreController extends Controller
     public function show(Request $request, $appelOffreId, $id)
     {
         try {
-            $lot = Lot::with([
+            $lot = Lot::actif()->with([
                 'appelOffre.typeAppelOffre',
-                'parent',
-                'versions' => function ($q) {
-                    $q->with(['creator', 'updater']);
-                },
-                'criteresEvaluation',
-                'attributionActive.prestataire',
-                'historiqueAttributions.prestataire',
                 'creator',
-                'updater'
-            ])->where('appel_offre_id', $appelOffreId)->findOrFail($id);
+                'updater',
+                'attributionActive.prestataire',
+                'attributionActive.proforma',
+                'criteresEvaluation'
+            ])->findOrFail($id);
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $lot,
-                    'historique' => $lot->getHistorique(),
-                    'statistiques' => [
-                        'duree_jours' => $lot->calculerDuree(),
-                        'est_attribue' => $lot->isAttribue(),
-                        'est_retire' => $lot->isRetire(),
-                        'a_attribution_active' => $lot->aUneAttributionActive(),
-                    ],
-                    'message' => 'Détails récupérés avec succès'
+                    'message' => 'Détails du lot récupérés avec succès'
                 ]);
             }
 
-            //Récupérer les prestataires actifs pour l'affectation
-            $prestataires = Prestataire::actif()
-                ->orderBy('raison_sociale_prestataire', 'asc')
-                ->get();
-
-            //Récupérer les proformas disponibles et actifs
-            $proformas = Proforma::actif()
-                ->orderBy('numero_proforma', 'asc')
-                ->get();
-
-
-
+            // Charger les prestataires et proformas pour le modal d'attribution
+            $prestataires = Prestataire::actif()->orderBy('raison_sociale_prestataire')->get();
+            $proformas = Proforma::actif()->orderBy('numero_proforma', 'desc')->get();
 
             return view('appels-offres.lot-show', compact('lot', 'prestataires', 'proformas'));
         } catch (Exception $e) {
@@ -335,25 +302,47 @@ class LotAppelOffreController extends Controller
     }
 
     /**
-     * Affiche le formulaire de modification
+     * Affiche le formulaire d'édition
      */
-    public function edit($appelOffreIdb, $id)
+    public function edit(Request $request, $appelOffreId, $id)
     {
         try {
-            $lot = Lot::with('appelOffre')->findOrFail($id);
+            $lot = Lot::with(['appelOffre.typeAppelOffre'])->findOrFail($id);
+
+            // Vérifier que le lot n'est pas attribué
+            if ($lot->isAttribue()) {
+                return back()->with('error', 'Impossible de modifier un lot attribué');
+            }
+
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $lot,
+                    'message' => 'Données du lot récupérées pour modification'
+                ]);
+            }
 
             return view('appels-offres.lot-edit', compact('lot'));
         } catch (Exception $e) {
+            Log::error('Erreur lors de la récupération du lot pour édition: ' . $e->getMessage());
+
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lot introuvable',
+                    'error' => $e->getMessage()
+                ], 404);
+            }
+
             return back()->with('error', 'Lot introuvable');
         }
     }
 
     /**
-     * Met à jour un lot (crée une nouvelle version)
+     * Met à jour un lot
      */
     public function update(Request $request, $appelOffreId, $id)
     {
-        // Validation
         $validator = Validator::make($request->all(), [
             'libelle' => 'required|string|max:160',
             'description_critere' => 'nullable|string',
@@ -362,11 +351,10 @@ class LotAppelOffreController extends Controller
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
             'taux_penalites' => 'nullable|numeric|min:0|max:100',
             'statut_lot' => 'required|in:0,1',
-            'motif_modification' => 'required|string',
         ], [
             'libelle.required' => 'Le libellé est obligatoire',
             'date_fin_prevue.after' => 'La date de fin doit être après la date de début',
-            'motif_modification.required' => 'Le motif de modification est obligatoire',
+            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%',
         ]);
 
         if ($validator->fails()) {
@@ -385,10 +373,12 @@ class LotAppelOffreController extends Controller
         try {
             $lot = Lot::findOrFail($id);
 
+            // Vérifier que le lot n'est pas attribué
+            if ($lot->isAttribue()) {
+                throw new Exception('Impossible de modifier un lot attribué. Créez une nouvelle version.');
+            }
 
-
-            // Créer une nouvelle version au lieu de modifier
-            $nouvelleVersion = $lot->creerNouvelleVersion([
+            $lot->update([
                 'libelle' => $request->libelle,
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,
@@ -396,45 +386,41 @@ class LotAppelOffreController extends Controller
                 'date_fin_prevue' => $request->date_fin_prevue,
                 'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
-                'created_by' => auth()->id(),
-            ], $request->motif_modification);
-
-            $lot->update(['statut_lot' => 0]);
+                'updated_by' => auth()->id(),
+            ]);
 
             DB::commit();
 
-            Log::info("Nouvelle version de lot créée", ['id' => $nouvelleVersion->id_lot]);
+            Log::info("Lot modifié", ['id' => $id]);
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
-                    'data' => $nouvelleVersion->load(['appelOffre', 'creator', 'parent']),
-                    'message' => 'Nouvelle version créée avec succès'
+                    'data' => $lot->fresh()->load('appelOffre'),
+                    'message' => 'Lot modifié avec succès'
                 ]);
             }
 
-
-
-            return redirect()->route('lots-appels-offres.show', [$appelOffreId, $nouvelleVersion->id_lot])
-                ->with('success', 'Nouvelle version créée avec succès');
+            return redirect()->route('lots-appels-offres.show', [$appelOffreId, $id])
+                ->with('success', 'Lot modifié avec succès');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Erreur lors de la mise à jour: ' . $e->getMessage());
+            Log::error('Erreur lors de la modification du lot: ' . $e->getMessage());
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erreur lors de la mise à jour',
+                    'message' => 'Erreur lors de la modification',
                     'error' => $e->getMessage()
                 ], 500);
             }
 
-            return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Erreur lors de la modification: ' . $e->getMessage())->withInput();
         }
     }
 
     /**
-     * Supprime un lot (soft delete)
+     * Supprime un lot
      */
     public function destroy(Request $request, $appelOffreId, $id)
     {
@@ -442,16 +428,9 @@ class LotAppelOffreController extends Controller
         try {
             $lot = Lot::findOrFail($id);
 
-            // Vérifier si le lot est attribué
+            // Vérifier que le lot n'est pas attribué
             if ($lot->isAttribue()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Impossible de supprimer un lot attribué'
-                    ], 422);
-                }
-
-                return back()->with('error', 'Impossible de supprimer un lot attribué');
+                throw new Exception('Impossible de supprimer un lot attribué');
             }
 
             $lot->deleted_by = auth()->id();
@@ -469,11 +448,11 @@ class LotAppelOffreController extends Controller
                 ]);
             }
 
-            return redirect()->route('lots.index')
+            return redirect()->route('lots-appels-offres.index', $appelOffreId)
                 ->with('success', 'Lot supprimé avec succès');
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Erreur lors de la suppression: ' . $e->getMessage());
+            Log::error('Erreur lors de la suppression du lot: ' . $e->getMessage());
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -483,22 +462,71 @@ class LotAppelOffreController extends Controller
                 ], 500);
             }
 
-            return back()->with('error', 'Erreur lors de la suppression');
+            return back()->with('error', 'Erreur lors de la suppression: ' . $e->getMessage());
         }
     }
 
     /**
-     * Attribue un lot à un prestataire
+     * ================================================================
+     * ATTRIBUTION DU LOT - MÉTHODE AMÉLIORÉE
+     * ================================================================
+     *
+     * Cette méthode gère deux modes d'attribution :
+     * 1. Mode "select" : Sélection d'une proforma existante
+     * 2. Mode "create" : Création d'une nouvelle proforma avant attribution
      */
     public function attribuer(Request $request, $appelOffreId, $id)
     {
+        // Déterminer le mode de proforma (select ou create)
+        $proformaMode = $request->input('proforma_mode', 'select');
 
-        $validator = Validator::make($request->all(), [
+        // Règles de validation de base
+        $rules = [
             'prestataire_id' => 'required|exists:prestataires,id_prestataire',
-            'proforma_id' => 'required|exists:proformas,id_proforma',
             'date_attribution' => 'nullable|date',
-        ]);
+            'proforma_mode' => 'nullable|in:select,create',
+        ];
 
+        // Messages de validation personnalisés
+        $messages = [
+            'prestataire_id.required' => 'Le prestataire est obligatoire.',
+            'prestataire_id.exists' => 'Le prestataire sélectionné est invalide.',
+            'proforma_id.required' => 'La proforma est obligatoire.',
+            'proforma_id.exists' => 'La proforma sélectionnée est invalide.',
+            'new_date_proforma.required' => 'La date de la proforma est obligatoire.',
+            'new_date_debut_validee.required' => 'La date de début validée est obligatoire.',
+            'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
+            'new_date_fin_validee.required' => 'La date de fin validée est obligatoire.',
+            'new_date_fin_validee.after' => 'La date de fin doit être après la date de début.',
+            'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
+            'new_montant_retenu.numeric' => 'Le montant retenu doit être un nombre.',
+            'new_montant_retenu.min' => 'Le montant retenu doit être positif.',
+            'new_taux_tva.required' => 'Le taux de TVA est obligatoire.',
+            'new_taux_tva.between' => 'Le taux de TVA doit être compris entre 0 et 100.',
+            'new_modalite_paiement.required' => 'Les modalités de paiement sont obligatoires.',
+        ];
+
+        // Ajouter les règles selon le mode
+        if ($proformaMode === 'select') {
+            // Mode sélection : proforma_id obligatoire
+            $rules['proforma_id'] = 'required|exists:proformas,id_proforma';
+        } else {
+            // Mode création : tous les champs de la proforma sont obligatoires
+            $rules['new_date_proforma'] = 'required|date';
+            $rules['new_date_debut_validee'] = 'required|date';
+            $rules['new_date_redemarrage'] = 'required|date';
+            $rules['new_date_fin_validee'] = 'required|date|after_or_equal:new_date_debut_validee';
+            $rules['new_montant_retenu'] = 'required|numeric|min:0';
+            $rules['new_taux_tva'] = 'required|numeric|between:0,100';
+            $rules['new_taxe_montant'] = 'nullable|numeric|min:0';
+            $rules['new_taux_remise'] = 'nullable|numeric|between:0,100';
+            $rules['new_remise_montant'] = 'nullable|numeric|min:0';
+            $rules['new_penalites'] = 'nullable|numeric|min:0';
+            $rules['new_modalite_paiement'] = 'required|string|max:500';
+        }
+
+        // Validation
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             if ($request->wantsJson() || $request->is('api/*')) {
@@ -518,42 +546,120 @@ class LotAppelOffreController extends Controller
              */
             $lot = Lot::findOrFail($id);
 
+            // Vérifier que le lot n'est pas déjà attribué
             if ($lot->isAttribue()) {
                 throw new Exception('Ce lot est déjà attribué');
             }
 
+            // Récupérer le prestataire
             $prestataire = Prestataire::findOrFail($request->prestataire_id);
-            $proforma = Proforma::findOrFail($request->proforma_id);
 
+            // Gérer la proforma selon le mode
+            $proforma = null;
+
+            if ($proformaMode === 'select') {
+                // ================================
+                // MODE SÉLECTION : Utiliser une proforma existante
+                // ================================
+                $proforma = Proforma::findOrFail($request->proforma_id);
+
+                Log::info("Attribution avec proforma existante", [
+                    'proforma_id' => $proforma->id_proforma,
+                    'numero_proforma' => $proforma->numero_proforma
+                ]);
+
+            } else {
+                // ================================
+                // MODE CRÉATION : Créer une nouvelle proforma
+                // ================================
+
+                // Calculer les montants
+                $montantRetenu = floatval($request->new_montant_retenu);
+                $tauxTVA = floatval($request->new_taux_tva);
+                $tauxRemise = floatval($request->input('new_taux_remise', 0));
+                $penalites = floatval($request->input('new_penalites', 0));
+
+                // Calcul TVA
+                $montantTVA = $montantRetenu * ($tauxTVA / 100);
+
+                // Calcul Remise
+                $montantRemise = $montantRetenu * ($tauxRemise / 100);
+
+                // Créer la proforma
+                $proforma = Proforma::create([
+                    'date_proforma' => $request->new_date_proforma,
+                    'date_debut_validee_proforma' => $request->new_date_debut_validee,
+                    'date_redemarrage_proforma' => $request->new_date_redemarrage,
+                    'date_fin_validee_proforma' => $request->new_date_fin_validee,
+                    'montant_retenu_proforma' => $montantRetenu,
+                    'taxe_montant' => $montantTVA,
+                    'remise_montant_proforma' => $montantRemise,
+                    'penalites_proforma' => $penalites,
+                    'modalite_proforma' => $request->new_modalite_paiement,
+                    'actif_proforma' => true,
+                    'version_proforma' => 1,
+                    'created_by' => auth()->id(),
+                ]);
+
+                Log::info("Nouvelle proforma créée pour attribution", [
+                    'proforma_id' => $proforma->id_proforma,
+                    'numero_proforma' => $proforma->numero_proforma,
+                    'montant_ht' => $montantRetenu,
+                    'tva' => $montantTVA,
+                    'remise' => $montantRemise,
+                    'total_ttc' => $proforma->calculerMontantTTC()
+                ]);
+            }
+
+            // Effectuer l'attribution
             $attribution = $lot->attribuerAuPrestataire(
                 $prestataire,
                 $proforma,
                 auth()->id()
             );
 
-            $lot->attribuer($request->date_attribution);
+            // Mettre à jour le lot avec la date d'attribution
+            $lot->attribuer($request->date_attribution ?? now());
 
             DB::commit();
 
-            Log::info("Lot attribué", [
+            Log::info("Lot attribué avec succès", [
                 'lot_id' => $id,
-                'prestataire_id' => $request->prestataire_id
+                'lot_numero' => $lot->numero,
+                'prestataire_id' => $request->prestataire_id,
+                'prestataire_nom' => $prestataire->raison_sociale_prestataire,
+                'proforma_id' => $proforma->id_proforma,
+                'proforma_numero' => $proforma->numero_proforma,
+                'mode_proforma' => $proformaMode
             ]);
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $attribution->load(['prestataire', 'lot', 'proforma']),
-                    'message' => 'Lot attribué avec succès'
+                    'message' => 'Lot attribué avec succès',
+                    'proforma_mode' => $proformaMode,
+                    'proforma_created' => $proformaMode === 'create'
                 ]);
             }
 
-            return redirect()->route('lots-appels-offres.show', [$appelOffreId, $id])->with('success', 'Lot attribué avec succès');
+            $successMessage = $proformaMode === 'create'
+                ? 'Lot attribué avec succès. Une nouvelle proforma (' . $proforma->numero_proforma . ') a été créée.'
+                : 'Lot attribué avec succès.';
 
+            return redirect()
+                ->route('lots-appels-offres.show', [$appelOffreId, $id])
+                ->with('success', $successMessage);
 
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Erreur lors de l\'attribution: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'attribution du lot: ' . $e->getMessage(), [
+                'lot_id' => $id,
+                'prestataire_id' => $request->prestataire_id,
+                'proforma_mode' => $proformaMode,
+                'trace' => $e->getTraceAsString()
+            ]);
+
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
@@ -561,7 +667,10 @@ class LotAppelOffreController extends Controller
                     'error' => $e->getMessage()
                 ], 500);
             }
-            return back()->with('error', 'Erreur lors de l\'attribution: ' . $e->getMessage())->withInput();
+
+            return back()
+                ->with('error', 'Erreur lors de l\'attribution: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -584,9 +693,14 @@ class LotAppelOffreController extends Controller
 
         DB::beginTransaction();
         try {
+
+            /**
+             * @var Lot $lot
+             */
             $lot = Lot::findOrFail($id);
 
-            $lot->retirer($request->motif_retrait, auth()->id());
+            // $lot->retirer($request->motif_retrait, auth()->id());
+            $lot->retirerAttribution($request->motif_retrait, auth()->id());
 
             DB::commit();
 
@@ -608,6 +722,7 @@ class LotAppelOffreController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Obtient l'historique des versions

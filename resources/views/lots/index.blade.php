@@ -190,7 +190,7 @@
                                         </span>
                                         @if ($lot->attributionActive)
                                             <div class="text-xs text-gray-600 mt-1">
-                                                {{ $lot->attributionActive->prestataire->nom_prestataire ?? 'N/A' }}
+                                                {{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A' }}
                                             </div>
                                         @endif
                                     @else

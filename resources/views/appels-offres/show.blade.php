@@ -58,7 +58,8 @@
                     @endif
 
 
-                    <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}" class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                    <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}"
+                        class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                         <i class="fas fa-thumbs-up text-sm"></i>
                         <span class="text-sm font-medium">Caractéristiques</span>
                     </a>
@@ -411,137 +412,6 @@
                         @endif
                     </div>
                 </div>
-
-                <!-- Modal Création Lot -->
-                <div id="createLotModal"
-                    class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 overflow-y-auto">
-                    <div class="flex items-center justify-center min-h-screen p-4">
-                        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full transform transition-all">
-                            <!-- Header -->
-                            <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                                <h3 class="text-xl font-bold text-gray-900">Nouveau Lot</h3>
-                                <button onclick="closeLotModal()"
-                                    class="text-gray-400 hover:text-gray-600 transition-colors">
-                                    <i class="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-
-                            <!-- Form -->
-                            <form id="lotForm" method="POST" action="{{ route('lots.store') }}" class="p-6">
-                                @csrf
-                                <input type="hidden" name="appel_offre_id" value="{{ $appelOffre->id_appel_offre }}">
-
-                                <div class="space-y-5">
-                                    <!-- Info AO -->
-                                    <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-                                        <p class="text-sm text-indigo-700">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            <strong>Appel d'offres:</strong> {{ $appelOffre->numero_appel_offre }} -
-                                            {{ $appelOffre->libelle_critere_appel_offre }}
-                                        </p>
-                                    </div>
-
-                                    <!-- Numéro et Libellé -->
-                                    <div class="grid grid-cols-1 gap-4">
-                                        {{-- <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Numéro du lot <span class="text-red-500">*</span>
-                                            </label>
-                                            <input type="text" name="numero" id="lot_numero" required maxlength="20"
-                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
-                                                placeholder="Ex: LOT-001">
-                                            <div id="error_lot_numero" class="hidden text-red-500 text-sm mt-1"></div>
-                                        </div> --}}
-
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Libellé <span class="text-red-500">*</span>
-                                            </label>
-                                            <input type="text" name="libelle" id="lot_libelle" required
-                                                maxlength="160"
-                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
-                                                placeholder="Ex: Gros œuvre">
-                                            <div id="error_lot_libelle" class="hidden text-red-500 text-sm mt-1"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Description -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Description
-                                        </label>
-                                        <textarea name="description_critere" id="lot_description" rows="3"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"
-                                            placeholder="Description détaillée du lot..."></textarea>
-                                    </div>
-
-                                    <!-- Spécifications techniques -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Spécifications techniques
-                                        </label>
-                                        <textarea name="specifications_techniques" id="lot_specifications" rows="3"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent resize-none"
-                                            placeholder="Spécifications techniques..."></textarea>
-                                    </div>
-
-                                    <!-- Dates -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Date de début prévue
-                                            </label>
-                                            <input type="datet" name="date_debut_prevue" id="lot_date_debut"
-                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                                Date de fin prévue
-                                            </label>
-                                            <input type="datetime-local" name="date_fin_prevue" id="lot_date_fin"
-                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent">
-                                            <div id="error_lot_date_fin" class="hidden text-red-500 text-sm mt-1"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Taux pénalités -->
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Taux de pénalités (%)
-                                        </label>
-                                        <input type="number" name="taux_penalites" id="lot_taux_penalites"
-                                            min="0" max="100" step="0.01"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
-                                            placeholder="Ex: 1.5">
-                                        <p class="text-xs text-gray-500 mt-1">Pourcentage appliqué par jour de retard</p>
-                                    </div>
-
-                                    <!-- Statut -->
-                                    <div class="flex items-center space-x-3">
-                                        <input type="checkbox" name="statut_lot" id="lot_statut" value="1" checked
-                                            class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="lot_statut" class="text-sm font-medium text-gray-700">Lot
-                                            actif</label>
-                                    </div>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                                    <button type="button" onclick="closeLotModal()"
-                                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                                        Annuler
-                                    </button>
-                                    <button type="submit" id="submitLotBtn"
-                                        class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                                        <i class="fas fa-save mr-2"></i>
-                                        <span id="submitLotText">Créer le lot</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Sidebar -->
@@ -666,26 +536,255 @@
         </div>
     </main>
 
-    <!-- Modal Confirmation Suppression -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                <div class="text-center">
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
-                    <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
+    <!-- ========================================== -->
+    <!-- MODAL CRÉATION LOT - AMÉLIORÉ -->
+    <!-- ========================================== -->
+    <div id="createLotModal"
+        class="hidden fixed inset-0 z-50 overflow-hidden"
+        aria-labelledby="modal-title"
+        role="dialog"
+        aria-modal="true">
 
-                    <div class="flex items-center justify-center space-x-3">
-                        <button onclick="closeDeleteModal()"
-                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                            Annuler
-                        </button>
-                        <button onclick="executeDelete()"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+        <!-- Overlay avec fermeture au clic -->
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-300"
+            id="modalOverlay"
+            onclick="closeLotModal()"></div>
+
+        <!-- Container du modal -->
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 sm:p-6">
+
+                <!-- Contenu du modal -->
+                <div id="modalContent"
+                    class="relative w-full max-w-2xl transform rounded-2xl bg-white shadow-2xl transition-all duration-300 ease-out
+                           opacity-0 scale-95 translate-y-4">
+
+                    <!-- Header du modal -->
+                    <div class="relative bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-t-2xl px-6 py-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center justify-center w-10 h-10 bg-white/20 rounded-lg">
+                                    <i class="fas fa-box text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 id="modal-title" class="text-xl font-bold text-white">Nouveau Lot</h3>
+                                    <p class="text-indigo-200 text-sm">Ajoutez un lot à cet appel d'offres</p>
+                                </div>
+                            </div>
+                            <button type="button"
+                                onclick="closeLotModal()"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors duration-200 group">
+                                <i class="fas fa-times text-white group-hover:rotate-90 transition-transform duration-200"></i>
+                            </button>
+                        </div>
+
+                        <!-- Barre de progression -->
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-indigo-800">
+                            <div id="progressBar" class="h-full bg-white/50 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Corps du formulaire -->
+                    <form id="lotForm" method="POST" action="{{ route('lots.store') }}">
+                        @csrf
+                        <input type="hidden" name="appel_offre_id" value="{{ $appelOffre->id_appel_offre }}">
+
+                        <div class="px-6 py-6 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
+
+                            <!-- Info AO -->
+                            <div class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-contract text-indigo-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-indigo-800">{{ $appelOffre->numero_appel_offre }}</p>
+                                        <p class="text-xs text-indigo-600 mt-0.5">{{ Str::limit($appelOffre->libelle_critere_appel_offre, 60) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+
+                                <!-- Libellé - Champ principal -->
+                                <div class="group">
+                                    <label for="lot_libelle" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-tag text-indigo-500 mr-2 text-xs"></i>
+                                        Libellé du lot
+                                        <span class="text-red-500 ml-1">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text"
+                                            name="libelle"
+                                            id="lot_libelle"
+                                            required
+                                            maxlength="160"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                            placeholder="Ex: Travaux de gros œuvre"
+                                            oninput="updateProgress()">
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                            <span id="libelle_count">0</span>/160
+                                        </div>
+                                    </div>
+                                    <div id="error_lot_libelle" class="hidden mt-2 text-red-500 text-sm flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        <span></span>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="group">
+                                    <label for="lot_description" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-align-left text-indigo-500 mr-2 text-xs"></i>
+                                        Description
+                                    </label>
+                                    <textarea name="description_critere"
+                                        id="lot_description"
+                                        rows="3"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
+                                        placeholder="Décrivez le contenu et les objectifs de ce lot..."
+                                        oninput="updateProgress()"></textarea>
+                                </div>
+
+                                <!-- Spécifications techniques -->
+                                <div class="group">
+                                    <label for="lot_specifications" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-cogs text-indigo-500 mr-2 text-xs"></i>
+                                        Spécifications techniques
+                                    </label>
+                                    <textarea name="specifications_techniques"
+                                        id="lot_specifications"
+                                        rows="3"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
+                                        placeholder="Détaillez les exigences techniques..."></textarea>
+                                </div>
+
+                                <!-- Dates - Grid -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="group">
+                                        <label for="lot_date_debut" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                            <i class="fas fa-calendar-plus text-green-500 mr-2 text-xs"></i>
+                                            Date de début prévue
+                                        </label>
+                                        <input type="datetime-local"
+                                            name="date_debut_prevue"
+                                            id="lot_date_debut"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">
+                                        <div id="error_lot_date_debut" class="hidden mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="group">
+                                        <label for="lot_date_fin" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                            <i class="fas fa-calendar-check text-red-500 mr-2 text-xs"></i>
+                                            Date de fin prévue
+                                        </label>
+                                        <input type="datetime-local"
+                                            name="date_fin_prevue"
+                                            id="lot_date_fin"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">
+                                        <div id="error_lot_date_fin" class="hidden mt-2 text-red-500 text-sm flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Taux pénalités -->
+                                <div class="group">
+                                    <label for="lot_taux_penalites" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-percentage text-orange-500 mr-2 text-xs"></i>
+                                        Taux de pénalités
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number"
+                                            name="taux_penalites"
+                                            id="lot_taux_penalites"
+                                            min="0"
+                                            max="100"
+                                            step="0.01"
+                                            class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                            placeholder="Ex: 1.5">
+                                        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1.5 flex items-center">
+                                        <i class="fas fa-info-circle mr-1 text-gray-400"></i>
+                                        Pourcentage appliqué par jour de retard
+                                    </p>
+                                </div>
+
+                                <!-- Statut actif -->
+                                <div class="group">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox"
+                                            name="statut_lot"
+                                            id="lot_statut"
+                                            value="1"
+                                            checked
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-700">Lot actif</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer du modal -->
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <p class="text-xs text-gray-500 flex items-center">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Les champs marqués <span class="text-red-500 mx-1">*</span> sont obligatoires
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button type="button"
+                                        onclick="closeLotModal()"
+                                        class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-medium text-sm">
+                                        <i class="fas fa-times mr-2"></i>
+                                        Annuler
+                                    </button>
+                                    <button type="submit"
+                                        id="submitLotBtn"
+                                        class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl transition-all duration-200 font-medium text-sm shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                        <i class="fas fa-save mr-2" id="submitIcon"></i>
+                                        <span id="submitLotText">Créer le lot</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Suppression -->
+    <div id="deleteModal"
+        class="hidden fixed inset-0 z-50 overflow-hidden"
+        onclick="if(event.target === this) closeDeleteModal()">
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+                    <div class="text-center">
+                        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
+                        <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
+
+                        <div class="flex items-center justify-center space-x-3">
+                            <button onclick="closeDeleteModal()"
+                                class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
+                                Annuler
+                            </button>
+                            <button onclick="executeDelete()"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -695,6 +794,179 @@
     @push('scripts')
         <script>
             const aoId = '{{ $appelOffre->id_appel_offre }}';
+
+            // ==========================================
+            // GESTION DU MODAL LOT - AMÉLIORÉ
+            // ==========================================
+
+            function openCreateLotModal() {
+                const modal = document.getElementById('createLotModal');
+                const content = document.getElementById('modalContent');
+
+                // Afficher le modal
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Animation d'entrée
+                requestAnimationFrame(() => {
+                    content.classList.remove('opacity-0', 'scale-95', 'translate-y-4');
+                    content.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                });
+
+                // Focus sur le premier champ
+                setTimeout(() => {
+                    document.getElementById('lot_libelle').focus();
+                }, 300);
+            }
+
+            function closeLotModal() {
+                const modal = document.getElementById('createLotModal');
+                const content = document.getElementById('modalContent');
+
+                // Animation de sortie
+                content.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                content.classList.add('opacity-0', 'scale-95', 'translate-y-4');
+
+                // Masquer après l'animation
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    resetLotForm();
+                }, 200);
+            }
+
+            function resetLotForm() {
+                document.getElementById('lotForm').reset();
+                clearLotErrors();
+                updateProgress();
+                document.getElementById('libelle_count').textContent = '0';
+            }
+
+            function clearLotErrors() {
+                const errorDivs = document.querySelectorAll('[id^="error_lot_"]');
+                errorDivs.forEach(div => {
+                    div.classList.add('hidden');
+                    const span = div.querySelector('span');
+                    if (span) span.textContent = '';
+                });
+            }
+
+            function showError(fieldName, message) {
+                const errorDiv = document.getElementById(`error_lot_${fieldName}`);
+                if (errorDiv) {
+                    const span = errorDiv.querySelector('span');
+                    if (span) {
+                        span.textContent = message;
+                    } else {
+                        errorDiv.textContent = message;
+                    }
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+
+            // Mise à jour de la barre de progression
+            function updateProgress() {
+                const libelle = document.getElementById('lot_libelle').value;
+                const description = document.getElementById('lot_description').value;
+
+                let progress = 0;
+                if (libelle.length > 0) progress += 50;
+                if (description.length > 0) progress += 30;
+                if (document.getElementById('lot_date_debut').value) progress += 10;
+                if (document.getElementById('lot_date_fin').value) progress += 10;
+
+                document.getElementById('progressBar').style.width = progress + '%';
+            }
+
+            // Compteur de caractères pour le libellé
+            document.getElementById('lot_libelle').addEventListener('input', function() {
+                document.getElementById('libelle_count').textContent = this.value.length;
+            });
+
+            // Validation date fin > date début
+            document.getElementById('lot_date_fin').addEventListener('change', function() {
+                const dateDebut = document.getElementById('lot_date_debut').value;
+                const dateFin = this.value;
+
+                if (dateDebut && dateFin && new Date(dateFin) <= new Date(dateDebut)) {
+                    showError('date_fin', 'La date de fin doit être après la date de début');
+                } else {
+                    document.getElementById('error_lot_date_fin').classList.add('hidden');
+                }
+            });
+
+            // Soumission du formulaire
+            document.getElementById('lotForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitBtn = document.getElementById('submitLotBtn');
+                const submitIcon = document.getElementById('submitIcon');
+                const submitText = document.getElementById('submitLotText');
+
+                // État de chargement
+                submitBtn.disabled = true;
+                submitIcon.className = 'fas fa-spinner fa-spin mr-2';
+                submitText.textContent = 'Création en cours...';
+
+                clearLotErrors();
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Animation de succès
+                            submitIcon.className = 'fas fa-check mr-2';
+                            submitText.textContent = 'Lot créé !';
+                            submitBtn.classList.remove('from-indigo-600', 'to-indigo-700');
+                            submitBtn.classList.add('from-green-500', 'to-green-600');
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                        } else {
+                            // Afficher les erreurs de validation
+                            if (data.errors) {
+                                Object.keys(data.errors).forEach(key => {
+                                    showError(key, data.errors[key][0]);
+                                });
+
+                                // Focus sur le premier champ en erreur
+                                const firstErrorField = document.querySelector('[id^="error_lot_"]:not(.hidden)');
+                                if (firstErrorField) {
+                                    const fieldId = firstErrorField.id.replace('error_lot_', 'lot_');
+                                    document.getElementById(fieldId)?.focus();
+                                }
+                            } else {
+                                alert(data.message || 'Une erreur est survenue');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        alert('Une erreur est survenue lors de la création du lot');
+                    })
+                    .finally(() => {
+                        // Réinitialiser le bouton si pas de succès
+                        if (!document.getElementById('submitLotBtn').classList.contains('from-green-500')) {
+                            submitBtn.disabled = false;
+                            submitIcon.className = 'fas fa-save mr-2';
+                            submitText.textContent = 'Créer le lot';
+                        }
+                    });
+            });
+
+            // ==========================================
+            // AUTRES FONCTIONS
+            // ==========================================
 
             // Toggle menu
             function toggleMenu() {
@@ -765,7 +1037,7 @@
             function cloturer() {
                 if (confirm(
                         'Voulez-vous clôturer cet appel d\'offres ? Cette action modifiera la date limite de dépôt à maintenant.'
-                        )) {
+                    )) {
                     fetch(`/appels-offres/${aoId}/cloturer`, {
                             method: 'POST',
                             headers: {
@@ -793,7 +1065,7 @@
             function duplicate() {
                 if (confirm(
                         'Voulez-vous dupliquer cet appel d\'offres ? Un nouvel appel d\'offres sera créé avec les mêmes informations.'
-                        )) {
+                    )) {
                     fetch(`/appels-offres/${aoId}/duplicate`, {
                             method: 'POST',
                             headers: {
@@ -849,7 +1121,7 @@
             function confirmDelete() {
                 const nbLots = {{ $appelOffre->lots_count }};
                 let message =
-                    `Êtes-vous sûr de vouloir supprimer l'appel d'offres $appelOffre->numero_appel_offre ?`;
+                    `Êtes-vous sûr de vouloir supprimer l'appel d'offres {{ $appelOffre->numero_appel_offre }} ?`;
 
                 if (nbLots > 0) {
                     message = `Impossible de supprimer cet appel d'offres car il contient ${nbLots} lot(s).`;
@@ -894,94 +1166,11 @@
                 document.getElementById('deleteModal').classList.add('hidden');
             }
 
-            // Gestion du modal de création de lot
-            function openCreateLotModal() {
-                document.getElementById('createLotModal').classList.remove('hidden');
-            }
-
-            function closeLotModal() {
-                document.getElementById('createLotModal').classList.add('hidden');
-                document.getElementById('lotForm').reset();
-                clearLotErrors();
-            }
-
-            function clearLotErrors() {
-                const errorDivs = document.querySelectorAll('[id^="error_lot_"]');
-                errorDivs.forEach(div => {
-                    div.classList.add('hidden');
-                    div.textContent = '';
-                });
-            }
-
-            // Gestion du formulaire de lot
-            document.getElementById('lotForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const submitBtn = document.getElementById('submitLotBtn');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Création en cours...';
-
-                clearLotErrors();
-
-                const formData = new FormData(this);
-
-                fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            // Afficher les erreurs de validation
-                            if (data.errors) {
-                                Object.keys(data.errors).forEach(key => {
-                                    const errorDiv = document.getElementById(`error_lot_${key}`);
-                                    if (errorDiv) {
-                                        errorDiv.textContent = data.errors[key][0];
-                                        errorDiv.classList.remove('hidden');
-                                    }
-                                });
-                            } else {
-                                alert(data.message || 'Une erreur est survenue');
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue lors de la création du lot');
-                    })
-                    .finally(() => {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    });
-            });
-
-            // Validation date fin > date début
-            document.getElementById('lot_date_fin').addEventListener('change', function() {
-                const dateDebut = document.getElementById('lot_date_debut').value;
-                const dateFin = this.value;
-                const errorDiv = document.getElementById('error_lot_date_fin');
-
-                if (dateDebut && dateFin && new Date(dateFin) <= new Date(dateDebut)) {
-                    errorDiv.textContent = 'La date de fin doit être après la date de début';
-                    errorDiv.classList.remove('hidden');
-                } else {
-                    errorDiv.classList.add('hidden');
-                }
-            });
-
             // Fermer modales avec Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    closeDeleteModal();
                     closeLotModal();
+                    closeDeleteModal();
                     document.getElementById('actionMenu').classList.add('hidden');
                 }
             });
@@ -993,7 +1182,6 @@
                     opacity: 0;
                     transform: translateY(-10px);
                 }
-
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -1009,6 +1197,32 @@
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
+            }
+
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            /* Custom scrollbar pour le modal */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
             }
 
             @media print {

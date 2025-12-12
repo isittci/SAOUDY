@@ -15,14 +15,19 @@ return new class extends Migration
             $table->uuid('id_proforma')->primary();
             // version
             $table->integer('version_proforma')->default(1)->comment('Version du critère pour le suivi des modifications.');
-            $table->string('numero_proforma',20)->comment(" Référence dans tous les documents.");
+            $table->string('numero_proforma',20)->comment(" Référence dans tous les documents. Généré automatiquement dans le controller");
 
 
-            $table->date('date_proforma_proforma')->nullable()->comment('Date de création de la proforma.');
+            $table->date('date_proforma')->comment('Date de création de la proforma.');
+            $table->date('date_debut_validee')->comment('Date du début valitéé.');
+            $table->date('date_redemarrage')->comment('Date de redemarrage validée.');
+            $table->date('date_fin_validee')->comment('Date  de fin validée.');
+
+
             $table->decimal('montant_retenu_proforma',15,2)->default(0)->comment('');
-            $table->decimal('taxe_montant',15,2)->default(0)->comment('');
-            $table->decimal('remise_montant_proforma',15,2)->default( 0)->comment('');
-            $table->string('modalite_proforma')->nullable()->comment('Modalités de paiement spécifiées dans la proforma.');
+            $table->decimal('taxe_montant',15,2)->default(0)->comment("TVA par defaut 18% du montent retenu");
+            $table->decimal('remise_montant_proforma',15,2)->default( 0)->comment('La rémise (reduction)');
+            $table->string('modalite_proforma')->comment('Modalités de paiement spécifiées dans la proforma.');
             $table->decimal('penalites_proforma',15,2)->default(0)->comment('Pénalités associées à la proforma.');
 
             // motif_modification
@@ -42,6 +47,10 @@ return new class extends Migration
             // Soft delete
             $table->softDeletes();
         });
+
+
+
+
 
         // Auto relation parent_id
         Schema::table('proformas', function (Blueprint $table) {

@@ -320,7 +320,7 @@
                     </div>
                     @endif
 
-                    
+
                 </div>
             </div>
 
@@ -340,13 +340,7 @@
                         <span class="text-sm font-semibold text-gray-700">Créer un AO de ce type</span>
                     </a>
 
-                    <button onclick="generateNumber()"
-                       class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg transition-all duration-200 group">
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                            <i class="fas fa-hashtag text-blue-600"></i>
-                        </div>
-                        <span class="text-sm font-semibold text-gray-700">Générer un numéro</span>
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -532,7 +526,7 @@ function clearErrors() {
 function toggleStatus(id, isActive) {
     const action = isActive ? 'désactiver' : 'activer';
     if (confirm(`Voulez-vous vraiment ${action} ce type d'appel d'offres ?`)) {
-        fetch(`/types-appels-offres/${id}/toggle-status`, {
+        fetch("{{ route('types-appels-offres.toggle-status', ':id') }}".replace(':id', id), {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -606,26 +600,7 @@ function closeDeleteModal() {
     deleteTypeId = null;
 }
 
-// Générer numéro
-function generateNumber() {
-    fetch(`/types-appels-offres/{{ $typeAO->id_type_appel_offre }}/generer-numero`, {
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(`Numéro généré: ${data.data.numero}\n\nCe numéro peut être utilisé pour un nouvel appel d'offres de type ${data.data.type}.`);
-        } else {
-            alert('Erreur lors de la génération du numéro');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    });
-}
+
 
 // Gestion du formulaire
 document.getElementById('typeForm').addEventListener('submit', function(e) {

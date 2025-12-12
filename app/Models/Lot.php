@@ -258,10 +258,11 @@ class Lot extends Model
 
     public function retirer($motif, $userId = null)
     {
+        dd($this);
         $this->date_retrait = now();
         $this->motif_retrait = $motif;
         $this->statut_retrait = 1;
-        $this->deleted_by = $userId;
+        // $this->deleted_by = $userId;
         $this->attribution_lot = 0;
         $this->save();
 
@@ -291,6 +292,9 @@ class Lot extends Model
         }
 
         // Créer l'attribution
+        /**
+         * @var PrestataireLot $attribution
+         */
         $attribution = PrestataireLot::create([
             'prestataire_id' => $prestataire->id_prestataire,
             'lot_id' => $this->id_lot,
@@ -309,6 +313,9 @@ class Lot extends Model
      */
     public function retirerAttribution($motif, $userId = null)
     {
+        /**
+         * @var PrestataireLot $attributionActive
+         */
         $attributionActive = $this->attributionActive;
 
         if (!$attributionActive) {

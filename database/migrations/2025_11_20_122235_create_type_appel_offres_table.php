@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('code_type_appel_offre',10)->comment("Code court (ex: AOT, AOS, AOF). Utilisé dans les numéros d'AO.");
             $table->decimal('valeur_minimuim_type_appel_offre', 15, 2)->comment('Valeur minimale associée au type d\'appel d\'offres');
             $table->decimal('valeur_maximuim_type_appel_offre',15,2)->comment('Valeur maximale associée au type d\'appel d\'offres');
-
+            
             $table->text('description_critere_type_appel_offre')->nullable()->comment('Description détaillée du type d\'appel d\'offres');
             $table->boolean('actif_type_appel_offre')->default(true)->comment('Permet de désactiver temporairement un type sans le supprimer.');
 
@@ -32,6 +32,15 @@ return new class extends Migration
             // Soft delete
             $table->softDeletes();
         });
+
+
+        // // Auto relation parent_id car à la mise à jour on écrase pas l'ancienne information on la desactive et on creer une nouvelle ligne
+        // Schema::table('types_appels_offres', function (Blueprint $table) {
+        //     $table->foreignUuid('parent_id')->nullable()->comment('Identifiant du critère parent, si applicable.')->references('id_type_appel_offre')->on('types_appels_offres')->onDelete('set null');
+        //     $table->integer('version_type_appel_offre')->default(1);
+        //     $table->string('motif_modification_type_appel_offre', 255)->nullable();
+        //     $table->string('valeur_maximuim_type_appel_offre', 255)->nullable();
+        // });
     }
 
     /**

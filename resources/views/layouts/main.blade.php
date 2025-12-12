@@ -5,12 +5,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard | '.config('app.name'))</title>
+    <title>@yield('title', 'Dashboard | ' . config('app.name'))</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Dans votre <head> ou avant </body> -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Dans le <head> -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+
+    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
 
     <style>
         /* Custom scrollbar - Plus moderne */
@@ -27,7 +36,6 @@
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #64748b, #475569);
             border-radius: 10px;
-            transition: background 0.3s;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -40,6 +48,7 @@
                 transform: translateX(-100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -52,6 +61,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -60,13 +70,6 @@
 
         .dropdown-enter {
             animation: fadeInDown 0.3s ease-out;
-        }
-
-        /* Amélioration des transitions */
-        * {
-            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-            transition-duration: 200ms;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Focus visible pour l'accessibilité */
@@ -79,6 +82,31 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* Sidebar transitions */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Overlay transitions */
+        #mobileMenuOverlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #mobileMenuOverlay.opacity-0 {
+            pointer-events: none;
+        }
+
+        /* Desktop sidebar always visible */
+        @media (min-width: 1024px) {
+            #sidebar {
+                transform: translateX(0) !important;
+            }
+
+            #mobileMenuOverlay {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -86,8 +114,8 @@
     <div class="flex h-screen overflow-hidden">
         <!-- Mobile Menu Overlay avec blur -->
         <div id="mobileMenuOverlay"
-             class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-all duration-300"
-             onclick="toggleMobileMenu()">
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden opacity-0 pointer-events-none"
+            onclick="closeMobileMenu()">
         </div>
 
         <!-- Sidebar -->
@@ -106,22 +134,102 @@
     @stack('scripts')
 
     <script>
+        // État du menu mobile
+        let isMobileMenuOpen = false;
+        const MOBILE_BREAKPOINT = 1024;
+
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
+            initializeSidebar();
+            setupResizeHandler();
+        });
+
+        // Initialiser l'état du sidebar
+        function initializeSidebar() {
             const sidebar = document.getElementById("sidebar");
             const overlay = document.getElementById("mobileMenuOverlay");
 
-            // S'assurer que le menu est fermé sur mobile au chargement
-            if (window.innerWidth < 1024) {
+            if (window.innerWidth < MOBILE_BREAKPOINT) {
+                // Mode mobile : menu fermé par défaut
                 sidebar.classList.add("-translate-x-full");
-                overlay.classList.add("hidden");
-                document.body.style.overflow = "";
+                overlay.classList.add("opacity-0", "pointer-events-none");
+                isMobileMenuOpen = false;
             } else {
-                // S'assurer que le menu est ouvert sur desktop
+                // Mode desktop : menu toujours visible
                 sidebar.classList.remove("-translate-x-full");
-                overlay.classList.add("hidden");
             }
-        });
+
+            document.body.style.overflow = "";
+        }
+
+        // Ouvrir le menu mobile
+        function openMobileMenu() {
+            if (window.innerWidth >= MOBILE_BREAKPOINT) return;
+
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("mobileMenuOverlay");
+
+            sidebar.classList.remove("-translate-x-full");
+            overlay.classList.remove("opacity-0", "pointer-events-none");
+
+            document.body.style.overflow = "hidden";
+            isMobileMenuOpen = true;
+        }
+
+        // Fermer le menu mobile
+        function closeMobileMenu() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("mobileMenuOverlay");
+
+            sidebar.classList.add("-translate-x-full");
+            overlay.classList.add("opacity-0", "pointer-events-none");
+
+            document.body.style.overflow = "";
+            isMobileMenuOpen = false;
+        }
+
+        // Toggle du menu mobile
+        function toggleMobileMenu() {
+            if (isMobileMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        // Gestion du redimensionnement
+        function setupResizeHandler() {
+            let resizeTimeout;
+            let previousWidth = window.innerWidth;
+
+            window.addEventListener("resize", function() {
+                clearTimeout(resizeTimeout);
+
+                resizeTimeout = setTimeout(function() {
+                    const currentWidth = window.innerWidth;
+                    const sidebar = document.getElementById("sidebar");
+                    const overlay = document.getElementById("mobileMenuOverlay");
+
+                    // Passage de mobile à desktop
+                    if (currentWidth >= MOBILE_BREAKPOINT && previousWidth < MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove("-translate-x-full");
+                        overlay.classList.add("opacity-0", "pointer-events-none");
+                        document.body.style.overflow = "";
+                        isMobileMenuOpen = false;
+                    }
+
+                    // Passage de desktop à mobile
+                    if (currentWidth < MOBILE_BREAKPOINT && previousWidth >= MOBILE_BREAKPOINT) {
+                        sidebar.classList.add("-translate-x-full");
+                        overlay.classList.add("opacity-0", "pointer-events-none");
+                        document.body.style.overflow = "";
+                        isMobileMenuOpen = false;
+                    }
+
+                    previousWidth = currentWidth;
+                }, 150);
+            });
+        }
 
         // Toggle User Menu
         function toggleUserMenu() {
@@ -145,103 +253,52 @@
             const userMenuIcon = document.getElementById("userMenuIcon");
             const userProfile = event.target.closest('button[onclick*="toggleUserMenu"]');
 
-            if (!userProfile && !userMenu.contains(event.target)) {
+            if (!userProfile && userMenu && !userMenu.contains(event.target)) {
                 userMenu.classList.add("hidden");
-                userMenuIcon.classList.remove("rotate-180");
+                if (userMenuIcon) {
+                    userMenuIcon.classList.remove("rotate-180");
+                }
             }
         });
 
-        // Toggle Mobile Menu avec animations
-        function toggleMobileMenu() {
-
-            const sidebar = document.getElementById("sidebar");
-            const overlay = document.getElementById("mobileMenuOverlay");
-
-            sidebar.classList.toggle("-translate-x-full");
-            overlay.classList.toggle("hidden");
-
-            // Prevent body scroll when menu is open
-            document.body.style.overflow = sidebar.classList.contains("-translate-x-full") ? "" : "hidden";
-        }
-
-        // Toggle Filters
+        // Toggle Filters (si utilisé dans les pages)
         function toggleFilters() {
             const filtersContainer = document.getElementById("filtersContainer");
             const toggleIcon = document.getElementById("filterToggleIcon");
 
-            filtersContainer.classList.toggle("hidden");
-            toggleIcon.classList.toggle("rotate-180");
+            if (filtersContainer) {
+                filtersContainer.classList.toggle("hidden");
+            }
+            if (toggleIcon) {
+                toggleIcon.classList.toggle("rotate-180");
+            }
         }
-
-        // Auto-close mobile menu on resize (seulement si déjà ouvert)
-        let resizeTimer;
-        let lastWidth = window.innerWidth;
-
-        window.addEventListener("resize", function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                const currentWidth = window.innerWidth;
-
-                // Ne fermer que si on passe de mobile à desktop ET que le menu est ouvert
-                if (currentWidth >= 1024 && lastWidth < 1024) {
-                    const sidebar = document.getElementById("sidebar");
-                    const overlay = document.getElementById("mobileMenuOverlay");
-
-                    // Vérifier si le menu est actuellement ouvert
-                    if (!sidebar.classList.contains("-translate-x-full")) {
-                        sidebar.classList.add("-translate-x-full");
-                        overlay.classList.add("hidden");
-                        document.body.style.overflow = "";
-                    }
-                }
-
-                // Auto-show filters on desktop uniquement si on passe de mobile à desktop
-                if (currentWidth >= 768 && lastWidth < 768) {
-                    const filtersContainer = document.getElementById("filtersContainer");
-                    const toggleIcon = document.getElementById("filterToggleIcon");
-
-                    filtersContainer.classList.remove("hidden");
-                    toggleIcon.classList.remove("rotate-180");
-                }
-
-                lastWidth = currentWidth;
-            }, 250);
-        });
 
         // Escape key to close menus
         document.addEventListener("keydown", function(event) {
             if (event.key === "Escape") {
-                // Close mobile menu
-                const sidebar = document.getElementById("sidebar");
-                const overlay = document.getElementById("mobileMenuOverlay");
-                if (!sidebar.classList.contains("-translate-x-full")) {
-                    toggleMobileMenu();
+                // Fermer le menu mobile s'il est ouvert
+                if (isMobileMenuOpen) {
+                    closeMobileMenu();
                 }
 
-                // Close user menu
+                // Fermer le menu utilisateur
                 const userMenu = document.getElementById("userMenu");
-                if (!userMenu.classList.contains("hidden")) {
+                if (userMenu && !userMenu.classList.contains("hidden")) {
                     toggleUserMenu();
                 }
             }
         });
 
-        // Add loading state to buttons
-        document.querySelectorAll('button[type="submit"], a[data-loading]').forEach(element => {
-            element.addEventListener('click', function(e) {
-
-                if (!this.disabled) {
-                    const originalContent = this.innerHTML;
-                    // this.disabled = true;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Chargement...';
-
-                    // Re-enable after 3 seconds (fallback)
-                    setTimeout(() => {
-                        this.disabled = false;
-                        this.innerHTML = originalContent;
-                    }, 3000);
+        // Fermer le menu mobile lors d'un clic sur un lien (optionnel)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth < MOBILE_BREAKPOINT && isMobileMenuOpen) {
+                const clickedLink = event.target.closest('#sidebar a[href]:not([href="#"])');
+                if (clickedLink) {
+                    // Petite temporisation pour laisser le temps au lien de s'activer
+                    setTimeout(closeMobileMenu, 150);
                 }
-            });
+            }
         });
     </script>
 </body>

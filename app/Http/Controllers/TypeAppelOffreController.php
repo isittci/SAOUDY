@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TypeAppelOffre;
+use Exception;
+use App\Models\AppelOffre;
 use Illuminate\Http\Request;
+use App\Models\TypeAppelOffre;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Exception;
 
 class TypeAppelOffreController extends Controller
 {
@@ -19,7 +20,9 @@ class TypeAppelOffreController extends Controller
 
         try {
             $query = TypeAppelOffre::with(['creator', 'updater'])
-                ->withCount('appelOffres');
+                ->with(['parent'])
+                ->withCount('appelOffres')
+                /*->where('actif_type_appel_offre', true)*/?->versionActuelle();
 
             // Filtres
             if ($request->filled('actif')) {
@@ -28,9 +31,9 @@ class TypeAppelOffreController extends Controller
 
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('libelle_type_appel_offre', 'like', "%{$search}%")
-                      ->orWhere('code_type_appel_offre', 'like', "%{$search}%");
+                        ->orWhere('code_type_appel_offre', 'like', "%{$search}%");
                 });
             }
 
@@ -53,7 +56,6 @@ class TypeAppelOffreController extends Controller
             }
 
             return view('types-appels-offres.index', compact('typesAO'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des types AO: ' . $e->getMessage());
 
@@ -131,7 +133,6 @@ class TypeAppelOffreController extends Controller
 
             return redirect()->route('types-appels-offres.show', $typeAO->id_type_appel_offre)
                 ->with('success', 'Type d\'appel d\'offres créé avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création du type AO: ' . $e->getMessage());
@@ -155,14 +156,14 @@ class TypeAppelOffreController extends Controller
     {
         try {
             $typeAO = TypeAppelOffre::with([
-                'appelOffres' => function($q) {
+                'appelOffres' => function ($q) {
                     $q->latest()->limit(10);
                 },
                 'creator',
                 'updater',
                 'deleter'
             ])->withCount('appelOffres')
-              ->findOrFail($id);
+                ->findOrFail($id);
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -173,7 +174,6 @@ class TypeAppelOffreController extends Controller
             }
 
             return view('types-appels-offres.show', compact('typeAO'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du type AO: ' . $e->getMessage());
 
@@ -188,6 +188,58 @@ class TypeAppelOffreController extends Controller
             return back()->with('error', 'Type d\'appel d\'offres introuvable');
         }
     }
+
+
+public function fetchAOByTAO(Request $request, $id)
+{
+    try {
+        // Récupérer le type d'appel d'offres
+        $typeAO = TypeAppelOffre::with(['creator', 'updater', 'deleter'])
+            ->withCount('appelOffres')
+            ->findOrFail($id);
+
+        // Récupérer les appels d'offres avec pagination
+        $perPage = $request->input('per_page', 10);
+        $appelOffres = AppelOffre::where('type_appel_offre_id', $id)
+            ->with(['creator', 'updater']) // Ajoute les relations nécessaires
+            ->latest()
+            ->paginate($perPage);
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'type_appel_offre' => $typeAO,
+                    'appels_offres' => $appelOffres->items(),
+                    'pagination' => [
+                        'current_page' => $appelOffres->currentPage(),
+                        'last_page' => $appelOffres->lastPage(),
+                        'per_page' => $appelOffres->perPage(),
+                        'total' => $appelOffres->total(),
+                        'from' => $appelOffres->firstItem(),
+                        'to' => $appelOffres->lastItem(),
+                    ]
+                ],
+                'message' => 'Détails récupérés avec succès'
+            ]);
+        }
+
+        return view('types-appels-offres.liste-appel-offre', compact('typeAO', 'appelOffres'));
+
+    } catch (Exception $e) {
+        Log::error('Erreur lors de la récupération du type AO: ' . $e->getMessage());
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Type d\'appel d\'offres introuvable',
+                'error' => $e->getMessage()
+            ], 404);
+        }
+
+        return back()->with('error', 'Type d\'appel d\'offres introuvable');
+    }
+}
 
     /**
      * Affiche le formulaire de modification
@@ -207,15 +259,26 @@ class TypeAppelOffreController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validation
+        $typeAO = TypeAppelOffre::findOrFail($id);
+// dd(25);
         $validator = Validator::make($request->all(), [
             'libelle_type_appel_offre' => 'required|string|max:160',
-            'code_type_appel_offre' => 'required|string|max:10|unique:types_appels_offres,code_type_appel_offre,' . $id . ',id_type_appel_offre',
+            // 'code_type_appel_offre' => 'nullable|string|max:10|unique:types_appels_offres,code_type_appel_offre,' . $id . ',id_type_appel_offre',
             'valeur_minimuim_type_appel_offre' => 'required|numeric|min:0',
             'valeur_maximuim_type_appel_offre' => 'required|numeric|gt:valeur_minimuim_type_appel_offre',
             'description_critere_type_appel_offre' => 'nullable|string',
+            'motif_modification_type_appel_offre' => 'nullable|string',
             'actif_type_appel_offre' => 'boolean',
         ]);
+
+        // Rendre motif obligatoire seulement si les valeurs changent
+        $validator->sometimes('motif_modification_type_appel_offre', 'required|string', function ($input) use ($typeAO) {
+            return $input->valeur_minimuim_type_appel_offre != $typeAO->valeur_minimuim_type_appel_offre
+                || $input->valeur_maximuim_type_appel_offre != $typeAO->valeur_maximuim_type_appel_offre;
+        });
+
+        $validator->validate();
+
 
         if ($validator->fails()) {
             if ($request->wantsJson() || $request->is('api/*')) {
@@ -231,35 +294,60 @@ class TypeAppelOffreController extends Controller
 
         DB::beginTransaction();
         try {
-            $typeAO = TypeAppelOffre::findOrFail($id);
+            $validator = $validator->validate();
 
-            // Vérifier si le type est utilisé et si on change les valeurs
-            if ($typeAO->appel_offres_count > 0) {
-                $changementValeurs =
-                    $typeAO->valeur_minimuim_type_appel_offre != $request->valeur_minimuim_type_appel_offre ||
-                    $typeAO->valeur_maximuim_type_appel_offre != $request->valeur_maximuim_type_appel_offre;
 
-                if ($changementValeurs) {
-                    if ($request->wantsJson() || $request->is('api/*')) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Impossible de modifier les valeurs. Ce type est déjà utilisé dans des appels d\'offres.'
-                        ], 422);
-                    }
+            // // Vérifier si le type est utilisé et si on change les valeurs
+            // if ($typeAO->appel_offres_count > 0) {
+            //     $changementValeurs =
+            //         $typeAO->valeur_minimuim_type_appel_offre != $request->valeur_minimuim_type_appel_offre ||
+            //         $typeAO->valeur_maximuim_type_appel_offre != $request->valeur_maximuim_type_appel_offre;
 
-                    return back()->with('error', 'Impossible de modifier les valeurs. Ce type est déjà utilisé.');
-                }
+            //     if ($changementValeurs) {
+            //         if ($request->wantsJson() || $request->is('api/*')) {
+            //             return response()->json([
+            //                 'success' => false,
+            //                 'message' => 'Impossible de modifier les valeurs. Ce type est déjà utilisé dans des appels d\'offres.'
+            //             ], 422);
+            //         }
+
+            //         return back()->with('error', 'Impossible de modifier les valeurs. Ce type est déjà utilisé.');
+            //     }
+            // }
+
+            $updateName = $validator['libelle_type_appel_offre'] == $typeAO->libelle_type_appel_offre;
+            $updateMixValue = $validator['valeur_minimuim_type_appel_offre'] == $typeAO->valeur_minimuim_type_appel_offre;
+            $updateMaxValue = $validator['valeur_maximuim_type_appel_offre'] == $typeAO->valeur_maximuim_type_appel_offre;
+            // $updateDescription = $request->description_critere_type_appel_offre == $typeAO->description_critere_type_appel_offre;
+
+
+            if ($updateName && $updateMixValue && $updateMaxValue) {
+                $typeAO->update([
+                    'libelle_type_appel_offre' => $validator['libelle_type_appel_offre'],
+                    // 'code_type_appel_offre' => strtoupper($request->code_type_appel_offre),
+                    'valeur_minimuim_type_appel_offre' => $typeAO->valeur_minimuim_type_appel_offre,
+                    'valeur_maximuim_type_appel_offre' => $typeAO->valeur_maximuim_type_appel_offre,
+                    'description_critere_type_appel_offre' => $request->description_critere_type_appel_offre,
+                    'actif_type_appel_offre' => $request->get('actif_type_appel_offre', $typeAO->actif_type_appel_offre),
+
+                    'updated_by' => auth()->id(),
+                ]);
+            } else {
+                // Créer une nouvelle version - SANS duree_estimee_jours (calculée automatiquement)
+                $typeAO = $typeAO->creerNouvelleVersion([
+                    'libelle_type_appel_offre' => $request->libelle_type_appel_offre,
+                    'valeur_minimuim_type_appel_offre' => $validator['valeur_minimuim_type_appel_offre'],
+                    'valeur_maximuim_type_appel_offre' => $validator['valeur_maximuim_type_appel_offre'],
+                    'description_critere_type_appel_offre' => $validator['description_critere_type_appel_offre'],
+
+                    'actif_type_appel_offre' => $request->get('actif_type_appel_offre', $typeAO->actif_type_appel_offre),
+                    'updated_by' => auth()->id(),
+                    'created_by' => auth()->id(),
+                ], $validator['motif_modification_type_appel_offre']);
+                // La durée sera calculée automatiquement par le modèle
             }
 
-            $typeAO->update([
-                'libelle_type_appel_offre' => $request->libelle_type_appel_offre,
-                'code_type_appel_offre' => strtoupper($request->code_type_appel_offre),
-                'valeur_minimuim_type_appel_offre' => $request->valeur_minimuim_type_appel_offre,
-                'valeur_maximuim_type_appel_offre' => $request->valeur_maximuim_type_appel_offre,
-                'description_critere_type_appel_offre' => $request->description_critere_type_appel_offre,
-                'actif_type_appel_offre' => $request->get('actif_type_appel_offre', $typeAO->actif_type_appel_offre),
-                'updated_by' => auth()->id(),
-            ]);
+
 
             DB::commit();
 
@@ -275,7 +363,6 @@ class TypeAppelOffreController extends Controller
 
             return redirect()->route('types-appels-offres.show', $typeAO->id_type_appel_offre)
                 ->with('success', 'Type d\'appel d\'offres mis à jour avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour du type AO: ' . $e->getMessage());
@@ -307,7 +394,7 @@ class TypeAppelOffreController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'Impossible de supprimer ce type. Il est utilisé dans ' .
-                                   $typeAO->appel_offres_count . ' appel(s) d\'offres.'
+                            $typeAO->appel_offres_count . ' appel(s) d\'offres.'
                     ], 422);
                 }
 
@@ -331,7 +418,6 @@ class TypeAppelOffreController extends Controller
 
             return redirect()->route('types-appels-offres.index')
                 ->with('success', 'Type d\'appel d\'offres supprimé avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la suppression du type AO: ' . $e->getMessage());
@@ -376,7 +462,6 @@ class TypeAppelOffreController extends Controller
             }
 
             return back()->with('success', "Type d'appel d'offres {$statut} avec succès");
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors du changement de statut: ' . $e->getMessage());
@@ -423,7 +508,6 @@ class TypeAppelOffreController extends Controller
                     ? 'Type(s) correspondant(s) trouvé(s)'
                     : 'Aucun type ne correspond à ce montant'
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la vérification du montant: ' . $e->getMessage());
 
@@ -455,7 +539,6 @@ class TypeAppelOffreController extends Controller
                 ],
                 'message' => 'Numéro généré avec succès'
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la génération du numéro: ' . $e->getMessage());
 
@@ -483,7 +566,6 @@ class TypeAppelOffreController extends Controller
                 'data' => $types,
                 'message' => 'Export en cours de développement'
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de l\'export: ' . $e->getMessage());
 
@@ -494,4 +576,6 @@ class TypeAppelOffreController extends Controller
             ], 500);
         }
     }
+
+
 }

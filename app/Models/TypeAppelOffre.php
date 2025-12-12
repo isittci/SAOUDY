@@ -61,6 +61,15 @@ class TypeAppelOffre extends Model
         return $query->where('actif_type_appel_offre', true);
     }
 
+    public function scopeVersionActuelle($query)
+    {
+
+        return $query->whereNull('parent_id')->where('actif_type_appel_offre', 1)
+            ->orWhereDoesntHave('versions');
+    }
+
+
+
     public function scopeInactif($query)
     {
         return $query->where('actif_type_appel_offre', false);
@@ -69,24 +78,87 @@ class TypeAppelOffre extends Model
     public function scopeByValeur($query, $montant)
     {
         return $query->where('valeur_minimuim_type_appel_offre', '<=', $montant)
-                     ->where('valeur_maximuim_type_appel_offre', '>=', $montant);
+            ->where('valeur_maximuim_type_appel_offre', '>=', $montant);
     }
 
     // Méthodes utilitaires
     public function isValeurDansIntervalle($montant)
     {
-        return $montant >= $this->valeur_minimuim_type_appel_offre
-            && $montant <= $this->valeur_maximuim_type_appel_offre;
+        return $montant >= $this->valeur_minimuim_type_appel_offre && $montant <= $this->valeur_maximuim_type_appel_offre;
     }
 
     public function genererNumeroAppelOffre($annee = null)
     {
         $annee = $annee ?? date('Y');
-        $dernier = AppelOffre::where('type_appel_offre_id', $this->id_type_appel_offre)
-            ->whereYear('created_at', $annee)
-            ->count();
+        $dernier = AppelOffre::where('type_appel_offre_id', $this->id_type_appel_offre)->whereYear('created_at', $annee)->count();
 
         $sequence = str_pad($dernier + 1, 3, '0', STR_PAD_LEFT);
         return "{$this->code_type_appel_offre}-{$annee}-{$sequence}";
     }
+
+
+    /**
+     * Crée une nouvelle version de la caractéristique
+     */
+    public function creerNouvelleVersion(array $donnees, $motif = null)
+    {
+
+        // Désactiver la version actuelle
+        $this->actif_type_appel_offre  = false;
+        $this->save();
+
+
+        // Créer la nouvelle version
+        $nouvelleVersion = $this->replicate();
+        $nouvelleVersion->parent_id = $this->id_type_appel_offre;
+        $nouvelleVersion->version_type_appel_offre = $this->getProchainNumeroVersion();
+        $nouvelleVersion->motif_modification_type_appel_offre = $motif;
+        $nouvelleVersion->actif_type_appel_offre = true;
+
+
+        // Appliquer les nouvelles données
+        foreach ($donnees as $cle => $valeur) {
+            if (in_array($cle, $this->fillable)) {
+                $nouvelleVersion->$cle = $valeur;
+            }
+        }
+
+        // La durée sera calculée automatiquement via l'événement creating
+        $nouvelleVersion->save();
+        return $nouvelleVersion;
+    }
+
+
+    /**
+     * Obtient le prochain numéro de version
+     */
+    public function getProchainNumeroVersion()
+    {
+        if ($this->parent_id) {
+            $parent = $this->parent;
+            $derniereVersion = $parent->versions()->max('version_type_appel_offre');
+        } else {
+            $derniereVersion = $this->versions()->max('version_type_appel_offre');
+        }
+
+        return ($derniereVersion ?? $this->version_type_appel_offre) + 1;
+    }
+
+
+    public function parent()
+    {
+        return $this->belongsTo(TypeAppelOffre::class, 'parent_id', 'id_type_appel_offre');
+    }
+
+    public function versions()
+    {
+        return $this->hasMany(TypeAppelOffre::class, 'parent_id', 'id_type_appel_offre')->orderBy('created_at', 'desc')
+            /*->orderBy('version_type_appel_offre', 'desc')*/;
+    }
+
+    // public function versions()
+    // {
+    //     return $this->hasMany(Lot::class, 'parent_id', 'id_lot')
+    //         ->orderBy('created_at', 'desc');
+    // }
 }

@@ -23,12 +23,16 @@ Route::middleware(['auth'])->prefix('types-appels-offres')->name('types-appels-o
     Route::post('/check-montant', [TypeAppelOffreController::class, 'checkMontant'])->name('check-montant');
     Route::get('/{id}/generer-numero', [TypeAppelOffreController::class, 'genererNumero'])->name('generer-numero');
     Route::get('/export/{format?}', [TypeAppelOffreController::class, 'export'])->name('export');
+
+    Route::prefix('{id}/appels-offres')->name('appels-offres.')->group( function  (){
+        Route::get('/', [TypeAppelOffreController::class, 'fetchAOByTAO'])->name('index');
+    });
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| Routes API
+| Routes API types_appels_offres.appels_offres
 |--------------------------------------------------------------------------
 */
 

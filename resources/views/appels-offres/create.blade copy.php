@@ -1,9 +1,9 @@
 @extends('layouts.main')
-@section('title', 'Créer un prestataire')
+@section('title', 'Créer un Appel d\'Offres')
 @section('breadcrumb')
-    <a href="{{ route('prestataires.index') }}" class="text-white/80 hover:text-white transition-colors">Prestataires</a>
+    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">Nouveau prestataire</span>
+    <span class="text-white font-medium">Nouveau</span>
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('prestataires.index') }}"
+                <a href="{{ route('appels-offres.index') }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                         <i class="fas fa-plus-circle text-orange-500"></i>
-                        <span>Nouveau prestataire</span>
+                        <span>Nouvel Appel d'Offres</span>
                     </h1>
                     <p class="text-gray-600 mt-1 text-sm">Remplissez les informations ci-dessous</p>
                 </div>
@@ -45,7 +45,7 @@
             </div>
         @endif
 
-        <form action="{{ route('prestataires.store') }}" method="POST" id="prestataireForm">
+        <form action="{{ route('appels-offres.store') }}" method="POST" id="aoForm">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -62,348 +62,166 @@
                         </div>
 
                         <div class="p-6 space-y-5">
+
+                            <!-- Type d'AO avec bouton d'ajout et recherche -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Type d'Appel d'Offres <span class="text-red-500">*</span>
+                                </label>
+                                <div class="flex gap-2">
+                                    <div class="flex-1">
+                                        <select name="type_appel_offre_id" id="type_appel_offre_id" required
+                                            class="type-ao-select w-full"
+                                            placeholder="Rechercher un type d'appel d'offres...">
+                                            <option value="">-- Sélectionner un type --</option>
+                                            @foreach ($typesAO as $type)
+                                                <option value="{{ $type->id_type_appel_offre }}"
+                                                    data-min="{{ $type->valeur_minimuim_type_appel_offre }}"
+                                                    data-max="{{ $type->valeur_maximuim_type_appel_offre }}"
+                                                    data-code="{{ $type->code_type_appel_offre }}"
+                                                    data-libelle="{{ $type->libelle_type_appel_offre }}"
+                                                    {{ old('type_appel_offre_id') == $type->id_type_appel_offre ? 'selected' : '' }}>
+                                                    {{ $type->code_type_appel_offre }} -
+                                                    {{ $type->libelle_type_appel_offre }}
+                                                    ({{ number_format($type->valeur_minimuim_type_appel_offre, 0, ',', ' ') }}
+                                                    -
+                                                    {{ number_format($type->valeur_maximuim_type_appel_offre, 0, ',', ' ') }}
+                                                    FCFA)
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="button" onclick="window.openAddTypeModal()"
+                                        class="px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 whitespace-nowrap">
+                                        <i class="fas fa-plus"></i>
+                                        <span class="hidden sm:inline">Nouveau Type</span>
+                                    </button>
+                                </div>
+                                @error('type_appel_offre_id')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <div id="typeInfo"
+                                    class="hidden mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    <span id="typeInfoText"></span>
+                                </div>
+                            </div>
+
+
+
+
                             <!-- Libellé -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Raison sociale <span class="text-red-500">*</span>
+                                    Libellé <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="raison_sociale_prestataire" id="raison_sociale_prestataire"
-                                    required maxlength="160" value="{{ old('raison_sociale_prestataire', 'Société de Construction ABC') }}"
+                                <input type="text" name="libelle_critere_appel_offre" id="libelle" required
+                                    maxlength="160" value="{{ old('libelle_critere_appel_offre') }}"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                    placeholder="Ex: Société de Construction ABC">
+                                    placeholder="Ex: Construction d'un immeuble administratif">
                                 <div class="flex justify-between mt-1">
                                     @error('libelle_critere_appel_offre')
                                         <p class="text-red-500 text-sm">{{ $message }}</p>
                                     @enderror
-                                    <p class="text-xs text-gray-500 ml-auto"><span
-                                            id="raisonSocialePrestataire">0</span>/160</p>
+                                    <p class="text-xs text-gray-500 ml-auto"><span id="libelleCount">0</span>/160</p>
                                 </div>
                             </div>
 
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro d'identification <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="numero_identification_prestataire"
-                                        id="numero_identification_prestataire" required maxlength="50"
-                                        value="{{ old('numero_identification_prestataire', 'CI-U123456789') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: CI-U123456789">
-                                    <div class="flex justify-between mt-1">
-                                        @error('numero_identification_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto">
-                                            <span id="numeroIdentificationPrestataire">0</span>/50
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Email <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="email_prestataire" id="email_prestataire" required
-                                        maxlength="100" value="{{ old('email_prestataire', 'email@exemple.com') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: email@exemple.com">
-                                    <div class="flex justify-between mt-1">
-                                        @error('email_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto">
-                                            <span id="emailPrestataire">0</span>/100
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro de la carte de contribuable <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="numero_cc_prestataire" id="numero_cc_prestataire" required
-                                        maxlength="50" value="{{ old('numero_cc_prestataire', '123456789') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: 123456789">
-                                    <div class="flex justify-between mt-1">
-                                        @error('numero_cc_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span id="emailPrestataire">0</span>/50</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro RCCM <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="numero_rccm_prestataire" id="numero_rccm_prestataire"
-                                        required maxlength="50" value="{{ old('numero_rccm_prestataire', 'CI-A-2020-B-12345') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: CI-A-2020-B-12345">
-                                    <div class="flex justify-between mt-1">
-                                        @error('numero_rccm_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span
-                                                id="numeroRccmPrestataire">0</span>/50</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Téléphone principal <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="telephone_principal_prestataire"
-                                        id="telephone_principal_prestataire" required maxlength="50"
-
-                                        value="{{ old('telephone_principal_prestataire', '+225 05 00 00 00 00') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: +225 05 XX XX XX XX">
-                                    <div class="flex justify-between mt-1">
-                                        @error('telephone_principal_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span
-                                                id="telephonePrincipalPrestataire">0</span>/50</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Téléphone secondaire
-                                    </label>
-                                    <input type="text" name="telephone_secondaire_prestataire"
-                                        id="telephone_secondaire_prestataire" maxlength="50"
-                                        value="{{ old('telephone_secondaire_prestataire', '+225 05 00 00 00 55') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: +225 07 XX XX XX XX">
-                                    <div class="flex justify-between mt-1">
-                                        @error('telephone_secondaire_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span
-                                                id="telephoneSecondairePrestataire">0</span>/50</p>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Pays
-                                    </label>
-                                    <input type="text" name="pays_prestataire" id="pays_prestataire" maxlength="50"
-                                        value="{{ old('pays_prestataire', 'Côte d\'Ivoire') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: Côte d'Ivoire">
-                                    <div class="flex justify-between mt-1">
-                                        @error('pays_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span id="paysPrestataire">0</span>/50
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Ville
-                                    </label>
-                                    <input type="text" name="ville_prestataire" id="ville_prestataire" maxlength="50"
-                                        value="{{ old('ville_prestataire', 'Yamoussoukro') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: Yamoussoukro">
-                                    <div class="flex justify-between mt-1">
-                                        @error('ville_prestataire')
-                                            <p class="text-red-500 text-sm">{{ $message }}</p>
-                                        @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span id="villePrestataire">0</span>/50
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Adresse du prestataire -->
+                            <!-- Montant Global -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Adresse du prestataire <span class="text-red-500">*</span>
+                                    Montant Global (FCFA) <span class="text-red-500">*</span>
                                 </label>
-                                <textarea name="adresse_prestataire" id="adresse_prestataire" required rows="4"
+                                <input type="number" name="montant_global_appel_offre" id="montant_global" required
+                                    min="0" step="0.01" value="{{ old('montant_global_appel_offre') }}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                    placeholder="0.00">
+                                @error('montant_global_appel_offre')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                <div id="montantWarning"
+                                    class="hidden mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    <span id="montantWarningText"></span>
+                                </div>
+                            </div>
+
+                            <!-- Objet -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Objet de l'Appel d'Offres <span class="text-red-500">*</span>
+                                </label>
+                                <textarea name="objet_critere_appel_offre" id="objet" required rows="4"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                                    placeholder="Ex: Zone 4, Rue des Jardins, Immeuble XYZ, Appartement 12B">{{ old('adresse_prestataire', 'Zone 4, Rue des Jardins, Immeuble XYZ, Appartement 12B') }}</textarea>
-                                @error('adresse_prestataire')
+                                    placeholder="Description officielle de ce qui est demandé...">{{ old('objet_critere_appel_offre') }}</textarea>
+                                @error('objet_critere_appel_offre')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-
-
-                        </div>
-                    </div>
-
-
-
-                    <!-- Informations du représentant légal du prestataire -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
-                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                                Informations du représentant légal du prestataire
-                            </h2>
-                        </div>
-
-                        <div class="p-6 space-y-5" id="representantLegalSection">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-
-
-                                <!-- Nom -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
-                                    <input type="text" name="nom" value="{{ old('nom', 'KOUADIO Jean Marc') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : KOUADIO Jean Marc">
-                                </div>
-
-
-
-                                <!-- Contact -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contact *</label>
-                                    <input type="text" name="contact" value="{{ old('contact', '+225 07 07 07 07 07') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : 0708070708">
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                                    <input type="email" name="email" value="{{ old('email', 'exemple@mail.com')}}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : exemple@mail.com">
-                                </div>
-
-                                <!-- Nationalité -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nationalité *</label>
-                                    <input type="text" name="nationalite" value="{{ old('nationalite', 'Ivoirienne') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Ivoirienne">
-                                </div>
-
-                                <!-- Pays -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Pays *</label>
-                                    <input type="text" name="pays" value="{{ old('pays', 'Côte d\'Ivoire') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Côte d'Ivoire">
-                                </div>
-
-                                <!-- Adresse -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Adresse *</label>
-                                    <input type="text" name="adresse" value="{{ old('adresse', 'Yamoussoukro, Zone 4, Rue des Jardins') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Cocody, Riviera Palmeraie">
-                                </div>
-
-                                <!-- Profession -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Profession *</label>
-                                    <input type="text" name="profession" value="{{ old('profession', 'Ingénieur en bâtiment') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Ingénieur en bâtiment">
-                                </div>
-
-                                <!-- Date naissance -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date de naissance
-                                        *</label>
-                                    <input type="date" name="date_naissance" value="{{ old('date_naissance', '1980-01-15') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                </div>
-
-                                <!-- Lieu naissance -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Lieu de naissance
-                                        *</label>
-                                    <input type="text" name="lieu_naissance" value="{{ old('lieu_naissance', 'Yamoussoukro') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Yamoussoukro">
-                                </div>
-
-                                <!-- Numéro pièce d'identité -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Numéro pièce d'identité
-                                        *</label>
-                                    <input type="text" name="numero_piece_identite" value="{{ old('numero_piece_identite', 'CI012345678901') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : CI012345678901">
-                                </div>
-
-                                <!-- Type pièce identité -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type de pièce *</label>
-                                    <select name="type_piece_identite"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                        <option value="">-- Sélectionner --</option>
-                                        <option value="CNI" selected>Carte Nationale d'Identité</option>
-                                        <option value="PASSPORT">Passeport</option>
-                                        <option value="ATTESTATION">Attestation d'identité</option>
-                                    </select>
-                                </div>
-
-                                <!-- Date de délivrance -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date de délivrance
-                                        *</label>
-                                    <input type="date" name="date_delivrance" value="{{ old('date_delivrance', '2015-06-20') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                </div>
-
-                                <!-- Lieu de délivrance -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Lieu de délivrance
-                                        *</label>
-                                    <input type="text" name="lieu_delivrance" value="{{ old('lieu_delivrance', 'Abidjan') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                                        placeholder="Ex : Abidjan">
-                                </div>
-
-                                <!-- Date d'expiration -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date d'expiration
-                                        *</label>
-                                    <input type="date" name="date_expiration" value="{{ old('date_expiration', '2035-06-20') }}"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                </div>
-
+                            <!-- Description détaillée -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Description Détaillée <span class="text-red-500">*</span>
+                                </label>
+                                <textarea name="description_critere_critere_appel_offre" id="description" required rows="6"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
+                                    placeholder="Détails complets de l'appel d'offres...">{{ old('description_critere_critere_appel_offre') }}</textarea>
+                                @error('description_critere_critere_appel_offre')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
 
+                    <!-- Dates importantes -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
+                                Dates Importantes
+                            </h2>
+                        </div>
+
+                        <div class="p-6 space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Date de Publication <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="date" name="date_publication_critere_appel_offre"
+                                        id="date_publication" required
+                                        value="{{ old('date_publication_critere_appel_offre', date('Y-m-d')) }}"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Date Limite de Dépôt <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="date" name="date_limite_depot_critere_appel_offre" id="date_limite"
+                                        required value="{{ old('date_limite_depot_critere_appel_offre') }}"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Date d'Ouverture <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="date" name="date_ouverture_plis_critere_appel_offre"
+                                        id="date_ouverture" required
+                                        value="{{ old('date_ouverture_plis_critere_appel_offre') }}"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                                </div>
+                            </div>
+
+                            <div id="dateInfo"
+                                class="hidden p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                <span id="dateInfoText"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Colonne latérale -->
@@ -505,7 +323,7 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Code <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="code_type_appel_offre" id="modal_code" required maxlength="50"
+                        <input type="text" name="code_type_appel_offre" id="modal_code" required maxlength="10"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent uppercase"
                             placeholder="Ex: AOO">
                     </div>
@@ -803,6 +621,166 @@
                 }
             });
         </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialiser Tom Select
+                const typeSelect = new TomSelect('#type_appel_offre_id', {
+                    create: false,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    },
+                    placeholder: 'Rechercher un type d\'appel d\'offres...',
+                    allowEmptyOption: true,
+                    render: {
+                        option: function(data, escape) {
+                            const option = data.$option;
+                            if (!option || !data.value) {
+                                return '<div class="py-2 px-3 text-gray-500">-- Sélectionner un type --</div>';
+                            }
+
+                            const code = option.dataset.code || '';
+                            const libelle = option.dataset.libelle || '';
+                            const min = option.dataset.min ? Number(option.dataset.min).toLocaleString(
+                                'fr-FR') : '0';
+                            const max = option.dataset.max ? Number(option.dataset.max).toLocaleString(
+                                'fr-FR') : '0';
+
+                            return `
+                    <div class="py-2 px-3">
+                        <div class="font-semibold text-gray-800">
+                            <span class="text-orange-600">${escape(code)}</span> - ${escape(libelle)}
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-coins mr-1"></i>
+                            ${min} - ${max} FCFA
+                        </div>
+                    </div>
+                `;
+                        },
+                        item: function(data, escape) {
+                            const option = data.$option;
+                            if (!option || !data.value) {
+                                return '<div>-- Sélectionner un type --</div>';
+                            }
+
+                            const code = option.dataset.code || '';
+                            const libelle = option.dataset.libelle || '';
+
+                            return `<div><span class="font-semibold text-orange-600">${escape(code)}</span> - ${escape(libelle)}</div>`;
+                        }
+                    },
+                    onChange: function(value) {
+                        // Afficher les infos du type sélectionné
+                        afficherInfoType(value);
+                    }
+                });
+
+                // Stocker l'instance pour pouvoir la rafraîchir après ajout d'un nouveau type
+                window.typeSelectInstance = typeSelect;
+
+                // Fonction pour afficher les infos du type
+                function afficherInfoType(value) {
+                    const typeInfo = document.getElementById('typeInfo');
+                    const typeInfoText = document.getElementById('typeInfoText');
+
+                    if (!value) {
+                        typeInfo.classList.add('hidden');
+                        return;
+                    }
+
+                    const option = document.querySelector(`#type_appel_offre_id option[value="${value}"]`);
+                    if (option) {
+                        const min = Number(option.dataset.min).toLocaleString('fr-FR');
+                        const max = Number(option.dataset.max).toLocaleString('fr-FR');
+                        typeInfoText.textContent = `Montant estimé doit être compris entre ${min} et ${max} FCFA`;
+                        typeInfo.classList.remove('hidden');
+                    }
+                }
+
+                // Vérifier si une valeur est déjà sélectionnée (old value)
+                const currentValue = document.getElementById('type_appel_offre_id').value;
+                if (currentValue) {
+                    afficherInfoType(currentValue);
+                }
+            });
+
+            // Fonction pour ajouter un nouveau type dynamiquement après création
+            window.ajouterNouveauType = function(type) {
+                const select = document.getElementById('type_appel_offre_id');
+
+                // Créer la nouvelle option
+                const option = document.createElement('option');
+                option.value = type.id_type_appel_offre;
+                option.dataset.min = type.valeur_minimuim_type_appel_offre;
+                option.dataset.max = type.valeur_maximuim_type_appel_offre;
+                option.dataset.code = type.code_type_appel_offre;
+                option.dataset.libelle = type.libelle_type_appel_offre;
+                option.textContent =
+                    `${type.code_type_appel_offre} - ${type.libelle_type_appel_offre} (${Number(type.valeur_minimuim_type_appel_offre).toLocaleString('fr-FR')} - ${Number(type.valeur_maximuim_type_appel_offre).toLocaleString('fr-FR')} FCFA)`;
+
+                select.appendChild(option);
+
+                // Rafraîchir Tom Select et sélectionner le nouveau type
+                if (window.typeSelectInstance) {
+                    window.typeSelectInstance.addOption({
+                        value: type.id_type_appel_offre,
+                        text: option.textContent,
+                        $option: option
+                    });
+                    window.typeSelectInstance.setValue(type.id_type_appel_offre);
+                }
+            }
+        </script>
+
+        <style>
+            /* Personnalisation Tom Select pour correspondre au thème orange */
+            .ts-wrapper.single .ts-control {
+                padding: 0.625rem 1rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                background: white;
+                min-height: 44px;
+            }
+
+            .ts-wrapper.single .ts-control:focus,
+            .ts-wrapper.single.focus .ts-control {
+                outline: none;
+                border-color: transparent;
+                box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.5);
+            }
+
+            .ts-dropdown {
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                margin-top: 4px;
+            }
+
+            .ts-dropdown .option.active {
+                background-color: #fff7ed;
+                color: #ea580c;
+            }
+
+            .ts-dropdown .option:hover {
+                background-color: #ffedd5;
+            }
+
+            .ts-wrapper .ts-control input {
+                font-size: 0.875rem;
+            }
+
+            .ts-dropdown .ts-dropdown-content {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            /* Style pour le champ de recherche */
+            .ts-wrapper.single.input-active .ts-control {
+                background: white;
+            }
+        </style>
 
         <style>
             @keyframes fadeIn {

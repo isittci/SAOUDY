@@ -132,8 +132,10 @@ class CaracteristiqueAppelOffre extends Model
      */
     public function calculerDureeEstimee()
     {
-        if ($this->date_demarrage_prevue_caracteristique_appel_offre &&
-            $this->date_livraison_previsionnelle_caracteristique_appel_offre) {
+        if (
+            $this->date_demarrage_prevue_caracteristique_appel_offre &&
+            $this->date_livraison_previsionnelle_caracteristique_appel_offre
+        ) {
 
             $debut = Carbon::parse($this->date_demarrage_prevue_caracteristique_appel_offre);
             $fin = Carbon::parse($this->date_livraison_previsionnelle_caracteristique_appel_offre);
@@ -163,8 +165,10 @@ class CaracteristiqueAppelOffre extends Model
      */
     public function getDateLivraisonCalculeeAttribute()
     {
-        if ($this->date_demarrage_prevue_caracteristique_appel_offre &&
-            $this->duree_estimee_jours_caracteristique_appel_offre) {
+        if (
+            $this->date_demarrage_prevue_caracteristique_appel_offre &&
+            $this->duree_estimee_jours_caracteristique_appel_offre
+        ) {
 
             return Carbon::parse($this->date_demarrage_prevue_caracteristique_appel_offre)
                 ->addDays($this->duree_estimee_jours_caracteristique_appel_offre);
@@ -179,9 +183,11 @@ class CaracteristiqueAppelOffre extends Model
      */
     public function verifierCoherenceDates()
     {
-        if ($this->date_demarrage_prevue_caracteristique_appel_offre &&
+        if (
+            $this->date_demarrage_prevue_caracteristique_appel_offre &&
             $this->date_livraison_previsionnelle_caracteristique_appel_offre &&
-            $this->duree_estimee_jours_caracteristique_appel_offre !== null) {
+            $this->duree_estimee_jours_caracteristique_appel_offre !== null
+        ) {
 
             $dateLivraisonCalculee = $this->date_livraison_calculee;
 
@@ -202,7 +208,7 @@ class CaracteristiqueAppelOffre extends Model
      */
     public function creerNouvelleVersion(array $donnees, $motif = null)
     {
-        
+
         // Désactiver la version actuelle
         $this->is_active_caracteristique_appel_offre = false;
         $this->save();
@@ -223,7 +229,6 @@ class CaracteristiqueAppelOffre extends Model
 
         // La durée sera calculée automatiquement via l'événement creating
         $nouvelleVersion->save();
-
         return $nouvelleVersion;
     }
 
@@ -305,9 +310,11 @@ class CaracteristiqueAppelOffre extends Model
      */
     public function getPourcentageAvancementTheoriqueAttribute()
     {
-        if ($this->date_demarrage_prevue_caracteristique_appel_offre &&
+        if (
+            $this->date_demarrage_prevue_caracteristique_appel_offre &&
             $this->date_livraison_previsionnelle_caracteristique_appel_offre &&
-            $this->duree_estimee_jours_caracteristique_appel_offre > 0) {
+            $this->duree_estimee_jours_caracteristique_appel_offre > 0
+        ) {
 
             $debut = Carbon::parse($this->date_demarrage_prevue_caracteristique_appel_offre);
             $fin = Carbon::parse($this->date_livraison_previsionnelle_caracteristique_appel_offre);

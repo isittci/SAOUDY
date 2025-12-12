@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Lot;
 use App\Models\Proforma;
 use App\Models\Prestataire;
@@ -685,6 +686,47 @@ class PrestataireController extends Controller
         }
     }
 
+
+    //Récupérer les lots affectés au prestataire
+    public function lotsPrestataire(Request $request, $prestataireId){
+
+    }
+
+
+    // public function retirer(Request $request, $id, $lotId){
+    //     try{
+    //         $prestataire = Prestataire::find($id);
+    //         if(!$prestataire){
+    //             if($request->acceptsJson() || $request->wantsJson()){
+    //                 return response()->json([
+    //                     "errors" => "Données invalides",
+    //                     "succes" => false,
+    //                     "message" => "Le prestataire concerné n'existe pas."
+    //                 ], 200);
+    //             }
+    //             return redirect()->back()->with('error', "Le prestataire concerné n'existe pas.");
+    //         }
+    //         $lot = Lot::find($lotId);
+    //         if(!$lot){
+    //             if($request->acceptsJson() || $request->wantsJson()){
+    //                 return response()->json([
+    //                     "errors" => "Données invalides",
+    //                     "succes" => false,
+    //                     "message" => "Le lot concerné n'existe pas."
+    //                 ], 200);
+    //             }
+    //             return redirect()->back()->with('error', "Le lot concerné n'existe pas.");
+    //         }
+
+    //         $prestataireLot = PrestataireLot::
+
+
+
+    //     }catch(\Exception $e){
+    //         //
+    //     }
+    // }
+
     /**
      * Get validation messages for prestataire.
      */
@@ -735,5 +777,48 @@ class PrestataireController extends Controller
             'date_expiration.required' => 'La date d\'expiration est obligatoire.',
             'date_expiration.after' => 'La date d\'expiration doit être postérieure à la date de délivrance et à aujourd\'hui.',
         ];
+    }
+
+
+    // fetchLotsByPrestataire
+    // public function fetchLotsByPrestataire($id){
+    //     try{
+    //         //Vérifier si le prestataire existe
+    //         $prestataire = Prestataire::
+    //     }catch(\Exception){
+
+    //     }
+    // }
+
+
+    public function detailByLot(Request $request, $prestataireId, $lotId){
+        try{
+            $prestataire = Prestataire::find($prestataireId);
+            $lot = Lot::find($lotId);
+
+            if(!$prestataire){
+                if($request->acceptsJson() || $request->wantsJson()){
+                    return response()->json([
+                        'errors' => "Données invalides",
+                        "message" => "Ce prestataire n'existe pas,  veuillez s'il-vous-plaît réessayer !",
+                        "succes" => false
+                    ], 404);
+                }
+                return redirect()->back()->with('error', "Ce prestataire n'existe pas,  veuillez s'il-vous-plaît réessayer !",);
+            }
+
+            if(!$lot){
+                if($request->acceptsJson() || $request->wantsJson()){
+                    return response()->json([
+                        'errors' => "Données invalides",
+                        "message" => "Ce lot n'existe pas,  veuillez s'il-vous-plaît réessayer !",
+                        "succes" => false
+                    ], 404);
+                }
+                return redirect()->back()->with('error', "Ce lot n'existe pas,  veuillez s'il-vous-plaît réessayer !");
+            }
+        }catch(\Exception $e){
+
+        }
     }
 }

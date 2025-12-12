@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('telephone_principal')->nullable();
-            $table->string('telepone_secondaire')->nullable();
+            $table->string('telephone_secondaire')->nullable();
             $table->foreignUuid('role_id')->references('id')->on('roles')->onDelete('set null');
             $table->timestamp('email_verified_at')->nullable();
 

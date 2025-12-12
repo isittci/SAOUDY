@@ -11,124 +11,77 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('prestataires_lots', function (Blueprint $table) {
-            // Relations (clés composites)
-            $table->uuid('prestataire_id');
-            $table->uuid('lot_id');
-            $table->uuid('proforma_id');
+            // Clé primaire UUID (permet l'historique complet des attributions)
+            $table->uuid('id_attribution')->primary()->comment('Identifiant unique de l\'attribution');
 
-            // Foreign keys
-            $table->foreign('prestataire_id')
-                ->references('id_prestataire')
-                ->on('prestataires')
-                ->onDelete('cascade');
+            // Relations principales
+            $table->foreignUuid('prestataire_id')->comment('Prestataire attributaire')->references('id_prestataire')->on('prestataires')->onDelete('cascade');
+            $table->foreignUuid('lot_id')->comment('Lot concerné')->references('id_lot')->on('lots')->onDelete('cascade');
+            $table->foreignUuid('proforma_id')->comment('Proforma associée')->references('id_proforma')->on('proformas')->onDelete('cascade');
 
-            $table->foreign('lot_id')
-                ->references('id_lot')
-                ->on('lots')
-                ->onDelete('cascade');
+            // Versionnement et traçabilité
+            $table->integer('version_attribution')->default(1)->comment('Version de l\'attribution (incrémente à chaque réattribution)');
+            $table->boolean('is_active')->default(true)->comment('TRUE = attribution active, FALSE = historique');
+            $table->string('numero_attribution', 30)->nullable()->comment('Numéro unique (ex: ATT-2025-001)');
 
-            $table->foreign('proforma_id')
-                ->references('id_proforma')
-                ->on('proformas')
-                ->onDelete('cascade');
+            // Dates d'attribution
+            $table->date('date_attribution')->nullable()->comment('Date officielle d\'attribution');
+            $table->date('date_debut_prevue')->nullable()->comment('Date de début prévue');
+            $table->date('date_fin_prevue')->nullable()->comment('Date de fin prévue');
+            $table->date('date_debut_reelle')->nullable()->comment('Date réelle de début');
+            $table->date('date_fin_reelle')->nullable()->comment('Date réelle de fin');
 
-            // Dates d'exécution réelles
-            $table->date('date_debut_reelle')
-                ->nullable()
-                ->comment('Date réelle de début des travaux');
+            // Statut: 0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé, 5=Annulé
+            $table->smallInteger('statut_attribution')->default(0)->comment('0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé, 5=Annulé');
 
-            $table->date('date_fin_reelle')
-                ->nullable()
-                ->comment('Date réelle de fin des travaux');
+            // Suspension
+            $table->text('motif_suspension')->nullable()->comment('Raison de la suspension');
+            $table->dateTime('date_suspension')->nullable()->comment('Date de suspension');
+            $table->date('date_reprise_prevue')->nullable()->comment('Date prévue de reprise');
+            $table->date('date_reprise_reelle')->nullable()->comment('Date réelle de reprise');
 
-            // Statut de l'attribution
-            $table->smallInteger('statut_attribution')
-                ->default(0)
-                ->comment('0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé');
+            // Retrait
+            $table->text('motif_retrait')->nullable()->comment('Raison du retrait');
+            $table->dateTime('date_retrait')->nullable()->comment('Date du retrait');
+            $table->enum('type_retrait', ['volontaire', 'force', 'resiliation', 'abandon'])->nullable()->comment('Type de retrait');
 
-            // Informations de suspension
-            $table->text('motif_suspension')
-                ->nullable()
-                ->comment('Raison de la suspension des travaux');
+            // Pénalités et retards
+            $table->integer('jours_retard')->default(0)->comment('Jours de retard accumulés');
+            $table->decimal('taux_penalites', 5, 2)->default(0)->comment('Taux de pénalités (%)');
+            $table->decimal('penalites_appliquees', 15, 2)->default(0)->comment('Montant des pénalités');
+            $table->decimal('penalites_payees', 15, 2)->default(0)->comment('Pénalités payées');
 
-            $table->dateTime('date_suspension')
-                ->nullable()
-                ->comment('Date de suspension');
+            // Avancement et finances
+            $table->decimal('pourcentage_avancement', 5, 2)->default(0)->comment('Avancement (0-100%)');
+            $table->decimal('montant_engage', 15, 2)->default(0)->comment('Montant engagé');
+            $table->decimal('montant_paye', 15, 2)->default(0)->comment('Montant payé');
 
-            // Informations de retrait
-            $table->text('motif_retrait')
-                ->nullable()
-                ->comment('Raison du retrait du lot au prestataire');
-
-            $table->dateTime('date_retrait')
-                ->nullable()
-                ->comment('Date de retrait');
-
-            // Gestion des retards et pénalités
-            $table->integer('jours_retard')
-                ->default(0)
-                ->comment('Nombre de jours de retard accumulés');
-
-            $table->decimal('penalites_appliquees', 15, 2)
-                ->default(0)
-                ->comment('Montant total des pénalités appliquées');
-
-            // Suivi de l'avancement
-            $table->decimal('pourcentage_avancement', 5, 2)
-                ->default(0)
-                ->comment('Pourcentage d\'avancement des travaux (0-100)');
-
-            $table->text('observations')
-                ->nullable()
-                ->comment('Observations et notes sur l\'exécution');
+            // Notes
+            $table->text('observations')->nullable()->comment('Observations');
+            $table->text('conditions_particulieres')->nullable()->comment('Conditions particulières');
 
             // Audit
-            $table->foreignUuid('created_by')
-                ->nullable()
-                ->comment('Utilisateur ayant créé l\'attribution')
-                ->references('id')
-                ->on('users')
-                ->onDelete('set null');
-
-            $table->foreignUuid('updated_by')
-                ->nullable()
-                ->comment('Utilisateur ayant mis à jour')
-                ->references('id')
-                ->on('users')
-                ->onDelete('set null');
-
-            $table->foreignUuid('deleted_by')
-                ->nullable()
-                ->comment('Utilisateur ayant retiré/supprimé')
-                ->references('id')
-                ->on('users')
-                ->onDelete('set null');
+            $table->foreignUuid('created_by')->nullable()->references('id')->on('users')->onDelete('set null');
+            $table->foreignUuid('updated_by')->nullable()->references('id')->on('users')->onDelete('set null');
+            $table->foreignUuid('deleted_by')->nullable()->references('id')->on('users')->onDelete('set null');
 
             // Timestamps
-            $table->timestamp('created_at')
-                ->useCurrent()
-                ->nullable()
-                ->comment('Date de création de l\'attribution');
+            $table->timestamp('created_at')->useCurrent()->nullable();
+            $table->timestamp('updated_at')->useCurrent()->nullable();
+            $table->softDeletes();
 
-            $table->timestamp('updated_at')
-                ->useCurrent()
-                ->nullable()
-                ->comment('Date de dernière mise à jour');
+            // Index
+            $table->index(['lot_id', 'is_active'], 'idx_lot_active');
+            $table->index(['lot_id', 'statut_attribution'], 'idx_lot_statut');
+            $table->index(['prestataire_id', 'statut_attribution'], 'idx_prestataire_statut');
+            $table->index(['prestataire_id', 'is_active'], 'idx_prestataire_active');
+            $table->index('numero_attribution', 'idx_numero_attribution');
+        });
 
-            // Soft delete pour garder l'historique
-            $table->softDeletes()
-                ->comment('Date de suppression logique (retrait)');
-
-            // Définir la clé primaire composite
-            $table->primary(['prestataire_id', 'lot_id', 'proforma_id'], 'pk_prestataires_lots');
-
-            // Index pour améliorer les performances
-            $table->index(['lot_id', 'statut_attribution'], 'prestataires_lots_idx_lot_statut');
-            $table->index(['prestataire_id', 'statut_attribution'], 'prestataires_lots_idx_prestataire_statut');
-            $table->index('date_debut_reelle', 'prestataires_lots_idx_date_debut');
-            $table->index('date_fin_reelle', 'prestataires_lots_idx_date_fin');
+        // Auto-relation pour traçabilité des réattributions
+        Schema::table('prestataires_lots', function (Blueprint $table) {
+            $table->foreignUuid('parent_attribution_id')->nullable()->after('id_attribution')->comment('Attribution précédente (chaînage)')->references('id_attribution')->on('prestataires_lots')->onDelete('set null');
         });
     }
 

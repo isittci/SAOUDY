@@ -52,7 +52,7 @@ class User extends Authenticatable
         'email',
         'password',
         'telephone_principal',
-        'telepone_secondaire',
+        'telephone_secondaire',
         'role_id',
         'email_verified_at',
         'statut',

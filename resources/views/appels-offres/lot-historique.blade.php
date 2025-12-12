@@ -145,7 +145,7 @@
                                             <div>
                                                 <p class="text-xs text-gray-500">Créé par</p>
                                                 <p class="text-sm font-semibold text-gray-900">
-                                                    {{ $version->creator->nom_complet ?? 'N/A' }}
+                                                    {{ $version->creator->nom_complet ?? '-' }}
                                                 </p>
                                             </div>
                                         </div>

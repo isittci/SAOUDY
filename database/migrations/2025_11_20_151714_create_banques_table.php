@@ -20,8 +20,8 @@ return new class extends Migration
 
             // Informations bancaires
             $table->string('nom_banque', 150)->nullable()->comment('Nom de la banque');
-            $table->string('code_banque', 25)->nullable()->comment('Code banque');
-            $table->string('numero_compte_banque', 25)->nullable()->comment('Numéro de compte bancaire');
+            $table->string('code_banque', 25)->unique()->comment('Code banque');
+            $table->string('numero_compte_banque', 25)->unique()->nullable()->comment('Numéro de compte bancaire');
             $table->string('code_guichet_banque', 25)->nullable()->comment('Code guichet bancaire');
             $table->string('cle_rib_banque', 25)->nullable()->comment('Clé RIB (Relevé d\'Identité Bancaire)');
             $table->string('iban_banque', 25)->nullable()->comment('International Bank Account Number');

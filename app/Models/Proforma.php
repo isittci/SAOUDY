@@ -20,7 +20,10 @@ class Proforma extends Model
         'parent_id',
         'version_proforma',
         'numero_proforma',
-        'date_proforma_proforma',
+        'date_proforma',
+        'date_fin_validee_proforma',
+        'date_debut_validee_proforma',
+        'date_redemarrage_proforma',
         'montant_retenu_proforma',
         'taxe_montant',
         'remise_montant_proforma',
@@ -34,7 +37,10 @@ class Proforma extends Model
     ];
 
     protected $casts = [
-        'date_proforma_proforma' => 'date',
+        'date_proforma' => 'date',
+        'date_fin_validee_proforma' => 'date',
+        'date_debut_validee_proforma' => 'date',
+        'date_redemarrage_proforma' => 'date',
         'montant_retenu_proforma' => 'decimal:2',
         'taxe_montant' => 'decimal:2',
         'remise_montant_proforma' => 'decimal:2',
@@ -152,7 +158,7 @@ class Proforma extends Model
      */
     public function scopeParPeriode($query, $dateDebut, $dateFin)
     {
-        return $query->whereBetween('date_proforma_proforma', [$dateDebut, $dateFin]);
+        return $query->whereBetween('date_proforma', [$dateDebut, $dateFin]);
     }
 
     /**
@@ -323,7 +329,7 @@ class Proforma extends Model
         return [
             'numero' => $this->numero_proforma,
             'version' => $this->version_proforma,
-            'date' => $this->date_proforma_proforma ? $this->date_proforma_proforma->format('d/m/Y') : null,
+            'date' => $this->date_proforma ? $this->date_proforma->format('d/m/Y') : null,
             'montant_ht' => number_format($this->montant_retenu_proforma, 2, ',', ' '),
             'remise' => number_format($this->remise_montant_proforma, 2, ',', ' '),
             'montant_ht_apres_remise' => number_format($this->calculerMontantHTApresRemise(), 2, ',', ' '),

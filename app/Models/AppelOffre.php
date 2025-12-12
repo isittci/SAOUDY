@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AppelOffre extends Model
 {
@@ -56,11 +57,11 @@ class AppelOffre extends Model
     public function caracteristiqueActive()
     {
         return $this->hasOne(CaracteristiqueAppelOffre::class, 'appel_offre_id', 'id_appel_offre')
-                    ->whereNull('parent_id')
-                    ->orWhereHas('versions', function($q) {
-                        $q->orderBy('version_caracteristique_appel_offre', 'desc');
-                    })
-                    ->latest('version_caracteristique_appel_offre');
+            ->whereNull('parent_id')
+            ->orWhereHas('versions', function ($q) {
+                $q->orderBy('version_caracteristique_appel_offre', 'desc');
+            })
+            ->latest('version_caracteristique_appel_offre');
     }
 
     public function lots()
@@ -71,11 +72,11 @@ class AppelOffre extends Model
     public function lotsActifs()
     {
         return $this->lots()->whereNull('parent_id')
-                    ->orWhere(function($q) {
-                        $q->whereHas('versions', function($query) {
-                            $query->orderBy('created_at', 'desc');
-                        });
-                    });
+            ->orWhere(function ($q) {
+                $q->whereHas('versions', function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                });
+            });
     }
 
     public function creator()
@@ -130,12 +131,18 @@ class AppelOffre extends Model
         return $this->date_limite_depot_critere_appel_offre < now();
     }
 
-    public function joursRestants()
+    public function joursRestants(): int
     {
         if ($this->isCloture()) {
             return 0;
         }
-        return now()->diffInDays($this->date_limite_depot_critere_appel_offre);
+
+        $joursRestants = now()->startOfDay()->diffInDays(
+            Carbon::parse($this->date_limite_depot_critere_appel_offre)->startOfDay(),
+            false
+        ) + 1;
+
+        return max(0, $joursRestants);
     }
 
     public function getMontantTotalLotsAttribute()

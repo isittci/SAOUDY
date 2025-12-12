@@ -43,8 +43,8 @@
                             @endif
                         </div>
                         <p class="text-gray-600 mt-1">
-                            @if ($proforma->date_proforma_proforma)
-                                <i class="fas fa-calendar mr-1"></i>{{ $proforma->date_proforma_proforma->format('d/m/Y') }}
+                            @if ($proforma->date_proforma)
+                                <i class="fas fa-calendar mr-1"></i>{{ $proforma->date_proforma->format('d/m/Y') }}
                             @endif
                         </p>
                     </div>
@@ -257,7 +257,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-600 mb-2">Date de la proforma</label>
                             <p class="text-gray-900 font-medium">
-                                {{ $proforma->date_proforma_proforma ? $proforma->date_proforma_proforma->format('d/m/Y') : 'Non définie' }}
+                                {{ $proforma->date_proforma ? $proforma->date_proforma->format('d/m/Y') : 'Non définie' }}
                             </p>
                         </div>
 
@@ -462,7 +462,7 @@
                             <div class="flex items-center justify-between py-2 border-b border-gray-100">
                                 <span class="text-sm text-gray-500">Créée par</span>
                                 <span
-                                    class="text-sm font-medium text-gray-900">{{ $proforma->creator->name ?? 'N/A' }}</span>
+                                    class="text-sm font-medium text-gray-900">{{ $proforma->creator->nom_complet ?? 'N/A' }}</span>
                             </div>
                         @endif
 
@@ -478,7 +478,7 @@
                             <div class="flex items-center justify-between py-2">
                                 <span class="text-sm text-gray-500">Modifiée par</span>
                                 <span
-                                    class="text-sm font-medium text-gray-900">{{ $proforma->updater->name ?? 'N/A' }}</span>
+                                    class="text-sm font-medium text-gray-900">{{ $proforma->updater->nom_complet ?? 'N/A' }}</span>
                             </div>
                         @endif
                     </div>

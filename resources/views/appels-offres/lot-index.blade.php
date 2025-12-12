@@ -195,7 +195,7 @@
                                         </span>
                                         @if ($lot->attributionActive)
                                             <div class="text-xs text-gray-600 mt-1">
-                                                {{ $lot->attributionActive->prestataire->nom_prestataire ?? 'N/A' }}
+                                                {{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A' }}
                                             </div>
                                         @endif
                                     @else
@@ -257,7 +257,7 @@
                                                     </a>
 
                                                     @if (!$lot->attribution_lot)
-                                                        <button onclick="openAttributionModal('{{ $lot->id_lot }}')"
+                                                        <button onclick="openAttributionModal('{{ $lot->appel_offre_id }}', '{{ $lot->id_lot }}')"
                                                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                             <i class="fas fa-user-check mr-2 text-green-500"></i>
                                                             Attribuer
@@ -505,15 +505,17 @@
             });
 
             // Placeholder pour modales d'attribution et retrait
-            window.openAttributionModal = function(id) {
-                alert('Modal d\'attribution à implémenter. Redirection vers la page de détails...');
-                window.location.href = `/lots/${id}`;
+            window.openAttributionModal = function(appelOffreId, lotId) {
+                // alert('Modal d\'attribution à implémenter. Redirection vers la page de détails...');
+                window.location.href = "{{ route('lots-appels-offres.show', [':appel_offre', ':id']) }}".replace(':appelOffreId', appelOffreId).replace(':id', lotId);
             }
+
+            
 
             window.openRetraitModal = function(id) {
                 const motif = prompt('Veuillez indiquer le motif du retrait:');
                 if (motif && motif.trim()) {
-                    fetch(`/lots/${id}/retirer`, {
+                    fetch("{{ route('lots.retirer', ':id') }}".replace(':id', id), {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

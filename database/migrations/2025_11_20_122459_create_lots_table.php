@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUuid('appel_offre_id')->comment('Identifiant de l\'appel d\'offres associé.')->references('id_appel_offre')->on('appels_offres')->onDelete('cascade');
 
             // Strings
-            $table->string('numero', 25);
+            $table->string('numero', 35);
             $table->string('libelle', 160)->nullable();
 
             // Textes

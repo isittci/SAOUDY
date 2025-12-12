@@ -391,179 +391,65 @@ class CaracteristiqueAppelOffreController extends Controller
         }
     }
 
-    // /**
-    //  * Obtient l'historique des versions
-    //  */
-    // public function historique(Request $request, $appelOffreId, $caracteristiqueId)
-    // {
-
-    //     try {
-    //         $appelOffre = AppelOffre::findOrFail($appelOffreId);
-
-    //         // Récupérer la caractéristique (version de base, sans parent)
-    //         $caracteristique = CaracteristiqueAppelOffre::where('appel_offre_id', $appelOffreId)
-    //             ->where('id_caracteristique_appel_offre', $caracteristiqueId)
-    //             ->whereNull('parent_id')
-    //             ->firstOrFail();
-
-    //         $historique = $caracteristique->getHistorique();
-
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'data' => $historique,
-    //                 'message' => 'Historique récupéré avec succès'
-    //             ]);
-    //         }
-
-    //         return view('caracteristiques-appels-offres.historique', compact('historique', 'caracteristique', 'appelOffre'));
-
-    //     } catch (ModelNotFoundException $e) {
-    //         Log::error('Caractéristique non trouvée: ' . $e->getMessage());
-
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Caractéristique non trouvée'
-    //             ], 404);
-    //         }
-
-    //         return back()->with('error', 'Caractéristique non trouvée');
-
-    //     } catch (Exception $e) {
-    //         Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
-
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Erreur lors de la récupération de l\'historique',
-    //                 'error' => $e->getMessage()
-    //             ], 500);
-    //         }
-
-    //         return back()->with('error', 'Erreur lors de la récupération de l\'historique');
-    //     }
-    // }
 
     /**
      * Obtient l'historique des versions
      */
+    public function historique(Request $request, $appelOffreId, $caracteristiqueId)
+    {
+        try {
+            $appelOffre = AppelOffre::findOrFail($appelOffreId);
 
-    // public function historique(Request $request, $appelOffreId, $caracteristiqueId)
-    // {
-    //     try {
-    //         $appelOffre = AppelOffre::findOrFail($appelOffreId);
+            // Récupérer n'importe quelle version de la caractéristique
+            $caracteristiqueDemandee = CaracteristiqueAppelOffre::where('appel_offre_id', $appelOffreId)
+                ->where('id_caracteristique_appel_offre', $caracteristiqueId)
+                ->firstOrFail();
 
-    //         // Récupérer n'importe quelle version de la caractéristique
-    //         $caracteristique = CaracteristiqueAppelOffre::where('appel_offre_id', $appelOffreId)
-    //             ->where('id_caracteristique_appel_offre', $caracteristiqueId)
-    //             ->firstOrFail();
+            // Récupérer l'historique complet (getHistorique gère automatiquement les versions)
+            $historique = $caracteristiqueDemandee->getHistorique();
 
-    //         // getHistorique() gère automatiquement le cas où c'est une version
-    //         $historique = $caracteristique->getHistorique();
+            // Obtenir la version de base pour l'affichage
+            if ($caracteristiqueDemandee->parent_id) {
+                $caracteristique = CaracteristiqueAppelOffre::find($caracteristiqueDemandee->parent_id);
+            } else {
+                $caracteristique = $caracteristiqueDemandee;
+            }
 
-    //         // Récupérer la version de base pour l'affichage
-    //         $versionBase = $caracteristique->parent_id
-    //             ? CaracteristiqueAppelOffre::find($caracteristique->parent_id)
-    //             : $caracteristique;
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $historique,
+                    'caracteristique' => $caracteristique,
+                    'message' => 'Historique récupéré avec succès'
+                ]);
+            }
 
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'data' => $historique,
-    //                 'version_base' => $versionBase,
-    //                 'message' => 'Historique récupéré avec succès'
-    //             ]);
-    //         }
+            return view('caracteristiques-appels-offres.historique', compact('historique', 'caracteristique', 'appelOffre'));
+        } catch (ModelNotFoundException $e) {
+            Log::error('Caractéristique non trouvée: ' . $e->getMessage());
 
-    //         return view('caracteristiques-appels-offres.historique', compact('historique', 'versionBase', 'appelOffre'));
-    //     } catch (ModelNotFoundException $e) {
-    //         Log::error('Caractéristique non trouvée: ' . $e->getMessage());
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Caractéristique non trouvée'
+                ], 404);
+            }
 
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Caractéristique non trouvée'
-    //             ], 404);
-    //         }
+            return back()->with('error', 'Caractéristique non trouvée');
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
 
-    //         return back()->with('error', 'Caractéristique non trouvée');
-    //     } catch (Exception $e) {
-    //         Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération de l\'historique',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
 
-    //         if ($request->wantsJson() || $request->is('api/*')) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Erreur lors de la récupération de l\'historique',
-    //                 'error' => $e->getMessage()
-    //             ], 500);
-    //         }
-
-    //         return back()->with('error', 'Erreur lors de la récupération de l\'historique');
-    //     }
-    // }
-
-
-    /**
- * Obtient l'historique des versions
- */
-public function historique(Request $request, $appelOffreId, $caracteristiqueId)
-{
-    try {
-        $appelOffre = AppelOffre::findOrFail($appelOffreId);
-
-        // Récupérer n'importe quelle version de la caractéristique
-        $caracteristiqueDemandee = CaracteristiqueAppelOffre::where('appel_offre_id', $appelOffreId)
-            ->where('id_caracteristique_appel_offre', $caracteristiqueId)
-            ->firstOrFail();
-
-        // Récupérer l'historique complet (getHistorique gère automatiquement les versions)
-        $historique = $caracteristiqueDemandee->getHistorique();
-
-        // Obtenir la version de base pour l'affichage
-        if ($caracteristiqueDemandee->parent_id) {
-            $caracteristique = CaracteristiqueAppelOffre::find($caracteristiqueDemandee->parent_id);
-        } else {
-            $caracteristique = $caracteristiqueDemandee;
+            return back()->with('error', 'Erreur lors de la récupération de l\'historique');
         }
-
-        if ($request->wantsJson() || $request->is('api/*')) {
-            return response()->json([
-                'success' => true,
-                'data' => $historique,
-                'caracteristique' => $caracteristique,
-                'message' => 'Historique récupéré avec succès'
-            ]);
-        }
-
-        return view('caracteristiques-appels-offres.historique', compact('historique', 'caracteristique', 'appelOffre'));
-
-    } catch (ModelNotFoundException $e) {
-        Log::error('Caractéristique non trouvée: ' . $e->getMessage());
-
-        if ($request->wantsJson() || $request->is('api/*')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Caractéristique non trouvée'
-            ], 404);
-        }
-
-        return back()->with('error', 'Caractéristique non trouvée');
-
-    } catch (Exception $e) {
-        Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
-
-        if ($request->wantsJson() || $request->is('api/*')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la récupération de l\'historique',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-        return back()->with('error', 'Erreur lors de la récupération de l\'historique');
     }
-}
 
     /**
      * Restaure une version précédente

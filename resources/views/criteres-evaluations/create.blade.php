@@ -7,14 +7,9 @@
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
 
 
-
-
-    
-
-    <a href="{{ route('lots-appels-offres.index', [$critere->lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
+    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">{{ $critere->lot->numero }}</a>
-
+    <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">{{ $lot->numero }}</a>
 
 
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>

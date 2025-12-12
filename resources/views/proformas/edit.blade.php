@@ -115,13 +115,13 @@
 
                                 <!-- Date proforma -->
                                 <div>
-                                    <label for="date_proforma_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="date_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
                                         Date de la proforma <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" id="date_proforma_proforma" name="date_proforma_proforma"
-                                        value="{{ old('date_proforma_proforma', $proforma->date_proforma_proforma ? $proforma->date_proforma_proforma->format('Y-m-d') : '') }}" required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent @error('date_proforma_proforma') border-red-500 @enderror">
-                                    @error('date_proforma_proforma')
+                                    <input type="date" id="date_proforma" name="date_proforma"
+                                        value="{{ old('date_proforma', $proforma->date_proforma ? $proforma->date_proforma->format('Y-m-d') : '') }}" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent @error('date_proforma') border-red-500 @enderror">
+                                    @error('date_proforma')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>

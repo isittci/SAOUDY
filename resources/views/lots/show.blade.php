@@ -293,7 +293,7 @@
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-bold text-gray-900 mb-2">
-                                        {{ $lot->attributionActive->prestataire->nom_prestataire ?? 'N/A' }}
+                                        {{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A' }}
                                     </h3>
 
                                     @if($lot->attributionActive->proforma)
@@ -387,7 +387,7 @@
                                         </div>
                                         <div class="flex-1">
                                             <h4 class="text-sm font-semibold text-gray-900">
-                                                {{ $attribution->prestataire->nom_prestataire ?? 'N/A' }}
+                                                {{ $attribution->prestataire->raison_sociale_prestataire ?? 'N/A' }}
                                             </h4>
                                             <p class="text-xs text-gray-500 mt-1">
                                                 {{ $attribution->created_at->format('d/m/Y à H:i') }}
@@ -517,7 +517,7 @@
                             </div>
                         @endif
 
-                       
+
                     </div>
                 </div>
 

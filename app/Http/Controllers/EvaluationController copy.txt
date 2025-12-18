@@ -1,0 +1,1074 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Exception;
+use App\Models\Lot;
+use App\Models\Evaluation;
+use App\Models\PrestataireLot;
+use App\Models\CritereEvaluation;
+use App\Models\EvaluationLotPrestataire;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+class EvaluationController extends Controller
+{
+    /**
+     * Affiche la liste de toutes les évaluations
+     */
+    public function index(Request $request)
+    {
+        try {
+            $query = Evaluation::with([
+                    'attribution.lot.appelOffre',
+                    'attribution.prestataire',
+                    'evaluateurPrincipal',
+                    'creator'
+                ])
+                ->current();
+
+            // Filtres
+            if ($request->filled('statut')) {
+                $query->where('statut_evaluation', $request->statut);
+            }
+
+            if ($request->filled('lot_id')) {
+                $query->whereHas('attribution', function ($q) use ($request) {
+                    $q->where('lot_id', $request->lot_id);
+                });
+            }
+
+            if ($request->filled('prestataire_id')) {
+                $query->whereHas('attribution', function ($q) use ($request) {
+                    $q->where('prestataire_id', $request->prestataire_id);
+                });
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('numero_evaluation', 'like', "%{$search}%")
+                      ->orWhereHas('attribution.prestataire', function ($q2) use ($search) {
+                          $q2->where('raison_sociale_prestataire', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('attribution.lot', function ($q2) use ($search) {
+                          $q2->where('numero', 'like', "%{$search}%")
+                             ->orWhere('libelle', 'like', "%{$search}%");
+                      });
+                });
+            }
+
+            // Tri
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $query->orderBy($sortBy, $sortOrder);
+
+            // Pagination
+            $perPage = $request->get('per_page', 15);
+            $evaluations = $query->paginate($perPage);
+
+            // Statistiques
+            $stats = [
+                'total' => Evaluation::current()->count(),
+                'en_attente' => Evaluation::current()->enAttente()->count(),
+                'en_cours' => Evaluation::current()->enCours()->count(),
+                'terminees' => Evaluation::current()->terminee()->count(),
+                'validees' => Evaluation::current()->validee()->count(),
+                'rejetees' => Evaluation::current()->rejetee()->count(),
+            ];
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluations,
+                    'stats' => $stats,
+                ]);
+            }
+
+            return view('evaluations.index', compact('evaluations', 'stats'));
+
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la récupération des évaluations: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération des données',
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors de la récupération des données');
+        }
+    }
+
+    /**
+     * Affiche les évaluations d'une attribution spécifique
+     */
+    public function pourAttribution(Request $request, $attributionId)
+    {
+        try {
+            $attribution = PrestataireLot::with([
+                    'lot.appelOffre',
+                    'lot.criteresEvaluation',
+                    'prestataire',
+                    'proforma'
+                ])
+                ->findOrFail($attributionId);
+
+            $evaluations = Evaluation::with(['evaluateurPrincipal', 'validateur', 'creator'])
+                ->pourAttribution($attributionId)
+                ->orderBy('version', 'desc')
+                ->get();
+
+            $evaluationCourante = $evaluations->where('is_current', true)->first();
+
+            // Statistiques des critères
+            $criteres = $attribution->lot->criteresEvaluation()->actif()->ordonne()->get();
+            $totalNotesReference = $criteres->sum('note_reference_critere_evaluation');
+
+            // dd($evaluations);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'attribution' => $attribution,
+                    'evaluations' => $evaluations,
+                    'evaluation_courante' => $evaluationCourante,
+                    'criteres' => $criteres,
+                    'total_notes_reference' => $totalNotesReference,
+                ]);
+            }
+
+            return view('evaluations.pour-attribution', compact(
+                'attribution',
+                'evaluations',
+                'evaluationCourante',
+                'criteres',
+                'totalNotesReference'
+            ));
+
+        } catch (ModelNotFoundException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attribution introuvable',
+                ], 404);
+            }
+
+            return back()->with('error', 'Attribution introuvable');
+        } catch (Exception $e) {
+            Log::error('Erreur: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération des données',
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors de la récupération des données');
+        }
+    }
+
+    /**
+     * Affiche le formulaire de création d'une évaluation
+     */
+    public function create(Request $request, $attributionId)
+    {
+        try {
+            $attribution = PrestataireLot::with([
+                    'lot.appelOffre',
+                    'lot.criteresEvaluation' => function ($q) {
+                        $q->actif()->ordonne();
+                    },
+                    'prestataire',
+                    'proforma'
+                ])
+                ->findOrFail($attributionId);
+
+            // Vérifier qu'il n'y a pas déjà une évaluation en cours
+            $evaluationExistante = Evaluation::pourAttribution($attributionId)
+                ->current()
+                ->whereIn('statut_evaluation', [
+                    Evaluation::STATUT_EN_ATTENTE,
+                    Evaluation::STATUT_EN_COURS
+                ])
+                ->first();
+
+            if ($evaluationExistante) {
+                return redirect()
+                    ->route('evaluations.edit', $evaluationExistante->id_evaluation)
+                    ->with('info', 'Une évaluation est déjà en cours pour cette attribution');
+            }
+
+            $criteres = $attribution->lot->criteresEvaluation;
+            // dd($criteres);
+            $totalNotesReference = $criteres->sum('note_reference_critere_evaluation');
+
+            return view('evaluations.create', compact(
+                'attribution',
+                'criteres',
+                'totalNotesReference'
+            ));
+
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Attribution introuvable');
+        } catch (Exception $e) {
+            Log::error('Erreur: ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors du chargement du formulaire');
+        }
+    }
+
+    /**
+     * Enregistre une nouvelle évaluation
+     */
+    public function store(Request $request, $attributionId)
+    {
+        $validator = Validator::make($request->all(), [
+            'respo_technique' => 'nullable|array',
+            'respo_technique.nom_complet' => 'nullable|string|max:255',
+            'respo_technique.email' => 'nullable|email|max:255',
+            'respo_technique.telephone' => 'nullable|string|max:20',
+            'superviseur' => 'nullable|array',
+            'superviseur.nom_complet' => 'nullable|string|max:255',
+            'superviseur.email' => 'nullable|email|max:255',
+            'superviseur.telephone' => 'nullable|string|max:20',
+            'evalue_par' => 'nullable|array',
+            'evalue_par.nom_complet' => 'nullable|string|max:255',
+            'evalue_par.email' => 'nullable|email|max:255',
+            'evalue_par.telephone' => 'nullable|string|max:20',
+            'commentaire_general' => 'nullable|string',
+            'notes' => 'required|array',
+            'notes.*.critere_id' => 'required|uuid|exists:criteres_evaluations,id_critere_evaluation',
+            'notes.*.note_obtenue' => 'required|numeric|min:0',
+            'notes.*.observation' => 'nullable|string',
+            'notes.*.justification' => 'nullable|string',
+            'notes.*.conforme' => 'nullable|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            $attribution = PrestataireLot::with(['lot.criteresEvaluation', 'prestataire'])
+                ->findOrFail($attributionId);
+
+            // Créer l'évaluation
+            $evaluation = Evaluation::create([
+                'attribution_id' => $attribution->id_attribution,
+                'numero_evaluation' => Evaluation::genererNumeroEvaluation($attributionId),
+                'statut_evaluation' => Evaluation::STATUT_EN_COURS,
+                'date_evaluation' => now(),
+                'evaluateur_principal_id' => Auth::id(),
+                'respo_technique_evaluation' => $request->respo_technique,
+                'superviseur_evaluation' => $request->superviseur,
+                'evalue_par' => $request->evalue_par,
+                'commentaire_general' => $request->commentaire_general,
+                'created_by' => Auth::id(),
+            ]);
+
+            // Enregistrer les notes pour chaque critère
+            foreach ($request->notes as $noteData) {
+                $critere = CritereEvaluation::find($noteData['critere_id']);
+
+                if ($critere) {
+                    $evaluation->ajouterNoteCritere(
+                        $critere,
+                        $noteData['note_obtenue'],
+                        $noteData['observation'] ?? null,
+                        $noteData['justification'] ?? null,
+                        $noteData['conforme'] ?? false,
+                        Auth::id()
+                    );
+                }
+            }
+
+            // Calculer la note finale
+            $evaluation->calculerNoteFinale();
+
+            DB::commit();
+
+            Log::info('Évaluation créée', ['id' => $evaluation->id_evaluation]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->load('notesCriteres.critereEvaluation'),
+                    'message' => 'Évaluation créée avec succès',
+                ], 201);
+            }
+
+            return redirect()
+                ->route('evaluations.show', $evaluation->id_evaluation)
+                ->with('success', 'Évaluation créée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur création évaluation: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la création',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Affiche les détails d'une évaluation
+     */
+    public function show(Request $request, $id)
+    {
+        try {
+            $evaluation = Evaluation::with([
+                    'attribution.lot.appelOffre',
+                    'attribution.lot.criteresEvaluation',
+                    'attribution.prestataire',
+                    'attribution.proforma',
+                    'notesCriteres.critereEvaluation',
+                    'evaluateurPrincipal',
+                    'validateur',
+                    'rejeteur',
+                    'creator',
+                    'parent',
+                    'versions'
+                ])
+                ->findOrFail($id);
+
+            // Organiser les notes par critère
+            $notesCriteres = $evaluation->notesCriteres
+                ->keyBy('critere_evaluation_id');
+
+            // Historique des versions
+            $historiqueVersions = $evaluation->getHistoriqueVersions();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation,
+                    'notes_criteres' => $notesCriteres,
+                    'historique_versions' => $historiqueVersions,
+                ]);
+            }
+
+            return view('evaluations.show', compact(
+                'evaluation',
+                'notesCriteres',
+                'historiqueVersions'
+            ));
+
+        } catch (ModelNotFoundException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Évaluation introuvable',
+                ], 404);
+            }
+
+            return back()->with('error', 'Évaluation introuvable');
+        } catch (Exception $e) {
+            Log::error('Erreur: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération des données',
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors de la récupération des données');
+        }
+    }
+
+    /**
+     * Affiche le formulaire de modification
+     */
+    public function edit(Request $request, $id)
+    {
+        try {
+            $evaluation = Evaluation::with([
+                    'attribution.lot.appelOffre',
+                    'attribution.lot.criteresEvaluation' => function ($q) {
+                        $q->actif()->ordonne();
+                    },
+                    'attribution.prestataire',
+                    'notesCriteres.critereEvaluation',
+                ])
+                ->findOrFail($id);
+
+            if (!$evaluation->peutEtreModifiee()) {
+                return back()->with('error', 'Cette évaluation ne peut plus être modifiée');
+            }
+
+            $criteres = $evaluation->attribution->lot->criteresEvaluation;
+            $notesCriteres = $evaluation->notesCriteres->keyBy('critere_evaluation_id');
+            $totalNotesReference = $criteres->sum('note_reference_critere_evaluation');
+
+            return view('evaluations.edit', compact(
+                'evaluation',
+                'criteres',
+                'notesCriteres',
+                'totalNotesReference'
+            ));
+
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Évaluation introuvable');
+        } catch (Exception $e) {
+            Log::error('Erreur: ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors du chargement du formulaire');
+        }
+    }
+
+    /**
+     * Met à jour une évaluation
+     */
+    // public function update(Request $request, $id)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'respo_technique' => 'nullable|array',
+    //         'superviseur' => 'nullable|array',
+    //         'evalue_par' => 'nullable|array',
+    //         'commentaire_general' => 'nullable|string',
+    //         'recommandation' => 'nullable|string',
+    //         'notes' => 'required|array',
+    //         'notes.*.critere_id' => 'required|uuid',
+    //         'notes.*.note_obtenue' => 'required|numeric|min:0',
+    //         'notes.*.observation' => 'nullable|string',
+    //         'notes.*.justification' => 'nullable|string',
+    //         'notes.*.conforme' => 'nullable|boolean',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         if ($request->wantsJson()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'errors' => $validator->errors(),
+    //             ], 422);
+    //         }
+    //         return back()->withErrors($validator)->withInput();
+    //     }
+
+    //     DB::beginTransaction();
+    //     try {
+    //         $evaluation = Evaluation::findOrFail($id);
+
+    //         if (!$evaluation->peutEtreModifiee()) {
+    //             throw new Exception('Cette évaluation ne peut plus être modifiée');
+    //         }
+
+    //         // Mettre à jour l'évaluation
+    //         $evaluation->update([
+    //             'respo_technique_evaluation' => $request->respo_technique,
+    //             'superviseur_evaluation' => $request->superviseur,
+    //             'evalue_par' => $request->evalue_par,
+    //             'commentaire_general' => $request->commentaire_general,
+    //             'recommandation' => $request->recommandation,
+    //             'updated_by' => Auth::id(),
+    //         ]);
+
+    //         // Mettre à jour les notes
+    //         foreach ($request->notes as $noteData) {
+    //             $noteCritere = EvaluationLotPrestataire::where('evaluation_id', $id)
+    //                 ->where('critere_evaluation_id', $noteData['critere_id'])
+    //                 ->first();
+
+    //             if ($noteCritere) {
+    //                 $noteCritere->mettreAJourNote(
+    //                     $noteData['note_obtenue'],
+    //                     $noteData['observation'] ?? null,
+    //                     $noteData['justification'] ?? null,
+    //                     $noteData['conforme'] ?? false,
+    //                     Auth::id()
+    //                 );
+    //             }
+    //         }
+
+    //         // Recalculer la note finale
+    //         $evaluation->calculerNoteFinale();
+
+    //         DB::commit();
+
+    //         Log::info('Évaluation mise à jour', ['id' => $id]);
+
+    //         if ($request->wantsJson()) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'data' => $evaluation->fresh()->load('notesCriteres'),
+    //                 'message' => 'Évaluation mise à jour avec succès',
+    //             ]);
+    //         }
+
+    //         return redirect()
+    //             ->route('evaluations.show', $id)
+    //             ->with('success', 'Évaluation mise à jour avec succès');
+
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Erreur mise à jour évaluation: ' . $e->getMessage());
+
+    //         if ($request->wantsJson()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Erreur lors de la mise à jour',
+    //                 'error' => $e->getMessage(),
+    //             ], 500);
+    //         }
+
+    //         return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
+    //     }
+    // }
+
+    /**
+ * Met à jour une évaluation
+ * VERSION OPTIMISÉE - Évite les recalculs multiples
+ */
+public function update(Request $request, $id)
+{
+    $validator = Validator::make($request->all(), [
+        'respo_technique' => 'nullable|array',
+        'superviseur' => 'nullable|array',
+        'evalue_par' => 'nullable|array',
+        'commentaire_general' => 'nullable|string',
+        'recommandation' => 'nullable|string',
+        'notes' => 'required|array',
+        'notes.*.critere_id' => 'required|uuid',
+        'notes.*.note_obtenue' => 'required|numeric|min:0',
+        'notes.*.observation' => 'nullable|string',
+        'notes.*.justification' => 'nullable|string',
+        'notes.*.conforme' => 'nullable|boolean',
+    ]);
+
+    if ($validator->fails()) {
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+        return back()->withErrors($validator)->withInput();
+    }
+
+    DB::beginTransaction();
+    try {
+        $evaluation = Evaluation::findOrFail($id);
+
+        if (!$evaluation->peutEtreModifiee()) {
+            throw new Exception('Cette évaluation ne peut plus être modifiée');
+        }
+
+        // Mettre à jour l'évaluation
+        $evaluation->update([
+            'respo_technique_evaluation' => $request->respo_technique,
+            'superviseur_evaluation' => $request->superviseur,
+            'evalue_par' => $request->evalue_par,
+            'commentaire_general' => $request->commentaire_general,
+            'recommandation' => $request->recommandation,
+            'updated_by' => Auth::id(),
+        ]);
+
+        // ============================================
+        // OPTIMISATION: Mise à jour en batch
+        // ============================================
+        foreach ($request->notes as $noteData) {
+            $noteObtenue = floatval($noteData['note_obtenue']);
+
+            // Récupérer la note de référence pour calculer le pourcentage
+            $noteCritere = EvaluationLotPrestataire::where('evaluation_id', $id)
+                ->where('critere_evaluation_id', $noteData['critere_id'])
+                ->first();
+
+            if ($noteCritere) {
+                $noteReference = $noteCritere->note_reference;
+                $pourcentage = $noteReference > 0 ? ($noteObtenue / $noteReference) * 100 : 0;
+
+                // Mise à jour directe sans déclencher les events/observers
+                EvaluationLotPrestataire::where('evaluation_id', $id)
+                    ->where('critere_evaluation_id', $noteData['critere_id'])
+                    ->update([
+                        'note_obtenue' => $noteObtenue,
+                        'note_finale' => $noteObtenue,
+                        'pourcentage' => $pourcentage,
+                        'observation' => $noteData['observation'] ?? null,
+                        'justification' => $noteData['justification'] ?? null,
+                        'conforme' => isset($noteData['conforme']) ? (bool)$noteData['conforme'] : false,
+                        'updated_by' => Auth::id(),
+                        'updated_at' => now(),
+                    ]);
+            }
+        }
+
+        // ============================================
+        // UN SEUL recalcul de la note finale à la fin
+        // ============================================
+        $evaluation->calculerNoteFinale();
+
+        DB::commit();
+
+        Log::info('Évaluation mise à jour', ['id' => $id]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $evaluation->fresh()->load('notesCriteres'),
+                'message' => 'Évaluation mise à jour avec succès',
+            ]);
+        }
+
+        return redirect()
+            ->route('evaluations.show', $id)
+            ->with('success', 'Évaluation mise à jour avec succès');
+
+    } catch (Exception $e) {
+        DB::rollBack();
+        Log::error('Erreur mise à jour évaluation: ' . $e->getMessage());
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
+    }
+}
+
+    /**
+     * Démarre une évaluation
+     */
+    public function demarrer(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            if (!$evaluation->demarrer(Auth::id())) {
+                throw new Exception('Impossible de démarrer cette évaluation');
+            }
+
+            DB::commit();
+
+            Log::info('Évaluation démarrée', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->fresh(),
+                    'message' => 'Évaluation démarrée avec succès',
+                ]);
+            }
+
+            return back()->with('success', 'Évaluation démarrée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur démarrage: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Termine une évaluation
+     */
+    public function terminer(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            if (!$evaluation->terminer(Auth::id())) {
+                throw new Exception('Impossible de terminer cette évaluation');
+            }
+
+            DB::commit();
+
+            Log::info('Évaluation terminée', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->fresh(),
+                    'message' => 'Évaluation terminée avec succès',
+                ]);
+            }
+
+            return back()->with('success', 'Évaluation terminée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur terminaison: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Valide une évaluation
+     */
+    public function valider(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'motif_validation' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            if (!$evaluation->valider($request->motif_validation, Auth::id())) {
+                throw new Exception('Impossible de valider cette évaluation');
+            }
+
+            DB::commit();
+
+            Log::info('Évaluation validée', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->fresh(),
+                    'message' => 'Évaluation validée avec succès',
+                ]);
+            }
+
+            return back()->with('success', 'Évaluation validée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur validation: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Rejette une évaluation
+     */
+    public function rejeter(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'motif_rejet' => 'required|string|min:10|max:1000',
+        ], [
+            'motif_rejet.required' => 'Le motif de rejet est obligatoire',
+            'motif_rejet.min' => 'Le motif doit contenir au moins 10 caractères',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+            return back()->withErrors($validator);
+        }
+
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            if (!$evaluation->rejeter($request->motif_rejet, Auth::id())) {
+                throw new Exception('Impossible de rejeter cette évaluation');
+            }
+
+            DB::commit();
+
+            Log::info('Évaluation rejetée', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->fresh(),
+                    'message' => 'Évaluation rejetée',
+                ]);
+            }
+
+            return back()->with('success', 'Évaluation rejetée');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur rejet: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Reprend une évaluation rejetée
+     */
+    public function reprendre(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            if (!$evaluation->reprendre(Auth::id())) {
+                throw new Exception('Impossible de reprendre cette évaluation');
+            }
+
+            DB::commit();
+
+            Log::info('Évaluation reprise', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $evaluation->fresh(),
+                    'message' => 'Évaluation reprise avec succès',
+                ]);
+            }
+
+            return redirect()
+                ->route('evaluations.edit', $id)
+                ->with('success', 'Évaluation reprise. Vous pouvez maintenant la modifier.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur reprise: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Crée une nouvelle version d'une évaluation
+     */
+    public function creerVersion(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            $nouvelleVersion = $evaluation->creerNouvelleVersion(Auth::id());
+
+            DB::commit();
+
+            Log::info('Nouvelle version créée', [
+                'original' => $id,
+                'nouvelle' => $nouvelleVersion->id_evaluation,
+            ]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $nouvelleVersion->load('notesCriteres'),
+                    'message' => 'Nouvelle version créée avec succès',
+                ], 201);
+            }
+
+            return redirect()
+                ->route('evaluations.edit', $nouvelleVersion->id_evaluation)
+                ->with('success', 'Nouvelle version créée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur création version: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Affiche le classement des évaluations pour un lot
+     */
+    public function classementLot(Request $request, $lotId)
+    {
+        try {
+            $lot = Lot::with(['appelOffre', 'criteresEvaluation'])->findOrFail($lotId);
+
+            $evaluations = Evaluation::with([
+                    'attribution.prestataire',
+                    'notesCriteres.critereEvaluation',
+                    'validateur'
+                ])
+                ->whereHas('attribution', function ($q) use ($lotId) {
+                    $q->where('lot_id', $lotId);
+                })
+                ->current()
+                ->validee()
+                ->orderBy('rang', 'asc')
+                ->get();
+
+            $stats = Evaluation::statistiquesLot($lotId);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'lot' => $lot,
+                    'evaluations' => $evaluations,
+                    'stats' => $stats,
+                ]);
+            }
+
+            return view('evaluations.classement', compact('lot', 'evaluations', 'stats'));
+
+        } catch (ModelNotFoundException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lot introuvable',
+                ], 404);
+            }
+
+            return back()->with('error', 'Lot introuvable');
+        } catch (Exception $e) {
+            Log::error('Erreur classement: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération du classement',
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors de la récupération du classement');
+        }
+    }
+
+    /**
+     * Génère un rapport PDF de l'évaluation
+     */
+    public function genererRapport(Request $request, $id)
+    {
+        try {
+            $evaluation = Evaluation::with([
+                    'attribution.lot.appelOffre',
+                    'attribution.prestataire',
+                    'notesCriteres.critereEvaluation',
+                    'evaluateurPrincipal',
+                    'validateur'
+                ])
+                ->findOrFail($id);
+
+            // Données pour le rapport
+            $rapport = [
+                'evaluation' => $evaluation,
+                'attribution' => $evaluation->attribution,
+                'lot' => $evaluation->lot,
+                'prestataire' => $evaluation->prestataire,
+                'appelOffre' => $evaluation->appelOffre,
+                'notesCriteres' => $evaluation->notesCriteres,
+                'genereLe' => now()->format('d/m/Y H:i'),
+            ];
+
+            // Pour l'instant, retourner une vue (plus tard, générer un PDF)
+            return view('evaluations.rapport', $rapport);
+
+        } catch (Exception $e) {
+            Log::error('Erreur génération rapport: ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors de la génération du rapport');
+        }
+    }
+
+    /**
+     * Supprime une évaluation (soft delete)
+     */
+    public function destroy(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $evaluation = Evaluation::findOrFail($id);
+
+            // Vérifier que l'évaluation peut être supprimée
+            if ($evaluation->isValidee()) {
+                throw new Exception('Impossible de supprimer une évaluation validée');
+            }
+
+            $evaluation->deleted_by = Auth::id();
+            $evaluation->save();
+            $evaluation->delete();
+
+            DB::commit();
+
+            Log::info('Évaluation supprimée', ['id' => $id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Évaluation supprimée avec succès',
+                ]);
+            }
+
+            return redirect()
+                ->route('evaluations.index')
+                ->with('success', 'Évaluation supprimée avec succès');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur suppression: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
+    }
+}

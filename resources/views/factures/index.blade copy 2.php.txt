@@ -1,0 +1,367 @@
+@extends('layouts.main')
+
+@section('title', 'Factures')
+
+@section('breadcrumb')
+    <span class="text-white font-medium">Factures</span>
+@endsection
+
+@section('content')
+    <!-- Header avec statistiques -->
+    <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
+        <div class="px-3 sm:px-4 lg:px-6 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Factures</h1>
+                    <p class="text-gray-600 mt-1">Gestion des factures liées aux proformas</p>
+                </div>
+                <a href="{{ route('factures.create') }}"
+                    class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 shadow-md">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nouvelle Facture
+                </a>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mt-4">
+                <div class="bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500 uppercase">Total</span>
+                        <i class="fas fa-file-invoice-dollar text-gray-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">{{ $statistiques['total'] }}</p>
+                </div>
+                <div class="bg-white rounded-xl p-3 border border-yellow-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-yellow-600 uppercase">En attente</span>
+                        <i class="fas fa-clock text-yellow-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-yellow-600 mt-1">{{ $statistiques['en_attente'] }}</p>
+                </div>
+                <div class="bg-white rounded-xl p-3 border border-blue-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-blue-600 uppercase">Validées</span>
+                        <i class="fas fa-check-circle text-blue-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-blue-600 mt-1">{{ $statistiques['validees'] }}</p>
+                </div>
+                <div class="bg-white rounded-xl p-3 border border-green-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-green-600 uppercase">Payées</span>
+                        <i class="fas fa-check-double text-green-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-green-600 mt-1">{{ $statistiques['payees'] }}</p>
+                </div>
+                <div class="bg-white rounded-xl p-3 border border-orange-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-orange-600 uppercase">Partielles</span>
+                        <i class="fas fa-adjust text-orange-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-orange-600 mt-1">{{ $statistiques['partiellement_payees'] }}</p>
+                </div>
+                <div class="bg-white rounded-xl p-3 border border-red-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-red-600 uppercase">Rejetées</span>
+                        <i class="fas fa-times-circle text-red-400"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-red-600 mt-1">{{ $statistiques['rejetees'] }}</p>
+                </div>
+            </div>
+
+            <!-- Résumé Financier -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-xs font-medium uppercase">Montant Total Facturé</p>
+                            <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_total'], 0, ',', ' ') }} FCFA</p>
+                        </div>
+                        <i class="fas fa-coins text-3xl text-orange-300 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-xs font-medium uppercase">Montant Payé</p>
+                            <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_paye'], 0, ',', ' ') }} FCFA</p>
+                        </div>
+                        <i class="fas fa-hand-holding-usd text-3xl text-green-300 opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-red-100 text-xs font-medium uppercase">Reste à Payer</p>
+                            <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_restant'], 0, ',', ' ') }} FCFA</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-3xl text-red-300 opacity-50"></i>
+                    </div>
+                    <div class="mt-2">
+                        <div class="w-full bg-red-400 rounded-full h-1.5">
+                            <div class="bg-white rounded-full h-1.5" style="width: {{ $statistiques['taux_paiement'] }}%"></div>
+                        </div>
+                        <p class="text-xs text-red-100 mt-1">{{ $statistiques['taux_paiement'] }}% payé</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 lg:p-6">
+
+        @include('partials.alerts')
+
+        <!-- Filtres -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
+            <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-200">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-filter text-orange-500 mr-2"></i>
+                    Filtres
+                </h2>
+            </div>
+            <div class="p-6">
+                <form action="{{ route('factures.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                            placeholder="N° facture, proforma...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                        <select name="statut" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400">
+                            <option value="">Tous les statuts</option>
+                            @foreach($statuts as $key => $label)
+                                <option value="{{ $key }}" {{ request('statut') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date début</label>
+                        <input type="date" name="date_debut" value="{{ request('date_debut') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date fin</label>
+                        <input type="date" name="date_fin" value="{{ request('date_fin') }}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400">
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <button type="submit" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all">
+                            <i class="fas fa-search mr-2"></i>Filtrer
+                        </button>
+                        <a href="{{ route('factures.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
+                            <i class="fas fa-undo"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Liste des factures -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-file-invoice text-indigo-500 mr-2"></i>
+                    Liste des factures
+                    <span class="ml-2 px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">
+                        {{ $factures->total() }}
+                    </span>
+                </h2>
+            </div>
+
+            @if($factures->isEmpty())
+                <div class="p-12 text-center">
+                    <i class="fas fa-file-invoice text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Aucune facture trouvée</h3>
+                    <p class="text-gray-500 mb-4">Commencez par créer une nouvelle facture.</p>
+                    <a href="{{ route('factures.create') }}"
+                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700">
+                        <i class="fas fa-plus mr-2"></i>Nouvelle Facture
+                    </a>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">N° Facture</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Proforma</th>
+                                <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Montant</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Paiement</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($factures as $facture)
+                                @php
+                                    $statutClasses = [
+                                        'en_attente' => 'bg-yellow-100 text-yellow-800',
+                                        'validee' => 'bg-blue-100 text-blue-800',
+                                        'rejetee' => 'bg-red-100 text-red-800',
+                                        'payee' => 'bg-green-100 text-green-800',
+                                        'partiellement_payee' => 'bg-orange-100 text-orange-800',
+                                        'annulee' => 'bg-gray-100 text-gray-800',
+                                    ];
+                                    $statutIcons = [
+                                        'en_attente' => 'clock',
+                                        'validee' => 'check-circle',
+                                        'rejetee' => 'times-circle',
+                                        'payee' => 'check-double',
+                                        'partiellement_payee' => 'adjust',
+                                        'annulee' => 'ban',
+                                    ];
+                                @endphp
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-file-invoice text-orange-600"></i>
+                                            </div>
+                                            <div>
+                                                <span class="font-semibold text-gray-900">{{ $facture->numero_facture }}</span>
+                                                <p class="text-xs text-gray-500">{{ $facture->created_at->format('d/m/Y H:i') }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($facture->proforma)
+                                            <span class="text-sm font-medium text-gray-900">{{ $facture->proforma->numero_proforma }}</span>
+                                        @else
+                                            <span class="text-sm text-gray-400 italic">Non définie</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <span class="text-sm font-bold text-gray-900">{{ $facture->montant_formate }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $facture->date_facture->format('d/m/Y') }}</div>
+                                        <div class="text-xs text-gray-500">Reçue: {{ $facture->date_reception_facture->format('d/m/Y') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $statutClasses[$facture->statut_facture] ?? 'bg-gray-100 text-gray-800' }}">
+                                            <i class="fas fa-{{ $statutIcons[$facture->statut_facture] ?? 'question' }} mr-1"></i>
+                                            {{ $facture->statut_libelle }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @php
+                                            $pourcentage = $facture->montant_facture > 0
+                                                ? round(($facture->montant_paye / $facture->montant_facture) * 100)
+                                                : 0;
+                                        @endphp
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-16 bg-gray-200 rounded-full h-2 mb-1">
+                                                <div class="bg-green-500 h-2 rounded-full" style="width: {{ $pourcentage }}%"></div>
+                                            </div>
+                                            <span class="text-xs text-gray-600">{{ $pourcentage }}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-1">
+                                            <a href="{{ route('factures.show', $facture->id_facture) }}"
+                                                class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if($facture->peutEtreModifiee())
+                                                <a href="{{ route('factures.edit', $facture->id_facture) }}"
+                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                                    title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            @endif
+                                            @if($facture->peutEtreValidee())
+                                                <form action="{{ route('factures.valider', $facture->id_facture) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                        title="Valider">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            @if($facture->peutRecevoirPaiement())
+                                            {{-- {{ route('paiements.create', ['facture_id' => $facture->id_facture]) }} --}}
+                                                <a href="#"
+                                                    class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                    title="Ajouter un paiement">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                </a>
+                                            @endif
+                                            <button onclick="openDeleteModal('{{ $facture->id_facture }}', '{{ $facture->numero_facture }}')"
+                                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    {{ $factures->withQueryString()->links() }}
+                </div>
+            @endif
+        </div>
+    </main>
+
+    <!-- Modal de suppression -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" onclick="closeDeleteModal()"></div>
+            <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Confirmer la suppression
+                    </h3>
+                </div>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="p-6">
+                        <p class="text-gray-600">
+                            Êtes-vous sûr de vouloir supprimer la facture <strong id="deleteFactureNumero"></strong> ?
+                        </p>
+                        <p class="text-sm text-red-600 mt-2">Cette action est irréversible.</p>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+                        <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-white border text-gray-700 rounded-lg hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                            Supprimer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+<script>
+    function openDeleteModal(id, numero) {
+        document.getElementById('deleteForm').action = `/factures/${id}`;
+        document.getElementById('deleteFactureNumero').textContent = numero;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+</script>
+@endpush

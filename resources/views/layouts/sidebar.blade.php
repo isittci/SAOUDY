@@ -122,10 +122,10 @@
                 </button>
 
                 <div id="paiement" class="hidden ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="max-height: 0;">
-                    <a href="#"
+                    <a href="{{ route('factures.index') }}"
                         class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
                         <i class="fas fa-plus text-xs"></i>
-                        <span>Nouvelle facture</span>
+                        <span>Liste facture</span>
                     </a>
                     <a href="#"
                         class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
@@ -165,9 +165,37 @@
                 </div>
             </div>
 
+            {{-- <div>
+                <button onclick="toggleSubmenu('evaluaMenu','evaluaIcon')" type="button"
+                    class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('evaluations.*') ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-file-signature text-sm group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium text-sm">Evaluations de lots</span>
+                    </div>
+                    <i id="evaluaIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs('evaluations.*') ? 'rotate-180' : '' }}""></i>
+                </button>
+
+                <div id="evaluaMenu" class="{{ request()->routeIs('evaluations.*') ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="{{ request()->routeIs('evaluations.*') ? 'max-height: 500px;' : 'max-height: 0;' }}">
+                    <a href="{{ route('evaluations.create') }}"
+                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                        <i class="fas fa-plus text-xs"></i>
+                        <span>Nouvelle attribution</span>
+                    </a>
+                    <a href="{{ route('evaluations.index') }}"
+                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                        <i class="fas fa-list text-xs"></i>
+                        <span>Liste</span>
+                    </a>
+                </div>
+            </div> --}}
+
             <!-- Évaluation des lots -->
-            <a href="#"
+            {{-- <a href="{{ route('') }}"
                 class="flex items-center space-x-3 px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
+                <i class="fas fa-star text-sm group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium text-sm">Évaluation des lots</span>
+            </a> --}}
+            <a href="{{ route('evaluations.index') }}" class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
                 <i class="fas fa-star text-sm group-hover:scale-110 transition-transform"></i>
                 <span class="font-medium text-sm">Évaluation des lots</span>
             </a>

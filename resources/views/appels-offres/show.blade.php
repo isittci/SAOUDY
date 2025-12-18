@@ -58,9 +58,12 @@
                     @endif
 
 
-                    <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}"
-                        class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-thumbs-up text-sm"></i>
+                    {{-- <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}" class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                        <i class="fas fa-list-check text-sm"></i>
+                        <span class="text-sm font-medium">Caractéristiques</span>
+                    </a> --}}
+                    <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}" class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                        <i class="fas fa-list-check text-sm"></i>
                         <span class="text-sm font-medium">Caractéristiques</span>
                     </a>
 
@@ -322,18 +325,18 @@
 
                 <!-- Lots associés -->
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
+                    <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-200">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-boxes text-indigo-500 mr-2"></i>
+                                <i class="fas fa-boxes text-orange-500 mr-2"></i>
                                 Lots
                                 <span
-                                    class="ml-2 px-2.5 py-1 bg-indigo-100 text-indigo-800 text-sm font-semibold rounded-full">
+                                    class="ml-2 px-2.5 py-1 bg-orange-100 text-orange-800 text-sm font-semibold rounded-full">
                                     {{ $appelOffre->lots_count }}
                                 </span>
                             </h2>
                             <button onclick="openCreateLotModal()"
-                                class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all text-sm font-medium shadow-md hover:shadow-lg">
+                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm font-medium shadow-md hover:shadow-lg">
                                 <i class="fas fa-plus mr-1"></i> Ajouter un lot
                             </button>
                         </div>
@@ -348,7 +351,7 @@
                                         <div class="flex-1">
                                             <div class="flex items-center space-x-3 flex-wrap gap-2">
                                                 <span
-                                                    class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-700">
+                                                    class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-orange-100 text-orange-700">
                                                     {{ $lot->numero }}
                                                 </span>
                                                 <p class="font-medium text-gray-900">{{ $lot->libelle }}</p>
@@ -386,7 +389,7 @@
                                         <div class="flex items-center space-x-2 ml-4">
                                             <button
                                                 onclick="window.location.href='{{ route('lots-appels-offres.show', [$lot->appel_offre_id, $lot->id_lot]) }}'"
-                                                class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                                                 title="Voir détails">
                                                 <i class="fas fa-eye"></i>
                                             </button>
@@ -407,7 +410,7 @@
                                 <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
                                 <p class="text-gray-500 font-medium mb-3">Aucun lot pour cet appel d'offres</p>
                                 <button onclick="openCreateLotModal()"
-                                    class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all text-sm shadow-md">
+                                    class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
                                     <i class="fas fa-plus mr-1"></i> Créer le premier lot
                                 </button>
                             </div>
@@ -557,12 +560,10 @@
             <div class="flex min-h-full items-center justify-center p-4 sm:p-6">
 
                 <!-- Contenu du modal -->
-                <div id="modalContent"
-                    class="relative w-full max-w-2xl transform rounded-2xl bg-white shadow-2xl transition-all duration-300 ease-out
-                           opacity-0 scale-95 translate-y-4">
+                <div id="modalContent" class="relative w-full max-w-2xl transform rounded-2xl bg-white shadow-2xl transition-all duration-300 ease-out opacity-0 scale-95 translate-y-4">
 
                     <!-- Header du modal -->
-                    <div class="relative bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-t-2xl px-6 py-5">
+                    <div class="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-t-2xl px-6 py-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="flex items-center justify-center w-10 h-10 bg-white/20 rounded-lg">
@@ -570,7 +571,7 @@
                                 </div>
                                 <div>
                                     <h3 id="modal-title" class="text-xl font-bold text-white">Nouveau Lot</h3>
-                                    <p class="text-indigo-200 text-sm">Ajoutez un lot à cet appel d'offres</p>
+                                    <p class="text-orange-100 text-sm">Ajoutez un lot à cet appel d'offres</p>
                                 </div>
                             </div>
                             <button type="button"
@@ -581,7 +582,7 @@
                         </div>
 
                         <!-- Barre de progression -->
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-indigo-800">
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-orange-700">
                             <div id="progressBar" class="h-full bg-white/50 transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
@@ -594,14 +595,14 @@
                         <div class="px-6 py-6 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
 
                             <!-- Info AO -->
-                            <div class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl">
+                            <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-blue-50 border border-orange-200 rounded-xl">
                                 <div class="flex items-start space-x-3">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-file-contract text-indigo-600 text-sm"></i>
+                                    <div class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-file-contract text-orange-600 text-sm"></i>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-indigo-800">{{ $appelOffre->numero_appel_offre }}</p>
-                                        <p class="text-xs text-indigo-600 mt-0.5">{{ Str::limit($appelOffre->libelle_critere_appel_offre, 60) }}</p>
+                                        <p class="text-sm font-semibold text-orange-800">{{ $appelOffre->numero_appel_offre }}</p>
+                                        <p class="text-xs text-orange-600 mt-0.5">{{ Str::limit($appelOffre->libelle_critere_appel_offre, 60) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -611,7 +612,7 @@
                                 <!-- Libellé - Champ principal -->
                                 <div class="group">
                                     <label for="lot_libelle" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-tag text-indigo-500 mr-2 text-xs"></i>
+                                        <i class="fas fa-tag text-orange-500 mr-2 text-xs"></i>
                                         Libellé du lot
                                         <span class="text-red-500 ml-1">*</span>
                                     </label>
@@ -621,7 +622,7 @@
                                             id="lot_libelle"
                                             required
                                             maxlength="160"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
                                             placeholder="Ex: Travaux de gros œuvre"
                                             oninput="updateProgress()">
                                         <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
@@ -637,13 +638,13 @@
                                 <!-- Description -->
                                 <div class="group">
                                     <label for="lot_description" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-align-left text-indigo-500 mr-2 text-xs"></i>
+                                        <i class="fas fa-align-left text-orange-600 mr-2 text-xs"></i>
                                         Description
                                     </label>
                                     <textarea name="description_critere"
                                         id="lot_description"
                                         rows="3"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
                                         placeholder="Décrivez le contenu et les objectifs de ce lot..."
                                         oninput="updateProgress()"></textarea>
                                 </div>
@@ -651,13 +652,13 @@
                                 <!-- Spécifications techniques -->
                                 <div class="group">
                                     <label for="lot_specifications" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-cogs text-indigo-500 mr-2 text-xs"></i>
+                                        <i class="fas fa-cogs text-orange-600 mr-2 text-xs"></i>
                                         Spécifications techniques
                                     </label>
                                     <textarea name="specifications_techniques"
                                         id="lot_specifications"
                                         rows="3"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
                                         placeholder="Détaillez les exigences techniques..."></textarea>
                                 </div>
 
@@ -666,12 +667,12 @@
                                     <div class="group">
                                         <label for="lot_date_debut" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                             <i class="fas fa-calendar-plus text-green-500 mr-2 text-xs"></i>
-                                            Date de début prévue <span class="text-red-500"> *</span>
+                                            Date de début prévue <span class="text-red-500 px-1"> *</span>
                                         </label>
                                         <input type="datetime-local" required
                                             name="date_debut_prevue"
                                             id="lot_date_debut"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800">
                                         <div id="error_lot_date_debut" class="hidden mt-2 text-red-500 text-sm flex items-center">
                                             <i class="fas fa-exclamation-circle mr-1"></i>
                                             <span></span>
@@ -681,12 +682,12 @@
                                     <div class="group">
                                         <label for="lot_date_fin" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                             <i class="fas fa-calendar-check text-red-500 mr-2 text-xs"></i>
-                                            Date de fin prévue <span class="text-red-500"> *</span>
+                                            Date de fin prévue <span class="text-red-500 px-1"> *</span>
                                         </label>
                                         <input type="datetime-local" required
                                             name="date_fin_prevue"
                                             id="lot_date_fin"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800">
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800">
                                         <div id="error_lot_date_fin" class="hidden mt-2 text-red-500 text-sm flex items-center">
                                             <i class="fas fa-exclamation-circle mr-1"></i>
                                             <span></span>
@@ -707,7 +708,7 @@
                                             min="0"
                                             max="100"
                                             step="0.01"
-                                            class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                            class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
                                             placeholder="Ex: 1.5">
                                         <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</div>
                                     </div>
@@ -726,7 +727,7 @@
                                             value="1"
                                             checked
                                             class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-600/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
                                         <span class="ml-3 text-sm font-medium text-gray-700">Lot actif</span>
                                     </label>
                                 </div>
@@ -749,7 +750,7 @@
                                     </button>
                                     <button type="submit"
                                         id="submitLotBtn"
-                                        class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl transition-all duration-200 font-medium text-sm shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                        class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl transition-all duration-200 font-medium text-sm shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
                                         <i class="fas fa-save mr-2" id="submitIcon"></i>
                                         <span id="submitLotText">Créer le lot</span>
                                     </button>
@@ -928,7 +929,7 @@
                             // Animation de succès
                             submitIcon.className = 'fas fa-check mr-2';
                             submitText.textContent = 'Lot créé !';
-                            submitBtn.classList.remove('from-indigo-600', 'to-indigo-700');
+                            submitBtn.classList.remove('from-orange-600', 'to-orange-700');
                             submitBtn.classList.add('from-green-500', 'to-green-600');
 
                             setTimeout(() => {

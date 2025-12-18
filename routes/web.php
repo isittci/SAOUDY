@@ -13,6 +13,8 @@ require __DIR__ . '/routes_proformas.php';
 require __DIR__ . '/prestataires.php';
 require __DIR__ . '/banques.php';
 require __DIR__.'/attributions.php';
+require __DIR__.'/evaluations.php';
+require __DIR__.'/routes_factures.php';
 
 Route::get('/test', function () {
     return view('test');

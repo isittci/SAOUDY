@@ -19,13 +19,12 @@ return new class extends Migration
             $table->foreignUuid('lot_id')->comment('Identifiant du lot associé.')->references('id_lot')->on('lots')->onDelete('cascade');
 
             // Autres champs
-            $table->string('numero_critere_evaluation', 20)->nullable();
-            $table->string('libelle_critere_evaluation', 160)->nullable();
+            $table->string('numero_critere_evaluation', 20);
+            $table->string('libelle_critere_evaluation', 160);
             $table->text('description_critere_evaluation')->nullable();
 
-            // Décimal sans précision indiquée → je mets (8,2) par défaut
             // Si tu veux une précision exacte, dis-moi.
-            $table->decimal('note_reference_critere_evaluation', 8, 2)->nullable();
+            $table->decimal('note_reference_critere_evaluation', 8, 2)->comment("La note maximale qu'on peut obtenir")->default(100);
 
             $table->enum('statut_critere_evaluation', [0, 1])->default(1);
 

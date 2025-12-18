@@ -254,7 +254,7 @@
                             <!-- Date début prévue -->
                             <div>
                                 <label for="date_debut_prevue" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de début prévue <span class="text-red-500"> *</span>
+                                    Date de début prévue <span class="text-red-500 px-1"> *</span>
                                 </label>
                                 <input type="date" required
                                     name="date_debut_prevue"
@@ -269,7 +269,7 @@
                             <!-- Date fin prévue -->
                             <div>
                                 <label for="date_fin_prevue" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de fin prévue <span class="text-red-500"> *</span>
+                                    Date de fin prévue <span class="text-red-500 px-1"> *</span>
                                 </label>
                                 <input type="date" required
                                     name="date_fin_prevue"

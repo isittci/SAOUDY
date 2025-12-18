@@ -267,7 +267,7 @@
             </div>
         </form>
     </main>
-@endsection
+
 
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
@@ -434,3 +434,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
+
+@endsection

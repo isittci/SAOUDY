@@ -47,9 +47,18 @@
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 flex-wrap gap-2">
                     @if($attribution->is_active)
+
                         @if($attribution->peutEtreSuspendue())
-                            <button onclick="openSuspendreModal()"
-                                class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                            <a href="{{ route('evaluations.pour-attribution', $attribution->id_attribution) }}" class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-check-circle text-sm"></i>
+                                <span class="text-sm font-medium">Évaluations</span>
+                            </a>
+                            {{-- <a href="{{ route('evaluations.create', $attribution->id_attribution) }}" class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-check-circle text-sm"></i>
+                                <span class="text-sm font-medium">Évaluer</span>
+                            </a> --}}
+
+                            <button onclick="openSuspendreModal()" class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                                 <i class="fas fa-pause text-sm"></i>
                                 <span class="text-sm font-medium">Suspendre</span>
                             </button>

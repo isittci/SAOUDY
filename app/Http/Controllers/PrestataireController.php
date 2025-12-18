@@ -81,6 +81,7 @@ class PrestataireController extends Controller
             return view('prestataires.index', compact('prestataires', 'stats'));
 
         } catch (\Exception $e) {
+
             Log::error('Erreur lors de la récupération des prestataires: ' . $e->getMessage());
 
             if ($request->wantsJson() || $request->is('api/*')) {

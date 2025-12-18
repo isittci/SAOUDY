@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Proforma extends Model
 {
@@ -106,12 +107,15 @@ class Proforma extends Model
     }
 
     /**
-     * Relations avec les prestataires et lots via table pivot
+     * Relations avec les prestataires et lots via table pivot 
      */
     public function prestataireLotsAttributions()
     {
         return $this->hasMany(PrestataireLot::class, 'proforma_id', 'id_proforma');
     }
+
+
+
 
     /**
      * ================================================================
@@ -378,6 +382,59 @@ class Proforma extends Model
     {
         return $this->calculerTauxTaxe();
     }
+
+
+
+
+    /**
+ * Relation avec la facture associée.
+ * Une proforma peut avoir une seule facture (relation 1:1)
+ *
+ * @return HasOne
+ */
+public function facture(): HasOne
+{
+    return $this->hasOne(Facture::class, 'proforma_id', 'id_proforma');
+}
+
+/**
+ * Vérifier si la proforma a une facture.
+ *
+ * @return bool
+ */
+public function aUneFacture(): bool
+{
+    return $this->facture()->exists();
+}
+
+/**
+ * Scope pour les proformas sans facture.
+ *
+ * @param \Illuminate\Database\Eloquent\Builder $query
+ * @return \Illuminate\Database\Eloquent\Builder
+ */
+public function scopeSansFacture($query)
+{
+    return $query->whereDoesntHave('facture');
+}
+
+/**
+ * Scope pour les proformas avec facture.
+ *
+ * @param \Illuminate\Database\Eloquent\Builder $query
+ * @return \Illuminate\Database\Eloquent\Builder
+ */
+public function scopeAvecFacture($query)
+{
+    return $query->whereHas('facture');
+}
+
+
+
+
+
+
+
 
     /**
      * ================================================================

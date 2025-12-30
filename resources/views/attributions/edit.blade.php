@@ -68,7 +68,7 @@
                         </div>
                     </div>
 
-                    <!-- Pénalités -->
+                    {{-- <!-- Pénalités -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b">
                             <h2 class="text-lg font-bold text-gray-800"><i class="fas fa-percent text-red-500 mr-2"></i>Pénalités</h2>
@@ -83,7 +83,7 @@
                                 <p class="mt-1 text-xs text-gray-500">Pénalité par jour de retard</p>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Observations -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

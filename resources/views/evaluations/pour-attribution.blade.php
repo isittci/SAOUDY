@@ -27,9 +27,17 @@
                     </div>
                 </div>
 
+                {{-- {{ dd($criteresDisponibles) }} --}}
+                @php
+                    $noteReference = 0;
+                    foreach($criteresDisponibles as $note) {
+                        $noteReference += $note['critere']->note_reference_critere_evaluation;
+                    }
+                @endphp
+
                 <!-- Actions -->
                 <div class="flex items-center space-x-2">
-                    @if(count($criteresDisponibles) > 0)
+                    @if($noteReference < 100)
                         <a href="{{ route('evaluations.create', $attribution->id_attribution) }}"
                             class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
                             <i class="fas fa-plus text-sm"></i>
@@ -184,7 +192,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Responsables -->
+                                    {{-- <!-- Responsables -->
                                     <div class="mt-3 flex flex-wrap gap-4 text-xs text-gray-500">
                                         @if($evaluation->hasRespoTechnique())
                                             <span title="Responsable technique">
@@ -204,7 +212,284 @@
                                                 {{ $evaluation->evalue_par['nom_complet'] ?? '' }}
                                             </span>
                                         @endif
-                                    </div>
+                                    </div> --}}
+
+                                    {{-- ============================================================
+    SOLUTION COMPLÈTE - BLOC RESPONSABLES
+    ============================================================
+
+    INSTRUCTIONS:
+    1. Remplacez les lignes 187-207 de pour-attribution.blade.php
+    2. Ajoutez le CSS dans @push('styles') à la fin du fichier
+
+    IMPORTANT: Cette solution résout le problème de z-index
+    en utilisant position:fixed pour le popover
+--}}
+
+
+{{-- ========== DÉBUT DU BLOC À COPIER (remplace lignes 187-207) ========== --}}
+
+<!-- Responsables -->
+<div class="mt-3 flex flex-wrap gap-3 text-xs text-gray-500">
+    {{-- Responsable Technique --}}
+    @if($evaluation->hasRespoTechnique())
+        <div class="responsable-badge-wrapper" data-popover-id="respo-tech-{{ $evaluation->id_evaluation }}">
+            <div class="flex items-center px-2.5 py-1.5 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
+                <i class="fas fa-user-cog text-blue-500 mr-1.5"></i>
+                <span class="font-medium text-blue-700">{{ $evaluation->respo_technique_evaluation['nom_complet'] ?? '' }}</span>
+                @if(!empty($evaluation->respo_technique_evaluation['email']) || !empty($evaluation->respo_technique_evaluation['telephone']))
+                    <i class="fas fa-info-circle text-blue-400 ml-1.5 text-[10px]"></i>
+                @endif
+            </div>
+
+            @if(!empty($evaluation->respo_technique_evaluation['email']) || !empty($evaluation->respo_technique_evaluation['telephone']))
+                <div class="responsable-popover" id="respo-tech-{{ $evaluation->id_evaluation }}">
+                    <div class="popover-content bg-white rounded-lg shadow-2xl border border-gray-200 p-3 min-w-[240px]">
+                        <div class="flex items-center mb-2 pb-2 border-b border-gray-100">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                                <i class="fas fa-user-cog text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 text-sm truncate">{{ $evaluation->respo_technique_evaluation['nom_complet'] ?? '' }}</p>
+                                <p class="text-[10px] text-blue-600 uppercase font-medium">Responsable technique</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            @if(!empty($evaluation->respo_technique_evaluation['email']))
+                                <a href="mailto:{{ $evaluation->respo_technique_evaluation['email'] }}"
+                                   class="flex items-center text-gray-600 hover:text-blue-600 transition-colors text-xs group">
+                                    <i class="fas fa-envelope w-5 text-gray-400 group-hover:text-blue-500 mr-2 flex-shrink-0"></i>
+                                    <span class="truncate">{{ $evaluation->respo_technique_evaluation['email'] }}</span>
+                                </a>
+                            @endif
+                            @if(!empty($evaluation->respo_technique_evaluation['telephone']))
+                                <a href="tel:{{ $evaluation->respo_technique_evaluation['telephone'] }}"
+                                   class="flex items-center text-gray-600 hover:text-blue-600 transition-colors text-xs group">
+                                    <i class="fas fa-phone w-5 text-gray-400 group-hover:text-blue-500 mr-2 flex-shrink-0"></i>
+                                    <span>{{ $evaluation->respo_technique_evaluation['telephone'] }}</span>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+
+    {{-- Superviseur --}}
+    @if($evaluation->hasSuperviseur())
+        <div class="responsable-badge-wrapper" data-popover-id="superviseur-{{ $evaluation->id_evaluation }}">
+            <div class="flex items-center px-2.5 py-1.5 bg-purple-50 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors">
+                <i class="fas fa-user-shield text-purple-500 mr-1.5"></i>
+                <span class="font-medium text-purple-700">{{ $evaluation->superviseur_evaluation['nom_complet'] ?? '' }}</span>
+                @if(!empty($evaluation->superviseur_evaluation['email']) || !empty($evaluation->superviseur_evaluation['telephone']))
+                    <i class="fas fa-info-circle text-purple-400 ml-1.5 text-[10px]"></i>
+                @endif
+            </div>
+
+            @if(!empty($evaluation->superviseur_evaluation['email']) || !empty($evaluation->superviseur_evaluation['telephone']))
+                <div class="responsable-popover" id="superviseur-{{ $evaluation->id_evaluation }}">
+                    <div class="popover-content bg-white rounded-lg shadow-2xl border border-gray-200 p-3 min-w-[240px]">
+                        <div class="flex items-center mb-2 pb-2 border-b border-gray-100">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                                <i class="fas fa-user-shield text-purple-600 text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 text-sm truncate">{{ $evaluation->superviseur_evaluation['nom_complet'] ?? '' }}</p>
+                                <p class="text-[10px] text-purple-600 uppercase font-medium">Superviseur</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            @if(!empty($evaluation->superviseur_evaluation['email']))
+                                <a href="mailto:{{ $evaluation->superviseur_evaluation['email'] }}"
+                                   class="flex items-center text-gray-600 hover:text-purple-600 transition-colors text-xs group">
+                                    <i class="fas fa-envelope w-5 text-gray-400 group-hover:text-purple-500 mr-2 flex-shrink-0"></i>
+                                    <span class="truncate">{{ $evaluation->superviseur_evaluation['email'] }}</span>
+                                </a>
+                            @endif
+                            @if(!empty($evaluation->superviseur_evaluation['telephone']))
+                                <a href="tel:{{ $evaluation->superviseur_evaluation['telephone'] }}"
+                                   class="flex items-center text-gray-600 hover:text-purple-600 transition-colors text-xs group">
+                                    <i class="fas fa-phone w-5 text-gray-400 group-hover:text-purple-500 mr-2 flex-shrink-0"></i>
+                                    <span>{{ $evaluation->superviseur_evaluation['telephone'] }}</span>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+
+    {{-- Responsable du suivi-évaluation --}}
+    @if($evaluation->hasEvaluePar())
+        <div class="responsable-badge-wrapper" data-popover-id="evalue-par-{{ $evaluation->id_evaluation }}">
+            <div class="flex items-center px-2.5 py-1.5 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
+                <i class="fas fa-user-check text-green-500 mr-1.5"></i>
+                <span class="font-medium text-green-700">{{ $evaluation->evalue_par['nom_complet'] ?? '' }}</span>
+                @if(!empty($evaluation->evalue_par['email']) || !empty($evaluation->evalue_par['telephone']))
+                    <i class="fas fa-info-circle text-green-400 ml-1.5 text-[10px]"></i>
+                @endif
+            </div>
+
+            @if(!empty($evaluation->evalue_par['email']) || !empty($evaluation->evalue_par['telephone']))
+                <div class="responsable-popover" id="evalue-par-{{ $evaluation->id_evaluation }}">
+                    <div class="popover-content bg-white rounded-lg shadow-2xl border border-gray-200 p-3 min-w-[240px]">
+                        <div class="flex items-center mb-2 pb-2 border-b border-gray-100">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                                <i class="fas fa-user-check text-green-600 text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="font-semibold text-gray-800 text-sm truncate">{{ $evaluation->evalue_par['nom_complet'] ?? '' }}</p>
+                                <p class="text-[10px] text-green-600 uppercase font-medium">Suivi-évaluation</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            @if(!empty($evaluation->evalue_par['email']))
+                                <a href="mailto:{{ $evaluation->evalue_par['email'] }}"
+                                   class="flex items-center text-gray-600 hover:text-green-600 transition-colors text-xs group">
+                                    <i class="fas fa-envelope w-5 text-gray-400 group-hover:text-green-500 mr-2 flex-shrink-0"></i>
+                                    <span class="truncate">{{ $evaluation->evalue_par['email'] }}</span>
+                                </a>
+                            @endif
+                            @if(!empty($evaluation->evalue_par['telephone']))
+                                <a href="tel:{{ $evaluation->evalue_par['telephone'] }}"
+                                   class="flex items-center text-gray-600 hover:text-green-600 transition-colors text-xs group">
+                                    <i class="fas fa-phone w-5 text-gray-400 group-hover:text-green-500 mr-2 flex-shrink-0"></i>
+                                    <span>{{ $evaluation->evalue_par['telephone'] }}</span>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+</div>
+
+{{-- ========== FIN DU BLOC À COPIER ========== --}}
+
+
+{{-- ========== AJOUTEZ CECI DANS @push('scripts') À LA FIN DU FICHIER ========== --}}
+
+@push('scripts')
+<style>
+    /* Wrapper du badge */
+    .responsable-badge-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Popover caché par défaut */
+    .responsable-popover {
+        position: fixed;
+        z-index: 99999;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(5px);
+        transition: all 0.2s ease;
+        pointer-events: none;
+    }
+
+    /* Popover visible */
+    .responsable-popover.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    /* Contenu du popover */
+    .responsable-popover .popover-content {
+        position: relative;
+    }
+
+    /* Flèche du popover */
+    .responsable-popover .popover-content::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 20px;
+        width: 12px;
+        height: 12px;
+        background: white;
+        border-left: 1px solid #e5e7eb;
+        border-top: 1px solid #e5e7eb;
+        transform: rotate(45deg);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wrappers = document.querySelectorAll('.responsable-badge-wrapper');
+
+    wrappers.forEach(wrapper => {
+        const popover = wrapper.querySelector('.responsable-popover');
+        if (!popover) return;
+
+        let hideTimeout;
+
+        // Afficher le popover
+        function showPopover() {
+            clearTimeout(hideTimeout);
+
+            // Fermer tous les autres popovers
+            document.querySelectorAll('.responsable-popover.active').forEach(p => {
+                p.classList.remove('active');
+            });
+
+            // Calculer la position
+            const rect = wrapper.getBoundingClientRect();
+            const popoverHeight = 150; // Estimation
+            const popoverWidth = 260;
+
+            // Position par défaut: en dessous
+            let top = rect.bottom + 8;
+            let left = rect.left;
+
+            // Vérifier si ça dépasse en bas
+            if (top + popoverHeight > window.innerHeight) {
+                top = rect.top - popoverHeight - 8;
+            }
+
+            // Vérifier si ça dépasse à droite
+            if (left + popoverWidth > window.innerWidth - 20) {
+                left = window.innerWidth - popoverWidth - 20;
+            }
+
+            // Vérifier si ça dépasse à gauche
+            if (left < 20) {
+                left = 20;
+            }
+
+            popover.style.top = top + 'px';
+            popover.style.left = left + 'px';
+            popover.classList.add('active');
+        }
+
+        // Cacher le popover
+        function hidePopover() {
+            hideTimeout = setTimeout(() => {
+                popover.classList.remove('active');
+            }, 150);
+        }
+
+        // Events sur le wrapper
+        wrapper.addEventListener('mouseenter', showPopover);
+        wrapper.addEventListener('mouseleave', hidePopover);
+
+        // Garder le popover ouvert quand on le survole
+        popover.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+        });
+
+        popover.addEventListener('mouseleave', () => {
+            popover.classList.remove('active');
+        });
+    });
+});
+</script>
+@endpush
                                 </div>
                             @empty
                                 <div class="p-4 text-center text-gray-500">

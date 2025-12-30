@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Lot;
 use App\Models\Facture;
 use App\Models\Proforma;
-use App\Http\Requests\StoreFactureRequest;
-use App\Http\Requests\UpdateFactureRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
+use App\Models\AppelOffre;
+use Illuminate\Http\Request;
+use App\Models\TypeAppelOffre;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreFactureRequest;
+use App\Http\Requests\UpdateFactureRequest;
 
 class FactureController extends Controller
 {
@@ -98,14 +101,32 @@ class FactureController extends Controller
     }
 
     /**
-     * Afficher le formulaire de création.
+     * Afficher le formulaire de création de la facture.
      *
      * @param Request $request
      * @return View|JsonResponse
      */
-    public function create(Request $request)
+    public function creater(Request $request)
     {
         try {
+
+            $typesAppelsOffres = TypeAppelOffre::with(['creator', 'updater'])
+                ->with(['parent', 'appelOffres'])
+                ->withCount('appelOffres')?->versionActuelle()->get();
+
+
+            $appelsOffres = AppelOffre::with([
+                'typeAppelOffre',
+                'lots.attributionActive.prestataire',
+                'lots.attributionActive.proforma'
+            ])
+            ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
+            ->orderBy('numero_appel_offre', 'desc')
+            ->get();
+
+
+
+
             // Récupérer les proformas validées sans facture associée
             $proformas = Proforma::where('actif_proforma', true)
                 ->whereDoesntHave('facture')
@@ -128,7 +149,7 @@ class FactureController extends Controller
                 ]);
             }
 
-            return view('factures.create', compact('proformas', 'proformaSelectionnee'));
+            return view('factures.create', compact('proformas', 'proformaSelectionnee', 'appelsOffres'));
 
         } catch (Exception $e) {
             Log::error('Erreur lors du chargement du formulaire de création: ' . $e->getMessage());
@@ -144,6 +165,116 @@ class FactureController extends Controller
             return back()->with('error', 'Erreur lors du chargement du formulaire.');
         }
     }
+
+        /**
+         * Afficher le formulaire de création d'une facture.
+         *
+         * @param Request $request
+         * @return View|JsonResponse
+         */
+        public function create(Request $request)
+        {
+            try {
+                // dd(52);
+                // Récupérer les types d'appels d'offres actifs avec leurs relations
+                $typesAppelsOffres = TypeAppelOffre::with([
+                    'creator',
+                    'updater',
+                    'appelOffres' => function ($query) {
+                        $query->actif()
+                            ->with([
+                                'lots' => function ($query) {
+                                    $query->versionActuelle()
+                                        ->actif()
+                                        ->with([
+                                            'attributionActive' => function ($query) {
+                                                $query->with([
+                                                    'proforma' => function ($query) {
+                                                        $query->actif()
+                                                            ->whereDoesntHave('facture');
+                                                    },
+                                                    'prestataire'
+                                                ]);
+                                            }
+                                        ]);
+                                }
+                            ]);
+                    }
+                ])
+                ->versionActuelle()
+                ->actif()
+                ->withCount([
+                    'appelOffres' => function ($query) {
+                        $query->actif();
+                    }
+                ])
+                ->orderBy('libelle_type_appel_offre')
+                ->get();
+
+
+                $appelsOffres = AppelOffre::with([
+                    'typeAppelOffre',
+                    'lots.attributionActive.prestataire',
+                    'lots.attributionActive.proforma'
+                ])
+                ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
+                ->orderBy('numero_appel_offre', 'desc')
+                ->get();
+
+
+
+                // Si lot_id est passé en paramètre, pré-sélectionner le lot et sa proforma
+                $lotSelectionne = null;
+                if ($request->filled('lot_id')) {
+                    $lotSelectionne = Lot::with([
+                        'appelOffre.typeAppelOffre',
+                        'attributionActive' => function ($query) {
+                            $query->with([
+                                'proforma' => function ($query) {
+                                    $query->actif();
+                                },
+                                'prestataire'
+                            ]);
+                        }
+                    ])
+                    ->find($request->lot_id);
+                }
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'data' => [
+                            'types_appels_offres' => $typesAppelsOffres,
+                            'lot_selectionne' => $lotSelectionne,
+                            'proforma' => $lotSelectionne?->attributionActive?->proforma,
+                        ],
+                    ]);
+                }
+                // proformaSelectionnee
+                // dd($typesAppelsOffres, $lotSelectionne);
+
+                return view('factures.create', compact(
+                    'typesAppelsOffres',
+                    'lotSelectionne', 'appelsOffres'
+                ));
+
+            } catch (Exception $e) {
+                Log::error('Erreur lors du chargement du formulaire de création: ' . $e->getMessage());
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Erreur lors du chargement du formulaire.',
+                        'error' => $e->getMessage(),
+                    ], 500);
+                }
+
+                return back()->with('error', 'Erreur lors du chargement du formulaire.');
+            }
+        }
+
+
+
 
     /**
      * Enregistrer une nouvelle facture.

@@ -3,11 +3,11 @@
 @section('breadcrumb')
     <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $lot->appelOffre->numero_appel_offre }}</a>
+    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($lot->appelOffre->libelle_critere_appel_offre, 10) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
+    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors" title="Lites de lots">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">{{ $lot->numero }}</span>
+    <span class="text-white font-medium" title="{{ $lot->libelle }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 35) }}</span>
 @endsection
 
 @section('content')
@@ -60,15 +60,9 @@
                                         </span>
                                     @endif
 
-                                    {{-- Bouton Détails attribution --}}
-                                    <a href="{{ route('attributions.show', $lot->attributionActive) }}"
-                                        class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 shadow-sm">
-                                        <i class="fas fa-info-circle mr-1.5"></i>
-                                        Détails attribution
-                                    </a>
+
                                 </div>
                             @else
-                                {{-- Lot non attribué --}}
                                 <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                                     <i class="fas fa-user-slash mr-1.5 text-gray-400"></i>
                                     Non attribué
@@ -86,15 +80,24 @@
                 {{-- Boutons d'action pour les lots non attribués --}}
                 <div class="flex flex-wrap items-center gap-3">
 
+                    @if ($lot->attribution_lot || $lot->attributionActive)
+                        <a href="{{ route('attributions.show', $lot->attributionActive) }}"
+                            class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm group"
+                            >
+                            <i class="fas fa-info-circle mr-1.5"></i>
+                            Détails attribution
+                        </a>
+                    @endif
+
                     {{-- {{ dd($lot->criteresEvaluation->count()) }} --}}
                     {{-- Bouton Critère d'évaluation --}}
-                    @if (!$lot->attribution_lot)
+                    {{-- @if (!$lot->attribution_lot) --}}
                         <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
                             class="px-4 py-2.5 bg-white border border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm group">
                             <i class="fas fa-clipboard-check text-sm group-hover:scale-110 transition-transform"></i>
                             <span class="text-sm font-medium">Critères d'évaluation</span>
                         </a>
-                    @endif
+                    {{-- @endif --}}
 
                     {{-- Bouton Attribuer --}}
                     @if (!$lot->attribution_lot && !$lot->isRetire() && $lot->criteresEvaluation->count() > 0 && $lot->criteresEvaluation->sum('note_reference_critere_evaluation') == 100)
@@ -129,11 +132,11 @@
                                     <i class="fas fa-history mr-2 text-blue-500"></i>
                                     Historique
                                 </a>
-                                <button onclick="viewStatistiques()"
+                                {{-- <button onclick="viewStatistiques()"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                     <i class="fas fa-chart-bar mr-2 text-purple-500"></i>
                                     Statistiques
-                                </button>
+                                </button> --}}
                                 <button onclick="duplicate()"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                     <i class="fas fa-copy mr-2 text-indigo-500"></i>
@@ -247,7 +250,7 @@
                         @endif
 
                         <!-- Taux de pénalités -->
-                        @if($lot->taux_penalites)
+                        {{-- @if($lot->taux_penalites)
                             <div>
                                 <label class="block text-sm font-semibold text-gray-600 mb-2">Taux de pénalités</label>
                                 <div class="flex items-center space-x-2">
@@ -255,7 +258,7 @@
                                     <span class="text-sm text-gray-500">% par jour de retard</span>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
 
@@ -422,7 +425,7 @@
                         @endif
 
                         <!-- Taux pénalités -->
-                        @if($lot->taux_penalites)
+                        {{-- @if($lot->taux_penalites)
                             <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-transparent rounded-lg border-l-4 border-orange-500">
                                 <div>
                                     <p class="text-sm text-gray-600 font-medium">Taux pénalités</p>
@@ -432,7 +435,7 @@
                                     <i class="fas fa-percentage text-orange-600"></i>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
 
@@ -510,13 +513,13 @@
                             <span class="text-sm font-semibold text-gray-700">Dupliquer le lot</span>
                         </button>
 
-                        <button onclick="window.print()"
+                        {{-- <button onclick="window.print()"
                             class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-all duration-200 group">
                             <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
                                 <i class="fas fa-print text-gray-600"></i>
                             </div>
                             <span class="text-sm font-semibold text-gray-700">Imprimer</span>
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
             </div>
@@ -567,7 +570,7 @@
                 <div id="attributionModalContent" class="relative w-full max-w-3xl transform rounded-2xl bg-white shadow-2xl transition-all duration-300 ease-out opacity-0 scale-95 translate-y-4">
 
                     <!-- Header -->
-                    <div class="relative bg-gradient-to-r from-green-600 to-emerald-600 rounded-t-2xl px-6 py-5">
+                    <div class="relative bg-gradient-to-r from-orange-600 to-orange-400 rounded-t-2xl px-6 py-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <div class="flex items-center justify-center w-10 h-10 bg-white/20 rounded-lg">
@@ -674,81 +677,9 @@
                                         <span class="text-red-500 ml-1">*</span>
                                     </label>
 
-                                    <!-- Toggle choix proforma -->
-                                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                        <label class="flex items-center cursor-pointer group">
-                                            <input type="radio" name="proforma_mode" value="select" checked
-                                                class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                                                onchange="toggleProformaMode('select')">
-                                            <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors">
-                                                <i class="fas fa-list mr-1"></i> Sélectionner une proforma existante
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center cursor-pointer group">
-                                            <input type="radio" name="proforma_mode" value="create"
-                                                class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                                                onchange="toggleProformaMode('create')">
-                                            <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors">
-                                                <i class="fas fa-plus mr-1"></i> Créer une nouvelle proforma
-                                            </span>
-                                        </label>
-                                    </div>
 
                                     <!-- ================================ -->
-                                    <!-- MODE SELECTION PROFORMA -->
-                                    <!-- ================================ -->
-                                    <div id="proformaSelectMode" class="space-y-3">
-                                        <!-- Champ de recherche proforma -->
-                                        <div class="relative">
-                                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <i class="fas fa-search text-gray-400"></i>
-                                            </div>
-                                            <input type="text"
-                                                id="searchProforma"
-                                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
-                                                placeholder="Rechercher une proforma par numéro..."
-                                                autocomplete="off">
-                                        </div>
-
-                                        <!-- Liste des proformas -->
-                                        <select name="proforma_id"
-                                            id="proforma_id"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 text-gray-800 appearance-none bg-white cursor-pointer"
-                                            size="3">
-                                            @forelse ($proformas as $proforma)
-                                                <option value="{{ $proforma->id_proforma }}"
-                                                    data-numero="{{ $proforma->numero_proforma }}"
-                                                    data-montant="{{ $proforma->montant_retenu_proforma }}">
-                                                    {{ $proforma->numero_proforma }} - {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }} FCFA
-                                                </option>
-                                            @empty
-                                                <option value="" disabled>Aucune proforma disponible</option>
-                                            @endforelse
-                                        </select>
-
-                                        <!-- Proforma sélectionnée -->
-                                        <div id="selectedProforma" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center space-x-2">
-                                                    <i class="fas fa-check-circle text-blue-500"></i>
-                                                    <span id="selectedProformaName" class="text-sm font-medium text-blue-800"></span>
-                                                </div>
-                                                <button type="button" onclick="clearProformaSelection()" class="text-blue-600 hover:text-blue-800">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div id="error_proforma_id" class="hidden mt-2 text-red-500 text-sm flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <span></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- ================================ -->
-                                    <!-- MODE CREATION PROFORMA (ACCORDEON) -->
-                                    <!-- ================================ -->
-                                    <div id="proformaCreateMode" class="hidden">
+                                    <div id="proformaCreateMode" class="">
                                         <div class="border-2 border-dashed border-blue-300 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50/50 to-white">
                                             <!-- Header accordéon -->
                                             <div class="px-5 py-4 bg-gradient-to-r from-blue-100 to-blue-50 border-b border-blue-200">
@@ -769,7 +700,7 @@
                                                             <i class="fas fa-calendar text-blue-500 mr-2 text-xs"></i>
                                                             Date proforma <span class="text-red-500 ml-1">*</span>
                                                         </label>
-                                                        <input type="date"
+                                                        <input type="date" required
                                                             name="new_date_proforma"
                                                             id="new_date_proforma"
                                                             value="{{ date('Y-m-d') }}"
@@ -777,44 +708,27 @@
                                                         <div id="error_new_date_proforma" class="hidden mt-1 text-red-500 text-xs"></div>
                                                     </div>
 
-                                                    <div>
-                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                            <i class="fas fa-calendar-check text-green-500 mr-2 text-xs"></i>
-                                                            Date début validée <span class="text-red-500 ml-1">*</span>
-                                                        </label>
-                                                        <input type="date"
-                                                            name="new_date_debut_validee"
-                                                            id="new_date_debut_validee"
-                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
-                                                        <div id="error_new_date_debut_validee" class="hidden mt-1 text-red-500 text-xs"></div>
-                                                    </div>
-                                                </div>
 
-                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                                                     <div>
                                                         <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                                             <i class="fas fa-redo text-orange-500 mr-2 text-xs"></i>
                                                             Date redémarrage <span class="text-red-500 ml-1">*</span>
                                                         </label>
-                                                        <input type="date"
+                                                        {{-- {{ dd($lot->appelOffre->caracteristiqueActive) }} --}}
+                                                        <input type="date" required
                                                             name="new_date_redemarrage"
                                                             id="new_date_redemarrage"
+                                                            min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
+                                                            max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
+                                                            value="{{ old('new_date_redemarrage') }}"
                                                             class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
                                                         <div id="error_new_date_redemarrage" class="hidden mt-1 text-red-500 text-xs"></div>
                                                     </div>
-
-                                                    <div>
-                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                            <i class="fas fa-calendar-times text-red-500 mr-2 text-xs"></i>
-                                                            Date fin validée <span class="text-red-500 ml-1">*</span>
-                                                        </label>
-                                                        <input type="date"
-                                                            name="new_date_fin_validee"
-                                                            id="new_date_fin_validee"
-                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
-                                                        <div id="error_new_date_fin_validee" class="hidden mt-1 text-red-500 text-xs"></div>
-                                                    </div>
                                                 </div>
+
+
+
 
                                                 <!-- Montants -->
                                                 <div class="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
@@ -822,44 +736,57 @@
                                                         <i class="fas fa-coins mr-2"></i>
                                                         Montants et calculs
                                                     </h4>
-{{-- {{ dd($lot->appelOffre->caracteristiqueActive, $lot->appelOffre) }} --}}
+
                                                     <div class="space-y-4">
                                                         <!-- Montant retenu HT -->
                                                         <div>
                                                             <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                                Montant retenu (HT) <span class="text-red-500 ml-1">*</span>
+                                                                Montant retenu hors taxe (HT) <span class="text-red-500 ml-1">*</span>
                                                             </label>
                                                             <div class="relative">
-                                                                <input type="number"
+                                                                <input type="text"
+                                                                    required
+                                                                    inputmode="decimal"
                                                                     name="new_montant_retenu"
                                                                     id="new_montant_retenu"
-                                                                    min="0"
-                                                                    max=""
-                                                                    step="0.01"
+                                                                    data-min="5"
+                                                                    data-max="{{ $montantRestant }}"
+                                                                    value="{{ old('new_montant_retenu') }}"
                                                                     class="proforma-required w-full px-4 py-2.5 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
-                                                                    placeholder="0.00"
-                                                                    oninput="calculerMontants()">
+                                                                    placeholder="0,00"
+                                                                    autocomplete="off">
                                                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
                                                             </div>
-                                                            <div id="error_new_montant_retenu" class="hidden mt-1 text-red-500 text-xs"></div>
+                                                            <!-- Message d'aide pour les limites -->
+                                                            <p class="mt-1 text-xs text-gray-500">
+                                                                <i class="fas fa-info-circle mr-1"></i>
+                                                                {{-- Min: {{ number_format($lot->appelOffre->typeAppelOffre->valeur_minimuim_type_appel_offre, 0, ',', ' ') }} FCFA --}}
+                                                                Min: 5 FCFA
+                                                                - Max: {{ number_format($montantRestant, 0, ',', ' ') }} FCFA
+                                                            </p>
+                                                            <div id="error_new_montant_retenu" class="hidden mt-1 text-red-500 text-xs flex items-center">
+                                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                                <span></span>
+                                                            </div>
                                                         </div>
 
-                                                        <!-- TVA -->
-                                                        <div class="grid grid-cols-2 gap-4">
+                                                        {{-- <!-- TVA -->
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                             <div>
                                                                 <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                                                     Taux TVA <span class="text-red-500 ml-1">*</span>
                                                                 </label>
                                                                 <div class="relative">
-                                                                    <input type="number"
+                                                                    <input type="text"
+                                                                        required
+                                                                        inputmode="decimal"
                                                                         name="new_taux_tva"
                                                                         id="new_taux_tva"
-                                                                        min="0"
-                                                                        max="100"
-                                                                        step="0.01"
-                                                                        value="18"
+                                                                        data-min="0"
+                                                                        data-max="100"
+                                                                        value="{{ old('new_taux_tva', '18') }}"
                                                                         class="proforma-required w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
-                                                                        oninput="calculerMontants()">
+                                                                        autocomplete="off">
                                                                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
                                                                 </div>
                                                             </div>
@@ -869,33 +796,91 @@
                                                                     <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
                                                                 </label>
                                                                 <div class="relative">
-                                                                    <input type="number"
+                                                                    <input type="text"
+                                                                        inputmode="decimal"
                                                                         name="new_taxe_montant"
                                                                         id="new_taxe_montant"
+                                                                        value="{{ old('new_taxe_montant') }}"
                                                                         readonly
-                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium"
-                                                                        placeholder="0.00">
+                                                                        tabindex="-1"
+                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium cursor-not-allowed"
+                                                                        placeholder="0,00">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                                </div>
+                                                            </div>
+                                                        </div> --}}
+
+                                                        <!-- TVA -->
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Taux TVA <span class="text-red-500 ml-1">*</span>
+                                                                </label>
+
+                                                                <!-- Case à cocher Exonération -->
+                                                                <div class="flex items-center mb-2 p-2 bg-amber-50 rounded-lg border border-amber-200">
+                                                                    <input type="checkbox"
+
+                                                                        id="new_exoneration_tva"
+                                                                        class="w-4 h-4 text-amber-600 bg-gray-100 border-gray-300 rounded focus:ring-amber-500 focus:ring-2 cursor-pointer"
+                                                                        onchange="toggleExonerationTVA(this)">
+                                                                    <label for="new_exoneration_tva" class="ml-2 text-sm font-medium text-amber-800 cursor-pointer select-none">
+                                                                        <i class="fas fa-certificate mr-1"></i>
+                                                                        Exonération de TVA
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="relative">
+                                                                    <input type="text"
+                                                                        required
+                                                                        inputmode="decimal"
+                                                                        name="new_taux_tva"
+                                                                        id="new_taux_tva"
+                                                                        data-min="0"
+                                                                        data-max="100"
+                                                                        value="{{ old('new_taux_tva', '18') }}"
+                                                                        class="proforma-required w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
+                                                                        autocomplete="off">
+                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                                                    Montant TVA
+                                                                    <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
+                                                                </label>
+                                                                <div class="relative mt-8">
+                                                                    <input type="text"
+                                                                        inputmode="decimal"
+                                                                        name="new_taxe_montant"
+                                                                        id="new_taxe_montant"
+                                                                        value="{{ old('new_taxe_montant') }}"
+                                                                        readonly
+                                                                        tabindex="-1"
+                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium cursor-not-allowed"
+                                                                        placeholder="0,00">
                                                                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <!-- Remise -->
-                                                        <div class="grid grid-cols-2 gap-4">
+                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                             <div>
                                                                 <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                                                     Taux remise
+                                                                    <span class="ml-2 text-xs text-gray-500">(optionnel)</span>
                                                                 </label>
                                                                 <div class="relative">
-                                                                    <input type="number"
+                                                                    <input type="text"
+                                                                        inputmode="decimal"
                                                                         name="new_taux_remise"
                                                                         id="new_taux_remise"
-                                                                        min="0"
-                                                                        max="100"
-                                                                        step="0.01"
-                                                                        value="0"
+                                                                        data-min="0"
+                                                                        data-max="100"
+                                                                        value="{{ old('new_taux_remise', '0') }}"
                                                                         class="w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
-                                                                        oninput="calculerMontants()">
+                                                                        autocomplete="off">
                                                                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
                                                                 </div>
                                                             </div>
@@ -905,46 +890,89 @@
                                                                     <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
                                                                 </label>
                                                                 <div class="relative">
-                                                                    <input type="number"
+                                                                    <input type="text"
+                                                                        inputmode="decimal"
                                                                         name="new_remise_montant"
                                                                         id="new_remise_montant"
+                                                                        value="{{ old('new_remise_montant', '0') }}"
                                                                         readonly
-                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium"
-                                                                        placeholder="0.00">
+                                                                        tabindex="-1"
+                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium cursor-not-allowed"
+                                                                        placeholder="0,00">
                                                                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <!-- Pénalités -->
-                                                        <div>
+                                                        {{-- <div>
                                                             <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                                                 Pénalités
+                                                                <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                                                                    <i class="fas fa-lock text-xs mr-1"></i>Prédéfini
+                                                                </span>
                                                             </label>
                                                             <div class="relative">
-                                                                <input type="number"
+                                                                <input type="text"
+                                                                    inputmode="decimal"
                                                                     name="new_penalites"
                                                                     id="new_penalites"
-                                                                    min="0"
-                                                                    step="0.01"
-                                                                    value="0"
-                                                                    class="w-full px-4 py-2.5 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
-                                                                    placeholder="0.00"
-                                                                    oninput="calculerMontants()">
-                                                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
+                                                                    data-min="0"
+                                                                    readonly
+                                                                    tabindex="-1"
+                                                                    value="{{ old('new_penalites', $lot->taux_penalites ?? 0) }}"
+                                                                    class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium cursor-not-allowed"
+                                                                    placeholder="0,00">
+                                                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
                                                             </div>
-                                                        </div>
+                                                            <p class="mt-1 text-xs text-gray-500">
+                                                                <i class="fas fa-info-circle mr-1"></i>
+                                                                Valeur définie au niveau du lot
+                                                            </p>
+                                                        </div> --}}
 
                                                         <!-- Total TTC -->
                                                         <div class="pt-4 border-t-2 border-emerald-200">
-                                                            <div class="flex items-center justify-between p-4 bg-emerald-100 rounded-xl">
-                                                                <span class="font-bold text-emerald-800">TOTAL TTC</span>
-                                                                <div class="flex items-center space-x-2">
+                                                            <div class="flex items-center justify-between p-4 bg-emerald-100 rounded-xl shadow-sm">
+                                                                <div>
+                                                                    <span class="font-bold text-emerald-800 text-base">TOTAL TTC</span>
+                                                                    <p class="text-xs text-emerald-600 mt-0.5">Montant toutes taxes comprises</p>
+                                                                </div>
+                                                                <div class="flex items-baseline space-x-2">
                                                                     <span id="displayTotalTTC" class="text-2xl font-bold text-emerald-700">0</span>
-                                                                    <span class="text-emerald-600 font-medium">FCFA</span>
+                                                                    <span class="text-emerald-600 font-medium text-sm">FCFA</span>
                                                                 </div>
                                                             </div>
-                                                            <input type="hidden" name="new_total_ttc" id="new_total_ttc" value="0">
+                                                            <input type="hidden" name="new_total_ttc" id="new_total_ttc" value="{{ old('new_total_ttc') }}">
+
+                                                            <!-- Détails du calcul (optionnel, peut être masqué) -->
+                                                            <div class="mt-3 p-3 bg-white rounded-lg border border-emerald-100">
+                                                                <details class="group">
+                                                                    <summary class="cursor-pointer text-xs font-medium text-gray-600 hover:text-emerald-600 transition-colors flex items-center">
+                                                                        <i class="fas fa-calculator mr-2"></i>
+                                                                        Voir le détail du calcul
+                                                                        <i class="fas fa-chevron-down ml-auto text-xs group-open:rotate-180 transition-transform"></i>
+                                                                    </summary>
+                                                                    <div class="mt-3 space-y-1.5 text-xs text-gray-600">
+                                                                        <div class="flex justify-between">
+                                                                            <span>Montant HT:</span>
+                                                                            <span id="detail_ht" class="font-medium">0 FCFA</span>
+                                                                        </div>
+                                                                        <div class="flex justify-between text-green-600">
+                                                                            <span>+ TVA (<span id="detail_tva_rate">18</span>%):</span>
+                                                                            <span id="detail_tva" class="font-medium">0 FCFA</span>
+                                                                        </div>
+                                                                        <div class="flex justify-between text-orange-600">
+                                                                            <span>- Remise (<span id="detail_remise_rate">0</span>%):</span>
+                                                                            <span id="detail_remise" class="font-medium">0 FCFA</span>
+                                                                        </div>
+                                                                        <div class="flex justify-between pt-2 border-t border-gray-200 font-semibold text-emerald-700">
+                                                                            <span>Total TTC:</span>
+                                                                            <span id="detail_total">0 FCFA</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </details>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -970,17 +998,54 @@
                                 <!-- ================================ -->
                                 <!-- DATE D'ATTRIBUTION -->
                                 <!-- ================================ -->
-                                <div>
-                                    <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-calendar-day text-indigo-500 mr-2 text-xs"></i>
-                                        Date d'attribution
-                                    </label>
-                                    <input type="date"
-                                        name="date_attribution"
-                                        id="date_attribution"
-                                        value="{{ date('Y-m-d') }}"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all duration-200 text-gray-800">
+
+                                <!-- Dates -->
+                                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                                    <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b"><h2 class="text-lg font-bold text-gray-800"><i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Planification</h2></div>
+                                    <div class="p-6">
+                                        <div class="grid grid-cols-3 gap-5">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date d'attribution <span class="text-red-500">*</span></label>
+                                                <input type="date" name="date_attribution" id="date_attribution"
+
+                                                 required value="{{ old('date_attribution', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date début <span class="text-red-500">*</span></label>
+                                                <input type="date" name="date_debut_prevue"
+                                                onchange="updateDateFinMin()"
+                                                min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
+                                                max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
+                                                id="date_debut_prevue" required value="{{ old('date_debut_prevue') }}" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Date fin <span class="text-red-500">*</span></label>
+                                                <input type="date" name="date_fin_prevue"
+                                                onchange="updateDateFinMin()"
+                                                min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
+                                                max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
+                                                id="date_fin_prevue" required value="{{ old('date_fin_prevue') }}" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 p-3 bg-gray-50 rounded-lg flex justify-between"><span class="text-sm text-gray-600">Durée prévue:</span><span id="dureeCalculee" class="font-semibold">-</span></div>
+                                    </div>
                                 </div>
+
+                                  <script>
+                                        function updateDateFinMin() {
+                                            const dateDebut = document.getElementById('date_debut_prevue').value;
+                                            const dateFin = document.getElementById('date_fin_prevue');
+
+                                            if (dateDebut) {
+                                                dateFin.min = dateDebut;
+
+                                                // Réinitialiser si date fin < date début
+                                                if (dateFin.value && dateFin.value < dateDebut) {
+                                                    dateFin.value = '';
+                                                }
+                                            }
+                                        }
+                                    </script>
 
                             </div>
                         </div>
@@ -1121,7 +1186,6 @@
                 clearAttributionErrors();
 
                 // Reset mode proforma
-                document.querySelector('input[name="proforma_mode"][value="select"]').checked = true;
                 toggleProformaMode('select');
 
                 // Reset sélections
@@ -1183,34 +1247,7 @@
                 }
             }
 
-            // ==========================================
-            // RECHERCHE PROFORMA
-            // ==========================================
-            document.getElementById('searchProforma').addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                const select = document.getElementById('proforma_id');
-                const options = select.options;
 
-                for (let i = 0; i < options.length; i++) {
-                    const option = options[i];
-                    const numero = (option.dataset.numero || '').toLowerCase();
-                    const text = option.text.toLowerCase();
-
-                    if (text.includes(searchTerm) || numero.includes(searchTerm)) {
-                        option.style.display = '';
-                    } else {
-                        option.style.display = 'none';
-                    }
-                }
-            });
-
-            document.getElementById('proforma_id').addEventListener('change', function(e) {
-                const selected = this.options[this.selectedIndex];
-                if (selected && selected.value) {
-                    document.getElementById('selectedProformaName').textContent = selected.text;
-                    document.getElementById('selectedProforma').classList.remove('hidden');
-                }
-            });
 
             function clearProformaSelection() {
                 document.getElementById('proforma_id').value = '';
@@ -1223,58 +1260,11 @@
                 }
             }
 
-            // ==========================================
-            // TOGGLE MODE PROFORMA
-            // ==========================================
-            function toggleProformaMode(mode) {
-                const selectMode = document.getElementById('proformaSelectMode');
-                const createMode = document.getElementById('proformaCreateMode');
-                const proformaIdField = document.getElementById('proforma_id');
-                const proformaRequiredFields = document.querySelectorAll('.proforma-required');
 
-                if (mode === 'select') {
-                    selectMode.classList.remove('hidden');
-                    createMode.classList.add('hidden');
-                    proformaIdField.required = true;
 
-                    // Retirer required des champs de création
-                    proformaRequiredFields.forEach(field => {
-                        field.required = false;
-                    });
-                } else {
-                    selectMode.classList.add('hidden');
-                    createMode.classList.remove('hidden');
-                    proformaIdField.required = false;
 
-                    // Ajouter required aux champs de création
-                    proformaRequiredFields.forEach(field => {
-                        field.required = true;
-                    });
-                }
-            }
 
-            // ==========================================
-            // CALCULS AUTOMATIQUES
-            // ==========================================
-            function calculerMontants() {
-                const montantRetenu = parseFloat(document.getElementById('new_montant_retenu').value) || 0;
-                const tauxTVA = parseFloat(document.getElementById('new_taux_tva').value) || 0;
-                const tauxRemise = parseFloat(document.getElementById('new_taux_remise').value) || 0;
-                const penalites = parseFloat(document.getElementById('new_penalites').value) || 0;
 
-                // Calcul TVA
-                const montantTVA = montantRetenu * (tauxTVA / 100);
-                document.getElementById('new_taxe_montant').value = montantTVA.toFixed(2);
-
-                // Calcul Remise
-                const montantRemise = montantRetenu * (tauxRemise / 100);
-                document.getElementById('new_remise_montant').value = montantRemise.toFixed(2);
-
-                // Calcul Total TTC
-                const totalTTC = montantRetenu + montantTVA - montantRemise - penalites;
-                document.getElementById('new_total_ttc').value = totalTTC.toFixed(2);
-                document.getElementById('displayTotalTTC').textContent = new Intl.NumberFormat('fr-FR').format(totalTTC.toFixed(0));
-            }
 
             // ==========================================
             // SOUMISSION FORMULAIRE ATTRIBUTION
@@ -1296,8 +1286,7 @@
                 formData.append('lot_id', lotId);
 
                 // Ajouter le mode proforma
-                const proformaMode = document.querySelector('input[name="proforma_mode"]:checked').value;
-                formData.append('proforma_mode', proformaMode);
+                formData.append('proforma_mode', 'create');
 
                 fetch("{{ route('attributions.store') }}", {
                     method: 'POST',
@@ -1418,6 +1407,31 @@
                 document.getElementById('deleteModal').classList.remove('hidden');
             }
 
+
+            /**
+             * Gère l'activation/désactivation de l'exonération TVA
+             */
+            function toggleExonerationTVA(checkbox) {
+                const tauxTvaInput = document.getElementById('new_taux_tva');
+
+                if (checkbox.checked) {
+                    // Exonération activée : TVA à 0 et champ grisé
+                    tauxTvaInput.value = '0';
+                    tauxTvaInput.readOnly = true;
+                    tauxTvaInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                    tauxTvaInput.classList.remove('focus:border-emerald-500', 'focus:ring-4', 'focus:ring-emerald-500/10');
+                } else {
+                    // Exonération désactivée : TVA à 18% et champ actif
+                    tauxTvaInput.value = '18';
+                    tauxTvaInput.readOnly = false;
+                    tauxTvaInput.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                    tauxTvaInput.classList.add('focus:border-emerald-500', 'focus:ring-4', 'focus:ring-emerald-500/10');
+                }
+
+                calculerMontants();
+
+            }
+
             function executeDelete() {
                 fetch("{{route('api.lots-appels-offres.destroy', [':appelOffre', ':id'])}}".replace(':appelOffre', appelOffreId).replace(':id', lotId), {
                     method: 'DELETE',
@@ -1509,6 +1523,375 @@
                 calculerMontants();
             });
         </script>
+
+
+
+
+<script>
+    // ==========================================
+// FORMATAGE ET VALIDATION DES MONTANTS
+// Version complète et optimisée
+// ==========================================
+
+/**
+ * Formate un nombre avec séparateur de milliers (espaces) et virgule pour les décimales
+ */
+function formatWithSpaces(value, decimals = 2) {
+    if (!value && value !== 0) return '';
+
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return '';
+
+    const fixed = numValue.toFixed(decimals);
+    const parts = fixed.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    return decimals > 0 ? parts.join(',') : parts[0];
+}
+
+/**
+ * Parse un nombre formaté en valeur numérique
+ */
+function parseFormattedNumber(value) {
+    if (!value) return 0;
+    return parseFloat(value.toString().replace(/\s/g, '').replace(',', '.')) || 0;
+}
+
+/**
+ * Affiche un message d'erreur pour un champ
+ */
+function showError(fieldId, message) {
+    const errorDiv = document.getElementById(`error_${fieldId}`);
+    if (errorDiv) {
+        errorDiv.querySelector('span').textContent = message;
+        errorDiv.classList.remove('hidden');
+    }
+
+    const input = document.getElementById(fieldId);
+    if (input) {
+        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/10');
+        input.classList.remove('border-gray-200', 'focus:border-emerald-500', 'focus:ring-emerald-500/10');
+    }
+}
+
+/**
+ * Cache le message d'erreur pour un champ
+ */
+function hideError(fieldId) {
+    const errorDiv = document.getElementById(`error_${fieldId}`);
+    if (errorDiv) {
+        errorDiv.classList.add('hidden');
+    }
+
+    const input = document.getElementById(fieldId);
+    if (input) {
+        input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/10');
+        input.classList.add('border-gray-200', 'focus:border-emerald-500', 'focus:ring-emerald-500/10');
+    }
+}
+
+/**
+ * Valide un champ numérique selon ses contraintes
+ */
+function validateNumberField(fieldId) {
+    const input = document.getElementById(fieldId);
+    if (!input) return true;
+
+    const value = parseFormattedNumber(input.value);
+    const min = parseFloat(input.dataset.min || input.getAttribute('data-min'));
+    const max = parseFloat(input.dataset.max || input.getAttribute('data-max'));
+
+    let isValid = true;
+    let errorMessage = '';
+
+    // if (!isNaN(min) && value < min) {
+    //     isValid = false;
+    //     errorMessage = `La valeur doit être supérieure ou égale à ${formatWithSpaces(min, 0)} FCFA`;
+    // } else
+    if (!isNaN(max) && value > max) {
+        isValid = false;
+        errorMessage = `La valeur doit être inférieure ou égale à ${formatWithSpaces(max, 0)} FCFA`;
+    }
+
+    if (!isValid) {
+        showError(fieldId, errorMessage);
+        // Flash visuel
+        input.classList.add('animate-shake');
+        setTimeout(() => input.classList.remove('animate-shake'), 500);
+    } else {
+        hideError(fieldId);
+    }
+
+    return isValid;
+}
+
+/**
+ * Configure un champ input pour le formatage automatique
+ */
+function setupNumberInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    // Changer le type en text si nécessaire
+    if (input.type === 'number') {
+        input.type = 'text';
+        input.inputMode = 'decimal';
+    }
+
+    // Formatage en temps réel
+    input.addEventListener('input', function(e) {
+        const cursorPosition = this.selectionStart;
+        const oldValue = this.value;
+        const oldLength = oldValue.length;
+
+        // Nettoyer et ne garder que les chiffres, virgules et points
+        let rawValue = oldValue.replace(/[^\d,.-]/g, '');
+
+        // Gérer le signe négatif
+        const isNegative = rawValue.startsWith('-');
+        rawValue = rawValue.replace(/-/g, '');
+        if (isNegative) rawValue = '-' + rawValue;
+
+        // Unifier les séparateurs décimaux
+        rawValue = rawValue.replace(/,/g, '.');
+
+        // Gérer plusieurs points décimaux
+        const dotCount = (rawValue.match(/\./g) || []).length;
+        if (dotCount > 1) {
+            const parts = rawValue.split('.');
+            rawValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        // Séparer partie entière et décimale
+        const parts = rawValue.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts[1];
+
+        // Formater la partie entière avec espaces
+        if (integerPart) {
+            const isNeg = integerPart.startsWith('-');
+            let absInteger = integerPart.replace('-', '');
+            absInteger = absInteger.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            integerPart = (isNeg ? '-' : '') + absInteger;
+        }
+
+        // Reconstruire la valeur formatée
+        let formatted = integerPart || '0';
+        if (decimalPart !== undefined) {
+            formatted += ',' + decimalPart.substring(0, 2);
+        } else if (oldValue.endsWith(',') || oldValue.endsWith('.')) {
+            formatted += ',';
+        }
+
+        this.value = formatted;
+
+        // Ajuster la position du curseur
+        try {
+            const newLength = this.value.length;
+            const diff = newLength - oldLength;
+            const newPosition = Math.min(Math.max(0, cursorPosition + diff), newLength);
+            this.setSelectionRange(newPosition, newPosition);
+        } catch (e) {
+            // Ignorer si setSelectionRange échoue
+        }
+
+        // Déclencher le calcul
+        calculerMontants();
+    });
+
+    // Validation et formatage au blur
+    input.addEventListener('blur', function() {
+        if (this.value && !this.readOnly) {
+            const numValue = parseFormattedNumber(this.value);
+            this.value = formatWithSpaces(numValue, 2);
+
+            // Valider selon les contraintes
+            validateNumberField(this.id);
+
+            // Recalculer
+            calculerMontants();
+        }
+    });
+
+    // Formater la valeur initiale
+    if (input.value) {
+        const numValue = parseFormattedNumber(input.value);
+        input.value = formatWithSpaces(numValue, 2);
+    }
+}
+
+/**
+ * Met à jour le détail du calcul (si le bloc existe)
+ */
+function updateCalculDetail(montantHT, tauxTVA, montantTVA, tauxRemise, montantRemise, totalTTC) {
+    const detailElements = {
+        ht: document.getElementById('detail_ht'),
+        tva_rate: document.getElementById('detail_tva_rate'),
+        tva: document.getElementById('detail_tva'),
+        remise_rate: document.getElementById('detail_remise_rate'),
+        remise: document.getElementById('detail_remise'),
+        total: document.getElementById('detail_total')
+    };
+
+    if (detailElements.ht) detailElements.ht.textContent = formatWithSpaces(montantHT, 0) + ' FCFA';
+    if (detailElements.tva_rate) detailElements.tva_rate.textContent = tauxTVA.toFixed(2);
+    if (detailElements.tva) detailElements.tva.textContent = formatWithSpaces(montantTVA, 0) + ' FCFA';
+    if (detailElements.remise_rate) detailElements.remise_rate.textContent = tauxRemise.toFixed(2);
+    if (detailElements.remise) detailElements.remise.textContent = formatWithSpaces(montantRemise, 0) + ' FCFA';
+    if (detailElements.total) detailElements.total.textContent = formatWithSpaces(totalTTC, 0) + ' FCFA';
+}
+
+/**
+ * Calcule automatiquement les montants
+ */
+function calculerMontants() {
+    // Récupérer les valeurs
+    const montantRetenu = parseFormattedNumber(document.getElementById('new_montant_retenu')?.value || 0);
+    const tauxTVA = parseFormattedNumber(document.getElementById('new_taux_tva')?.value || 0);
+    const tauxRemise = parseFormattedNumber(document.getElementById('new_taux_remise')?.value || 0);
+    // const penalites = parseFormattedNumber(document.getElementById('new_penalites')?.value || 0);
+
+    // Calcul TVA
+    const montantTVA = montantRetenu * (tauxTVA / 100);
+    const taxeMontantInput = document.getElementById('new_taxe_montant');
+    if (taxeMontantInput) {
+        taxeMontantInput.value = formatWithSpaces(montantTVA, 2);
+    }
+
+    // Calcul Remise
+    const montantRemise = montantRetenu * (tauxRemise / 100);
+    const remiseMontantInput = document.getElementById('new_remise_montant');
+    if (remiseMontantInput) {
+        remiseMontantInput.value = formatWithSpaces(montantRemise, 2);
+    }
+
+    // Calcul Total TTC
+    const totalTTC = montantRetenu + montantTVA - montantRemise;
+
+    // Mettre à jour le champ caché
+    const totalTTCInput = document.getElementById('new_total_ttc');
+    if (totalTTCInput) {
+        totalTTCInput.value = totalTTC.toFixed(2);
+    }
+
+    // Mettre à jour l'affichage principal
+    const displayTotalTTC = document.getElementById('displayTotalTTC');
+    if (displayTotalTTC) {
+        displayTotalTTC.textContent = formatWithSpaces(totalTTC, 0);
+
+        // Animation du montant
+        displayTotalTTC.classList.add('scale-110');
+        setTimeout(() => displayTotalTTC.classList.remove('scale-110'), 200);
+    }
+
+    // Mettre à jour le détail (si présent)
+    updateCalculDetail(montantRetenu, tauxTVA, montantTVA, tauxRemise, montantRemise, totalTTC);
+}
+
+// ==========================================
+// INITIALISATION
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Champs à formater
+    const fieldsToFormat = [
+        'new_montant_retenu',
+        'new_taux_tva',
+        'new_taux_remise',
+        // 'new_penalites'
+    ];
+
+    fieldsToFormat.forEach(fieldId => setupNumberInput(fieldId));
+
+    // Formater les champs readonly
+    const readonlyFields = ['new_taxe_montant', 'new_remise_montant'];
+    readonlyFields.forEach(fieldId => {
+        const input = document.getElementById(fieldId);
+        if (input && input.type === 'number') {
+            input.type = 'text';
+            input.inputMode = 'decimal';
+        }
+    });
+
+    // Calcul initial
+    setTimeout(() => calculerMontants(), 100);
+
+    // Ajouter l'animation shake au CSS si elle n'existe pas
+    if (!document.getElementById('number-format-styles')) {
+        const style = document.createElement('style');
+        style.id = 'number-format-styles';
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.3s ease-in-out;
+            }
+            #displayTotalTTC {
+                transition: transform 0.2s ease;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+});
+
+// ==========================================
+// NETTOYAGE AVANT SOUMISSION
+// ==========================================
+const attributionForm = document.getElementById('attributionForm');
+if (attributionForm) {
+    attributionForm.addEventListener('submit', function(e) {
+        // Valider tous les champs avant soumission
+        let isFormValid = true;
+
+        const fieldsToValidate = [
+            'new_montant_retenu',
+            'new_taux_tva',
+            'new_taux_remise'
+        ];
+
+        fieldsToValidate.forEach(fieldId => {
+            if (!validateNumberField(fieldId)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            e.preventDefault();
+
+            // Scroller vers le premier champ en erreur
+            const firstError = document.querySelector('.border-red-500');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
+            }
+
+            return false;
+        }
+
+        // Nettoyer les valeurs pour la soumission
+        const fieldsToClean = [
+            'new_montant_retenu',
+            'new_taux_tva',
+            'new_taux_remise',
+            // 'new_penalites',
+            'new_taxe_montant',
+            'new_remise_montant'
+        ];
+
+        fieldsToClean.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input && input.value) {
+                const numValue = parseFormattedNumber(input.value);
+                input.value = numValue.toString();
+            }
+        });
+    });
+}
+</script>
+
+
 
         <style>
             @keyframes fadeIn {

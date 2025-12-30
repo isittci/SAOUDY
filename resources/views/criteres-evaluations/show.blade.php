@@ -3,16 +3,19 @@
 @section('breadcrumb')
     <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $critere->lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $critere->lot->appelOffre->numero_appel_offre }}</a>
+    <a href="{{ route('appels-offres.show', $critere->lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ \Illuminate\Support\Str::limit($critere->lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.index', [$critere->lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
+    <a href="{{ route('lots-appels-offres.index', [$critere->lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste de lots - {{ $critere->lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">{{ $critere->lot->numero }}</a>
+    <a href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $critere->lot->libelle }}">{{ \Illuminate\Support\Str::limit($critere->lot->libelle, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">Critères</a>
+    <a href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste des critères d'évaluation - {{ $critere->lot->libelle }}">Critères</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">{{ $critere->numero_critere_evaluation }}</span>
+    <span class="text-white font-medium">{{ \Illuminate\Support\Str::limit($critere->libelle_critere_evaluation, 25) }}</span>
 @endsection
+
+
+
 
 @section('content')
     <!-- Header -->

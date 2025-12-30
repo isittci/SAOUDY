@@ -309,7 +309,7 @@
 
                     <div class="p-6 space-y-5">
                         <!-- Taux de pénalités -->
-                        <div>
+                        {{-- <div>
                             <label for="taux_penalites" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Taux de pénalités (%)
                             </label>
@@ -334,7 +334,7 @@
                                 <i class="fas fa-calculator mr-1"></i>
                                 Pourcentage appliqué par jour de retard (0 à 100%)
                             </p>
-                        </div>
+                        </div> --}}
 
                         <!-- Statut -->
                         <div>
@@ -418,15 +418,15 @@
                 }
             });
 
-            // Validation taux de pénalités
-            document.getElementById('taux_penalites').addEventListener('input', function() {
-                const value = parseFloat(this.value);
-                if (value < 0) {
-                    this.value = 0;
-                } else if (value > 100) {
-                    this.value = 100;
-                }
-            });
+            // // Validation taux de pénalités
+            // document.getElementById('taux_penalites').addEventListener('input', function() {
+            //     const value = parseFloat(this.value);
+            //     if (value < 0) {
+            //         this.value = 0;
+            //     } else if (value > 100) {
+            //         this.value = 100;
+            //     }
+            // });
 
             // Confirmation avant soumission
             document.querySelector('form').addEventListener('submit', function(e) {

@@ -3,7 +3,7 @@
 @section('breadcrumb')
 <a href="{{ route('types-appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Types AO</a>
 <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-<span class="text-white font-medium">{{ $typeAO->code_type_appel_offre }}</span>
+<span class="text-white font-medium" title="{{ $typeAO->libelle_type_appel_offre }}">{{ \Illuminate\Support\Str::limit($typeAO->libelle_type_appel_offre, 50) }}</span>
 @endsection
 
 @section('content')
@@ -36,11 +36,13 @@
 
             <!-- Actions -->
             <div class="flex items-center space-x-2">
-                <button onclick='openEditModal(@json($typeAO))'
-                    class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                    <i class="fas fa-edit text-sm"></i>
-                    <span class="text-sm font-medium">Modifier</span>
-                </button>
+                @if ($typeAO->actif_type_appel_offre)
+                    <button onclick='openEditModal(@json($typeAO))'
+                        class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                        <i class="fas fa-edit text-sm"></i>
+                        <span class="text-sm font-medium">Modifier</span>
+                    </button>
+                @endif
 
                 <button onclick="toggleStatus('{{ $typeAO->id_type_appel_offre }}', {{ $typeAO->actif_type_appel_offre ? 'true' : 'false' }})"
                     class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
@@ -339,8 +341,6 @@
                         </div>
                         <span class="text-sm font-semibold text-gray-700">Créer un AO de ce type</span>
                     </a>
-
-
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@
 @section('breadcrumb')
     <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{$appelOffre->numero_appel_offre}}</a>
+    <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $appelOffre->libelle_critere_appel_offre }}">{{\Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50)}}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Lots</span>
 @endsection
@@ -234,11 +234,13 @@
                                         </button>
 
                                         <!-- Modifier -->
-                                        <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
+                                        @if (!$lot->attribution_lot)
+                                            <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
+                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                title="Modifier">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        @endif
 
                                         <!-- Menu Actions -->
                                         <div class="relative">
@@ -510,7 +512,7 @@
                 window.location.href = "{{ route('lots-appels-offres.show', [':appel_offre', ':id']) }}".replace(':appelOffreId', appelOffreId).replace(':id', lotId);
             }
 
-            
+
 
             window.openRetraitModal = function(id) {
                 const motif = prompt('Veuillez indiquer le motif du retrait:');

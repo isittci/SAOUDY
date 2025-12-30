@@ -183,10 +183,10 @@ class Prestataire extends Model
     /**
      * Évaluations
      */
-    public function evaluations()
-    {
-        return $this->hasMany(Evaluation::class, 'prestataire_id', 'id_prestataire');
-    }
+    // public function evaluations()
+    // {
+    //     return $this->hasMany(Evaluation::class, 'prestataire_id', 'id_prestataire');
+    // }
 
     /**
      * ================================================================

@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict gPqK2KaMpLWgIPgXhxUvKzgqycGkGtpq5vGeHgBKqaPI1qiqk1v2w1DqFwqRxyr
+\restrict f8MIHsFnpXyqj0srlTV7lVZIEScMP5zVBMZrUAK7cJele1mwg5ELgJjquV0aQWf
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-12-10 16:26:41
+-- Started on 2025-12-26 18:25:10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -26,7 +26,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 245 (class 1259 OID 40269)
+-- TOC entry 246 (class 1259 OID 49014)
 -- Name: alertes; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -44,7 +44,7 @@ CREATE TABLE public.alertes (
 ALTER TABLE public.alertes OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1259 OID 38265)
+-- TOC entry 230 (class 1259 OID 48319)
 -- Name: appels_offres; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -75,7 +75,7 @@ CREATE TABLE public.appels_offres (
 ALTER TABLE public.appels_offres OWNER TO postgres;
 
 --
--- TOC entry 5384 (class 0 OID 0)
+-- TOC entry 5434 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.type_appel_offre_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -84,7 +84,7 @@ COMMENT ON COLUMN public.appels_offres.type_appel_offre_id IS 'Identifiant uniqu
 
 
 --
--- TOC entry 5385 (class 0 OID 0)
+-- TOC entry 5435 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.numero_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -93,7 +93,7 @@ COMMENT ON COLUMN public.appels_offres.numero_appel_offre IS 'Numéro officiel (
 
 
 --
--- TOC entry 5386 (class 0 OID 0)
+-- TOC entry 5436 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.libelle_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -102,7 +102,7 @@ COMMENT ON COLUMN public.appels_offres.libelle_critere_appel_offre IS 'Nom du lo
 
 
 --
--- TOC entry 5387 (class 0 OID 0)
+-- TOC entry 5437 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.objet_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -111,7 +111,7 @@ COMMENT ON COLUMN public.appels_offres.objet_critere_appel_offre IS 'Description
 
 
 --
--- TOC entry 5388 (class 0 OID 0)
+-- TOC entry 5438 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.montant_global_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -120,7 +120,7 @@ COMMENT ON COLUMN public.appels_offres.montant_global_appel_offre IS 'Montant to
 
 
 --
--- TOC entry 5389 (class 0 OID 0)
+-- TOC entry 5439 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.description_critere_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -129,7 +129,7 @@ COMMENT ON COLUMN public.appels_offres.description_critere_critere_appel_offre I
 
 
 --
--- TOC entry 5390 (class 0 OID 0)
+-- TOC entry 5440 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.date_publication_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -138,7 +138,7 @@ COMMENT ON COLUMN public.appels_offres.date_publication_critere_appel_offre IS '
 
 
 --
--- TOC entry 5391 (class 0 OID 0)
+-- TOC entry 5441 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.date_limite_depot_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -147,7 +147,7 @@ COMMENT ON COLUMN public.appels_offres.date_limite_depot_critere_appel_offre IS 
 
 
 --
--- TOC entry 5392 (class 0 OID 0)
+-- TOC entry 5442 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.date_ouverture_plis_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -156,7 +156,7 @@ COMMENT ON COLUMN public.appels_offres.date_ouverture_plis_critere_appel_offre I
 
 
 --
--- TOC entry 5393 (class 0 OID 0)
+-- TOC entry 5443 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.statut_evaluation_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -165,7 +165,7 @@ COMMENT ON COLUMN public.appels_offres.statut_evaluation_critere_appel_offre IS 
 
 
 --
--- TOC entry 5394 (class 0 OID 0)
+-- TOC entry 5444 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.conditions_participation_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -174,7 +174,7 @@ COMMENT ON COLUMN public.appels_offres.conditions_participation_critere_appel_of
 
 
 --
--- TOC entry 5395 (class 0 OID 0)
+-- TOC entry 5445 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: COLUMN appels_offres.criteres_selection_critere_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -183,7 +183,7 @@ COMMENT ON COLUMN public.appels_offres.criteres_selection_critere_appel_offre IS
 
 
 --
--- TOC entry 238 (class 1259 OID 39960)
+-- TOC entry 238 (class 1259 OID 48666)
 -- Name: banques; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -191,7 +191,7 @@ CREATE TABLE public.banques (
     id_banque uuid NOT NULL,
     prestataire_id uuid NOT NULL,
     nom_banque character varying(150),
-    code_banque character varying(25),
+    code_banque character varying(25) NOT NULL,
     numero_compte_banque character varying(25),
     code_guichet_banque character varying(25),
     cle_rib_banque character varying(25),
@@ -211,7 +211,7 @@ CREATE TABLE public.banques (
 ALTER TABLE public.banques OWNER TO postgres;
 
 --
--- TOC entry 5396 (class 0 OID 0)
+-- TOC entry 5446 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.id_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -220,7 +220,7 @@ COMMENT ON COLUMN public.banques.id_banque IS 'Identifiant unique de la banque.'
 
 
 --
--- TOC entry 5397 (class 0 OID 0)
+-- TOC entry 5447 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.prestataire_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -229,7 +229,7 @@ COMMENT ON COLUMN public.banques.prestataire_id IS 'Identifiant du prestataire a
 
 
 --
--- TOC entry 5398 (class 0 OID 0)
+-- TOC entry 5448 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.nom_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -238,7 +238,7 @@ COMMENT ON COLUMN public.banques.nom_banque IS 'Nom de la banque';
 
 
 --
--- TOC entry 5399 (class 0 OID 0)
+-- TOC entry 5449 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.code_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -247,7 +247,7 @@ COMMENT ON COLUMN public.banques.code_banque IS 'Code banque';
 
 
 --
--- TOC entry 5400 (class 0 OID 0)
+-- TOC entry 5450 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.numero_compte_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -256,7 +256,7 @@ COMMENT ON COLUMN public.banques.numero_compte_banque IS 'Numéro de compte banc
 
 
 --
--- TOC entry 5401 (class 0 OID 0)
+-- TOC entry 5451 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.code_guichet_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -265,7 +265,7 @@ COMMENT ON COLUMN public.banques.code_guichet_banque IS 'Code guichet bancaire';
 
 
 --
--- TOC entry 5402 (class 0 OID 0)
+-- TOC entry 5452 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.cle_rib_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -274,7 +274,7 @@ COMMENT ON COLUMN public.banques.cle_rib_banque IS 'Clé RIB (Relevé d''Identit
 
 
 --
--- TOC entry 5403 (class 0 OID 0)
+-- TOC entry 5453 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.iban_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -283,7 +283,7 @@ COMMENT ON COLUMN public.banques.iban_banque IS 'International Bank Account Numb
 
 
 --
--- TOC entry 5404 (class 0 OID 0)
+-- TOC entry 5454 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.swift_bic_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -292,7 +292,7 @@ COMMENT ON COLUMN public.banques.swift_bic_banque IS 'SWIFT/BIC code';
 
 
 --
--- TOC entry 5405 (class 0 OID 0)
+-- TOC entry 5455 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.titulaire_compte_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -301,7 +301,7 @@ COMMENT ON COLUMN public.banques.titulaire_compte_banque IS 'Nom du titulaire du
 
 
 --
--- TOC entry 5406 (class 0 OID 0)
+-- TOC entry 5456 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.actif_banque; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -310,7 +310,7 @@ COMMENT ON COLUMN public.banques.actif_banque IS 'Permet de désactiver temporai
 
 
 --
--- TOC entry 5407 (class 0 OID 0)
+-- TOC entry 5457 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.created_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -319,7 +319,7 @@ COMMENT ON COLUMN public.banques.created_by IS 'Identifiant de l''utilisateur ay
 
 
 --
--- TOC entry 5408 (class 0 OID 0)
+-- TOC entry 5458 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.updated_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -328,7 +328,7 @@ COMMENT ON COLUMN public.banques.updated_by IS 'Identifiant de l''utilisateur ay
 
 
 --
--- TOC entry 5409 (class 0 OID 0)
+-- TOC entry 5459 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.deleted_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -337,7 +337,7 @@ COMMENT ON COLUMN public.banques.deleted_by IS 'Identifiant de l''utilisateur ay
 
 
 --
--- TOC entry 5410 (class 0 OID 0)
+-- TOC entry 5460 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.created_at; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -346,7 +346,7 @@ COMMENT ON COLUMN public.banques.created_at IS 'Date de création de la banque.'
 
 
 --
--- TOC entry 5411 (class 0 OID 0)
+-- TOC entry 5461 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.updated_at; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -355,7 +355,7 @@ COMMENT ON COLUMN public.banques.updated_at IS 'Date de la dernière mise à jou
 
 
 --
--- TOC entry 5412 (class 0 OID 0)
+-- TOC entry 5462 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: COLUMN banques.deleted_at; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -364,7 +364,7 @@ COMMENT ON COLUMN public.banques.deleted_at IS 'Date de suppression de la banque
 
 
 --
--- TOC entry 239 (class 1259 OID 39991)
+-- TOC entry 239 (class 1259 OID 48702)
 -- Name: capacites_techniques; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -391,7 +391,7 @@ CREATE TABLE public.capacites_techniques (
 ALTER TABLE public.capacites_techniques OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 38305)
+-- TOC entry 231 (class 1259 OID 48359)
 -- Name: caracteristiques_appels_offres; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -400,6 +400,7 @@ CREATE TABLE public.caracteristiques_appels_offres (
     appel_offre_id uuid NOT NULL,
     version_caracteristique_appel_offre integer DEFAULT 1 CONSTRAINT caracteristiques_appels_off_version_caracteristique_ap_not_null NOT NULL,
     date_demarrage_prevue_caracteristique_appel_offre date,
+    duree_estimee_jours_caracteristique_appel_offre integer,
     date_livraison_previsionnelle_caracteristique_appel_offre date,
     lieu_execution_caracteristique_appel_offre character varying(255),
     penalites_retard_journalier_caracteristique_appel_offre numeric(15,2),
@@ -408,6 +409,7 @@ CREATE TABLE public.caracteristiques_appels_offres (
     conditions_paiement_caracteristique_appel_offre text,
     modalites_execution_caracteristique_appel_offre text,
     documents_requis_caracteristique_appel_offre text,
+    is_active_caracteristique_appel_offre boolean DEFAULT true CONSTRAINT caracteristiques_appels_offres_is_active_not_null NOT NULL,
     autres_informations_caracteristique_appel_offre text,
     motif_modification_caracteristique_appel_offre text,
     created_by uuid NOT NULL,
@@ -416,16 +418,14 @@ CREATE TABLE public.caracteristiques_appels_offres (
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp(0) without time zone,
-    parent_id uuid,
-    is_active_caracteristique_appel_offre boolean,
-    duree_estimee_jours_caracteristique_appel_offre numeric
+    parent_id uuid
 );
 
 
 ALTER TABLE public.caracteristiques_appels_offres OWNER TO postgres;
 
 --
--- TOC entry 5413 (class 0 OID 0)
+-- TOC entry 5463 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: COLUMN caracteristiques_appels_offres.appel_offre_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -434,7 +434,7 @@ COMMENT ON COLUMN public.caracteristiques_appels_offres.appel_offre_id IS 'Ident
 
 
 --
--- TOC entry 5414 (class 0 OID 0)
+-- TOC entry 5464 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: COLUMN caracteristiques_appels_offres.version_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -443,7 +443,7 @@ COMMENT ON COLUMN public.caracteristiques_appels_offres.version_caracteristique_
 
 
 --
--- TOC entry 5415 (class 0 OID 0)
+-- TOC entry 5465 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: COLUMN caracteristiques_appels_offres.date_demarrage_prevue_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -452,106 +452,7 @@ COMMENT ON COLUMN public.caracteristiques_appels_offres.date_demarrage_prevue_ca
 
 
 --
--- TOC entry 5416 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.date_livraison_previsionnelle_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.date_livraison_previsionnelle_caracteristique_appel_offre IS 'Date prévue de livraison des travaux.';
-
-
---
--- TOC entry 5417 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.lieu_execution_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.lieu_execution_caracteristique_appel_offre IS 'Lieu prévu pour l''exécution des travaux.';
-
-
---
--- TOC entry 5418 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.penalites_retard_journalier_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.penalites_retard_journalier_caracteristique_appel_offre IS 'Montant de pénalité par jour de retard (ex: 50 000 FCFA/jour). Dissuasif.';
-
-
---
--- TOC entry 5419 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.montant_garantie_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.montant_garantie_caracteristique_appel_offre IS 'Caution de bonne exécution (souvent 5-10% du marché).';
-
-
---
--- TOC entry 5420 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.delai_garantie_jours_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.delai_garantie_jours_caracteristique_appel_offre IS 'Durée de garantie après réception (ex: 365 jours).';
-
-
---
--- TOC entry 5421 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.conditions_paiement_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.conditions_paiement_caracteristique_appel_offre IS 'Modalités (ex: 30% avance, 40% mi-parcours, 30% livraison).';
-
-
---
--- TOC entry 5422 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.modalites_execution_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.modalites_execution_caracteristique_appel_offre IS 'Exigences particulières.';
-
-
---
--- TOC entry 5423 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.documents_requis_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.documents_requis_caracteristique_appel_offre IS 'Liste des pièces à fournir (ex: [Attestation fiscale, Assurance, Caution]).';
-
-
---
--- TOC entry 5424 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.autres_informations_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.autres_informations_caracteristique_appel_offre IS 'Infos diverses.';
-
-
---
--- TOC entry 5425 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.motif_modification_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.motif_modification_caracteristique_appel_offre IS 'Pourquoi cette modification (ex: Demande du maître d''ouvrage, Erreur initiale, Force majeure).';
-
-
---
--- TOC entry 5426 (class 0 OID 0)
--- Dependencies: 231
--- Name: COLUMN caracteristiques_appels_offres.parent_id; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.caracteristiques_appels_offres.parent_id IS 'Identifiant du critère parent, si applicable.';
-
-
---
--- TOC entry 5427 (class 0 OID 0)
+-- TOC entry 5466 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: COLUMN caracteristiques_appels_offres.duree_estimee_jours_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -560,17 +461,125 @@ COMMENT ON COLUMN public.caracteristiques_appels_offres.duree_estimee_jours_cara
 
 
 --
--- TOC entry 234 (class 1259 OID 38432)
+-- TOC entry 5467 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.date_livraison_previsionnelle_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.date_livraison_previsionnelle_caracteristique_appel_offre IS 'Date prévue de livraison des travaux.';
+
+
+--
+-- TOC entry 5468 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.lieu_execution_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.lieu_execution_caracteristique_appel_offre IS 'Lieu prévu pour l''exécution des travaux.';
+
+
+--
+-- TOC entry 5469 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.penalites_retard_journalier_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.penalites_retard_journalier_caracteristique_appel_offre IS 'Montant de pénalité par jour de retard (ex: 50 000 FCFA/jour). Dissuasif.';
+
+
+--
+-- TOC entry 5470 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.montant_garantie_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.montant_garantie_caracteristique_appel_offre IS 'Caution de bonne exécution (souvent 5-10% du marché).';
+
+
+--
+-- TOC entry 5471 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.delai_garantie_jours_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.delai_garantie_jours_caracteristique_appel_offre IS 'Durée de garantie après réception (ex: 365 jours).';
+
+
+--
+-- TOC entry 5472 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.conditions_paiement_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.conditions_paiement_caracteristique_appel_offre IS 'Modalités (ex: 30% avance, 40% mi-parcours, 30% livraison).';
+
+
+--
+-- TOC entry 5473 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.modalites_execution_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.modalites_execution_caracteristique_appel_offre IS 'Exigences particulières.';
+
+
+--
+-- TOC entry 5474 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.documents_requis_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.documents_requis_caracteristique_appel_offre IS 'Liste des pièces à fournir (ex: [Attestation fiscale, Assurance, Caution]).';
+
+
+--
+-- TOC entry 5475 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.is_active_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.is_active_caracteristique_appel_offre IS 'Indique si cette version est active ou obsolète.';
+
+
+--
+-- TOC entry 5476 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.autres_informations_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.autres_informations_caracteristique_appel_offre IS 'Infos diverses.';
+
+
+--
+-- TOC entry 5477 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.motif_modification_caracteristique_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.motif_modification_caracteristique_appel_offre IS 'Pourquoi cette modification (ex: Demande du maître d''ouvrage, Erreur initiale, Force majeure).';
+
+
+--
+-- TOC entry 5478 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: COLUMN caracteristiques_appels_offres.parent_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.caracteristiques_appels_offres.parent_id IS 'Identifiant du critère parent, si applicable.';
+
+
+--
+-- TOC entry 234 (class 1259 OID 48495)
 -- Name: criteres_evaluations; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.criteres_evaluations (
     id_critere_evaluation uuid NOT NULL,
     lot_id uuid NOT NULL,
-    numero_critere_evaluation character varying(20),
-    libelle_critere_evaluation character varying(160),
+    numero_critere_evaluation character varying(20) NOT NULL,
+    libelle_critere_evaluation character varying(160) NOT NULL,
     description_critere_evaluation text,
-    note_reference_critere_evaluation numeric(8,2),
+    note_reference_critere_evaluation numeric(8,2) DEFAULT '100'::numeric NOT NULL,
     statut_critere_evaluation character varying(255) DEFAULT '1'::character varying NOT NULL,
     ordre_execution_critere_evaluation integer,
     created_by uuid NOT NULL,
@@ -586,7 +595,7 @@ CREATE TABLE public.criteres_evaluations (
 ALTER TABLE public.criteres_evaluations OWNER TO postgres;
 
 --
--- TOC entry 5428 (class 0 OID 0)
+-- TOC entry 5479 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: COLUMN criteres_evaluations.lot_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -595,7 +604,16 @@ COMMENT ON COLUMN public.criteres_evaluations.lot_id IS 'Identifiant du lot asso
 
 
 --
--- TOC entry 235 (class 1259 OID 38561)
+-- TOC entry 5480 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: COLUMN criteres_evaluations.note_reference_critere_evaluation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.criteres_evaluations.note_reference_critere_evaluation IS 'La note maximale qu''on peut obtenir';
+
+
+--
+-- TOC entry 237 (class 1259 OID 48635)
 -- Name: documents; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -626,79 +644,78 @@ CREATE TABLE public.documents (
 ALTER TABLE public.documents OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 39892)
+-- TOC entry 236 (class 1259 OID 48572)
 -- Name: evaluations; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.evaluations (
     id_evaluation uuid NOT NULL,
-    appel_offre_id uuid NOT NULL,
-    lot_id uuid NOT NULL,
-    prestataire_id uuid NOT NULL,
+    version integer DEFAULT 1 NOT NULL,
+    is_current boolean DEFAULT true NOT NULL,
     numero_evaluation character varying(50) NOT NULL,
     date_evaluation timestamp(0) without time zone,
-    statut_evaluation smallint DEFAULT '0'::smallint NOT NULL,
-    note_totale numeric(10,2) DEFAULT '0'::numeric NOT NULL,
+    resultat_evaluation numeric(10,2) DEFAULT '0'::numeric NOT NULL,
     note_maximale numeric(10,2) DEFAULT '0'::numeric NOT NULL,
     pourcentage_final numeric(5,2) DEFAULT '0'::numeric NOT NULL,
     rang integer,
+    respo_technique_evaluation json,
+    superviseur_evaluation json,
+    evalue_par json,
+    statut_evaluation smallint DEFAULT '0'::smallint NOT NULL,
     commentaire_general text,
     recommandation text,
     documents_evalues json,
     evaluateur_principal_id uuid,
     date_validation timestamp(0) without time zone,
+    motif_validation text,
     valide_par uuid,
+    date_rejet timestamp(0) without time zone,
     motif_rejet text,
-    created_by uuid NOT NULL,
+    rejete_par uuid,
+    created_by uuid,
     updated_by uuid,
     deleted_by uuid,
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp(0) without time zone
+    deleted_at timestamp(0) without time zone,
+    evaluation_parent_id uuid,
+    attribution_id uuid NOT NULL,
+    critere_evaluation_id uuid
 );
 
 
 ALTER TABLE public.evaluations OWNER TO postgres;
 
 --
--- TOC entry 5429 (class 0 OID 0)
--- Dependencies: 237
--- Name: COLUMN evaluations.appel_offre_id; Type: COMMENT; Schema: public; Owner: postgres
+-- TOC entry 5481 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.version; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.appel_offre_id IS 'Identifiant de l''appel d''offres.';
-
-
---
--- TOC entry 5430 (class 0 OID 0)
--- Dependencies: 237
--- Name: COLUMN evaluations.lot_id; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.evaluations.lot_id IS 'Identifiant du lot évalué.';
+COMMENT ON COLUMN public.evaluations.version IS 'Numéro de version de l''évaluation';
 
 
 --
--- TOC entry 5431 (class 0 OID 0)
--- Dependencies: 237
--- Name: COLUMN evaluations.prestataire_id; Type: COMMENT; Schema: public; Owner: postgres
+-- TOC entry 5482 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.is_current; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.prestataire_id IS 'Identifiant du prestataire évalué.';
+COMMENT ON COLUMN public.evaluations.is_current IS 'Indique si c''est la version active/courante';
 
 
 --
--- TOC entry 5432 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5483 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.numero_evaluation; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.numero_evaluation IS 'Numéro unique de l''évaluation';
+COMMENT ON COLUMN public.evaluations.numero_evaluation IS 'Numéro de l''évaluation (identique entre versions) - Généré automatiquement';
 
 
 --
--- TOC entry 5433 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5484 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.date_evaluation; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -706,44 +723,35 @@ COMMENT ON COLUMN public.evaluations.date_evaluation IS 'Date de réalisation de
 
 
 --
--- TOC entry 5434 (class 0 OID 0)
--- Dependencies: 237
--- Name: COLUMN evaluations.statut_evaluation; Type: COMMENT; Schema: public; Owner: postgres
+-- TOC entry 5485 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.resultat_evaluation; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.statut_evaluation IS '0=En attente, 1=En cours, 2=Terminée, 3=Validée, 4=Rejetée';
-
-
---
--- TOC entry 5435 (class 0 OID 0)
--- Dependencies: 237
--- Name: COLUMN evaluations.note_totale; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.evaluations.note_totale IS 'Note totale obtenue';
+COMMENT ON COLUMN public.evaluations.resultat_evaluation IS 'Note totale obtenue (somme des notes par critère)';
 
 
 --
--- TOC entry 5436 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5486 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.note_maximale; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.note_maximale IS 'Note maximale possible';
+COMMENT ON COLUMN public.evaluations.note_maximale IS 'Note maximale possible (somme des notes de référence des critères)';
 
 
 --
--- TOC entry 5437 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5487 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.pourcentage_final; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.evaluations.pourcentage_final IS 'Pourcentage final (note_totale/note_maximale * 100)';
+COMMENT ON COLUMN public.evaluations.pourcentage_final IS 'Pourcentage final (resultat_evaluation / note_maximale * 100)';
 
 
 --
--- TOC entry 5438 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5488 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.rang; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -751,8 +759,44 @@ COMMENT ON COLUMN public.evaluations.rang IS 'Rang parmi tous les prestataires �
 
 
 --
--- TOC entry 5439 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5489 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.respo_technique_evaluation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.respo_technique_evaluation IS 'Responsable technique: {nom_complet, email, telephone}';
+
+
+--
+-- TOC entry 5490 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.superviseur_evaluation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.superviseur_evaluation IS 'Superviseur: {nom_complet, email, telephone}';
+
+
+--
+-- TOC entry 5491 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.evalue_par; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.evalue_par IS 'Évaluateur: {nom_complet, email, telephone}';
+
+
+--
+-- TOC entry 5492 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.statut_evaluation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.statut_evaluation IS '0=En attente, 1=En cours, 2=Terminée, 3=Validée, 4=Rejetée';
+
+
+--
+-- TOC entry 5493 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.commentaire_general; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -760,8 +804,8 @@ COMMENT ON COLUMN public.evaluations.commentaire_general IS 'Commentaire génér
 
 
 --
--- TOC entry 5440 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5494 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.recommandation; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -769,8 +813,8 @@ COMMENT ON COLUMN public.evaluations.recommandation IS 'Recommandation pour l''a
 
 
 --
--- TOC entry 5441 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5495 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.documents_evalues; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -778,8 +822,8 @@ COMMENT ON COLUMN public.evaluations.documents_evalues IS 'Liste des documents c
 
 
 --
--- TOC entry 5442 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5496 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.evaluateur_principal_id; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -787,8 +831,8 @@ COMMENT ON COLUMN public.evaluations.evaluateur_principal_id IS 'Identifiant de 
 
 
 --
--- TOC entry 5443 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5497 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.date_validation; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -796,8 +840,17 @@ COMMENT ON COLUMN public.evaluations.date_validation IS 'Date de validation de l
 
 
 --
--- TOC entry 5444 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5498 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.motif_validation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.motif_validation IS 'Motif en cas de validation de l''évaluation';
+
+
+--
+-- TOC entry 5499 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.valide_par; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -805,8 +858,17 @@ COMMENT ON COLUMN public.evaluations.valide_par IS 'Identifiant de l''utilisateu
 
 
 --
--- TOC entry 5445 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5500 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.date_rejet; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.date_rejet IS 'Date du rejet de l''évaluation';
+
+
+--
+-- TOC entry 5501 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.motif_rejet; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -814,8 +876,17 @@ COMMENT ON COLUMN public.evaluations.motif_rejet IS 'Motif en cas de rejet de l'
 
 
 --
--- TOC entry 5446 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5502 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.rejete_par; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.rejete_par IS 'Identifiant de l''utilisateur ayant rejeté';
+
+
+--
+-- TOC entry 5503 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.created_by; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -823,8 +894,8 @@ COMMENT ON COLUMN public.evaluations.created_by IS 'Identifiant de l''utilisateu
 
 
 --
--- TOC entry 5447 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5504 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.updated_by; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -832,8 +903,8 @@ COMMENT ON COLUMN public.evaluations.updated_by IS 'Identifiant de l''utilisateu
 
 
 --
--- TOC entry 5448 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5505 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.deleted_by; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -841,8 +912,8 @@ COMMENT ON COLUMN public.evaluations.deleted_by IS 'Identifiant de l''utilisateu
 
 
 --
--- TOC entry 5449 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5506 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.created_at; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -850,8 +921,8 @@ COMMENT ON COLUMN public.evaluations.created_at IS 'Date de création';
 
 
 --
--- TOC entry 5450 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5507 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.updated_at; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -859,8 +930,8 @@ COMMENT ON COLUMN public.evaluations.updated_at IS 'Date de mise à jour';
 
 
 --
--- TOC entry 5451 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 5508 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: COLUMN evaluations.deleted_at; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -868,15 +939,42 @@ COMMENT ON COLUMN public.evaluations.deleted_at IS 'Date de suppression logique'
 
 
 --
--- TOC entry 244 (class 1259 OID 40228)
+-- TOC entry 5509 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.evaluation_parent_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.evaluation_parent_id IS 'Évaluation parente (chaînage des versions)';
+
+
+--
+-- TOC entry 5510 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: COLUMN evaluations.attribution_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations.attribution_id IS 'Référence vers l''attribution (prestataires_lots)';
+
+
+--
+-- TOC entry 245 (class 1259 OID 48956)
 -- Name: evaluations_lots_prestataires; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.evaluations_lots_prestataires (
+    id_evaluation_critere uuid NOT NULL,
     critere_evaluation_id uuid NOT NULL,
     evaluation_id uuid NOT NULL,
-    prestatiare_id uuid NOT NULL,
-    created_by uuid NOT NULL,
+    prestataire_id uuid NOT NULL,
+    note_obtenue numeric(8,2) DEFAULT '0'::numeric NOT NULL,
+    note_reference numeric(8,2) DEFAULT '0'::numeric NOT NULL,
+    note_finale numeric(8,2) DEFAULT '0'::numeric NOT NULL,
+    pourcentage numeric(5,2) DEFAULT '0'::numeric NOT NULL,
+    conforme boolean DEFAULT false NOT NULL,
+    observation text,
+    justification text,
+    documents_fournis json,
+    created_by uuid,
     updated_by uuid,
     deleted_by uuid,
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -888,7 +986,106 @@ CREATE TABLE public.evaluations_lots_prestataires (
 ALTER TABLE public.evaluations_lots_prestataires OWNER TO postgres;
 
 --
--- TOC entry 241 (class 1259 OID 40054)
+-- TOC entry 5511 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.critere_evaluation_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.critere_evaluation_id IS 'Critère d''évaluation';
+
+
+--
+-- TOC entry 5512 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.evaluation_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.evaluation_id IS 'Évaluation parente';
+
+
+--
+-- TOC entry 5513 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.prestataire_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.prestataire_id IS 'Prestataire évalué';
+
+
+--
+-- TOC entry 5514 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.note_obtenue; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.note_obtenue IS 'Note attribuée par l''évaluateur';
+
+
+--
+-- TOC entry 5515 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.note_reference; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.note_reference IS 'Note de référence du critère (copie pour historique)';
+
+
+--
+-- TOC entry 5516 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.note_finale; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.note_finale IS 'Note finale calculée (note_obtenue)';
+
+
+--
+-- TOC entry 5517 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.pourcentage; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.pourcentage IS 'Pourcentage (note_obtenue / note_reference * 100)';
+
+
+--
+-- TOC entry 5518 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.conforme; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.conforme IS 'Le critère est-il conforme?';
+
+
+--
+-- TOC entry 5519 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.observation; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.observation IS 'Observation sur ce critère';
+
+
+--
+-- TOC entry 5520 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.justification; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.justification IS 'Justification de la note attribuée';
+
+
+--
+-- TOC entry 5521 (class 0 OID 0)
+-- Dependencies: 245
+-- Name: COLUMN evaluations_lots_prestataires.documents_fournis; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.evaluations_lots_prestataires.documents_fournis IS 'Documents fournis pour ce critère';
+
+
+--
+-- TOC entry 241 (class 1259 OID 48765)
 -- Name: evaluations_prestataires; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -918,7 +1115,123 @@ CREATE TABLE public.evaluations_prestataires (
 ALTER TABLE public.evaluations_prestataires OWNER TO postgres;
 
 --
--- TOC entry 224 (class 1259 OID 38106)
+-- TOC entry 242 (class 1259 OID 48797)
+-- Name: factures; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.factures (
+    id_facture uuid NOT NULL,
+    proforma_id uuid NOT NULL,
+    numero_facture character varying(30) NOT NULL,
+    montant_facture numeric(15,2) NOT NULL,
+    date_facture date NOT NULL,
+    date_reception_facture date NOT NULL,
+    statut_facture character varying(255) DEFAULT 'en_attente'::character varying NOT NULL,
+    comment_facture text,
+    created_by uuid,
+    updated_by uuid,
+    deleted_by uuid,
+    created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp(0) without time zone,
+    CONSTRAINT factures_statut_facture_check CHECK (((statut_facture)::text = ANY ((ARRAY['en_attente'::character varying, 'validee'::character varying, 'rejetee'::character varying, 'payee'::character varying, 'partiellement_payee'::character varying, 'annulee'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.factures OWNER TO postgres;
+
+--
+-- TOC entry 5522 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.id_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.id_facture IS 'Identifiant unique de la facture au format UUID. Clé primaire générée automatiquement pour garantir l''unicité à travers tous les systèmes.';
+
+
+--
+-- TOC entry 5523 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.numero_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.numero_facture IS 'Numéro unique de la facture attribué par le prestataire. Format attendu: FAC-YYYY-XXXXX ou selon la nomenclature du prestataire. Sert de référence officielle dans tous les échanges et documents comptables.';
+
+
+--
+-- TOC entry 5524 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.montant_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.montant_facture IS 'Montant total TTC de la facture en FCFA. Doit correspondre au montant de la proforma validée (montant_retenu + TVA - remise + pénalités). Précision de 2 décimales pour les calculs comptables. Maximum: 9 999 999 999 999,99 FCFA.';
+
+
+--
+-- TOC entry 5525 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.date_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.date_facture IS 'Date d''émission de la facture par le prestataire. Date figurant sur le document officiel de facturation. Sert de référence pour le calcul des délais de paiement légaux.';
+
+
+--
+-- TOC entry 5526 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.date_reception_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.date_reception_facture IS 'Date de réception effective de la facture par le service gestionnaire. Point de départ du délai de traitement administratif. Important pour le respect des délais de paiement réglementaires (généralement 30 jours en marchés publics).';
+
+
+--
+-- TOC entry 5527 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.statut_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.statut_facture IS 'État actuel de la facture dans le workflow de traitement. Valeurs possibles: en_attente (réception, vérification en cours), validee (conforme, prête pour paiement), rejetee (non conforme, retournée au prestataire), payee (règlement total effectué), partiellement_payee (acompte versé), annulee (facture invalidée).';
+
+
+--
+-- TOC entry 5528 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.comment_facture; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.comment_facture IS 'Observations, remarques ou notes internes concernant la facture. Peut contenir: motifs de rejet, instructions particulières, références de documents complémentaires, historique des échanges avec le prestataire.';
+
+
+--
+-- TOC entry 5529 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.created_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.created_at IS 'Date et heure de création de l''enregistrement dans la base de données. Générée automatiquement lors de l''insertion. Format: YYYY-MM-DD HH:MM:SS.';
+
+
+--
+-- TOC entry 5530 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.updated_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.updated_at IS 'Date et heure de la dernière modification de l''enregistrement. Mise à jour automatiquement par Eloquent à chaque sauvegarde. Permet de suivre la fraîcheur des données.';
+
+
+--
+-- TOC entry 5531 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: COLUMN factures.deleted_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.factures.deleted_at IS 'Date de suppression logique (soft delete). Si non NULL, la facture est considérée comme supprimée mais reste en base pour archivage et audit. Permet la restauration ultérieure si nécessaire.';
+
+
+--
+-- TOC entry 224 (class 1259 OID 48160)
 -- Name: failed_jobs; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -936,7 +1249,7 @@ CREATE TABLE public.failed_jobs (
 ALTER TABLE public.failed_jobs OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 38390)
+-- TOC entry 233 (class 1259 OID 48449)
 -- Name: lots; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -948,6 +1261,7 @@ CREATE TABLE public.lots (
     description_critere text,
     specifications_techniques text,
     motif_retrait text,
+    version_lot integer DEFAULT 1 NOT NULL,
     date_attribution date,
     date_debut_prevue timestamp(0) without time zone,
     date_fin_prevue timestamp(0) without time zone,
@@ -963,16 +1277,15 @@ CREATE TABLE public.lots (
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp(0) without time zone,
     parent_id uuid,
-    version_lot integer,
     CONSTRAINT lots_attribution_lot_check CHECK (((attribution_lot)::text = ANY ((ARRAY['0'::character varying, '1'::character varying])::text[]))),
-    CONSTRAINT lots_statut_lol_check CHECK (((statut_lot)::text = ANY ((ARRAY['0'::character varying, '1'::character varying])::text[])))
+    CONSTRAINT lots_statut_lot_check CHECK (((statut_lot)::text = ANY ((ARRAY['0'::character varying, '1'::character varying])::text[])))
 );
 
 
 ALTER TABLE public.lots OWNER TO postgres;
 
 --
--- TOC entry 5452 (class 0 OID 0)
+-- TOC entry 5532 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: COLUMN lots.appel_offre_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -981,7 +1294,7 @@ COMMENT ON COLUMN public.lots.appel_offre_id IS 'Identifiant de l''appel d''offr
 
 
 --
--- TOC entry 5453 (class 0 OID 0)
+-- TOC entry 5533 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: COLUMN lots.parent_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -990,7 +1303,7 @@ COMMENT ON COLUMN public.lots.parent_id IS 'Identifiant du lot principal associ�
 
 
 --
--- TOC entry 220 (class 1259 OID 34844)
+-- TOC entry 220 (class 1259 OID 48086)
 -- Name: migrations; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1004,7 +1317,7 @@ CREATE TABLE public.migrations (
 ALTER TABLE public.migrations OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1259 OID 34843)
+-- TOC entry 219 (class 1259 OID 48085)
 -- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1020,7 +1333,7 @@ CREATE SEQUENCE public.migrations_id_seq
 ALTER SEQUENCE public.migrations_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5454 (class 0 OID 0)
+-- TOC entry 5534 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -1029,12 +1342,13 @@ ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
 
 
 --
--- TOC entry 242 (class 1259 OID 40086)
+-- TOC entry 243 (class 1259 OID 48837)
 -- Name: paiements; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.paiements (
     id_paiement uuid NOT NULL,
+    facture_id uuid NOT NULL,
     banque_id uuid NOT NULL,
     montant_net_paye_paiement numeric(20,2),
     statut_paiement smallint,
@@ -1055,7 +1369,106 @@ CREATE TABLE public.paiements (
 ALTER TABLE public.paiements OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1259 OID 38097)
+-- TOC entry 5535 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.id_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.id_paiement IS 'Identifiant unique du paiement au format UUID. Clé primaire générée automatiquement garantissant l''unicité absolue de chaque transaction de paiement dans le système.';
+
+
+--
+-- TOC entry 5536 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.montant_net_paye_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.montant_net_paye_paiement IS 'Montant effectivement versé au prestataire en FCFA. Représente la somme nette créditée sur le compte bancaire. Peut différer du montant facturé en cas de: retenues de garantie, pénalités déduites, acomptes, ou paiements partiels. Précision de 2 décimales. Maximum: 99 999 999 999 999 999,99 FCFA.';
+
+
+--
+-- TOC entry 5537 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.statut_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.statut_paiement IS 'Code numérique indiquant l''état du paiement dans le workflow. Valeurs suggérées: 0=En attente de validation, 1=Validé/Approuvé, 2=En cours de traitement bancaire, 3=Payé/Exécuté, 4=Rejeté, 5=Annulé. Permet le suivi du cycle de vie complet du paiement.';
+
+
+--
+-- TOC entry 5538 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.date_validation_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.date_validation_paiement IS 'Date et heure exactes de la validation/approbation du paiement par l''autorité compétente. Marque le moment où le paiement est autorisé pour exécution. NULL tant que le paiement n''est pas validé. Important pour les délais de traitement et l''audit.';
+
+
+--
+-- TOC entry 5539 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.motif_rejet_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.motif_rejet_paiement IS 'Explication détaillée en cas de rejet du paiement. Doit préciser: la raison du rejet (pièces manquantes, erreur de montant, RIB invalide, etc.), les actions correctives requises, et les références réglementaires si applicable. Obligatoire si statut_paiement = Rejeté.';
+
+
+--
+-- TOC entry 5540 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.observations_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.observations_paiement IS 'Notes et commentaires libres concernant le paiement. Peut inclure: références du virement bancaire, numéro de bordereau, instructions particulières, historique des relances, ou toute information utile au suivi. Champ flexible pour documentation interne.';
+
+
+--
+-- TOC entry 5541 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.valide_par; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.valide_par IS 'Identifiant de l''utilisateur (ordonnateur ou responsable financier) ayant validé/approuvé le paiement. Représente l''autorité ayant donné le feu vert pour l''exécution du règlement. Essentiel pour la chaîne de responsabilité et la conformité aux procédures de contrôle interne.';
+
+
+--
+-- TOC entry 5542 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.paye_par; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.paye_par IS 'Identifiant de l''utilisateur (comptable ou trésorier) ayant effectivement exécuté le paiement. Distingué du validateur car souvent deux personnes différentes (séparation des tâches). Trace qui a physiquement déclenché le virement ou émis le chèque.';
+
+
+--
+-- TOC entry 5543 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.created_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.created_at IS 'Date et heure de création de l''enregistrement du paiement. Horodatage automatique lors de l''insertion. Représente le moment où la demande de paiement a été enregistrée, pas nécessairement la date d''exécution effective.';
+
+
+--
+-- TOC entry 5544 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.updated_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.updated_at IS 'Date et heure de la dernière modification de l''enregistrement. Mis à jour automatiquement par Eloquent. Permet de connaître la fraîcheur des données et de détecter les modifications récentes.';
+
+
+--
+-- TOC entry 5545 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.deleted_at; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.deleted_at IS 'Date de suppression logique (soft delete) du paiement. Si renseignée, le paiement est considéré comme annulé/archivé mais reste en base pour la comptabilité et l''audit. Les paiements financiers ne doivent JAMAIS être supprimés définitivement pour conformité légale.';
+
+
+--
+-- TOC entry 223 (class 1259 OID 48151)
 -- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1069,7 +1482,7 @@ CREATE TABLE public.password_reset_tokens (
 ALTER TABLE public.password_reset_tokens OWNER TO postgres;
 
 --
--- TOC entry 226 (class 1259 OID 38138)
+-- TOC entry 226 (class 1259 OID 48192)
 -- Name: permissions; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1099,7 +1512,7 @@ CREATE TABLE public.permissions (
 ALTER TABLE public.permissions OWNER TO postgres;
 
 --
--- TOC entry 5455 (class 0 OID 0)
+-- TOC entry 5546 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: TABLE permissions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1108,7 +1521,7 @@ COMMENT ON TABLE public.permissions IS 'Table des permissions du système de con
 
 
 --
--- TOC entry 5456 (class 0 OID 0)
+-- TOC entry 5547 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.name; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1117,7 +1530,7 @@ COMMENT ON COLUMN public.permissions.name IS 'Nom affiché de la permission';
 
 
 --
--- TOC entry 5457 (class 0 OID 0)
+-- TOC entry 5548 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.slug; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1126,7 +1539,7 @@ COMMENT ON COLUMN public.permissions.slug IS 'Identifiant unique pour la permiss
 
 
 --
--- TOC entry 5458 (class 0 OID 0)
+-- TOC entry 5549 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.description; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1135,7 +1548,7 @@ COMMENT ON COLUMN public.permissions.description IS 'Description détaillée de 
 
 
 --
--- TOC entry 5459 (class 0 OID 0)
+-- TOC entry 5550 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.resource; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1144,7 +1557,7 @@ COMMENT ON COLUMN public.permissions.resource IS 'Entité/ressource concernée (
 
 
 --
--- TOC entry 5460 (class 0 OID 0)
+-- TOC entry 5551 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.action; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1153,7 +1566,7 @@ COMMENT ON COLUMN public.permissions.action IS 'Action autorisée sur la ressour
 
 
 --
--- TOC entry 5461 (class 0 OID 0)
+-- TOC entry 5552 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.guard_name; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1162,7 +1575,7 @@ COMMENT ON COLUMN public.permissions.guard_name IS 'Guard utilisé (web, api, et
 
 
 --
--- TOC entry 5462 (class 0 OID 0)
+-- TOC entry 5553 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.category; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1171,7 +1584,7 @@ COMMENT ON COLUMN public.permissions.category IS 'Catégorie de permission pour 
 
 
 --
--- TOC entry 5463 (class 0 OID 0)
+-- TOC entry 5554 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.priority; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1180,7 +1593,7 @@ COMMENT ON COLUMN public.permissions.priority IS 'Priorité de la permission (0-
 
 
 --
--- TOC entry 5464 (class 0 OID 0)
+-- TOC entry 5555 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.is_active; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1189,7 +1602,7 @@ COMMENT ON COLUMN public.permissions.is_active IS 'Permission active/inactive';
 
 
 --
--- TOC entry 5465 (class 0 OID 0)
+-- TOC entry 5556 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.is_system; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1198,7 +1611,7 @@ COMMENT ON COLUMN public.permissions.is_system IS 'Permission système (non modi
 
 
 --
--- TOC entry 5466 (class 0 OID 0)
+-- TOC entry 5557 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.conditions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1207,7 +1620,7 @@ COMMENT ON COLUMN public.permissions.conditions IS 'Conditions supplémentaires 
 
 
 --
--- TOC entry 5467 (class 0 OID 0)
+-- TOC entry 5558 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.created_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1216,7 +1629,7 @@ COMMENT ON COLUMN public.permissions.created_by IS 'Membres qui a créé la perm
 
 
 --
--- TOC entry 5468 (class 0 OID 0)
+-- TOC entry 5559 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.updated_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1225,7 +1638,7 @@ COMMENT ON COLUMN public.permissions.updated_by IS 'Dernier membres ayant modifi
 
 
 --
--- TOC entry 5469 (class 0 OID 0)
+-- TOC entry 5560 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.last_used_at; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1234,7 +1647,7 @@ COMMENT ON COLUMN public.permissions.last_used_at IS 'Dernière utilisation de l
 
 
 --
--- TOC entry 225 (class 1259 OID 38123)
+-- TOC entry 225 (class 1259 OID 48177)
 -- Name: personal_access_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1255,7 +1668,7 @@ CREATE TABLE public.personal_access_tokens (
 ALTER TABLE public.personal_access_tokens OWNER TO postgres;
 
 --
--- TOC entry 236 (class 1259 OID 39854)
+-- TOC entry 235 (class 1259 OID 48534)
 -- Name: prestataires; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1285,8 +1698,8 @@ CREATE TABLE public.prestataires (
 ALTER TABLE public.prestataires OWNER TO postgres;
 
 --
--- TOC entry 5470 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5561 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.numero_cc_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1294,8 +1707,8 @@ COMMENT ON COLUMN public.prestataires.numero_cc_prestataire IS 'Numéro de la ca
 
 
 --
--- TOC entry 5471 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5562 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.numero_rccm_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1303,8 +1716,8 @@ COMMENT ON COLUMN public.prestataires.numero_rccm_prestataire IS 'Numéro du Reg
 
 
 --
--- TOC entry 5472 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5563 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.telephone_principal_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1312,8 +1725,8 @@ COMMENT ON COLUMN public.prestataires.telephone_principal_prestataire IS 'Numér
 
 
 --
--- TOC entry 5473 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5564 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.telephone_secondaire_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1321,8 +1734,8 @@ COMMENT ON COLUMN public.prestataires.telephone_secondaire_prestataire IS 'Numé
 
 
 --
--- TOC entry 5474 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5565 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.adresse_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1330,8 +1743,8 @@ COMMENT ON COLUMN public.prestataires.adresse_prestataire IS 'Adresse physique d
 
 
 --
--- TOC entry 5475 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 5566 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: COLUMN prestataires.representant_legal_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1339,75 +1752,182 @@ COMMENT ON COLUMN public.prestataires.representant_legal_prestataire IS 'Informa
 
 
 --
--- TOC entry 243 (class 1259 OID 40174)
+-- TOC entry 244 (class 1259 OID 48875)
 -- Name: prestataires_lots; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.prestataires_lots (
+    id_attribution uuid NOT NULL,
     prestataire_id uuid NOT NULL,
     lot_id uuid NOT NULL,
     proforma_id uuid NOT NULL,
+    version_attribution integer DEFAULT 1 NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    numero_attribution character varying(30),
+    date_attribution date,
+    date_debut_prevue date,
+    date_fin_prevue date,
     date_debut_reelle date,
     date_fin_reelle date,
     statut_attribution smallint DEFAULT '0'::smallint NOT NULL,
     motif_suspension text,
     date_suspension timestamp(0) without time zone,
+    date_reprise_prevue date,
+    date_reprise_reelle date,
     motif_retrait text,
     date_retrait timestamp(0) without time zone,
+    type_retrait character varying(255),
     jours_retard integer DEFAULT 0 NOT NULL,
+    taux_penalites numeric(5,2) DEFAULT '0'::numeric NOT NULL,
     penalites_appliquees numeric(15,2) DEFAULT '0'::numeric NOT NULL,
+    penalites_payees numeric(15,2) DEFAULT '0'::numeric NOT NULL,
     pourcentage_avancement numeric(5,2) DEFAULT '0'::numeric NOT NULL,
+    montant_engage numeric(15,2) DEFAULT '0'::numeric NOT NULL,
+    montant_paye numeric(15,2) DEFAULT '0'::numeric NOT NULL,
     observations text,
+    conditions_particulieres text,
     created_by uuid,
     updated_by uuid,
     deleted_by uuid,
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp(0) without time zone
+    deleted_at timestamp(0) without time zone,
+    parent_attribution_id uuid,
+    CONSTRAINT prestataires_lots_type_retrait_check CHECK (((type_retrait)::text = ANY ((ARRAY['volontaire'::character varying, 'force'::character varying, 'resiliation'::character varying, 'abandon'::character varying])::text[])))
 );
 
 
 ALTER TABLE public.prestataires_lots OWNER TO postgres;
 
 --
--- TOC entry 5476 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5567 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.id_attribution; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.id_attribution IS 'Identifiant unique de l''attribution';
+
+
+--
+-- TOC entry 5568 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.prestataire_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.prestataire_id IS 'Prestataire attributaire';
+
+
+--
+-- TOC entry 5569 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.lot_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.lot_id IS 'Lot concerné';
+
+
+--
+-- TOC entry 5570 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.proforma_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.proforma_id IS 'Proforma associée';
+
+
+--
+-- TOC entry 5571 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.version_attribution; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.version_attribution IS 'Version de l''attribution (incrémente à chaque réattribution)';
+
+
+--
+-- TOC entry 5572 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.is_active; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.is_active IS 'TRUE = attribution active, FALSE = historique';
+
+
+--
+-- TOC entry 5573 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.numero_attribution; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.numero_attribution IS 'Numéro unique (ex: ATT-2025-001)';
+
+
+--
+-- TOC entry 5574 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.date_attribution; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.date_attribution IS 'Date officielle d''attribution';
+
+
+--
+-- TOC entry 5575 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.date_debut_prevue; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.date_debut_prevue IS 'Date de début prévue';
+
+
+--
+-- TOC entry 5576 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.date_fin_prevue; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.date_fin_prevue IS 'Date de fin prévue';
+
+
+--
+-- TOC entry 5577 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_debut_reelle; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.date_debut_reelle IS 'Date réelle de début des travaux';
+COMMENT ON COLUMN public.prestataires_lots.date_debut_reelle IS 'Date réelle de début';
 
 
 --
--- TOC entry 5477 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5578 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_fin_reelle; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.date_fin_reelle IS 'Date réelle de fin des travaux';
+COMMENT ON COLUMN public.prestataires_lots.date_fin_reelle IS 'Date réelle de fin';
 
 
 --
--- TOC entry 5478 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5579 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.statut_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.statut_attribution IS '0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé';
+COMMENT ON COLUMN public.prestataires_lots.statut_attribution IS '0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé, 5=Annulé';
 
 
 --
--- TOC entry 5479 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5580 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.motif_suspension; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.motif_suspension IS 'Raison de la suspension des travaux';
+COMMENT ON COLUMN public.prestataires_lots.motif_suspension IS 'Raison de la suspension';
 
 
 --
--- TOC entry 5480 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5581 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_suspension; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1415,122 +1935,153 @@ COMMENT ON COLUMN public.prestataires_lots.date_suspension IS 'Date de suspensio
 
 
 --
--- TOC entry 5481 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5582 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.date_reprise_prevue; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.date_reprise_prevue IS 'Date prévue de reprise';
+
+
+--
+-- TOC entry 5583 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.date_reprise_reelle; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.date_reprise_reelle IS 'Date réelle de reprise';
+
+
+--
+-- TOC entry 5584 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.motif_retrait; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.motif_retrait IS 'Raison du retrait du lot au prestataire';
+COMMENT ON COLUMN public.prestataires_lots.motif_retrait IS 'Raison du retrait';
 
 
 --
--- TOC entry 5482 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5585 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_retrait; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.date_retrait IS 'Date de retrait';
+COMMENT ON COLUMN public.prestataires_lots.date_retrait IS 'Date du retrait';
 
 
 --
--- TOC entry 5483 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5586 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.type_retrait; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.type_retrait IS 'Type de retrait';
+
+
+--
+-- TOC entry 5587 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.jours_retard; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.jours_retard IS 'Nombre de jours de retard accumulés';
+COMMENT ON COLUMN public.prestataires_lots.jours_retard IS 'Jours de retard accumulés';
 
 
 --
--- TOC entry 5484 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5588 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.taux_penalites; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.taux_penalites IS 'Taux de pénalités (%)';
+
+
+--
+-- TOC entry 5589 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.penalites_appliquees; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.penalites_appliquees IS 'Montant total des pénalités appliquées';
+COMMENT ON COLUMN public.prestataires_lots.penalites_appliquees IS 'Montant des pénalités';
 
 
 --
--- TOC entry 5485 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5590 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.penalites_payees; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.penalites_payees IS 'Pénalités payées';
+
+
+--
+-- TOC entry 5591 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.pourcentage_avancement; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.pourcentage_avancement IS 'Pourcentage d''avancement des travaux (0-100)';
+COMMENT ON COLUMN public.prestataires_lots.pourcentage_avancement IS 'Avancement (0-100%)';
 
 
 --
--- TOC entry 5486 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 5592 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.montant_engage; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.montant_engage IS 'Montant engagé';
+
+
+--
+-- TOC entry 5593 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.montant_paye; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.prestataires_lots.montant_paye IS 'Montant payé';
+
+
+--
+-- TOC entry 5594 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: COLUMN prestataires_lots.observations; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.observations IS 'Observations et notes sur l''exécution';
+COMMENT ON COLUMN public.prestataires_lots.observations IS 'Observations';
 
 
 --
--- TOC entry 5487 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.created_by; Type: COMMENT; Schema: public; Owner: postgres
+-- TOC entry 5595 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.conditions_particulieres; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.created_by IS 'Utilisateur ayant créé l''attribution';
-
-
---
--- TOC entry 5488 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.updated_by; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.prestataires_lots.updated_by IS 'Utilisateur ayant mis à jour';
+COMMENT ON COLUMN public.prestataires_lots.conditions_particulieres IS 'Conditions particulières';
 
 
 --
--- TOC entry 5489 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.deleted_by; Type: COMMENT; Schema: public; Owner: postgres
+-- TOC entry 5596 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: COLUMN prestataires_lots.parent_attribution_id; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.prestataires_lots.deleted_by IS 'Utilisateur ayant retiré/supprimé';
-
-
---
--- TOC entry 5490 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.created_at; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.prestataires_lots.created_at IS 'Date de création de l''attribution';
+COMMENT ON COLUMN public.prestataires_lots.parent_attribution_id IS 'Attribution précédente (chaînage)';
 
 
 --
--- TOC entry 5491 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.updated_at; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.prestataires_lots.updated_at IS 'Date de dernière mise à jour';
-
-
---
--- TOC entry 5492 (class 0 OID 0)
--- Dependencies: 243
--- Name: COLUMN prestataires_lots.deleted_at; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN public.prestataires_lots.deleted_at IS 'Date de suppression logique (retrait)';
-
-
---
--- TOC entry 232 (class 1259 OID 38344)
+-- TOC entry 232 (class 1259 OID 48400)
 -- Name: proformas; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.proformas (
     id_proforma uuid NOT NULL,
     version_proforma integer DEFAULT 1 NOT NULL,
-    date_proforma date,
+    numero_proforma character varying(20) NOT NULL,
+    date_proforma date NOT NULL,
+    date_debut_validee_proforma date CONSTRAINT proformas_date_debut_validee_not_null NOT NULL,
+    date_redemarrage_proforma date CONSTRAINT proformas_date_redemarrage_not_null NOT NULL,
+    date_fin_validee_proforma date CONSTRAINT proformas_date_fin_validee_not_null NOT NULL,
     montant_retenu_proforma numeric(15,2) DEFAULT '0'::numeric NOT NULL,
     taxe_montant numeric(15,2) DEFAULT '0'::numeric NOT NULL,
     remise_montant_proforma numeric(15,2) DEFAULT '0'::numeric NOT NULL,
@@ -1544,18 +2095,14 @@ CREATE TABLE public.proformas (
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp(0) without time zone,
-    parent_id uuid,
-    numero_proforma character varying,
-    date_fin_validee_proforma date,
-    date_debut_validee_proforma date,
-    date_redemarrage_proforma date
+    parent_id uuid
 );
 
 
 ALTER TABLE public.proformas OWNER TO postgres;
 
 --
--- TOC entry 5493 (class 0 OID 0)
+-- TOC entry 5597 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.version_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1564,7 +2111,16 @@ COMMENT ON COLUMN public.proformas.version_proforma IS 'Version du critère pour
 
 
 --
--- TOC entry 5494 (class 0 OID 0)
+-- TOC entry 5598 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.numero_proforma; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.numero_proforma IS ' Référence dans tous les documents. Généré automatiquement dans le controller';
+
+
+--
+-- TOC entry 5599 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.date_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1573,7 +2129,52 @@ COMMENT ON COLUMN public.proformas.date_proforma IS 'Date de création de la pro
 
 
 --
--- TOC entry 5495 (class 0 OID 0)
+-- TOC entry 5600 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.date_debut_validee_proforma; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.date_debut_validee_proforma IS 'Date du début valitéé.';
+
+
+--
+-- TOC entry 5601 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.date_redemarrage_proforma; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.date_redemarrage_proforma IS 'Date de redemarrage validée.';
+
+
+--
+-- TOC entry 5602 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.date_fin_validee_proforma; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.date_fin_validee_proforma IS 'Date  de fin validée.';
+
+
+--
+-- TOC entry 5603 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.taxe_montant; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.taxe_montant IS 'TVA par defaut 18% du montent retenu';
+
+
+--
+-- TOC entry 5604 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: COLUMN proformas.remise_montant_proforma; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.proformas.remise_montant_proforma IS 'La rémise (reduction)';
+
+
+--
+-- TOC entry 5605 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.modalite_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1582,7 +2183,7 @@ COMMENT ON COLUMN public.proformas.modalite_proforma IS 'Modalités de paiement 
 
 
 --
--- TOC entry 5496 (class 0 OID 0)
+-- TOC entry 5606 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.penalites_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1591,7 +2192,7 @@ COMMENT ON COLUMN public.proformas.penalites_proforma IS 'Pénalités associées
 
 
 --
--- TOC entry 5497 (class 0 OID 0)
+-- TOC entry 5607 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.motif_modification_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1600,7 +2201,7 @@ COMMENT ON COLUMN public.proformas.motif_modification_proforma IS 'Pourquoi cett
 
 
 --
--- TOC entry 5498 (class 0 OID 0)
+-- TOC entry 5608 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.actif_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1609,7 +2210,7 @@ COMMENT ON COLUMN public.proformas.actif_proforma IS 'Permet de désactiver temp
 
 
 --
--- TOC entry 5499 (class 0 OID 0)
+-- TOC entry 5609 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.parent_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1618,7 +2219,7 @@ COMMENT ON COLUMN public.proformas.parent_id IS 'Identifiant du critère parent,
 
 
 --
--- TOC entry 227 (class 1259 OID 38178)
+-- TOC entry 227 (class 1259 OID 48232)
 -- Name: role_permissions; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1643,7 +2244,7 @@ CREATE TABLE public.role_permissions (
 ALTER TABLE public.role_permissions OWNER TO postgres;
 
 --
--- TOC entry 5500 (class 0 OID 0)
+-- TOC entry 5610 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: TABLE role_permissions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1652,7 +2253,7 @@ COMMENT ON TABLE public.role_permissions IS 'Table pivot : association entre rô
 
 
 --
--- TOC entry 5501 (class 0 OID 0)
+-- TOC entry 5611 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.role_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1661,7 +2262,7 @@ COMMENT ON COLUMN public.role_permissions.role_id IS 'ID du rôle';
 
 
 --
--- TOC entry 5502 (class 0 OID 0)
+-- TOC entry 5612 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.permission_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1670,7 +2271,7 @@ COMMENT ON COLUMN public.role_permissions.permission_id IS 'ID de la permission'
 
 
 --
--- TOC entry 5503 (class 0 OID 0)
+-- TOC entry 5613 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.attribue_par; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1679,7 +2280,7 @@ COMMENT ON COLUMN public.role_permissions.attribue_par IS 'ID de l''utilisateur 
 
 
 --
--- TOC entry 5504 (class 0 OID 0)
+-- TOC entry 5614 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.attribue_le; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1688,7 +2289,7 @@ COMMENT ON COLUMN public.role_permissions.attribue_le IS 'Date et heure d''attri
 
 
 --
--- TOC entry 5505 (class 0 OID 0)
+-- TOC entry 5615 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.expire_le; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1697,7 +2298,7 @@ COMMENT ON COLUMN public.role_permissions.expire_le IS 'Date d''expiration (pour
 
 
 --
--- TOC entry 5506 (class 0 OID 0)
+-- TOC entry 5616 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.actif; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1706,7 +2307,7 @@ COMMENT ON COLUMN public.role_permissions.actif IS 'Permission active pour ce r�
 
 
 --
--- TOC entry 5507 (class 0 OID 0)
+-- TOC entry 5617 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.conditions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1715,7 +2316,7 @@ COMMENT ON COLUMN public.role_permissions.conditions IS 'Conditions spécifiques
 
 
 --
--- TOC entry 5508 (class 0 OID 0)
+-- TOC entry 5618 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.notes; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1724,7 +2325,7 @@ COMMENT ON COLUMN public.role_permissions.notes IS 'Notes sur l''attribution de 
 
 
 --
--- TOC entry 221 (class 1259 OID 38041)
+-- TOC entry 221 (class 1259 OID 48095)
 -- Name: roles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1744,7 +2345,7 @@ CREATE TABLE public.roles (
 ALTER TABLE public.roles OWNER TO postgres;
 
 --
--- TOC entry 228 (class 1259 OID 38228)
+-- TOC entry 228 (class 1259 OID 48282)
 -- Name: role_permissions_actifs; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1770,7 +2371,7 @@ CREATE VIEW public.role_permissions_actifs AS
 ALTER VIEW public.role_permissions_actifs OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 40022)
+-- TOC entry 240 (class 1259 OID 48733)
 -- Name: situations_financieres; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1799,7 +2400,7 @@ CREATE TABLE public.situations_financieres (
 ALTER TABLE public.situations_financieres OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 38233)
+-- TOC entry 229 (class 1259 OID 48287)
 -- Name: types_appels_offres; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1826,7 +2427,7 @@ CREATE TABLE public.types_appels_offres (
 ALTER TABLE public.types_appels_offres OWNER TO postgres;
 
 --
--- TOC entry 5509 (class 0 OID 0)
+-- TOC entry 5619 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.libelle_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1835,7 +2436,7 @@ COMMENT ON COLUMN public.types_appels_offres.libelle_type_appel_offre IS 'Libell
 
 
 --
--- TOC entry 5510 (class 0 OID 0)
+-- TOC entry 5620 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.code_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1844,7 +2445,7 @@ COMMENT ON COLUMN public.types_appels_offres.code_type_appel_offre IS 'Code cour
 
 
 --
--- TOC entry 5511 (class 0 OID 0)
+-- TOC entry 5621 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.valeur_minimuim_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1853,7 +2454,7 @@ COMMENT ON COLUMN public.types_appels_offres.valeur_minimuim_type_appel_offre IS
 
 
 --
--- TOC entry 5512 (class 0 OID 0)
+-- TOC entry 5622 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.valeur_maximuim_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1862,7 +2463,7 @@ COMMENT ON COLUMN public.types_appels_offres.valeur_maximuim_type_appel_offre IS
 
 
 --
--- TOC entry 5513 (class 0 OID 0)
+-- TOC entry 5623 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.description_critere_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1871,7 +2472,7 @@ COMMENT ON COLUMN public.types_appels_offres.description_critere_type_appel_offr
 
 
 --
--- TOC entry 5514 (class 0 OID 0)
+-- TOC entry 5624 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.actif_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1880,7 +2481,7 @@ COMMENT ON COLUMN public.types_appels_offres.actif_type_appel_offre IS 'Permet d
 
 
 --
--- TOC entry 5515 (class 0 OID 0)
+-- TOC entry 5625 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.parent_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1889,7 +2490,7 @@ COMMENT ON COLUMN public.types_appels_offres.parent_id IS 'Identifiant du critè
 
 
 --
--- TOC entry 222 (class 1259 OID 38058)
+-- TOC entry 222 (class 1259 OID 48112)
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1899,7 +2500,7 @@ CREATE TABLE public.users (
     email character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     telephone_principal character varying(255),
-    telepone_secondaire character varying(255),
+    telephone_secondaire character varying(255),
     role_id uuid NOT NULL,
     email_verified_at timestamp(0) without time zone,
     statut character varying(255) DEFAULT '0'::character varying NOT NULL,
@@ -1916,7 +2517,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
--- TOC entry 4956 (class 2604 OID 34847)
+-- TOC entry 4960 (class 2604 OID 48089)
 -- Name: migrations id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1924,8 +2525,8 @@ ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.m
 
 
 --
--- TOC entry 5378 (class 0 OID 40269)
--- Dependencies: 245
+-- TOC entry 5428 (class 0 OID 49014)
+-- Dependencies: 246
 -- Data for Name: alertes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1934,33 +2535,31 @@ COPY public.alertes (id, created_by, updated_by, deleted_by, created_at, updated
 
 
 --
--- TOC entry 5363 (class 0 OID 38265)
+-- TOC entry 5412 (class 0 OID 48319)
 -- Dependencies: 230
 -- Data for Name: appels_offres; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.appels_offres (id_appel_offre, type_appel_offre_id, numero_appel_offre, libelle_critere_appel_offre, objet_critere_appel_offre, montant_global_appel_offre, description_critere_critere_appel_offre, date_publication_critere_appel_offre, date_limite_depot_critere_appel_offre, date_ouverture_plis_critere_appel_offre, statut_evaluation_critere_appel_offre, conditions_participation_critere_appel_offre, criteres_selection_critere_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a074ffd0-5ed6-487d-a23b-2cae9705a1c2	a073c14b-af1f-4b76-8cf4-0d5b8fb28dc7	AOR-2025-001	CONSTRUCTION D'UNISE NORD D'ABIDJAN	Parfait ! J'ai généré les 4 vues Blade pour la gestion des appels d'offres :	23000000.00	Parfait ! J'ai généré les 4 vues Blade pour la gestion des appels d'offres :	2025-07-20 00:00:00	2026-01-11 00:00:00	2026-03-26 00:00:00	1	Parfait ! J'ai généré les 4 vues Blade pour la gestion des appels d'offres :	Parfait ! J'ai généré les 4 vues Blade pour la gestion des appels d'offres :	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-11-27 11:41:24	2025-11-27 14:45:54	\N
-a0858f55-3910-4b00-9321-2d8360199c13	a0858897-bf8b-4260-8f5d-9079fcd64bc6	AOCO-2025-001	AZERTY 002	Objet de l'Appel d'Offres	9750000.00	Description Détaillée	2025-12-05 00:00:00	2025-12-15 00:00:00	2026-01-31 00:00:00	1	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-05 17:15:58	2025-12-05 17:15:58	\N
-a08d4b60-4b5a-4f05-add1-9a1c2e419603	a08d4852-293b-475b-9291-17db5ae56e51	DRP-2025-001	ACHAT DE METERIELS SCOLAIRE	Acquisition de matériels et fournitures scolaires dans le cadre du Programme de Soutien à l’Éducation\r\nFourniture, livraison et mise à disposition de matériels scolaires pour les établissements d’enseignement\r\nMarché relatif à l’achat et à la livraison de matériels scolaires pour le Ministère de l'Éducation Nationale	450000.00	La description détaillée porte sur l’acquisition de matériels scolaires destinés aux établissements d’enseignement. Le marché comprend la fourniture de fournitures diverses (cahiers, stylos, marqueurs, ardoises, kits géométriques…), d’équipements pédagogiques (tableaux blancs, cartes murales, supports didactiques) ainsi que de tout matériel spécifié dans le cahier des charges. Les produits doivent être neufs, conformes aux standards de qualité, livrés dans les délais prévus et répartis selon la liste des destinations fournies par l’autorité contractante.	2025-12-10 00:00:00	2025-12-25 00:00:00	2026-02-06 00:00:00	1	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-09 13:32:34	2025-12-09 13:32:34	\N
+a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	a0ad6950-63ec-4588-a41c-14244604c6ec	CDPPT-2025-TIAS02	CONSTRUCTION DE DEUX ECOLE PRIMAIRE PUBLIQUE A TIASSALE	Le présent appel d’offres a pour objet la sélection d’une entreprise qualifiée pour la construction de deux (02) écoles primaires publiques à Tiassalé, dans le but de renforcer les infrastructures éducatives, d’améliorer l’accès à l’enseignement primaire et de contribuer à l’amélioration des conditions d’apprentissage des élèves.\r\n\r\nLes travaux à réaliser comprennent l’ensemble des prestations nécessaires à la réalisation complète des infrastructures, depuis les études techniques jusqu’à la livraison des ouvrages prêts à l’usage, conformément aux normes en vigueur.	195000000.00	Le projet porte sur la construction complète de deux écoles primaires publiques, incluant notamment :\r\na) Travaux de construction\r\nTravaux préparatoires et d’installation de chantier\r\nTerrassement et fondations\r\nConstruction des bâtiments scolaires (salles de classe, bureaux administratifs, magasins, sanitaires)\r\nRéalisation des murs, toitures, plafonds et menuiseries (bois, aluminium ou métallique)\r\nTravaux de revêtement (carrelage, peinture intérieure et extérieure)\r\n\r\nb) Équipements et aménagements\r\nInstallation électrique complète (éclairage, prises, tableaux électriques)\r\nInstallation sanitaire (points d’eau, latrines, fosses septiques ou systèmes adaptés)\r\nAménagement des cours d’école et des voies d’accès\r\nClôture et portails de sécurité (si requis)\r\n\r\nc) Normes et exigences\r\nRespect des normes de construction en vigueur en Côte d’Ivoire\r\nPrise en compte des règles de sécurité, d’hygiène et d’accessibilité\r\nUtilisation de matériaux durables et de qualité\r\nRespect des délais contractuels d’exécution\r\n\r\nd) Livraison\r\nRéception provisoire et définitive des ouvrages\r\nRemise des plans de récolement et documents techniques\r\nMise à disposition d’infrastructures fonctionnelles, sécurisées et adaptées à l’enseignement primaire	2025-12-25 00:00:00	2025-12-26 00:00:00	2025-12-27 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 13:01:02	2025-12-25 13:01:02	\N
+a0af4a2a-5f0b-4464-9cf6-d564b102c40f	a0af47a5-0c9b-4715-8616-40e2e7e15fe1	CDB	CONSTRUCTION DE BIBLIOTHEQUE	Le présent appel d’offres a pour objet la construction d’une bibliothèque destinée à favoriser l’accès à la connaissance, à la lecture et à la recherche, au profit des élèves, étudiants et de la communauté locale.\r\nLe projet vise la réalisation d’une infrastructure moderne, fonctionnelle et durable, conforme aux normes techniques, architecturales et environnementales en vigueur.	215000000.00	Les travaux à réaliser dans le cadre du présent marché comprennent la construction complète de la bibliothèque, incluant les études, les travaux de gros œuvre, de second œuvre, ainsi que les équipements essentiels à son fonctionnement.\r\n\r\nDe manière non exhaustive, les prestations comprennent :\r\n\r\nLes études techniques et architecturales d’exécution\r\n\r\nLes travaux de terrassement et de fondation\r\n\r\nLa réalisation du gros œuvre (élévation, dallage, charpente, couverture)\r\n\r\nLes travaux de second œuvre (maçonnerie, menuiserie, plomberie, électricité, peinture, revêtements)\r\n\r\nL’aménagement des espaces intérieurs (salles de lecture, rayonnages, bureaux, espaces numériques)\r\n\r\nL’installation des équipements électriques, informatiques et de sécurité\r\n\r\nLa mise en conformité aux normes de sécurité, d’accessibilité et de protection incendie\r\n\r\nLes essais, contrôles et la réception des ouvrages\r\n\r\nL’ouvrage devra être livré clé en main, prêt à l’exploitation, dans le respect des délais contractuels et des exigences de qualité définies par le maître d’ouvrage.	2025-12-26 00:00:00	2025-12-27 00:00:00	2025-12-28 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:07:20	2025-12-26 11:07:20	\N
 \.
 
 
 --
--- TOC entry 5371 (class 0 OID 39960)
+-- TOC entry 5420 (class 0 OID 48666)
 -- Dependencies: 238
 -- Data for Name: banques; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.banques (id_banque, prestataire_id, nom_banque, code_banque, numero_compte_banque, code_guichet_banque, cle_rib_banque, iban_banque, swift_bic_banque, titulaire_compte_banque, actif_banque, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a0855cc9-c02a-4359-a275-21d0868c0104	a0834807-6769-4a7c-a6c3-dcc72acd9442	ECOBANK	CI000	01012022521	01001	50	CI008010010101202252151	SGBFCIAB851	SEMINO CISSOCO	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	2025-12-05 14:54:38	2025-12-05 14:55:32	2025-12-05 14:55:32
-a0855805-b520-46b3-8183-1052a934bf74	a0834807-6769-4a7c-a6c3-dcc72acd9442	ECOBANK	CI008	01012022521	01001	50	CI008010010101202252150	SGBFCIAB855	SEMINO CISSOCO	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-05 14:41:18	2025-12-05 14:57:07	\N
-a085573a-2011-4e45-be2d-7506511f5428	a0834807-6769-4a7c-a6c3-dcc72acd9442	ECOBANK	CI000	01012022525	01002	50	CI008010010101202252151	SGBFCIAB851	SEMINO CISSOCO	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-05 14:39:05	2025-12-05 14:57:17	\N
+a0ae0b56-e1a8-4753-987f-d12f5d29544d	a0ae078c-1897-48de-8e7a-867ef2d066d8	Bank of Africa	CI008	0123456789	01001	85	CI93CI0080104130854900185	SGBFCIAB	SOCIETE GENERALE DE CONSTRUCTION NAVALE	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:15:49	2025-12-25 20:16:30	\N
+a0af6d69-c12d-49bc-9e1b-a0b4c7b8eade	a0af6c59-ef06-4bf7-97ef-fec58547831c	ECOBANK	CO520	0120214520	021201	65	\N	\N	KOUASSI KAN	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 12:45:53	2025-12-26 12:45:53	\N
 \.
 
 
 --
--- TOC entry 5372 (class 0 OID 39991)
+-- TOC entry 5421 (class 0 OID 48702)
 -- Dependencies: 239
 -- Data for Name: capacites_techniques; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1970,35 +2569,38 @@ COPY public.capacites_techniques (id_capacite_technique, prestataire_id, effecti
 
 
 --
--- TOC entry 5364 (class 0 OID 38305)
+-- TOC entry 5413 (class 0 OID 48359)
 -- Dependencies: 231
 -- Data for Name: caracteristiques_appels_offres; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.caracteristiques_appels_offres (id_caracteristique_appel_offre, appel_offre_id, version_caracteristique_appel_offre, date_demarrage_prevue_caracteristique_appel_offre, date_livraison_previsionnelle_caracteristique_appel_offre, lieu_execution_caracteristique_appel_offre, penalites_retard_journalier_caracteristique_appel_offre, montant_garantie_caracteristique_appel_offre, delai_garantie_jours_caracteristique_appel_offre, conditions_paiement_caracteristique_appel_offre, modalites_execution_caracteristique_appel_offre, documents_requis_caracteristique_appel_offre, autres_informations_caracteristique_appel_offre, motif_modification_caracteristique_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id, is_active_caracteristique_appel_offre, duree_estimee_jours_caracteristique_appel_offre) FROM stdin;
-a07b4f6b-a35a-4e33-9d0d-030a913ead7d	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	3	2025-11-29	2026-01-28	Yamoussoukro	1000000.00	15000000.00	365.00	Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement	Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Motif de modification *	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-11-30 14:58:58	2025-11-30 14:58:58	\N	a07b3aff-8ec1-4bc5-9187-8d86280925a6	f	\N
-a07b4fa0-e087-4496-9ce2-c8eeca39c598	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	4	2025-11-29	2026-01-28	Yamoussoukro	1000000.00	15000000.00	\N	Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement	Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Motif de modification *	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-11-30 14:59:33	2025-12-01 09:19:25	\N	a07b3aff-8ec1-4bc5-9187-8d86280925a6	f	60
-a07cd8fd-ce3f-4cc3-b753-b1d04f23f5c7	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	5	2025-12-29	2026-12-28	Yamoussoukro	1000000.00	15000000.00	\N	Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement	Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Motif de modification *	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-01 09:19:30	2025-12-01 09:19:30	\N	a07b4fa0-e087-4496-9ce2-c8eeca39c598	t	364
-a07b3aff-8ec1-4bc5-9187-8d86280925a6	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	1	2026-01-11	2028-12-29	Yamoussoukro	1000000.00	15000000.00	\N	Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement	Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-11-30 14:01:52	2025-11-30 14:17:14	\N	\N	f	\N
-a07b407e-a6b1-4008-b716-318f69c3e252	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	2	2025-12-30	2028-12-15	Yamoussoukro	1000000.00	15000000.00	\N	Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement Conditions de paiement	Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution Modalités d'exécution	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Documents requis Documents requis Documents requis Documents requis Documents requis Documents requis	Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification Motif de modification	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-11-30 14:17:14	2025-11-30 14:17:14	\N	a07b3aff-8ec1-4bc5-9187-8d86280925a6	f	\N
+COPY public.caracteristiques_appels_offres (id_caracteristique_appel_offre, appel_offre_id, version_caracteristique_appel_offre, date_demarrage_prevue_caracteristique_appel_offre, duree_estimee_jours_caracteristique_appel_offre, date_livraison_previsionnelle_caracteristique_appel_offre, lieu_execution_caracteristique_appel_offre, penalites_retard_journalier_caracteristique_appel_offre, montant_garantie_caracteristique_appel_offre, delai_garantie_jours_caracteristique_appel_offre, conditions_paiement_caracteristique_appel_offre, modalites_execution_caracteristique_appel_offre, documents_requis_caracteristique_appel_offre, is_active_caracteristique_appel_offre, autres_informations_caracteristique_appel_offre, motif_modification_caracteristique_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
+a0ad74f3-7ceb-4d91-ab4d-c9db017eaedb	a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	1	2025-12-25	6	2025-12-31	TIASSALE (Région d'Agnéby-Tiassa)	\N	\N	\N	\N	\N	\N	t	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 13:15:19	2025-12-25 13:15:19	\N	\N
+a0af4c29-80d7-4ef4-8e2c-e5f344fc7ff2	a0af4a2a-5f0b-4464-9cf6-d564b102c40f	1	2025-12-28	34	2026-01-31	DISTRICT DE YAMOUSSOUKRO	\N	\N	\N	\N	\N	\N	t	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:12:55	2025-12-26 11:12:55	\N	\N
 \.
 
 
 --
--- TOC entry 5367 (class 0 OID 38432)
+-- TOC entry 5416 (class 0 OID 48495)
 -- Dependencies: 234
 -- Data for Name: criteres_evaluations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.criteres_evaluations (id_critere_evaluation, lot_id, numero_critere_evaluation, libelle_critere_evaluation, description_critere_evaluation, note_reference_critere_evaluation, statut_critere_evaluation, ordre_execution_critere_evaluation, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a07d4c2c-291f-4f40-b857-10973421606e	a07d172c-db69-4535-ae63-a6eeae44253f	CRIT-001	Qualité Technique de l'offre	Pour formater ta durée avec Carbon, il faut d’abord comprendre que :\r\n\r\nduree_estimee_jours_caracteristique_appel_offre semble être un nombre de jours, pas une date.\r\n\r\ndate() n’est pas adapté ici → il attend un timestamp.\r\n\r\nAvec Carbon, tu peux soit afficher le nombre de jours, soit le convertir en intervalle (ex : “3 jours”).\r\n\r\nVoici les bonnes approches :	70.00	1	1	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-01 14:41:33	2025-12-01 14:48:52	\N
-a07d4f33-b410-4fa6-a11b-7c842af4cba5	a07d172c-db69-4535-ae63-a6eeae44253f	CRIT-002	Qualité Morale de prestataire	Si tu veux, je peux :\r\n\r\nte donner le dégradé exact que tu veux (couleurs/angle) ;\r\n\r\ngénérer une classe réutilisable pour ton projet ;\r\n\r\ncréer un dégradé animé plus discret pour la production.\r\n\r\nTu veux quel style (soft / vibrant / sombre / image + overlay / animé) ?	30.00	1	2	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-01 14:50:01	2025-12-01 14:51:29	\N
+a0ae147c-080e-46b5-be1a-82cb41dd6374	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-006	Délai et planning de livraison	Mesure la capacité du soumissionnaire à respecter les délais de livraison proposés, la pertinence du planning, ainsi que la rapidité de mobilisation des moyens logistiques.	15.00	1	4	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:41:24	2025-12-25 20:58:30	\N
+a0ae131a-6d1b-4a5e-a5ed-d845fc514104	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-005	Garanties, service après-livraison et engagements	Apprécie les garanties offertes, les modalités de remplacement des matériaux non conformes, le service après-livraison et les engagements contractuels du soumissionnaire.	5.00	1	5	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:37:32	2025-12-25 20:58:41	\N
+a0ae1277-3d61-40b2-b013-8314f03f55c3	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-003	Capacité logistique et moyens matériels	Apprécie les moyens de transport, d’entreposage, de manutention et l’organisation logistique mise en place pour assurer une livraison efficace et sécurisée des matériaux.	10.00	1	6	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:35:45	2025-12-25 20:58:41	\N
+a0ae1192-b819-4da5-b307-d0979c3ac137	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-001	Conformité technique des matériels proposés	Apprécie le degré de conformité des matériaux proposés aux spécifications techniques du dossier d’appel d’offres, aux normes en vigueur et à la qualité requise (certificats, fiches techniques, caractéristiques physiques et mécaniques).	30.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:33:15	2025-12-25 21:03:56	\N
+a0af51a0-0987-4026-9881-e5bbdb740974	a0af507f-239c-4b4b-8598-34f54238aa16	CRIT-001	Conformité technique des matériels proposés	Apprécie la conformité des matériaux aux spécifications techniques, aux normes en vigueur et à la qualité exigée (fiches techniques, certificats, caractéristiques).	30.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:28:11	2025-12-26 11:28:11	\N
+a0ae1204-1dda-4b7f-8186-217334a97501	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-002	Prix et compétitivité de l’offre financière	Évalue le montant total de l’offre financière, la cohérence des prix unitaires, la compétitivité par rapport aux prix du marché et la clarté du devis détaillé.	30.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:34:30	2025-12-25 20:57:37	\N
+a0ae12b2-98cb-470a-8315-a3bbb28e0a05	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-004	Expérience et références du soumissionnaire	Évalue l’expérience du fournisseur dans la livraison de matériels de construction similaires, les références récentes, ainsi que la satisfaction des clients précédents.	10.00	1	3	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:36:24	2025-12-25 20:57:53	\N
+a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af507f-239c-4b4b-8598-34f54238aa16	CRIT-002	Prix et compétitivité de l’offre financière	Évalue le montant global de l’offre, la cohérence des prix unitaires, la compétitivité par rapport aux prix du marché et la clarté du devis.	70.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:29:53	2025-12-26 11:29:53	\N
 \.
 
 
 --
--- TOC entry 5368 (class 0 OID 38561)
--- Dependencies: 235
+-- TOC entry 5419 (class 0 OID 48635)
+-- Dependencies: 237
 -- Data for Name: documents; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -2007,27 +2609,57 @@ COPY public.documents (id_document, lot_id, type_document, titre_document, fichi
 
 
 --
--- TOC entry 5370 (class 0 OID 39892)
--- Dependencies: 237
+-- TOC entry 5418 (class 0 OID 48572)
+-- Dependencies: 236
 -- Data for Name: evaluations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.evaluations (id_evaluation, appel_offre_id, lot_id, prestataire_id, numero_evaluation, date_evaluation, statut_evaluation, note_totale, note_maximale, pourcentage_final, rang, commentaire_general, recommandation, documents_evalues, evaluateur_principal_id, date_validation, valide_par, motif_rejet, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+COPY public.evaluations (id_evaluation, version, is_current, numero_evaluation, date_evaluation, resultat_evaluation, note_maximale, pourcentage_final, rang, respo_technique_evaluation, superviseur_evaluation, evalue_par, statut_evaluation, commentaire_general, recommandation, documents_evalues, evaluateur_principal_id, date_validation, motif_validation, valide_par, date_rejet, motif_rejet, rejete_par, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, evaluation_parent_id, attribution_id, critere_evaluation_id) FROM stdin;
+a0ae6d6f-21a5-4243-b0b3-c475f8b823bb	1	t	EVAL-LOT-2025-AZ0025-CRIT-002-2025-0001	2025-12-26 00:50:07	30.00	30.00	100.00	1	{"nom_complet":"DAMBELE KONATE ALBERT","email":"albertdamb@gmail.com","telephone":"+2250785001241"}	{"nom_complet":"M. KOFFI ADOU RICHARD","email":"koffi.adou@gmail.com","telephone":"+2250101013321"}	{"nom_complet":"Mme. ALANGBA AHOU PAULINE","email":"pauline02alangba@gmail.com","telephone":"+2250320012012"}	3	L’offre financière est jugée très satisfaisante et présente un excellent niveau de compétitivité. Elle constitue une solution économiquement optimale pour le maître d’ouvrage et contribue de manière significative à l’optimisation des ressources financières du projet.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 01:37:46	sdsd	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 00:50:07	2025-12-26 01:37:46	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1204-1dda-4b7f-8186-217334a97501
+a0ae9245-773e-4533-bca7-c504fd5670df	1	t	EVAL-LOT-2025-AZ0025-CRIT-001-2025-0001	2025-12-26 02:33:07	15.00	30.00	50.00	1	{"nom_complet":"M DAMBELE KONATE ALBERT","email":"albertdamb@gmail.com","telephone":"+2250785001241"}	{"nom_complet":"M. KOFFI ADOU RICHARD","email":"koffi.adou@gmail.com","telephone":"+2250101013321"}	{"nom_complet":"Mme. ALANGBA AHOU PAULINE","email":"pauline02alangba@gmail.com","telephone":"+2250320012012"}	3	L’offre est techniquement acceptable mais présente des lacunes qui réduisent son niveau de conformité globale. Une amélioration de la documentation technique et une meilleure précision des caractéristiques des matériels proposés seraient nécessaires pour atteindre un niveau de conformité pleinement satisfaisant.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 02:48:35	Au regard de l’analyse technique, financière et administrative effectuée par la commission d’évaluation, l’offre du soumissionnaire a été jugée conforme aux exigences du dossier d’appel d’offres. Les matériels proposés répondent pleinement aux spécifications techniques requises et présentent des garanties suffisantes en matière de qualité, de conformité et de durabilité.\r\n\r\nPar ailleurs, l’offre financière est compétitive et économiquement avantageuse, tout en respectant les conditions contractuelles et les délais de livraison exigés. Le soumissionnaire dispose également des capacités techniques, logistiques et de l’expérience nécessaires pour assurer la bonne exécution des prestations.\r\n\r\nEn conséquence, la commission d’évaluation valide l’offre et recommande son attribution, sous réserve du respect des dispositions réglementaires et contractuelles en vigueur.	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:33:07	2025-12-26 02:48:35	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1192-b819-4da5-b307-d0979c3ac137
+a0afa499-91a8-4528-9d2e-29f2cb78d982	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0005	2025-12-26 15:20:12	10.00	70.00	14.29	4	{"nom_complet":"TIZIE LUIS","email":null,"telephone":null}	{"nom_complet":"ISSA YAKOU","email":null,"telephone":null}	{"nom_complet":"YAPO MARIANE","email":null,"telephone":null}	3	L’offre est peu compétitive et pourrait représenter un risque économique pour le maître d’ouvrage si elle était retenue. Une révision ou clarification des prix est recommandée	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:22:31	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:20:12	2025-12-26 15:23:12	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
+a0ae94b3-cd0c-4a03-9511-8e0c5b2e86f7	1	t	EVAL-LOT-2025-AZ0025-CRIT-001-2025-0002	2025-12-26 02:39:55	10.00	30.00	33.33	2	{"nom_complet":"M. COULIBALY AMINATOU","email":"coulb@gmail.com","telephone":"+2250101230010"}	{"nom_complet":"M. AKA AMICHA CLAUDE","email":null,"telephone":"+2250010210210"}	{"nom_complet":"N'GUESSAN LOUKOU MARIE CLEMENTINE","email":"marie.ngussean@gmail.com","telephone":"+2250100001020"}	3	L’offre est jugée techniquement conforme et acceptable. Elle répond de manière satisfaisante aux exigences techniques du marché et offre des garanties suffisantes quant à la qualité et à la durabilité des matériels proposés. Les réserves identifiées n’affectent pas de manière significative la bonne exécution du projet.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 02:51:18	dff	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:39:55	2025-12-26 02:51:18	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1192-b819-4da5-b307-d0979c3ac137
+a0ae9741-3378-467c-9ae6-054b46ff08c2	1	t	EVAL-LOT-2025-AZ0025-CRIT-001-2025-0003	2025-12-26 02:47:03	5.00	30.00	16.67	3	{"nom_complet":"M. GNAORE KADJA LAMBERT","email":"lambert.gnaore@gmail.com","telephone":"+2250585854511"}	{"nom_complet":"M. OUATTARA BAMOUSSA","email":"ouattarabamoussa@gmail.com","telephone":"+2251210121000"}	{"nom_complet":"M. DAGRI LEKIGNOUA PIERRE","email":"pierredagry01@gmail.com","telephone":"+2250202021200"}	3	L’offre est jugée techniquement excellente. Elle répond pleinement aux exigences du marché et offre des garanties solides en matière de qualité, de conformité et de fiabilité des matériels proposés. Aucun manquement technique n’a été relevé, ce qui justifie l’attribution de la note maximale.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 02:53:00	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:47:03	2025-12-26 02:53:00	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1192-b819-4da5-b307-d0979c3ac137
+a0ae9bc3-2465-4c4c-af9c-004cfe796cc0	1	t	EVAL-LOT-2025-AZ0025-CRIT-005-2025-0001	2025-12-26 02:59:40	5.00	5.00	100.00	1	{"nom_complet":"M. KAN JEAN LUIS","email":null,"telephone":null}	{"nom_complet":"M. MARCELIN KONE","email":null,"telephone":null}	{"nom_complet":"TOURE YAY","email":null,"telephone":null}	3	L’offre présente un excellent niveau de garanties et d’engagements contractuels. Le service après-livraison proposé apporte des assurances suffisantes quant à la fiabilité de la prestation et à la protection des intérêts du maître d’ouvrage. Ces éléments justifient pleinement l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:00:45	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:59:40	2025-12-26 03:00:45	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae131a-6d1b-4a5e-a5ed-d845fc514104
+a0aea233-92de-4a14-86da-76be74a32058	1	t	EVAL-LOT-2025-AZ0025-CRIT-006-2025-0001	2025-12-26 03:17:40	15.00	15.00	100.00	1	{"nom_complet":"M. COULIBALY AMINATOU","email":"coulb@gmail.com","telephone":"+2250101230010"}	{"nom_complet":"M. OUATTARA BAMOUSSA","email":"ouattarabamoussa@gmail.com","telephone":"+2251210121000"}	{"nom_complet":"M. DAGRI LEKIGNOUA PIERRE","email":"pierredagry01@gmail.com","telephone":"+2250202021200"}	3	L’offre présente un excellent niveau de performance en matière de délai et de planification de la livraison. L’organisation proposée garantit une exécution efficace et sécurisée des prestations, contribuant au bon déroulement global du projet. Ces éléments justifient l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:19:13	À l’issue de l’analyse technique, financière et administrative, l’offre du soumissionnaire a été jugée conforme aux exigences du dossier d’appel d’offres relatif au lot « Livraison de matériels de construction ». Les matériels proposés répondent aux spécifications techniques requises et présentent des garanties satisfaisantes de qualité et de conformité.\r\n\r\nL’offre financière est compétitive et économiquement avantageuse, tandis que les délais et le planning de livraison proposés sont réalistes et compatibles avec les contraintes du projet. Le soumissionnaire justifie par ailleurs d’une expérience et de références pertinentes, ainsi que de capacités logistiques adéquates.\r\n\r\nEn conséquence, la commission d’évaluation valide l’offre et recommande son attribution conformément aux dispositions en vigueur.	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:17:40	2025-12-26 03:19:13	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae147c-080e-46b5-be1a-82cb41dd6374
+a0ae9e5c-83dc-4b39-89ec-07f0a83c17e2	1	t	EVAL-LOT-2025-AZ0025-CRIT-004-2025-0001	2025-12-26 03:06:56	10.00	10.00	100.00	1	{"nom_complet":"N'THE THETIE ANNE","email":"ntheanne@gmail.com","telephone":"+2250101002023"}	{"nom_complet":"TRA BI IRIE","email":"biirietra@gmail.com","telephone":"+2250020001000"}	{"nom_complet":"OBITE AUGUSTIN","email":null,"telephone":null}	3	L’offre présente un excellent niveau d’expérience et de références. Le soumissionnaire dispose des compétences techniques et organisationnelles nécessaires pour mener à bien les prestations prévues, ce qui justifie pleinement l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:07:30	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:06:56	2025-12-26 03:07:30	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae12b2-98cb-470a-8315-a3bbb28e0a05
+a0aea4b6-ef68-48b2-a00b-9dae74032a03	1	t	EVAL-LOT-2025-AZ0025-CRIT-003-2025-0001	2025-12-26 03:24:42	10.00	10.00	100.00	1	{"nom_complet":"M. DAMBELE KONATE ALBERT","email":"albertdamb@gmail.com","telephone":"+2250785001241"}	{"nom_complet":"M. KOFFI ADOU RICHARD","email":"koffi.adou@gmail.com","telephone":"+2250101013321"}	{"nom_complet":"Mme. ALANGBA AHOU PAULINE","email":"pauline02alangba@gmail.com","telephone":"+2250320012012"}	3	L’offre présente un excellent niveau de capacité logistique et de moyens matériels. Le soumissionnaire est pleinement en mesure d’assurer la livraison sécurisée et ponctuelle des matériaux, ce qui justifie l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:26:02	À l’issue de l’analyse technique, financière et administrative, l’offre du soumissionnaire a été jugée pleinement conforme aux exigences du dossier d’appel d’offres pour le lot « Livraison de matériels de construction ».\r\n\r\nTous les critères d’évaluation ont été satisfaits :\r\n\r\nConformité technique des matériels proposés : 30/30\r\n\r\nPrix et compétitivité de l’offre : 30/30\r\n\r\nDélai et planning de livraison : 15/15\r\n\r\nCapacité logistique et moyens matériels : 10/10\r\n\r\nExpérience et références : 10/10\r\n\r\nGaranties et service après-livraison : 5/5\r\n\r\nLes matériels proposés respectent les normes et spécifications techniques, le prix est compétitif, les délais réalistes et le soumissionnaire dispose des moyens logistiques, de l’expérience et des garanties nécessaires. L’offre est donc validée et son attribution recommandée.	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:24:42	2025-12-26 03:26:02	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1277-3d61-40b2-b013-8314f03f55c3
+a0af9b6d-9d7a-4ab9-af85-3a6a4e8d9f1a	1	t	EVAL-LMC-2026-001-CRIT-001-2025-0002	2025-12-26 14:54:33	15.00	30.00	50.00	1	{"nom_complet":"KONE ABOLY","email":null,"telephone":null}	{"nom_complet":"KASSI KADJO PIERRE","email":null,"telephone":null}	{"nom_complet":"ADDY CHRISTIANE","email":null,"telephone":null}	3	L’offre est jugée techniquement conforme et satisfaisante. Elle présente des garanties suffisantes quant à la qualité, à la performance et à la durabilité des matériels proposés, permettant ainsi une exécution correcte des prestations prévues.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 14:55:53	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:54:33	2025-12-26 14:55:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af51a0-0987-4026-9881-e5bbdb740974
+a0af9a45-5c85-4a87-899f-e0482c6bc3fe	1	t	EVAL-LMC-2026-001-CRIT-001-2025-0001	2025-12-26 14:51:19	15.00	30.00	50.00	2	{"nom_complet":"KOFFI YAO","email":null,"telephone":null}	{"nom_complet":"KACOU BAH","email":"bah@gmail.com","telephone":"+2250212142201"}	{"nom_complet":"KONE BAMOUSSI","email":"kone@gmail.com","telephone":"+2251400120021"}	3	L’offre est jugée techniquement conforme et satisfaisante. Elle présente des garanties suffisantes quant à la qualité, à la performance et à la durabilité des matériels proposés, permettant ainsi une exécution correcte des prestations prévues.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 14:55:14	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:51:19	2025-12-26 14:55:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af51a0-0987-4026-9881-e5bbdb740974
+a0af9e40-1447-47a7-b54e-116b36b5e8a5	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0001	2025-12-26 15:02:27	30.00	70.00	42.86	1	{"nom_complet":"DAN LUC","email":null,"telephone":null}	{"nom_complet":"LOBA PIERRE","email":null,"telephone":null}	{"nom_complet":"TRAORE KANE","email":null,"telephone":null}	3	L’offre financière est très satisfaisante et offre un excellent rapport qualité/prix. Elle constitue la solution économiquement optimale pour le projet.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:22:53	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:02:27	2025-12-26 15:22:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
+a0af9f6d-3a50-4740-869f-c3e56641fa68	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0003	2025-12-26 15:05:44	0.00	70.00	0.00	5	{"nom_complet":"AKISSI KAN","email":null,"telephone":null}	{"nom_complet":"LUI VAN","email":null,"telephone":null}	{"nom_complet":"KOFFI ISSA","email":null,"telephone":null}	3	L’offre est techniquement acceptable et économiquement correcte, mais moins avantageuse que d’autres soumissions. Des négociations pourraient améliorer le rapport qualité/prix.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:23:03	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:05:44	2025-12-26 15:23:12	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
+a0af9eda-9c2b-4b25-9f43-78729f763e8b	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0002	2025-12-26 15:04:08	15.00	70.00	21.43	2	{"nom_complet":"AMANI JEAN MARCK","email":null,"telephone":null}	{"nom_complet":"ALIKO DESIRE","email":null,"telephone":null}	{"nom_complet":"TANGUI AMICHA","email":null,"telephone":null}	3	L’offre est jugée satisfaisante sur le plan financier. Elle présente un bon rapport qualité/prix et peut être retenue sans risque pour le budget du projet.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:22:09	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:04:08	2025-12-26 15:22:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
+a0afa3da-2bbe-4d07-932d-774abaf8a565	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0004	2025-12-26 15:18:06	15.00	70.00	21.43	3	{"nom_complet":"KANAN BI IRIE","email":"biirie@mail.com","telephone":null}	{"nom_complet":"TRA BI MARCELIN","email":"trabi@gmail.com","telephone":null}	{"nom_complet":"TEH Melo","email":null,"telephone":null}	3	L’offre est techniquement acceptable et économiquement correcte, mais moins avantageuse que d’autres soumissions. Des négociations pourraient améliorer le rapport qualité/prix.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:23:12	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:18:07	2025-12-26 15:23:12	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
 \.
 
 
 --
--- TOC entry 5377 (class 0 OID 40228)
--- Dependencies: 244
+-- TOC entry 5427 (class 0 OID 48956)
+-- Dependencies: 245
 -- Data for Name: evaluations_lots_prestataires; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.evaluations_lots_prestataires (critere_evaluation_id, evaluation_id, prestatiare_id, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+COPY public.evaluations_lots_prestataires (id_evaluation_critere, critere_evaluation_id, evaluation_id, prestataire_id, note_obtenue, note_reference, note_finale, pourcentage, conforme, observation, justification, documents_fournis, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0ae6d6f-4596-42b1-a319-0c058f6e243f	a0ae1204-1dda-4b7f-8186-217334a97501	a0ae6d6f-21a5-4243-b0b3-c475f8b823bb	a0ae078c-1897-48de-8e7a-867ef2d066d8	30.00	30.00	30.00	100.00	f	L’offre financière présentée est la plus compétitive parmi l’ensemble des soumissionnaires. Les prix unitaires et le montant global sont cohérents, détaillés et conformes aux prix du marché pour des prestations similaires. Aucun écart significatif ou incohérence n’a été relevé dans le bordereau des prix.	Le soumissionnaire propose un coût global inférieur ou équivalent aux estimations du maître d’ouvrage, tout en respectant l’ensemble des exigences techniques et contractuelles. Les prix sont justifiés, réalistes et économiquement avantageux, garantissant un bon rapport qualité/prix sans compromettre la qualité des matériels à livrer.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 00:50:07	2025-12-26 00:50:07	\N
+a0ae9245-a538-4952-b53b-b139520d3f1c	a0ae1192-b819-4da5-b307-d0979c3ac137	a0ae9245-773e-4533-bca7-c504fd5670df	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	30.00	15.00	50.00	f	Les matériels proposés répondent partiellement aux spécifications techniques exigées dans le dossier d’appel d’offres. Certaines caractéristiques techniques sont conformes, cependant des insuffisances ont été relevées au niveau de la documentation technique et de la précision de certaines caractéristiques des matériaux proposés.	Bien que les matériaux principaux respectent les exigences minimales en termes de nature et d’usage, l’offre ne fournit pas l’ensemble des fiches techniques, certificats de conformité ou détails requis pour attester pleinement du respect des normes en vigueur. Ces manquements limitent l’appréciation complète de la qualité et de la conformité des matériels.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:33:07	2025-12-26 02:33:07	\N
+a0ae94b3-d8fe-4859-a348-0969a4d9b8db	a0ae1192-b819-4da5-b307-d0979c3ac137	a0ae94b3-cd0c-4a03-9511-8e0c5b2e86f7	a0ae078c-1897-48de-8e7a-867ef2d066d8	10.00	30.00	10.00	33.33	f	Les matériels proposés sont globalement conformes aux spécifications techniques du dossier d’appel d’offres. Les principales caractéristiques techniques exigées sont respectées et les matériaux proposés répondent aux besoins du projet. Des compléments d’informations techniques ont permis de lever certaines insuffisances initialement relevées.	Les documents techniques fournis (fiches techniques, descriptions détaillées et références produits) permettent de confirmer la conformité des matériaux aux normes requises. Bien que quelques éléments mineurs puissent être améliorés, l’offre présente un niveau de conformité satisfaisant et techniquement fiable pour l’exécution des prestations prévues.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:39:55	2025-12-26 02:39:55	\N
+a0ae9741-3ae8-4876-9278-2a31316fc27a	a0ae1192-b819-4da5-b307-d0979c3ac137	a0ae9741-3378-467c-9ae6-054b46ff08c2	a0ae078c-1897-48de-8e7a-867ef2d066d8	5.00	30.00	5.00	16.67	f	Les matériels proposés sont entièrement conformes aux spécifications techniques du dossier d’appel d’offres. L’ensemble des caractéristiques techniques exigées est respecté et les matériaux présentés répondent parfaitement aux besoins du projet. La documentation technique fournie est complète, claire et conforme aux normes en vigueur.	Les fiches techniques, certificats de conformité et descriptions détaillées fournis attestent du respect intégral des exigences techniques et normatives. Les matériaux proposés présentent des performances adaptées, une qualité satisfaisante et une durabilité conforme aux standards requis pour les travaux envisagés.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:47:03	2025-12-26 02:47:03	\N
+a0ae9bc3-36d3-4e01-a9fc-1d38cc32eab7	a0ae131a-6d1b-4a5e-a5ed-d845fc514104	a0ae9bc3-2465-4c4c-af9c-004cfe796cc0	a0ae078c-1897-48de-8e7a-867ef2d066d8	5.00	5.00	5.00	100.00	f	Le soumissionnaire propose des garanties complètes et clairement définies sur l’ensemble des matériels livrés. Les engagements en matière de service après-livraison sont précis, réalistes et adaptés aux exigences du marché, notamment en ce qui concerne le remplacement des matériels non conformes ou défectueux.	Les garanties offertes couvrent la conformité, la qualité et la durabilité des matériels fournis. Le soumissionnaire s’engage formellement à assurer un remplacement rapide de tout matériel non conforme, sans incidence financière pour le maître d’ouvrage. Les modalités du service après-livraison sont clairement décrites et assorties de délais d’intervention satisfaisants.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 02:59:40	2025-12-26 02:59:40	\N
+a0ae9e5c-8a3c-458f-b5fe-75bf07484b52	a0ae12b2-98cb-470a-8315-a3bbb28e0a05	a0ae9e5c-83dc-4b39-89ec-07f0a83c17e2	a0ae078c-1897-48de-8e7a-867ef2d066d8	10.00	10.00	10.00	100.00	f	\N	Les attestations de bonne exécution, contrats antérieurs et références clients fournis démontrent la capacité du soumissionnaire à exécuter des marchés comparables dans le respect des exigences techniques, des délais et des conditions contractuelles. L’expérience acquise constitue un gage de fiabilité et de maîtrise des prestations attendues.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:06:56	2025-12-26 03:06:56	\N
+a0aea233-b2fe-498c-b546-edf5b6c13645	a0ae147c-080e-46b5-be1a-82cb41dd6374	a0aea233-92de-4a14-86da-76be74a32058	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	15.00	15.00	100.00	f	Le soumissionnaire propose un délai de livraison court, réaliste et parfaitement adapté aux exigences du projet. Le planning de livraison présenté est clair, détaillé et cohérent, avec une organisation précise des différentes étapes d’approvisionnement et de livraison.	Les délais proposés respectent strictement les exigences du dossier d’appel d’offres et tiennent compte des contraintes logistiques et opérationnelles du site. Le planning fourni démontre une bonne maîtrise des flux d’approvisionnement et une capacité effective à assurer des livraisons régulières et ponctuelles, limitant ainsi tout risque de retard.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:17:40	2025-12-26 03:17:40	\N
+a0aea4b6-fae5-413e-af6f-e1946d16a80b	a0ae1277-3d61-40b2-b013-8314f03f55c3	a0aea4b6-ef68-48b2-a00b-9dae74032a03	a0ae078c-1897-48de-8e7a-867ef2d066d8	10.00	10.00	10.00	100.00	f	Le soumissionnaire dispose de moyens logistiques et matériels adaptés pour assurer la livraison efficace des matériels de construction. Les véhicules, équipements de manutention et moyens d’entreposage proposés sont suffisants et conformes aux exigences du projet.	Les informations fournies démontrent que le soumissionnaire peut mobiliser les ressources nécessaires pour respecter les délais et garantir l’intégrité des matériels lors du transport et du déchargement. La planification logistique est réaliste et cohérente avec les besoins du projet.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:24:42	2025-12-26 03:24:42	\N
+a0af9a45-9a26-4524-afe8-b897905b0cfe	a0af51a0-0987-4026-9881-e5bbdb740974	a0af9a45-5c85-4a87-899f-e0482c6bc3fe	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	30.00	15.00	50.00	f	Les matériels proposés par le soumissionnaire sont conformes aux spécifications techniques définies dans le dossier d’appel d’offres. Les caractéristiques techniques essentielles exigées sont respectées et les matériaux présentés répondent aux besoins du projet.	Les fiches techniques, descriptions détaillées et, le cas échéant, les certificats de conformité fournis permettent de vérifier que les matériels proposés respectent les normes techniques et qualitatives en vigueur. Aucun écart majeur n’a été constaté entre les spécifications requises et les éléments proposés.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:51:19	2025-12-26 14:51:19	\N
+a0af9b6d-afb0-46aa-bb61-6e6d31286579	a0af51a0-0987-4026-9881-e5bbdb740974	a0af9b6d-9d7a-4ab9-af85-3a6a4e8d9f1a	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	30.00	15.00	50.00	f	Les matériels proposés par le soumissionnaire sont conformes aux spécifications techniques définies dans le dossier d’appel d’offres. Les caractéristiques techniques essentielles exigées sont respectées et les matériaux présentés répondent aux besoins du projet.	Les fiches techniques, descriptions détaillées et, le cas échéant, les certificats de conformité fournis permettent de vérifier que les matériels proposés respectent les normes techniques et qualitatives en vigueur. Aucun écart majeur n’a été constaté entre les spécifications requises et les éléments proposés.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:54:33	2025-12-26 14:54:33	\N
+a0af9e40-3814-4087-b051-4e746e4d2146	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af9e40-1447-47a7-b54e-116b36b5e8a5	a0ae078c-1897-48de-8e7a-867ef2d066d8	30.00	70.00	30.00	42.86	f	L’offre financière est la plus compétitive parmi toutes les soumissions. Les prix unitaires et le montant global sont cohérents, détaillés et conformes aux prix du marché.	Le soumissionnaire propose un coût global inférieur ou équivalent aux estimations du maître d’ouvrage, tout en respectant l’ensemble des exigences techniques et contractuelles.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:02:27	2025-12-26 15:02:27	\N
+a0af9eda-a35b-4035-963b-1307b6b472f6	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af9eda-9c2b-4b25-9f43-78729f763e8b	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	70.00	15.00	21.43	f	L’offre financière est compétitive et raisonnable, avec un montant global légèrement supérieur à l’offre la plus basse, mais restant conforme aux prix du marché.	Le soumissionnaire présente des prix réalistes et justifiés. Les écarts avec les meilleures offres ne compromettent pas l’équilibre financier du projet.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:04:08	2025-12-26 15:04:08	\N
+a0af9f6d-4fe9-43e3-ab38-59bb533a1a8a	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af9f6d-3a50-4740-869f-c3e56641fa68	a0ae078c-1897-48de-8e7a-867ef2d066d8	0.00	70.00	0.00	0.00	f	L’offre financière est acceptable, mais certains prix unitaires apparaissent légèrement élevés par rapport aux références du marché.	Les écarts de prix sont justifiés par la qualité ou les garanties proposées, mais l’offre n’est pas la plus compétitive.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:05:44	2025-12-26 15:05:44	\N
+a0afa3da-5984-4f50-a9e5-ba59f65e6713	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0afa3da-2bbe-4d07-932d-774abaf8a565	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	70.00	15.00	21.43	f	L’offre financière est acceptable, mais certains prix unitaires apparaissent légèrement élevés par rapport aux références du marché.	Les écarts de prix sont justifiés par la qualité ou les garanties proposées, mais l’offre n’est pas la plus compétitive.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:18:07	2025-12-26 15:18:07	\N
+a0afa499-a07e-44d9-ae30-004392d4d518	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0afa499-91a8-4528-9d2e-29f2cb78d982	a0ae078c-1897-48de-8e7a-867ef2d066d8	10.00	70.00	10.00	14.29	f	L’offre financière présente un coût global élevé ou des incohérences dans le détail des prix unitaires.	Certains postes sont surévalués ou non justifiés, réduisant la compétitivité de l’offre par rapport aux	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:20:12	2025-12-26 15:20:12	\N
 \.
 
 
 --
--- TOC entry 5374 (class 0 OID 40054)
+-- TOC entry 5423 (class 0 OID 48765)
 -- Dependencies: 241
 -- Data for Name: evaluations_prestataires; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2037,7 +2669,19 @@ COPY public.evaluations_prestataires (id_evaluation_prestataire, prestataire_id,
 
 
 --
--- TOC entry 5358 (class 0 OID 38106)
+-- TOC entry 5424 (class 0 OID 48797)
+-- Dependencies: 242
+-- Data for Name: factures; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.factures (id_facture, proforma_id, numero_facture, montant_facture, date_facture, date_reception_facture, statut_facture, comment_facture, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0af3c84-842c-4de1-ba2b-6babad8c8d28	a0ae6915-de64-4c5b-acd2-df2742e3bdcc	FACT-85REJDFD58DF5	192093000.00	2025-12-26	2025-12-26	partiellement_payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 10:29:11	2025-12-26 10:42:01	\N
+a0afad02-02c7-4eb0-abea-f0699eaf505d	a0af67ef-39bd-4b60-aab7-f7f55dabd04e	FACT-250MK54452	100300000.00	2025-12-26	2025-12-26	partiellement_payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:43:43	2025-12-26 15:46:04	\N
+\.
+
+
+--
+-- TOC entry 5407 (class 0 OID 48160)
 -- Dependencies: 224
 -- Data for Name: failed_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2047,72 +2691,68 @@ COPY public.failed_jobs (id, uuid, connection, queue, payload, exception, failed
 
 
 --
--- TOC entry 5366 (class 0 OID 38390)
+-- TOC entry 5415 (class 0 OID 48449)
 -- Dependencies: 233
 -- Data for Name: lots; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.lots (id_lot, appel_offre_id, numero, libelle, description_critere, specifications_techniques, motif_retrait, date_attribution, date_debut_prevue, date_fin_prevue, date_retrait, attribution_lot, statut_lot, taux_penalites, statut_retrait, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id, version_lot) FROM stdin;
-a0773903-f6df-4c49-931e-0c6fc7eb98a5	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	LOT-AOR-AOR-2025-001-001	ESPECTION ET APPLATISSEMENT DU TERRE	Pour renseigner automatiquement la version du lot comme étant la plus grande version existante + 1, voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	\N	\N	2025-05-30 14:11:00	2027-11-28 14:12:00	\N	0	0	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-11-28 14:13:01	2025-12-01 11:47:50	\N	\N	\N
-a07d16c1-a8e9-4a2a-9795-b3a7c5f7f3c5	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	LOT-AOR-AOR-2025-001-001	ESPECTION ET APPLATISSEMENT DU TERRE	Pour renseigner automatiquement la version du lot comme étant la plus grande version existante + 1, voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	Alternance	\N	2025-05-30 00:00:00	2027-10-28 00:00:00	\N	0	0	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-01 12:12:11	2025-12-01 12:12:11	\N	a0773903-f6df-4c49-931e-0c6fc7eb98a5	\N
-a08f3299-e1e4-4063-9249-a32af25a8a47	a08d4b60-4b5a-4f05-add1-9a1c2e419603	LOT-DRP-DRP-2025-001-001	CONSTRUCTION D'AUTO-ROUTE	La construction d’une autoroute est un projet d’infrastructure stratégique visant à aménager une voie de circulation rapide, sécurisée et durable, destinée à faciliter le transport des personnes et des marchandises. Elle implique un ensemble d’études techniques, d’opérations de génie civil et d’aménagements complémentaires, réalisés selon des normes strictes en matière de qualité, de sécurité et d’impact environnemental.\r\n\r\n1. Études préalables\r\n\r\nAvant le démarrage des travaux, plusieurs analyses sont menées :\r\n\r\nÉtudes topographiques, géologiques et hydrologiques\r\n\r\nÉtudes de trafic et de mobilité\r\n\r\nÉtudes d’impact environnemental et social\r\n\r\nDéfinition du tracé optimal et des ouvrages d’art nécessaires\r\n\r\nCes études permettent de s’assurer de la viabilité du projet et de définir les solutions techniques adéquates.\r\n\r\n2. Travaux de terrassement\r\n\r\nLa construction commence par :\r\n\r\nLe décapage et le nettoyage de la zone\r\n\r\nLe nivellement du terrain\r\n\r\nLe remblayage et la stabilisation des sols\r\n\r\nLe traitement des zones sensibles (marécages, reliefs escarpés, terrains instables)\r\n\r\nCes travaux constituent la base sur laquelle reposera toute l'infrastructure.\r\n\r\n3. Ouvrages d’art\r\n\r\nLes ouvrages d’art sont essentiels pour assurer la continuité et la sécurité de la route :\r\n\r\nPonts et viaducs\r\n\r\nPassages supérieurs et inférieurs\r\n\r\nDalots, ouvrages hydrauliques et bassins de rétention\r\n\r\nPassages pour la faune\r\n\r\nIls permettent de franchir les obstacles naturels et d'assurer une bonne gestion des eaux.\r\n\r\n4. Structure de la chaussée\r\n\r\nUne autoroute comporte plusieurs couches successives :\r\n\r\nCouche de fondation\r\n\r\nCouche de base\r\n\r\nCouche de roulement en béton bitumineux ou béton de ciment\r\n\r\nCes couches sont dimensionnées pour supporter un trafic intense et lourd sur plusieurs décennies.\r\n\r\n5. Aménagements complémentaires\r\n\r\nPour garantir fonctionnalité et sécurité, divers équipements sont installés :\r\n\r\nPostes de péage\r\n\r\nÉclairage public\r\n\r\nDispositifs de sécurité (glissières, panneaux, marquage au sol)\r\n\r\nAires de repos et stations-service\r\n\r\nRéseaux de drainage et d’assainissement\r\n\r\nCes aménagements améliorent le confort des usagers et prolongent la durée de vie de l’infrastructure.\r\n\r\n6. Contrôle qualité et sécurité\r\n\r\nPendant toute la durée du chantier, des contrôles sont effectués :\r\n\r\nTests de compactage et de portance\r\n\r\nContrôle des matériaux\r\n\r\nVérification du respect des normes techniques\r\n\r\nLa sécurité des travailleurs et des usagers est également une priorité.\r\n\r\n7. Mise en service\r\n\r\nUne fois les travaux terminés, l’autoroute est ouverte à la circulation après :\r\n\r\nInspections finales\r\n\r\nEssais techniques\r\n\r\nInstallation de la signalisation définitive	1. Données générales\r\n\r\nType d’infrastructure : Autoroute à 2 × 2 voies (extensible à 2 × 3 voies selon trafic).\r\n\r\nLargeur d’une voie : 3,50 m.\r\n\r\nLargeur de la bande d’arrêt d’urgence : 2,50 à 3,00 m.\r\n\r\nAccotements : 1,50 m à 2,00 m.\r\n\r\nVitesse de référence : 120 km/h (ou selon normes nationales).\r\n\r\nEmprise minimale : 60 à 80 mètres selon le tracé.\r\n\r\n2. Terrassements et plateforme routière\r\n2.1 Études géotechniques\r\n\r\nIdentification des sols, classification, essais CBR, essais Proctor.\r\n\r\nTraitement des zones instables par compactage dynamique, géotextiles, drains verticaux, remblais légers, etc.\r\n\r\n2.2 Travaux de terrassement\r\n\r\nDéblai/remblai selon profil en travers.\r\n\r\nCompaction par couches ≤ 30 cm.\r\n\r\nTaux de compactage requis : ≥ 95 % Proctor Modifié.\r\n\r\nTraitement des sols avec chaux/ciment pour améliorer portance si nécessaire.\r\n\r\n3. Structure de chaussée\r\n3.1 Couche de fondation\r\n\r\nMatériaux graveleux naturels ou traités.\r\n\r\nÉpaisseur : 20 à 30 cm selon trafic et nature du sol.\r\n\r\n3.2 Couche de base\r\n\r\nGrave-bitume, grave-ciment, ou matériaux concassés haute performance.\r\n\r\nÉpaisseur : 15 à 25 cm.\r\n\r\n3.3 Couche de roulement\r\n\r\nBéton bitumineux (BBM, BBSG, BET) ou béton de ciment fond dur.\r\n\r\nÉpaisseur : 5 à 8 cm selon type de revêtement.\r\n\r\nMacrotexture contrôlée pour assurer l’adhérence.\r\n\r\n3.4 Drainage\r\n\r\nFossés latéraux, caniveaux, buses, dalots, collecteurs.\r\n\r\nBassins de rétention pour zones à risque d’inondation.\r\n\r\nÉtanchéité assurée dans zones sensibles.\r\n\r\n4. Ouvrages d’art\r\n4.1 Ouvrages courants\r\n\r\nPonts, viaducs, passages supérieurs et inférieurs.\r\n\r\nDalles et tabliers en béton armé ou précontraint.\r\n\r\nNormes de charge : Eurocode ou normes nationales équivalentes.\r\n\r\n4.2 Ouvrages hydrauliques\r\n\r\nDalots (1 à 5 cellules), buses circulaires, radiers.\r\n\r\nDimensionnement basé sur pluies décennales ou centennales selon importance.\r\n\r\n5. Sécurité et équipements de l’autoroute\r\n5.1 Signalisation\r\n\r\nSignalisation verticale : panneaux rétro-réfléchissants classe II ou III.\r\n\r\nSignalisation horizontale : peinture thermoplastique ou résine froide.\r\n\r\nMarquage guide, STOP, zébras, bandes vibrantes.\r\n\r\n5.2 Barrières de sécurité\r\n\r\nGlissières métalliques ou béton armé type « New Jersey ».\r\n\r\nNormes de résistance : EN 1317 ou équivalentes.\r\n\r\n5.3 Éclairage\r\n\r\nÉclairage LED dans zones sensibles : échangeurs, péages, tunnels.\r\n\r\nMâts de 12 à 30 m selon besoin.\r\n\r\n6. Aires et installations annexes\r\n6.1 Aires de repos\r\n\r\nParkings VL et poids lourds.\r\n\r\nBloc sanitaire, espace vert, poubelles, éclairage.\r\n\r\n6.2 Postes de péage\r\n\r\nVoies manuelles, automatiques, télépéage.\r\n\r\nSystème de pesage dynamique et contrôle vidéo.\r\n\r\n6.3 Ouvrages de gestion de l’eau\r\n\r\nBassins de rétention\r\n\r\nFossés bétonnés\r\n\r\nRéseaux d’assainissement\r\n\r\n7. Contrôle qualité\r\n\r\nEssais granulométriques, CBR, Los Angeles, Proctor.\r\n\r\nEssais de densité in situ (noyau, pénétromètre).\r\n\r\nContrôle de l’adhérence, déflexion, régularité (I.R.I).\r\n\r\nVérification de l’épaisseur et de la température des couches bitumineuses.\r\n\r\n8. Normes et références\r\n\r\nNormes routières nationales (ouest-africaines / CEDEAO / CI).\r\n\r\nEurocodes pour ouvrages en béton et acier.\r\n\r\nManuels techniques des travaux publics.\r\n\r\nRecommandations SETRA, CEBTP, ASTM, AASHTO.	\N	\N	2025-12-19 12:10:00	2026-03-01 12:10:00	\N	0	0	0.50	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 12:14:58	2025-12-10 12:18:36	\N	\N	\N
-a07d172c-db69-4535-ae63-a6eeae44253f	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	LOT-AOR-AOR-2025-001-001	ESPECTION ET APPLATISSEMENT DU TERRE	Pour renseigner automatiquement la version du lot comme étant la plus grande version existante + 1, voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	SDSDD	2025-12-04	2025-05-30 00:00:00	2027-10-28 00:00:00	2025-12-04	1	1	5.00	1	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	2025-12-01 12:13:21	2025-12-04 16:37:12	\N	a07d16c1-a8e9-4a2a-9795-b3a7c5f7f3c5	\N
-a07d0e0c-aa49-4488-b2fe-136f24256e8a	a074ffd0-5ed6-487d-a23b-2cae9705a1c2	LOT-AOR-AOR-2025-001-001	ESPECTION ET APPLATISSEMENT DU TERRE	Pour renseigner automatiquement la version du lot comme étant la plus grande version existante + 1, voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	voici la manière propre et robuste de le faire dans ton contrôleur Laravel.	Pourquoi modifiez-vous ce lot ? *	2025-12-04	2025-01-09 00:00:00	2025-12-28 00:00:00	\N	1	1	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-01 11:47:50	2025-12-04 16:41:26	\N	a0773903-f6df-4c49-931e-0c6fc7eb98a5	\N
-a08f33e8-ef5f-40a2-b004-6041bdfc2da0	a08d4b60-4b5a-4f05-add1-9a1c2e419603	LOT-DRP-DRP-2025-001-001	CONSTRUCTION D'AUTO-ROUTE	La construction d’une autoroute est un projet d’infrastructure stratégique visant à aménager une voie de circulation rapide, sécurisée et durable, destinée à faciliter le transport des personnes et des marchandises. Elle implique un ensemble d’études techniques, d’opérations de génie civil et d’aménagements complémentaires, réalisés selon des normes strictes en matière de qualité, de sécurité et d’impact environnemental.\r\n\r\n1. Études préalables\r\n\r\nAvant le démarrage des travaux, plusieurs analyses sont menées :\r\n\r\nÉtudes topographiques, géologiques et hydrologiques\r\n\r\nÉtudes de trafic et de mobilité\r\n\r\nÉtudes d’impact environnemental et social\r\n\r\nDéfinition du tracé optimal et des ouvrages d’art nécessaires\r\n\r\nCes études permettent de s’assurer de la viabilité du projet et de définir les solutions techniques adéquates.\r\n\r\n2. Travaux de terrassement\r\n\r\nLa construction commence par :\r\n\r\nLe décapage et le nettoyage de la zone\r\n\r\nLe nivellement du terrain\r\n\r\nLe remblayage et la stabilisation des sols\r\n\r\nLe traitement des zones sensibles (marécages, reliefs escarpés, terrains instables)\r\n\r\nCes travaux constituent la base sur laquelle reposera toute l'infrastructure.\r\n\r\n3. Ouvrages d’art\r\n\r\nLes ouvrages d’art sont essentiels pour assurer la continuité et la sécurité de la route :\r\n\r\nPonts et viaducs\r\n\r\nPassages supérieurs et inférieurs\r\n\r\nDalots, ouvrages hydrauliques et bassins de rétention\r\n\r\nPassages pour la faune\r\n\r\nIls permettent de franchir les obstacles naturels et d'assurer une bonne gestion des eaux.\r\n\r\n4. Structure de la chaussée\r\n\r\nUne autoroute comporte plusieurs couches successives :\r\n\r\nCouche de fondation\r\n\r\nCouche de base\r\n\r\nCouche de roulement en béton bitumineux ou béton de ciment\r\n\r\nCes couches sont dimensionnées pour supporter un trafic intense et lourd sur plusieurs décennies.\r\n\r\n5. Aménagements complémentaires\r\n\r\nPour garantir fonctionnalité et sécurité, divers équipements sont installés :\r\n\r\nPostes de péage\r\n\r\nÉclairage public\r\n\r\nDispositifs de sécurité (glissières, panneaux, marquage au sol)\r\n\r\nAires de repos et stations-service\r\n\r\nRéseaux de drainage et d’assainissement\r\n\r\nCes aménagements améliorent le confort des usagers et prolongent la durée de vie de l’infrastructure.\r\n\r\n6. Contrôle qualité et sécurité\r\n\r\nPendant toute la durée du chantier, des contrôles sont effectués :\r\n\r\nTests de compactage et de portance\r\n\r\nContrôle des matériaux\r\n\r\nVérification du respect des normes techniques\r\n\r\nLa sécurité des travailleurs et des usagers est également une priorité.\r\n\r\n7. Mise en service\r\n\r\nUne fois les travaux terminés, l’autoroute est ouverte à la circulation après :\r\n\r\nInspections finales\r\n\r\nEssais techniques\r\n\r\nInstallation de la signalisation définitive	1. Données générales\r\n\r\nType d’infrastructure : Autoroute à 2 × 2 voies (extensible à 2 × 3 voies selon trafic).\r\n\r\nLargeur d’une voie : 3,50 m.\r\n\r\nLargeur de la bande d’arrêt d’urgence : 2,50 à 3,00 m.\r\n\r\nAccotements : 1,50 m à 2,00 m.\r\n\r\nVitesse de référence : 120 km/h (ou selon normes nationales).\r\n\r\nEmprise minimale : 60 à 80 mètres selon le tracé.\r\n\r\n2. Terrassements et plateforme routière\r\n2.1 Études géotechniques\r\n\r\nIdentification des sols, classification, essais CBR, essais Proctor.\r\n\r\nTraitement des zones instables par compactage dynamique, géotextiles, drains verticaux, remblais légers, etc.\r\n\r\n2.2 Travaux de terrassement\r\n\r\nDéblai/remblai selon profil en travers.\r\n\r\nCompaction par couches ≤ 30 cm.\r\n\r\nTaux de compactage requis : ≥ 95 % Proctor Modifié.\r\n\r\nTraitement des sols avec chaux/ciment pour améliorer portance si nécessaire.\r\n\r\n3. Structure de chaussée\r\n3.1 Couche de fondation\r\n\r\nMatériaux graveleux naturels ou traités.\r\n\r\nÉpaisseur : 20 à 30 cm selon trafic et nature du sol.\r\n\r\n3.2 Couche de base\r\n\r\nGrave-bitume, grave-ciment, ou matériaux concassés haute performance.\r\n\r\nÉpaisseur : 15 à 25 cm.\r\n\r\n3.3 Couche de roulement\r\n\r\nBéton bitumineux (BBM, BBSG, BET) ou béton de ciment fond dur.\r\n\r\nÉpaisseur : 5 à 8 cm selon type de revêtement.\r\n\r\nMacrotexture contrôlée pour assurer l’adhérence.\r\n\r\n3.4 Drainage\r\n\r\nFossés latéraux, caniveaux, buses, dalots, collecteurs.\r\n\r\nBassins de rétention pour zones à risque d’inondation.\r\n\r\nÉtanchéité assurée dans zones sensibles.\r\n\r\n4. Ouvrages d’art\r\n4.1 Ouvrages courants\r\n\r\nPonts, viaducs, passages supérieurs et inférieurs.\r\n\r\nDalles et tabliers en béton armé ou précontraint.\r\n\r\nNormes de charge : Eurocode ou normes nationales équivalentes.\r\n\r\n4.2 Ouvrages hydrauliques\r\n\r\nDalots (1 à 5 cellules), buses circulaires, radiers.\r\n\r\nDimensionnement basé sur pluies décennales ou centennales selon importance.\r\n\r\n5. Sécurité et équipements de l’autoroute\r\n5.1 Signalisation\r\n\r\nSignalisation verticale : panneaux rétro-réfléchissants classe II ou III.\r\n\r\nSignalisation horizontale : peinture thermoplastique ou résine froide.\r\n\r\nMarquage guide, STOP, zébras, bandes vibrantes.\r\n\r\n5.2 Barrières de sécurité\r\n\r\nGlissières métalliques ou béton armé type « New Jersey ».\r\n\r\nNormes de résistance : EN 1317 ou équivalentes.\r\n\r\n5.3 Éclairage\r\n\r\nÉclairage LED dans zones sensibles : échangeurs, péages, tunnels.\r\n\r\nMâts de 12 à 30 m selon besoin.\r\n\r\n6. Aires et installations annexes\r\n6.1 Aires de repos\r\n\r\nParkings VL et poids lourds.\r\n\r\nBloc sanitaire, espace vert, poubelles, éclairage.\r\n\r\n6.2 Postes de péage\r\n\r\nVoies manuelles, automatiques, télépéage.\r\n\r\nSystème de pesage dynamique et contrôle vidéo.\r\n\r\n6.3 Ouvrages de gestion de l’eau\r\n\r\nBassins de rétention\r\n\r\nFossés bétonnés\r\n\r\nRéseaux d’assainissement\r\n\r\n7. Contrôle qualité\r\n\r\nEssais granulométriques, CBR, Los Angeles, Proctor.\r\n\r\nEssais de densité in situ (noyau, pénétromètre).\r\n\r\nContrôle de l’adhérence, déflexion, régularité (I.R.I).\r\n\r\nVérification de l’épaisseur et de la température des couches bitumineuses.\r\n\r\n8. Normes et références\r\n\r\nNormes routières nationales (ouest-africaines / CEDEAO / CI).\r\n\r\nEurocodes pour ouvrages en béton et acier.\r\n\r\nManuels techniques des travaux publics.\r\n\r\nRecommandations SETRA, CEBTP, ASTM, AASHTO.	Réajustement du contenu technique du lot afin de mieux correspondre aux besoins réels du projet.\r\nAjout ou suppression de certaines prestations pour garantir la cohérence technique avec les autres lots.	\N	2025-12-19 00:00:00	2026-03-01 00:00:00	\N	0	0	0.50	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 12:18:36	2025-12-10 12:19:04	\N	a08f3299-e1e4-4063-9249-a32af25a8a47	\N
-a08593ef-3837-40da-b7ef-1ba5a175cbba	a0858f55-3910-4b00-9321-2d8360199c13	LOT-AOCO-AOCO-2025-001-001	CONSTRUCTION D'UN DISPENSAIRE	Description	Spécifications techniques	\N	2025-12-05	\N	\N	\N	1	1	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-05 17:28:50	2025-12-05 17:38:59	\N	\N	\N
-a08f2538-7d8e-400d-a348-7e3888eea9df	a0858f55-3910-4b00-9321-2d8360199c13	LOT-AOCO-AOCO-2025-001-002	LOT 2	Description	Spécifications techniques	\N	\N	2025-12-11 00:00:00	2026-05-30 00:00:00	\N	0	1	\N	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 11:37:35	2025-12-10 11:37:35	\N	\N	\N
-a08f3413-ed41-4e79-8e6d-b4748b027746	a08d4b60-4b5a-4f05-add1-9a1c2e419603	LOT-DRP-DRP-2025-001-001	CONSTRUCTION D'AUTO-ROUTE	a construction d’une autoroute est un projet d’infrastructure stratégique visant à aménager une voie de circulation rapide, sécurisée et durable, destinée à faciliter le transport des personnes et des marchandises. Elle implique un ensemble d’études techniques, d’opérations de génie civil et d’aménagements complémentaires, réalisés selon des normes strictes en matière de qualité, de sécurité et d’impact environnemental.\r\n\r\n1. Études préalables\r\n\r\nAvant le démarrage des travaux, plusieurs analyses sont menées :\r\n\r\nÉtudes topographiques, géologiques et hydrologiques\r\n\r\nÉtudes de trafic et de mobilité\r\n\r\nÉtudes d’impact environnemental et social\r\n\r\nDéfinition du tracé optimal et des ouvrages d’art nécessaires\r\n\r\nCes études permettent de s’assurer de la viabilité du projet et de définir les solutions techniques adéquates.\r\n\r\n2. Travaux de terrassement\r\n\r\nLa construction commence par :\r\n\r\nLe décapage et le nettoyage de la zone\r\n\r\nLe nivellement du terrain\r\n\r\nLe remblayage et la stabilisation des sols\r\n\r\nLe traitement des zones sensibles (marécages, reliefs escarpés, terrains instables)\r\n\r\nCes travaux constituent la base sur laquelle reposera toute l'infrastructure.\r\n\r\n3. Ouvrages d’art\r\n\r\nLes ouvrages d’art sont essentiels pour assurer la continuité et la sécurité de la route :\r\n\r\nPonts et viaducs\r\n\r\nPassages supérieurs et inférieurs\r\n\r\nDalots, ouvrages hydrauliques et bassins de rétention\r\n\r\nPassages pour la faune\r\n\r\nIls permettent de franchir les obstacles naturels et d'assurer une bonne gestion des eaux.\r\n\r\n4. Structure de la chaussée\r\n\r\nUne autoroute comporte plusieurs couches successives :\r\n\r\nCouche de fondation\r\n\r\nCouche de base\r\n\r\nCouche de roulement en béton bitumineux ou béton de ciment\r\n\r\nCes couches sont dimensionnées pour supporter un trafic intense et lourd sur plusieurs décennies.\r\n\r\n5. Aménagements complémentaires\r\n\r\nPour garantir fonctionnalité et sécurité, divers équipements sont installés :\r\n\r\nPostes de péage\r\n\r\nÉclairage public\r\n\r\nDispositifs de sécurité (glissières, panneaux, marquage au sol)\r\n\r\nAires de repos et stations-service\r\n\r\nRéseaux de drainage et d’assainissement\r\n\r\nCes aménagements améliorent le confort des usagers et prolongent la durée de vie de l’infrastructure.\r\n\r\n6. Contrôle qualité et sécurité\r\n\r\nPendant toute la durée du chantier, des contrôles sont effectués :\r\n\r\nTests de compactage et de portance\r\n\r\nContrôle des matériaux\r\n\r\nVérification du respect des normes techniques\r\n\r\nLa sécurité des travailleurs et des usagers est également une priorité.\r\n\r\n7. Mise en service\r\n\r\nUne fois les travaux terminés, l’autoroute est ouverte à la circulation après :\r\n\r\nInspections finales\r\n\r\nEssais techniques\r\n\r\nInstallation de la signalisation définitive	1. Données générales\r\n\r\nType d’infrastructure : Autoroute à 2 × 2 voies (extensible à 2 × 3 voies selon trafic).\r\n\r\nLargeur d’une voie : 3,50 m.\r\n\r\nLargeur de la bande d’arrêt d’urgence : 2,50 à 3,00 m.\r\n\r\nAccotements : 1,50 m à 2,00 m.\r\n\r\nVitesse de référence : 120 km/h (ou selon normes nationales).\r\n\r\nEmprise minimale : 60 à 80 mètres selon le tracé.\r\n\r\n2. Terrassements et plateforme routière\r\n2.1 Études géotechniques\r\n\r\nIdentification des sols, classification, essais CBR, essais Proctor.\r\n\r\nTraitement des zones instables par compactage dynamique, géotextiles, drains verticaux, remblais légers, etc.\r\n\r\n2.2 Travaux de terrassement\r\n\r\nDéblai/remblai selon profil en travers.\r\n\r\nCompaction par couches ≤ 30 cm.\r\n\r\nTaux de compactage requis : ≥ 95 % Proctor Modifié.\r\n\r\nTraitement des sols avec chaux/ciment pour améliorer portance si nécessaire.\r\n\r\n3. Structure de chaussée\r\n3.1 Couche de fondation\r\n\r\nMatériaux graveleux naturels ou traités.\r\n\r\nÉpaisseur : 20 à 30 cm selon trafic et nature du sol.\r\n\r\n3.2 Couche de base\r\n\r\nGrave-bitume, grave-ciment, ou matériaux concassés haute performance.\r\n\r\nÉpaisseur : 15 à 25 cm.\r\n\r\n3.3 Couche de roulement\r\n\r\nBéton bitumineux (BBM, BBSG, BET) ou béton de ciment fond dur.\r\n\r\nÉpaisseur : 5 à 8 cm selon type de revêtement.\r\n\r\nMacrotexture contrôlée pour assurer l’adhérence.\r\n\r\n3.4 Drainage\r\n\r\nFossés latéraux, caniveaux, buses, dalots, collecteurs.\r\n\r\nBassins de rétention pour zones à risque d’inondation.\r\n\r\nÉtanchéité assurée dans zones sensibles.\r\n\r\n4. Ouvrages d’art\r\n4.1 Ouvrages courants\r\n\r\nPonts, viaducs, passages supérieurs et inférieurs.\r\n\r\nDalles et tabliers en béton armé ou précontraint.\r\n\r\nNormes de charge : Eurocode ou normes nationales équivalentes.\r\n\r\n4.2 Ouvrages hydrauliques\r\n\r\nDalots (1 à 5 cellules), buses circulaires, radiers.\r\n\r\nDimensionnement basé sur pluies décennales ou centennales selon importance.\r\n\r\n5. Sécurité et équipements de l’autoroute\r\n5.1 Signalisation\r\n\r\nSignalisation verticale : panneaux rétro-réfléchissants classe II ou III.\r\n\r\nSignalisation horizontale : peinture thermoplastique ou résine froide.\r\n\r\nMarquage guide, STOP, zébras, bandes vibrantes.\r\n\r\n5.2 Barrières de sécurité\r\n\r\nGlissières métalliques ou béton armé type « New Jersey ».\r\n\r\nNormes de résistance : EN 1317 ou équivalentes.\r\n\r\n5.3 Éclairage\r\n\r\nÉclairage LED dans zones sensibles : échangeurs, péages, tunnels.\r\n\r\nMâts de 12 à 30 m selon besoin.\r\n\r\n6. Aires et installations annexes\r\n6.1 Aires de repos\r\n\r\nParkings VL et poids lourds.\r\n\r\nBloc sanitaire, espace vert, poubelles, éclairage.\r\n\r\n6.2 Postes de péage\r\n\r\nVoies manuelles, automatiques, télépéage.\r\n\r\nSystème de pesage dynamique et contrôle vidéo.\r\n\r\n6.3 Ouvrages de gestion de l’eau\r\n\r\nBassins de rétention\r\n\r\nFossés bétonnés\r\n\r\nRéseaux d’assainissement\r\n\r\n7. Contrôle qualité\r\n\r\nEssais granulométriques, CBR, Los Angeles, Proctor.\r\n\r\nEssais de densité in situ (noyau, pénétromètre).\r\n\r\nContrôle de l’adhérence, déflexion, régularité (I.R.I).\r\n\r\nVérification de l’épaisseur et de la température des couches bitumineuses.\r\n\r\n8. Normes et références\r\n\r\nNormes routières nationales (ouest-africaines / CEDEAO / CI).\r\n\r\nEurocodes pour ouvrages en béton et acier.\r\n\r\nManuels techniques des travaux publics.\r\n\r\nRecommandations SETRA, CEBTP, ASTM, AASHTO.	éajustement du contenu technique du lot afin de mieux correspondre aux besoins réels du projet.\r\nAjout ou suppression de certaines prestations pour garantir la cohérence technique avec les autres lots.	\N	2025-12-19 00:00:00	2026-03-01 00:00:00	\N	0	0	0.50	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 12:19:04	2025-12-10 12:19:32	\N	a08f33e8-ef5f-40a2-b004-6041bdfc2da0	\N
-a08f343d-b95a-436c-aa3f-8d322b64aa03	a08d4b60-4b5a-4f05-add1-9a1c2e419603	LOT-DRP-DRP-2025-001-001	CONSTRUCTION D'AUTO-ROUTE	La construction d’une autoroute est un projet d’infrastructure stratégique visant à aménager une voie de circulation rapide, sécurisée et durable, destinée à faciliter le transport des personnes et des marchandises. Elle implique un ensemble d’études techniques, d’opérations de génie civil et d’aménagements complémentaires, réalisés selon des normes strictes en matière de qualité, de sécurité et d’impact environnemental.\r\n\r\n1. Études préalables\r\n\r\nAvant le démarrage des travaux, plusieurs analyses sont menées :\r\n\r\nÉtudes topographiques, géologiques et hydrologiques\r\n\r\nÉtudes de trafic et de mobilité\r\n\r\nÉtudes d’impact environnemental et social\r\n\r\nDéfinition du tracé optimal et des ouvrages d’art nécessaires\r\n\r\nCes études permettent de s’assurer de la viabilité du projet et de définir les solutions techniques adéquates.\r\n\r\n2. Travaux de terrassement\r\n\r\nLa construction commence par :\r\n\r\nLe décapage et le nettoyage de la zone\r\n\r\nLe nivellement du terrain\r\n\r\nLe remblayage et la stabilisation des sols\r\n\r\nLe traitement des zones sensibles (marécages, reliefs escarpés, terrains instables)\r\n\r\nCes travaux constituent la base sur laquelle reposera toute l'infrastructure.\r\n\r\n3. Ouvrages d’art\r\n\r\nLes ouvrages d’art sont essentiels pour assurer la continuité et la sécurité de la route :\r\n\r\nPonts et viaducs\r\n\r\nPassages supérieurs et inférieurs\r\n\r\nDalots, ouvrages hydrauliques et bassins de rétention\r\n\r\nPassages pour la faune\r\n\r\nIls permettent de franchir les obstacles naturels et d'assurer une bonne gestion des eaux.\r\n\r\n4. Structure de la chaussée\r\n\r\nUne autoroute comporte plusieurs couches successives :\r\n\r\nCouche de fondation\r\n\r\nCouche de base\r\n\r\nCouche de roulement en béton bitumineux ou béton de ciment\r\n\r\nCes couches sont dimensionnées pour supporter un trafic intense et lourd sur plusieurs décennies.\r\n\r\n5. Aménagements complémentaires\r\n\r\nPour garantir fonctionnalité et sécurité, divers équipements sont installés :\r\n\r\nPostes de péage\r\n\r\nÉclairage public\r\n\r\nDispositifs de sécurité (glissières, panneaux, marquage au sol)\r\n\r\nAires de repos et stations-service\r\n\r\nRéseaux de drainage et d’assainissement\r\n\r\nCes aménagements améliorent le confort des usagers et prolongent la durée de vie de l’infrastructure.\r\n\r\n6. Contrôle qualité et sécurité\r\n\r\nPendant toute la durée du chantier, des contrôles sont effectués :\r\n\r\nTests de compactage et de portance\r\n\r\nContrôle des matériaux\r\n\r\nVérification du respect des normes techniques\r\n\r\nLa sécurité des travailleurs et des usagers est également une priorité.\r\n\r\n7. Mise en service\r\n\r\nUne fois les travaux terminés, l’autoroute est ouverte à la circulation après :\r\n\r\nInspections finales\r\n\r\nEssais techniques\r\n\r\nInstallation de la signalisation définitive	1. Données générales\r\n\r\nType d’infrastructure : Autoroute à 2 × 2 voies (extensible à 2 × 3 voies selon trafic).\r\n\r\nLargeur d’une voie : 3,50 m.\r\n\r\nLargeur de la bande d’arrêt d’urgence : 2,50 à 3,00 m.\r\n\r\nAccotements : 1,50 m à 2,00 m.\r\n\r\nVitesse de référence : 120 km/h (ou selon normes nationales).\r\n\r\nEmprise minimale : 60 à 80 mètres selon le tracé.\r\n\r\n2. Terrassements et plateforme routière\r\n2.1 Études géotechniques\r\n\r\nIdentification des sols, classification, essais CBR, essais Proctor.\r\n\r\nTraitement des zones instables par compactage dynamique, géotextiles, drains verticaux, remblais légers, etc.\r\n\r\n2.2 Travaux de terrassement\r\n\r\nDéblai/remblai selon profil en travers.\r\n\r\nCompaction par couches ≤ 30 cm.\r\n\r\nTaux de compactage requis : ≥ 95 % Proctor Modifié.\r\n\r\nTraitement des sols avec chaux/ciment pour améliorer portance si nécessaire.\r\n\r\n3. Structure de chaussée\r\n3.1 Couche de fondation\r\n\r\nMatériaux graveleux naturels ou traités.\r\n\r\nÉpaisseur : 20 à 30 cm selon trafic et nature du sol.\r\n\r\n3.2 Couche de base\r\n\r\nGrave-bitume, grave-ciment, ou matériaux concassés haute performance.\r\n\r\nÉpaisseur : 15 à 25 cm.\r\n\r\n3.3 Couche de roulement\r\n\r\nBéton bitumineux (BBM, BBSG, BET) ou béton de ciment fond dur.\r\n\r\nÉpaisseur : 5 à 8 cm selon type de revêtement.\r\n\r\nMacrotexture contrôlée pour assurer l’adhérence.\r\n\r\n3.4 Drainage\r\n\r\nFossés latéraux, caniveaux, buses, dalots, collecteurs.\r\n\r\nBassins de rétention pour zones à risque d’inondation.\r\n\r\nÉtanchéité assurée dans zones sensibles.\r\n\r\n4. Ouvrages d’art\r\n4.1 Ouvrages courants\r\n\r\nPonts, viaducs, passages supérieurs et inférieurs.\r\n\r\nDalles et tabliers en béton armé ou précontraint.\r\n\r\nNormes de charge : Eurocode ou normes nationales équivalentes.\r\n\r\n4.2 Ouvrages hydrauliques\r\n\r\nDalots (1 à 5 cellules), buses circulaires, radiers.\r\n\r\nDimensionnement basé sur pluies décennales ou centennales selon importance.\r\n\r\n5. Sécurité et équipements de l’autoroute\r\n5.1 Signalisation\r\n\r\nSignalisation verticale : panneaux rétro-réfléchissants classe II ou III.\r\n\r\nSignalisation horizontale : peinture thermoplastique ou résine froide.\r\n\r\nMarquage guide, STOP, zébras, bandes vibrantes.\r\n\r\n5.2 Barrières de sécurité\r\n\r\nGlissières métalliques ou béton armé type « New Jersey ».\r\n\r\nNormes de résistance : EN 1317 ou équivalentes.\r\n\r\n5.3 Éclairage\r\n\r\nÉclairage LED dans zones sensibles : échangeurs, péages, tunnels.\r\n\r\nMâts de 12 à 30 m selon besoin.\r\n\r\n6. Aires et installations annexes\r\n6.1 Aires de repos\r\n\r\nParkings VL et poids lourds.\r\n\r\nBloc sanitaire, espace vert, poubelles, éclairage.\r\n\r\n6.2 Postes de péage\r\n\r\nVoies manuelles, automatiques, télépéage.\r\n\r\nSystème de pesage dynamique et contrôle vidéo.\r\n\r\n6.3 Ouvrages de gestion de l’eau\r\n\r\nBassins de rétention\r\n\r\nFossés bétonnés\r\n\r\nRéseaux d’assainissement\r\n\r\n7. Contrôle qualité\r\n\r\nEssais granulométriques, CBR, Los Angeles, Proctor.\r\n\r\nEssais de densité in situ (noyau, pénétromètre).\r\n\r\nContrôle de l’adhérence, déflexion, régularité (I.R.I).\r\n\r\nVérification de l’épaisseur et de la température des couches bitumineuses.\r\n\r\n8. Normes et références\r\n\r\nNormes routières nationales (ouest-africaines / CEDEAO / CI).\r\n\r\nEurocodes pour ouvrages en béton et acier.\r\n\r\nManuels techniques des travaux publics.\r\n\r\nRecommandations SETRA, CEBTP, ASTM, AASHTO.	éajustement du contenu technique du lot afin de mieux correspondre aux besoins réels du projet.\r\nAjout ou suppression de certaines prestations pour garantir la cohérence technique avec les autres lots.	2025-12-10	2025-12-19 00:00:00	2026-03-01 00:00:00	\N	1	1	0.50	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 12:19:32	2025-12-10 15:47:47	\N	a08f3413-ed41-4e79-8e6d-b4748b027746	\N
+COPY public.lots (id_lot, appel_offre_id, numero, libelle, description_critere, specifications_techniques, motif_retrait, version_lot, date_attribution, date_debut_prevue, date_fin_prevue, date_retrait, attribution_lot, statut_lot, taux_penalites, statut_retrait, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
+a0ae0f46-357b-43e2-af5e-f2e422a91e41	a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	LOT-2025-AZ0025	LIVRAISON DE MATERIELS DE CONSTRUCTION	Le présent marché porte sur la livraison de matériels et matériaux de construction destinés à la réalisation de travaux de bâtiment et d’infrastructures.\r\nLa prestation comprend l’approvisionnement, le transport, la livraison sur site, ainsi que le déchargement des matériels conformément aux besoins exprimés par le maître d’ouvrage.\r\n\r\nLes matériels fournis devront être neufs, de qualité supérieure, conformes aux normes nationales et internationales en vigueur, et adaptés aux conditions climatiques locales.\r\nLa livraison devra être effectuée dans les délais contractuels, avec un conditionnement garantissant la protection et l’intégrité des produits jusqu’à leur réception définitive.	1. Nature des matériels à livrer (à titre indicatif)\r\nCiment (CPJ, CEM II ou équivalent)\r\nSable (lavé, propre et sans impuretés)\r\nGravier (différentes granulométries selon besoins)\r\nFer à béton (HA Ø6, Ø8, Ø10, Ø12, Ø14, Ø16, etc.)\r\nBriques, parpaings ou blocs creux normalisés\r\nBois de coffrage traité\r\nTôles de couverture (selon spécifications)\r\nAutres matériels de construction selon le bordereau des quantités\r\n\r\n2. Exigences de qualité\r\nTous les matériaux doivent être neufs, non utilisés\r\nConformité aux normes techniques en vigueur (ISO, NF, normes nationales)\r\nRésistance mécanique et durabilité adaptées aux travaux prévus\r\nCertificats de conformité ou fiches techniques fournis sur demande\r\n\r\n3. Conditions de livraison\r\nLivraison effectuée sur le site désigné par le maître d’ouvrage\r\nRespect strict du calendrier de livraison\r\nMatériels livrés en quantités exactes et en bon état\r\nDéchargement à la charge du fournisseur\r\nÉtablissement d’un procès-verbal de réception après contrôle\r\n\r\n4. Transport et sécurité\r\nMoyens de transport adaptés au type de matériaux\r\nProtection contre les intempéries et chocs durant le transport\r\nRespect des règles de sécurité et de manutention\r\n\r\n5. Garanties\r\nGarantie de conformité des matériels livrés\r\nRemplacement immédiat de tout matériel non conforme ou défectueux\r\nResponsabilité du fournisseur engagée jusqu’à la réception définitive	\N	1	2025-12-26	2025-12-26 00:00:00	2025-12-28 00:00:00	\N	1	1	5.50	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:26:50	2025-12-26 00:37:58	\N	\N
+a0af507f-239c-4b4b-8598-34f54238aa16	a0af4a2a-5f0b-4464-9cf6-d564b102c40f	LMC-2026-001	LIVRAISON DE MATERIELS DE CONSTRUCTION	Le présent marché porte sur la livraison de matériels et matériaux de construction destinés à la réalisation de travaux de bâtiment et d’infrastructures. La prestation comprend l’approvisionnement, le transport, la livraison sur site et le déchargement des matériaux conformément aux besoins exprimés par le maître d’ouvrage.\r\n\r\nLes matériels fournis devront être neufs, de qualité conforme aux normes en vigueur, adaptés aux conditions d’utilisation prévues et livrés dans les délais contractuels. Le fournisseur est tenu de garantir l’intégrité des matériaux jusqu’à leur réception définitive et de remplacer tout matériel non conforme ou défectueux.\r\n\r\nLa livraison devra s’effectuer selon un planning préalablement validé, dans le respect des règles de sécurité et de manutention, afin d’assurer la bonne exécution des travaux auxquels les matériels sont destinés.	Les matériels et matériaux de construction à livrer devront répondre strictement aux exigences techniques ci-après :\r\n\r\n1. Nature des matériels\r\n\r\nCiment (CPJ, CEM II ou équivalent) conforme aux normes en vigueur\r\n\r\nSable propre, lavé, exempt d’argile et de matières organiques\r\n\r\nGravier concassé ou roulé, de granulométrie conforme aux prescriptions techniques\r\n\r\nFer à béton (HA Ø6, Ø8, Ø10, Ø12, Ø14, Ø16 et plus selon besoins), conforme aux normes de résistance\r\nBriques, parpaings ou blocs creux normalisés\r\nBois de coffrage sec et traité\r\nTôles de couverture ou matériaux de toiture conformes aux spécifications\r\nAutres matériaux selon le bordereau des quantités	\N	1	2025-12-26	2025-12-30 00:00:00	2026-01-26 00:00:00	\N	1	1	2.50	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:25:02	2025-12-26 12:30:34	\N	\N
 \.
 
 
 --
--- TOC entry 5354 (class 0 OID 34844)
+-- TOC entry 5403 (class 0 OID 48086)
 -- Dependencies: 220
 -- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.migrations (id, migration, batch) FROM stdin;
-99	2014_10_11_000000_create_roles_table	1
-100	2014_10_12_000000_create_users_table	1
-101	2014_10_12_100000_create_password_reset_tokens_table	1
-102	2019_08_19_000000_create_failed_jobs_table	1
-103	2019_12_14_000001_create_personal_access_tokens_table	1
-104	2025_11_20_114959_create_permissions_table	1
-105	2025_11_20_115028_create_role_permissions_table	1
-106	2025_11_20_122235_create_type_appel_offres_table	1
-107	2025_11_20_122355_create_appels_offres_table	1
-108	2025_11_20_122424_create_caracteristique_appel_offres_table	1
-109	2025_11_20_122457_create_proformas_table	1
-110	2025_11_20_122459_create_lots_table	1
-111	2025_11_20_122612_create_critere_evaluations_table	1
-114	2025_11_20_151640_create_documents_table	1
-125	2025_11_20_151611_create_prestataires_table	2
-126	2025_11_20_151612_create_evaluations_table	2
-127	2025_11_20_151714_create_banques_table	2
-128	2025_11_20_151753_create_capacite_techniques_table	2
-129	2025_11_20_151819_create_situation_financieres_table	2
-130	2025_11_20_151900_create_evaluation_prestataires_table	2
-131	2025_11_20_152740_create_paiements_table	2
-133	2025_11_20_152919_create_prestataires_lots_table	3
-134	2025_11_20_152947_create_evaluations_lots_prestataires_table	3
-135	2025_11_20_153204_create_alertes_table	3
-136	2025_12_08_153200_creat_fixe_colonnes_table	4
+1	2014_10_11_000000_create_roles_table	1
+2	2014_10_12_000000_create_users_table	1
+3	2014_10_12_100000_create_password_reset_tokens_table	1
+4	2019_08_19_000000_create_failed_jobs_table	1
+5	2019_12_14_000001_create_personal_access_tokens_table	1
+6	2025_11_20_114959_create_permissions_table	1
+7	2025_11_20_115028_create_role_permissions_table	1
+8	2025_11_20_122235_create_type_appel_offres_table	1
+9	2025_11_20_122355_create_appels_offres_table	1
+10	2025_11_20_122424_create_caracteristique_appel_offres_table	1
+11	2025_11_20_122457_create_proformas_table	1
+12	2025_11_20_122459_create_lots_table	1
+13	2025_11_20_122612_create_critere_evaluations_table	1
+14	2025_11_20_151611_create_prestataires_table	1
+15	2025_11_20_151612_create_evaluations_table	1
+16	2025_11_20_151640_create_documents_table	1
+17	2025_11_20_151714_create_banques_table	1
+18	2025_11_20_151753_create_capacite_techniques_table	1
+19	2025_11_20_151819_create_situation_financieres_table	1
+20	2025_11_20_151900_create_evaluation_prestataires_table	1
+21	2025_11_20_152740_create_factures_table	1
+22	2025_11_20_152740_create_paiements_table	1
+23	2025_11_20_152919_create_prestataires_lots_table	1
+24	2025_11_20_152947_create_evaluations_lots_prestataires_table	1
+25	2025_11_20_153204_create_alertes_table	1
+26	2025_12_08_153200_creat_fixe_colonnes_table	1
+27	2025_12_16_151847_add_critere_evaluation_id_to_evaluations_table	1
 \.
 
 
 --
--- TOC entry 5375 (class 0 OID 40086)
--- Dependencies: 242
+-- TOC entry 5425 (class 0 OID 48837)
+-- Dependencies: 243
 -- Data for Name: paiements; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.paiements (id_paiement, banque_id, montant_net_paye_paiement, statut_paiement, date_validation_paiement, motif_rejet_paiement, observations_paiement, valide_par, paye_par, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+COPY public.paiements (id_paiement, facture_id, banque_id, montant_net_paye_paiement, statut_paiement, date_validation_paiement, motif_rejet_paiement, observations_paiement, valide_par, paye_par, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0af3d14-19c3-426d-b3d0-acd65ab68a3b	a0af3c84-842c-4de1-ba2b-6babad8c8d28	a0ae0b56-e1a8-4753-987f-d12f5d29544d	20000000.00	3	2025-12-26 10:31:01	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 10:30:44	2025-12-26 10:42:01	\N
+a0afadc7-bac5-4c4b-9e52-3309a1d8f233	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	15000000.00	3	2025-12-26 15:46:04	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:45:52	2025-12-26 15:46:11	\N
 \.
 
 
 --
--- TOC entry 5357 (class 0 OID 38097)
+-- TOC entry 5406 (class 0 OID 48151)
 -- Dependencies: 223
 -- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2122,46 +2762,46 @@ COPY public.password_reset_tokens (email, token, created_at) FROM stdin;
 
 
 --
--- TOC entry 5360 (class 0 OID 38138)
+-- TOC entry 5409 (class 0 OID 48192)
 -- Dependencies: 226
 -- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.permissions (id, name, slug, description, resource, action, guard_name, category, priority, is_active, is_system, conditions, created_by, updated_by, last_used_at, created_at, updated_at, deleted_at) FROM stdin;
-a073b928-4fa2-4cf5-b047-a29458de63f7	Gérer les utilisateurs	users-manage	Permet de gérer toutes les actions sur les utilisateurs	users	manage	web	Gestion des utilisateurs	20	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5540-406f-b3c5-caa55f8040bc	Créer des utilisateurs	users-create	Permet de créer de nouveaux utilisateurs	users	create	web	Gestion des utilisateurs	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-566d-4c57-b419-2771c263c868	Voir les utilisateurs	users-read	Permet de consulter la liste des utilisateurs	users	read	web	Gestion des utilisateurs	5	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5773-4533-967f-44bb1b0c08a0	Modifier les utilisateurs	users-update	Permet de modifier les informations des utilisateurs	users	update	web	Gestion des utilisateurs	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-580a-424b-bda3-7351a6eedbf0	Supprimer les utilisateurs	users-delete	Permet de supprimer des utilisateurs	users	delete	web	Gestion des utilisateurs	15	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-58ae-429e-9a35-6e0a7f017ca6	Exporter les utilisateurs	users-export	Permet d'exporter la liste des utilisateurs	users	export	web	Gestion des utilisateurs	5	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-590f-44ff-8825-78a7a3d07a14	Importer des utilisateurs	users-import	Permet d'importer des utilisateurs depuis un fichier	users	import	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5962-47d9-b665-d1f61cc24508	Valider les utilisateurs	users-validate	Permet de valider les comptes utilisateurs	users	validate	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-59b0-4863-b37e-aef368b69df7	Rejecter les utilisateurs	users-reject	Permet de rejetter les comptes utilisateurs	users	reject	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5a02-4fdb-b3a9-d0793908453f	Restaurer les utilisateurs	users-restore	Permet de restaurer les comptes utilisateurs supprimés	users	restore	web	Gestion des utilisateurs	15	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5a4f-4f51-b030-0f40f8f61a30	Dupliquer les utilisateurs	users-duplicate	Permet de dupliquer les comptes utilisateurs	users	duplicate	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5a9b-4d1b-a862-3674e2dcf4b7	Télécharger les utilisateurs	users-download	Permet de télécharger les informations des utilisateurs	users	download	web	Gestion des utilisateurs	5	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5af2-4472-92f7-e1f4109acd81	Créer des rôles	roles-create	Permet de créer de nouveaux rôles	roles	create	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5b41-4e63-9609-f30466286c73	Voir les rôles	roles-read	Permet de consulter la liste des rôles	roles	read	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5b8e-4338-a83f-0cc32398ff7f	Modifier les rôles	roles-update	Permet de modifier les rôles	roles	update	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5bda-4772-b185-c0bc00bd8611	Supprimer les rôles	roles-delete	Permet de supprimer des rôles	roles	delete	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5cb1-4157-9835-637092de810c	Assigner des rôles	roles-assign	Permet d'assigner des rôles aux utilisateurs	roles	update	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5dbd-4f0b-8f4f-8110cd1bccc1	Exporter les rôles	roles-export	Permet d'exporter la liste des rôles	roles	export	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5e5c-4b8c-a199-11b82a1aa80e	Importer des rôles	roles-import	Permet d'importer des rôles depuis un fichier	roles	import	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5ee9-46bf-96d1-f8153045db4a	Dupliquer les rôles	roles-duplicate	Permet de dupliquer les rôles	roles	duplicate	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-5f6d-4f9d-a02e-3994da4d7d7c	Télécharger les rôles	roles-download	Permet de télécharger les informations des rôles	roles	download	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6025-4b2a-afb0-a0f690daa6ba	Restaurer les rôles	roles-restore	Permet de restaurer les rôles supprimés	roles	restore	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-60a4-42fc-b03b-5c609ea038a1	Gérer les rôles	roles-manage	Permet de gérer toutes les actions sur les rôles	roles	manage	web	Gestion des rôles	20	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6126-41b3-97de-c2c4526e502b	Gérer les permissions	permissions-manage	Permet de gérer toutes les permissions	permissions	manage	web	Gestion des permissions	20	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-61a6-4d0f-b901-42e86e07d1a5	Voir les permissions	permissions-read	Permet de consulter les permissions	permissions	read	web	Gestion des permissions	5	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6229-462e-93dd-53e0a48d911f	Assigner des permissions	permissions-assign	Permet d'assigner des permissions aux rôles	permissions	update	web	Gestion des permissions	15	t	t	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-62c8-4fb8-af2b-39960ba2583a	Voir le dashboard	dashboard-read	Permet d'accéder au tableau de bord	dashboard	read	web	Dashboard	1	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6384-4319-9d02-ec3c18f5f4ec	Voir les rapports	reports-read	Permet de consulter les rapports	reports	read	web	Rapports	5	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-63eb-46c8-85f9-fb5563759003	Exporter les rapports	reports-export	Permet d'exporter les rapports	reports	export	web	Rapports	5	t	f	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
+a0acfc74-ffd8-45aa-aab8-1732f786669e	Gérer les utilisateurs	users-manage	Permet de gérer toutes les actions sur les utilisateurs	users	manage	web	Gestion des utilisateurs	20	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-8e8e-435b-a098-e9ad5c87e1fb	Créer des utilisateurs	users-create	Permet de créer de nouveaux utilisateurs	users	create	web	Gestion des utilisateurs	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-90bd-4027-825e-f5639b32206e	Voir les utilisateurs	users-read	Permet de consulter la liste des utilisateurs	users	read	web	Gestion des utilisateurs	5	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-92c1-48dd-8fdc-36cf6ba8b6c0	Modifier les utilisateurs	users-update	Permet de modifier les informations des utilisateurs	users	update	web	Gestion des utilisateurs	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9473-42bc-8c86-f1ede4c77180	Supprimer les utilisateurs	users-delete	Permet de supprimer des utilisateurs	users	delete	web	Gestion des utilisateurs	15	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9609-43af-a743-63db217c3199	Exporter les utilisateurs	users-export	Permet d'exporter la liste des utilisateurs	users	export	web	Gestion des utilisateurs	5	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-97a1-46eb-a425-48ec83a0441f	Importer des utilisateurs	users-import	Permet d'importer des utilisateurs depuis un fichier	users	import	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9949-4e16-b3d5-22cd129ca0ba	Valider les utilisateurs	users-validate	Permet de valider les comptes utilisateurs	users	validate	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9af4-4747-bc97-668fa562f564	Rejecter les utilisateurs	users-reject	Permet de rejetter les comptes utilisateurs	users	reject	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9c46-4bcd-b202-d7dbb4cd3e53	Restaurer les utilisateurs	users-restore	Permet de restaurer les comptes utilisateurs supprimés	users	restore	web	Gestion des utilisateurs	15	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9d9e-4bdf-a534-5012b1982b92	Dupliquer les utilisateurs	users-duplicate	Permet de dupliquer les comptes utilisateurs	users	duplicate	web	Gestion des utilisateurs	10	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-9f36-43c3-9864-4fcc702f373a	Télécharger les utilisateurs	users-download	Permet de télécharger les informations des utilisateurs	users	download	web	Gestion des utilisateurs	5	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a0cb-408e-b1ea-cb906e90684c	Créer des rôles	roles-create	Permet de créer de nouveaux rôles	roles	create	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a24f-422a-8978-a007ff9da136	Voir les rôles	roles-read	Permet de consulter la liste des rôles	roles	read	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a3da-4c2e-8534-dec81dd4c6ac	Modifier les rôles	roles-update	Permet de modifier les rôles	roles	update	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a552-4e59-acd8-60d43566656a	Supprimer les rôles	roles-delete	Permet de supprimer des rôles	roles	delete	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a6f4-4900-9f5f-f75a9b1c6ed8	Assigner des rôles	roles-assign	Permet d'assigner des rôles aux utilisateurs	roles	update	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a876-4562-b918-16b3522821a6	Exporter les rôles	roles-export	Permet d'exporter la liste des rôles	roles	export	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-a94e-4a3c-8dea-6a6c2fd0f464	Importer des rôles	roles-import	Permet d'importer des rôles depuis un fichier	roles	import	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-aa4c-43eb-8fe4-f3200a8703bb	Dupliquer les rôles	roles-duplicate	Permet de dupliquer les rôles	roles	duplicate	web	Gestion des rôles	10	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-abae-4fa0-9f33-eb7a5a4c021a	Télécharger les rôles	roles-download	Permet de télécharger les informations des rôles	roles	download	web	Gestion des rôles	5	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-ae1b-4beb-9c20-8307b5648697	Restaurer les rôles	roles-restore	Permet de restaurer les rôles supprimés	roles	restore	web	Gestion des rôles	15	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-afed-410e-b1ee-e0b14021bda1	Gérer les rôles	roles-manage	Permet de gérer toutes les actions sur les rôles	roles	manage	web	Gestion des rôles	20	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b199-4c8f-9a7e-df70257c220b	Gérer les permissions	permissions-manage	Permet de gérer toutes les permissions	permissions	manage	web	Gestion des permissions	20	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b311-4e7d-96b6-fda2aa6eee78	Voir les permissions	permissions-read	Permet de consulter les permissions	permissions	read	web	Gestion des permissions	5	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b483-4fd1-9137-e4730fe26f2d	Assigner des permissions	permissions-assign	Permet d'assigner des permissions aux rôles	permissions	update	web	Gestion des permissions	15	t	t	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b610-497a-8bf9-3381d4a0e5ba	Voir le dashboard	dashboard-read	Permet d'accéder au tableau de bord	dashboard	read	web	Dashboard	1	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b782-4ad9-b69d-2aec6e34c54e	Voir les rapports	reports-read	Permet de consulter les rapports	reports	read	web	Rapports	5	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-b8fe-4a5e-9806-f30765ec651d	Exporter les rapports	reports-export	Permet d'exporter les rapports	reports	export	web	Rapports	5	t	f	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
 \.
 
 
 --
--- TOC entry 5359 (class 0 OID 38123)
+-- TOC entry 5408 (class 0 OID 48177)
 -- Dependencies: 225
 -- Data for Name: personal_access_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2171,135 +2811,133 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 
 
 --
--- TOC entry 5369 (class 0 OID 39854)
--- Dependencies: 236
+-- TOC entry 5417 (class 0 OID 48534)
+-- Dependencies: 235
 -- Data for Name: prestataires; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.prestataires (id_prestataire, raison_sociale_prestataire, numero_identification_prestataire, email_prestataire, numero_cc_prestataire, numero_rccm_prestataire, telephone_principal_prestataire, telephone_secondaire_prestataire, adresse_prestataire, ville_prestataire, pays_prestataire, representant_legal_prestataire, statut_prestataire, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a0834807-6769-4a7c-a6c3-dcc72acd9442	Société de Construction ABC	CI-U123456789	nfcdjobo@gmail.com	CC-696332655	RCCM-A-2020-B-12345	+2250140940330	+2250245785524	Abidjan Cocody La Djibi	Cocody, Abidjan, Cote D'Ivoire	Côte d'Ivoire	[{"nom":"N'DRI DJOBO","contact":"+225 07 07 07 07 07","email":"djobo@yopmail.com","nationalite":"Ivoirienne","pays":"C\\u00f4te d\\u2019Ivoire","adresse":"Abidjan Cocody La Djibi","profession":"Ing\\u00e9nieur en b\\u00e2timent","date_naissance":"1990-12-04","lieu_naissance":"TAABOU","numero_piece_identite":"CI012345678901","type_piece_identite":"CNI","date_delivrance":"2019-12-04","lieu_delivrance":"Abidjan","date_expiration":"2030-06-04","id":"25818495-1ac3-4e7b-86e3-63f231bb0764","statut":1,"created_at":"2025-12-04T14:04:56+00:00"}]	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-04 14:04:56	2025-12-04 14:04:56	\N
+a0ae078c-1897-48de-8e7a-867ef2d066d8	SOCIETE GENERALE DE CONSTRUCTION NAVALE (SGCN SRL)	CI-ABJ-2025-001	sociatygcn@sosgcn.com	CI-123456780	RCCM-ABJ-2025-B-12345	+225014101203254	+225014101203854	Abidjan Plateau, Côte d'Ivoire, rue 225	Abidjan	Côte d'Ivoire	[{"nom":"KOUASSI Jean-Luc","contact":"+2250012458501","email":"jeanluc.kouassi@gmail.com","nationalite":"Ivoiriennes","pays":"C\\u00f4te d'Ivoire","adresse":"Abidjan Cocody, rue des golfes","profession":"Directeur G\\u00e9n\\u00e9rale","date_naissance":"1989-06-15","lieu_naissance":"Yamoussoukro","numero_piece_identite":"CI 201 21 01022","type_piece_identite":"CNI","date_delivrance":"2020-07-05","lieu_delivrance":"Yamoussoukro","date_expiration":"2030-07-04","id":"ea71a969-3885-469c-aeba-88351750b6d9","statut":1,"created_at":"2025-12-25T20:05:13+00:00"}]	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:05:15	2025-12-25 20:05:15	\N
+a0af6c59-ef06-4bf7-97ef-fec58547831c	SOCIETE APHA GOF (SAG)	SA-12525845	societeapha@gof.com	87153814K	ZCCM-ABJ-2024-B-12345	+2250120023120	+2250123001000	Abidjan Côte d'Ivoire	Abidjan	Côte d'Ivoire	[{"nom":"KOUASSI Yao","contact":"+22501120102","email":"yao@gmail.com","nationalite":"Ivoirienne","pays":"C\\u00f4te d'Ivoire","adresse":"Abidjan C\\u00f4te d'Ivoire","profession":"Directeur G\\u00e9n\\u00e9ral","date_naissance":"1988-06-08","lieu_naissance":"Abidjan","numero_piece_identite":"CI 5255252222","type_piece_identite":"CNI","date_delivrance":"2025-12-09","lieu_delivrance":"Abidjan","date_expiration":"2026-11-07","id":"7cee2324-c762-4734-8e1b-515819c107d0","statut":1,"created_at":"2025-12-26T12:42:55+00:00"}]	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 12:42:55	2025-12-26 12:42:55	\N
 \.
 
 
 --
--- TOC entry 5376 (class 0 OID 40174)
--- Dependencies: 243
+-- TOC entry 5426 (class 0 OID 48875)
+-- Dependencies: 244
 -- Data for Name: prestataires_lots; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.prestataires_lots (prestataire_id, lot_id, proforma_id, date_debut_reelle, date_fin_reelle, statut_attribution, motif_suspension, date_suspension, motif_retrait, date_retrait, jours_retard, penalites_appliquees, pourcentage_avancement, observations, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a0834807-6769-4a7c-a6c3-dcc72acd9442	a07d172c-db69-4535-ae63-a6eeae44253f	a0834649-d89a-4ef7-a22c-6e95a4810b19	2025-12-04	\N	1	\N	\N	\N	\N	0	0.00	0.00	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-04 16:35:20	2025-12-04 16:35:20	\N
-a0834807-6769-4a7c-a6c3-dcc72acd9442	a07d0e0c-aa49-4488-b2fe-136f24256e8a	a0834649-d89a-4ef7-a22c-6e95a4810b19	2025-12-04	\N	1	\N	\N	\N	\N	0	0.00	0.00	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-04 16:41:26	2025-12-04 16:41:26	\N
-a0834807-6769-4a7c-a6c3-dcc72acd9442	a08593ef-3837-40da-b7ef-1ba5a175cbba	a0834649-d89a-4ef7-a22c-6e95a4810b19	2025-12-05	\N	1	\N	\N	\N	\N	0	0.00	0.00	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-05 17:38:59	2025-12-05 17:38:59	\N
-a0834807-6769-4a7c-a6c3-dcc72acd9442	a08f343d-b95a-436c-aa3f-8d322b64aa03	a08f7eb8-2f52-4aab-8f73-afc9647077aa	2025-12-10	\N	1	\N	\N	\N	\N	0	0.00	0.00	\N	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-10 15:47:47	2025-12-10 15:47:47	\N
+COPY public.prestataires_lots (id_attribution, prestataire_id, lot_id, proforma_id, version_attribution, is_active, numero_attribution, date_attribution, date_debut_prevue, date_fin_prevue, date_debut_reelle, date_fin_reelle, statut_attribution, motif_suspension, date_suspension, date_reprise_prevue, date_reprise_reelle, motif_retrait, date_retrait, type_retrait, jours_retard, taux_penalites, penalites_appliquees, penalites_payees, pourcentage_avancement, montant_engage, montant_paye, observations, conditions_particulieres, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_attribution_id) FROM stdin;
+a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0ae0f46-357b-43e2-af5e-f2e422a91e41	a0ae6915-de64-4c5b-acd2-df2742e3bdcc	1	t	ATT-2025-0001	2025-12-26	\N	\N	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	100.00	0.00	0.00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 00:37:58	2025-12-26 03:26:02	\N	\N
+a0af67ef-65a2-468b-a3d4-234546270174	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0af507f-239c-4b4b-8598-34f54238aa16	a0af67ef-39bd-4b60-aab7-f7f55dabd04e	1	t	ATT-2025-0002	2025-12-26	\N	\N	\N	2025-12-26	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	100.00	100300000.00	0.00	\n[Terminé] Observations	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 12:30:34	2025-12-26 15:26:38	\N	\N
 \.
 
 
 --
--- TOC entry 5365 (class 0 OID 38344)
+-- TOC entry 5414 (class 0 OID 48400)
 -- Dependencies: 232
 -- Data for Name: proformas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.proformas (id_proforma, version_proforma, date_proforma, montant_retenu_proforma, taxe_montant, remise_montant_proforma, modalite_proforma, penalites_proforma, motif_modification_proforma, actif_proforma, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id, numero_proforma, date_fin_validee_proforma, date_debut_validee_proforma, date_redemarrage_proforma) FROM stdin;
-a0834649-d89a-4ef7-a22c-6e95a4810b19	2	2025-12-04	17000000.00	1130500.00	850000.00	Paiement à 30 jours	1000000.00	Motif de modification	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-04 14:00:04	2025-12-04 14:01:03	\N	a08345e0-0ca7-4b99-b2a1-b4c7f4ba1278	PROF-2025-0001	\N	\N	\N
-a08345e0-0ca7-4b99-b2a1-b4c7f4ba1278	1	2025-12-04	17000000.00	807500.00	850000.00	Paiement à 30 jours	1000000.00	\N	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-04 13:58:54	2025-12-10 13:57:13	\N	\N	PROF-2025-0001	\N	\N	\N
-a08f7eb8-2f52-4aab-8f73-afc9647077aa	1	2025-12-10	17000000.00	3060000.00	1190000.00	30% du début, 70% à la livraison	750000.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-10 15:47:47	2025-12-10 15:47:47	\N	\N	PROF-2025-0002	2028-02-06	2026-02-06	2026-01-17
+COPY public.proformas (id_proforma, version_proforma, numero_proforma, date_proforma, date_debut_validee_proforma, date_redemarrage_proforma, date_fin_validee_proforma, montant_retenu_proforma, taxe_montant, remise_montant_proforma, modalite_proforma, penalites_proforma, motif_modification_proforma, actif_proforma, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
+a0ae6915-de64-4c5b-acd2-df2742e3bdcc	1	PROF-2025-0001	2025-12-26	2025-12-27	2025-12-28	2025-12-29	165000000.00	29700000.00	2607000.00	30% avant livraison et 70% après livraison.	5.50	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 00:37:58	2025-12-26 00:37:58	\N	\N
+a0af67ef-39bd-4b60-aab7-f7f55dabd04e	1	PF2026	2025-12-26	2025-12-18	2025-12-18	2026-01-31	85000000.00	15300000.00	0.00	\N	0.00	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 12:30:34	2025-12-26 12:30:34	\N	\N
 \.
 
 
 --
--- TOC entry 5361 (class 0 OID 38178)
+-- TOC entry 5410 (class 0 OID 48232)
 -- Dependencies: 227
 -- Data for Name: role_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.role_permissions (role_id, permission_id, attribue_par, attribue_le, expire_le, actif, conditions, notes, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-4fa2-4cf5-b047-a29458de63f7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5540-406f-b3c5-caa55f8040bc	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-566d-4c57-b419-2771c263c868	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5773-4533-967f-44bb1b0c08a0	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-580a-424b-bda3-7351a6eedbf0	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-58ae-429e-9a35-6e0a7f017ca6	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-590f-44ff-8825-78a7a3d07a14	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5962-47d9-b665-d1f61cc24508	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-59b0-4863-b37e-aef368b69df7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5a02-4fdb-b3a9-d0793908453f	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5a4f-4f51-b030-0f40f8f61a30	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5a9b-4d1b-a862-3674e2dcf4b7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5af2-4472-92f7-e1f4109acd81	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5b41-4e63-9609-f30466286c73	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5b8e-4338-a83f-0cc32398ff7f	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5bda-4772-b185-c0bc00bd8611	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5cb1-4157-9835-637092de810c	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5dbd-4f0b-8f4f-8110cd1bccc1	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5e5c-4b8c-a199-11b82a1aa80e	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5ee9-46bf-96d1-f8153045db4a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-5f6d-4f9d-a02e-3994da4d7d7c	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-6025-4b2a-afb0-a0f690daa6ba	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-60a4-42fc-b03b-5c609ea038a1	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-6126-41b3-97de-c2c4526e502b	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-61a6-4d0f-b901-42e86e07d1a5	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-6229-462e-93dd-53e0a48d911f	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-62c8-4fb8-af2b-39960ba2583a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-6384-4319-9d02-ec3c18f5f4ec	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	a073b928-63eb-46c8-85f9-fb5563759003	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-4fa2-4cf5-b047-a29458de63f7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5540-406f-b3c5-caa55f8040bc	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-566d-4c57-b419-2771c263c868	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5773-4533-967f-44bb1b0c08a0	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-580a-424b-bda3-7351a6eedbf0	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-58ae-429e-9a35-6e0a7f017ca6	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-590f-44ff-8825-78a7a3d07a14	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5962-47d9-b665-d1f61cc24508	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-59b0-4863-b37e-aef368b69df7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5a02-4fdb-b3a9-d0793908453f	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5a4f-4f51-b030-0f40f8f61a30	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5a9b-4d1b-a862-3674e2dcf4b7	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5af2-4472-92f7-e1f4109acd81	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5b41-4e63-9609-f30466286c73	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5b8e-4338-a83f-0cc32398ff7f	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5bda-4772-b185-c0bc00bd8611	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5cb1-4157-9835-637092de810c	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5dbd-4f0b-8f4f-8110cd1bccc1	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5e5c-4b8c-a199-11b82a1aa80e	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5ee9-46bf-96d1-f8153045db4a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-5f6d-4f9d-a02e-3994da4d7d7c	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-6025-4b2a-afb0-a0f690daa6ba	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-60a4-42fc-b03b-5c609ea038a1	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-62c8-4fb8-af2b-39960ba2583a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-6384-4319-9d02-ec3c18f5f4ec	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	a073b928-63eb-46c8-85f9-fb5563759003	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-5540-406f-b3c5-caa55f8040bc	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-566d-4c57-b419-2771c263c868	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-5773-4533-967f-44bb1b0c08a0	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-5b41-4e63-9609-f30466286c73	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-62c8-4fb8-af2b-39960ba2583a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	a073b928-6384-4319-9d02-ec3c18f5f4ec	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6685-48b8-afba-a5c9cf6870a3	a073b928-566d-4c57-b419-2771c263c868	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6685-48b8-afba-a5c9cf6870a3	a073b928-62c8-4fb8-af2b-39960ba2583a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6685-48b8-afba-a5c9cf6870a3	a073b928-6384-4319-9d02-ec3c18f5f4ec	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-66f0-4446-8703-3f95a54cc955	a073b928-62c8-4fb8-af2b-39960ba2583a	\N	2025-11-26 20:28:01	\N	t	\N	\N	\N	\N	\N	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc74-ffd8-45aa-aab8-1732f786669e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-8e8e-435b-a098-e9ad5c87e1fb	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-90bd-4027-825e-f5639b32206e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-92c1-48dd-8fdc-36cf6ba8b6c0	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9473-42bc-8c86-f1ede4c77180	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9609-43af-a743-63db217c3199	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-97a1-46eb-a425-48ec83a0441f	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9949-4e16-b3d5-22cd129ca0ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9af4-4747-bc97-668fa562f564	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9c46-4bcd-b202-d7dbb4cd3e53	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9d9e-4bdf-a534-5012b1982b92	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-9f36-43c3-9864-4fcc702f373a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a0cb-408e-b1ea-cb906e90684c	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a24f-422a-8978-a007ff9da136	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a3da-4c2e-8534-dec81dd4c6ac	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a552-4e59-acd8-60d43566656a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a6f4-4900-9f5f-f75a9b1c6ed8	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a876-4562-b918-16b3522821a6	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-a94e-4a3c-8dea-6a6c2fd0f464	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-aa4c-43eb-8fe4-f3200a8703bb	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-abae-4fa0-9f33-eb7a5a4c021a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-ae1b-4beb-9c20-8307b5648697	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-afed-410e-b1ee-e0b14021bda1	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b199-4c8f-9a7e-df70257c220b	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b311-4e7d-96b6-fda2aa6eee78	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b483-4fd1-9137-e4730fe26f2d	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b610-497a-8bf9-3381d4a0e5ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b782-4ad9-b69d-2aec6e34c54e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	a0acfc77-b8fe-4a5e-9806-f30765ec651d	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc74-ffd8-45aa-aab8-1732f786669e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-8e8e-435b-a098-e9ad5c87e1fb	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-90bd-4027-825e-f5639b32206e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-92c1-48dd-8fdc-36cf6ba8b6c0	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9473-42bc-8c86-f1ede4c77180	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9609-43af-a743-63db217c3199	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-97a1-46eb-a425-48ec83a0441f	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9949-4e16-b3d5-22cd129ca0ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9af4-4747-bc97-668fa562f564	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9c46-4bcd-b202-d7dbb4cd3e53	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9d9e-4bdf-a534-5012b1982b92	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-9f36-43c3-9864-4fcc702f373a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a0cb-408e-b1ea-cb906e90684c	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a24f-422a-8978-a007ff9da136	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a3da-4c2e-8534-dec81dd4c6ac	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a552-4e59-acd8-60d43566656a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a6f4-4900-9f5f-f75a9b1c6ed8	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a876-4562-b918-16b3522821a6	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-a94e-4a3c-8dea-6a6c2fd0f464	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-aa4c-43eb-8fe4-f3200a8703bb	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-abae-4fa0-9f33-eb7a5a4c021a	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-ae1b-4beb-9c20-8307b5648697	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-afed-410e-b1ee-e0b14021bda1	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-b610-497a-8bf9-3381d4a0e5ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-b782-4ad9-b69d-2aec6e34c54e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	a0acfc77-b8fe-4a5e-9806-f30765ec651d	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-8e8e-435b-a098-e9ad5c87e1fb	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-90bd-4027-825e-f5639b32206e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-92c1-48dd-8fdc-36cf6ba8b6c0	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-a24f-422a-8978-a007ff9da136	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-b610-497a-8bf9-3381d4a0e5ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	a0acfc77-b782-4ad9-b69d-2aec6e34c54e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c1ba-4040-9975-19d6024df0a3	a0acfc77-90bd-4027-825e-f5639b32206e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c1ba-4040-9975-19d6024df0a3	a0acfc77-b610-497a-8bf9-3381d4a0e5ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c1ba-4040-9975-19d6024df0a3	a0acfc77-b782-4ad9-b69d-2aec6e34c54e	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c32c-4526-b84e-b09dcf38b0fa	a0acfc77-b610-497a-8bf9-3381d4a0e5ba	\N	2025-12-25 07:38:25	\N	t	\N	\N	\N	\N	\N	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
 \.
 
 
 --
--- TOC entry 5355 (class 0 OID 38041)
+-- TOC entry 5404 (class 0 OID 48095)
 -- Dependencies: 221
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.roles (id, name, slug, description, level, is_system_role, created_at, updated_at, deleted_at) FROM stdin;
-a073b928-64f6-48c7-b24f-9a2a3e46cd29	Super Administrateur	super-admin	Accès complet à toutes les fonctionnalités du système	100	t	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-65a4-43c4-ac0f-5d1af119ac18	Administrateur	admin	Gestion complète du système avec quelques restrictions	80	t	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6619-4129-9dae-a9b671dd94f2	Manager	manager	Gestion des utilisateurs et des contenus	60	f	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-6685-48b8-afba-a5c9cf6870a3	Éditeur	editor	Modification et gestion des contenus	40	f	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
-a073b928-66f0-4446-8703-3f95a54cc955	Utilisateur	user	Accès de base au système	20	f	2025-11-26 20:28:01	2025-11-26 20:28:01	\N
+a0acfc77-bb3b-43a5-9449-7f81b9daf3be	Super Administrateur	super-admin	Accès complet à toutes les fonctionnalités du système	100	t	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-be70-422b-b88e-a159ff77c61b	Administrateur	admin	Gestion complète du système avec quelques restrictions	80	t	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c035-4e8a-be45-6c5821aac0fa	Manager	manager	Gestion des utilisateurs et des contenus	60	f	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c1ba-4040-9975-19d6024df0a3	Éditeur	editor	Modification et gestion des contenus	40	f	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
+a0acfc77-c32c-4526-b84e-b09dcf38b0fa	Utilisateur	user	Accès de base au système	20	f	2025-12-25 07:38:25	2025-12-25 07:38:25	\N
 \.
 
 
 --
--- TOC entry 5373 (class 0 OID 40022)
+-- TOC entry 5422 (class 0 OID 48733)
 -- Dependencies: 240
 -- Data for Name: situations_financieres; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2309,50 +2947,45 @@ COPY public.situations_financieres (id_situation_financiere, prestataire_id, exe
 
 
 --
--- TOC entry 5362 (class 0 OID 38233)
+-- TOC entry 5411 (class 0 OID 48287)
 -- Dependencies: 229
 -- Data for Name: types_appels_offres; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.types_appels_offres (id_type_appel_offre, libelle_type_appel_offre, code_type_appel_offre, valeur_minimuim_type_appel_offre, valeur_maximuim_type_appel_offre, description_critere_type_appel_offre, actif_type_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id, version_type_appel_offre, motif_modification_type_appel_offre) FROM stdin;
-a0858897-bf8b-4260-8f5d-9079fcd64bc6	azert	AOCO	7000001.00	10000000.00	Description	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-05 16:57:07	2025-12-08 14:51:07	\N	\N	1	\N
-a08b6484-1025-4c4f-acb5-4cb680c01ab2	azert	AOCO	7000002.00	10000000.00	Description	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-08 14:51:14	2025-12-09 12:54:42	\N	a0858897-bf8b-4260-8f5d-9079fcd64bc6	2	fgf
-a07c9987-11a3-4050-b044-0490f7ce4113	Appel d’Offres avec Concours	AOC	500000.00	7000000.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-01 06:22:03	2025-12-09 13:02:32	\N	\N	1	\N
-a08d3de5-fde5-41ea-b7b5-bb9871fc5638	Appel d’Offres à Procédure d’Urgence	AOCO	7000002.00	10000000.00	Description	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-09 12:54:54	2025-12-09 13:04:50	\N	a08b6484-1025-4c4f-acb5-4cb680c01ab2	3	\N
-a08d4175-e0a8-4b49-823f-eb23202cf35e	Appel d’Offres à Procédure d’Urgence	AOCO	7000001.00	10000000.00	Description	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-09 13:04:50	2025-12-09 13:04:50	\N	a08d3de5-fde5-41ea-b7b5-bb9871fc5638	4	Motif de modification
-a073c14b-af1f-4b76-8cf4-0d5b8fb28dc7	Appel d’offres restreint	AOR	1000000.00	25000000.00	Seules les entreprises présélectionnées sont autorisées à soumissionner.\r\n➡️ Filtrage initial\r\n➡️ Plus rapide\r\n➡️ Garantit la qualité des soumissionnaires	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-11-26 20:50:46	2025-12-09 13:06:47	\N	\N	1	\N
-a08d4228-5a3f-4ba1-a0ed-cbeb090140e4	Appel d’offres restreint	AOR	1000001.00	25000000.00	Seules les entreprises présélectionnées sont autorisées à soumissionner.\r\n➡️ Filtrage initial\r\n➡️ Plus rapide\r\n➡️ Garantit la qualité des soumissionnaires	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-09 13:06:47	2025-12-09 13:06:47	\N	a073c14b-af1f-4b76-8cf4-0d5b8fb28dc7	2	Motif de modification
-a073b980-bbc7-440f-875e-4f216305a2e0	Appel d’offres ouvert	AOO	25000000.00	50000000.00	dfnjfggfkgfg	f	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-11-26 20:28:59	2025-12-09 13:07:11	\N	\N	1	\N
-a08d424c-2d6f-4884-9f2d-32c277f3968f	Appel d’offres ouvert	AOO	25000001.00	50000000.00	dfnjfggfkgfg	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	2025-12-09 13:07:11	2025-12-09 13:07:11	\N	a073b980-bbc7-440f-875e-4f216305a2e0	2	Motif de modification
-a08d428e-f0cf-4b74-a083-fdfb11105270	Appel d’Offres International	AOI	50000001.00	100000000.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-09 13:07:54	2025-12-09 13:07:54	\N	\N	1	\N
-a08d47aa-bcad-4af4-9d90-3031648bbafa	Appel d’Offres National	AON	100000001.00	150000000.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-09 13:22:12	2025-12-09 13:22:12	\N	\N	1	\N
-a08d4852-293b-475b-9291-17db5ae56e51	Demande de Renseignements et de Prix	DRP	250000.00	499999.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-09 13:24:01	2025-12-09 13:24:01	\N	\N	1	\N
-a08d48d4-6151-494a-bece-76f8241641e3	Demande de Cotation	DC	10000.00	499998.00	\N	t	1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	\N	\N	2025-12-09 13:25:27	2025-12-09 13:25:27	\N	\N	1	\N
+a0ad5e41-dfe1-4695-94c8-f15afad2678d	APPEL D'OFFRE OUVERT	AOO	1.00	20000000.00	Procédure dans laquelle toute entreprise qualifiée peut soumettre une offre, sans restriction préalable.\r\nCaractéristiques :\r\nLarge concurrence\r\nPublication publique (journaux, plateformes officielles)\r\nTransparence élevée\r\nAvantages :\r\nMeilleur rapport qualité/prix\r\nÉgalité de traitement	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:11:51	2025-12-25 12:11:51	\N	\N	1	\N
+a0ad5ed9-6b40-4295-b11f-bb294113e2af	APPEL D'OFFRE RESTREINT	AOR	20000001.00	50000000.00	Seules les entreprises pré-sélectionnées ou invitées peuvent soumissionner.\r\n\r\nCaractéristiques :\r\n\r\nNombre limité de candidats\r\n\r\nSélection basée sur des critères techniques et financiers\r\nAvantages :\r\nGain de temps\r\nOffres plus ciblées et qualitatives	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:13:30	2025-12-25 12:13:30	\N	\N	1	\N
+a0ad5f61-0932-4ae3-9e7e-820c18024099	APPEL D'OFFRE NATIONAL	AON	50000001.00	90000000.00	Réservé aux entreprises du pays concerné.\r\nCaractéristiques :\r\nFavorise les entreprises locales\r\nProcédures adaptées au contexte national\r\nAvantages :\r\nDéveloppement économique local\r\nRéduction des coûts logistiques	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:14:59	2025-12-25 12:14:59	\N	\N	1	\N
+a0ad5ffe-56d8-4593-adbc-dcbf4e4b25d9	APPEL D'OFFRE INTERNATIONAL	AOI	90000001.00	150000000.00	Ouvert aux entreprises étrangères et nationales.	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:16:42	2025-12-25 12:16:42	\N	\N	1	\N
+a0ad60cb-b4c2-44f6-89bd-3818680c67fa	APPEL D'OFFRE AVEC PREQUALIFICATION	AOAP	15000001.00	250000000.00	Étape préalable visant à vérifier la capacité technique, financière et administrative des entreprises avant l’appel d’offres final.	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:18:57	2025-12-25 12:18:57	\N	\N	1	\N
+a0ad6950-63ec-4588-a41c-14244604c6ec	APPEL D'OFFRES A DEUX ENVELOPPES	AODE	150000001.00	200000000.00	Les soumissionnaires déposent :\r\nune offre technique\r\nune offre financière, analysées séparément	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:42:46	2025-12-25 12:42:46	\N	\N	1	\N
+a0af47a5-0c9b-4715-8616-40e2e7e15fe1	Appel d’offres sur concours	AOC	200000001.00	250000000.00	L’appel d’offres sur concours est une procédure de passation de marché par laquelle le maître d’ouvrage invite des candidats à proposer des solutions techniques, architecturales ou conceptuelles répondant à un besoin spécifique. Les offres sont évaluées principalement sur la qualité technique, la créativité, l’innovation et la pertinence des solutions proposées, et non uniquement sur le prix.\r\n\r\nCette procédure est généralement utilisée pour des projets nécessitant un haut niveau d’expertise, tels que les études architecturales, l’ingénierie, l’urbanisme ou le design. Les propositions sont examinées par un jury ou une commission spécialisée, qui sélectionne la meilleure solution. Le lauréat du concours peut ensuite se voir attribuer le marché correspondant, conformément aux règles en vigueur...	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 11:00:17	2025-12-26 11:01:31	\N	\N	1	\N
 \.
 
 
 --
--- TOC entry 5356 (class 0 OID 38058)
+-- TOC entry 5405 (class 0 OID 48112)
 -- Dependencies: 222
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, nom_complet, email, password, telephone_principal, telepone_secondaire, role_id, email_verified_at, statut, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by) FROM stdin;
-1a9e9bbb-c5b3-4f89-ba6d-46c93d947e7d	DJOBO NDRI	nfcdjobo@gmail.com	$2y$12$tYRVVN/X1MRp9Ld7KWQpyeWZCEH5dk5juIBL2oNTGrpGIx9Y.650C	+2250200000000	+225010100000	a073b928-64f6-48c7-b24f-9a2a3e46cd29	2025-12-10 08:15:48	1	2025-11-26 20:28:01	2025-12-10 08:15:48	\N	\N	\N	\N
+COPY public.users (id, nom_complet, email, password, telephone_principal, telephone_secondaire, role_id, email_verified_at, statut, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by) FROM stdin;
+cbce60ed-83a3-4a39-8331-e3a4d9660d25	Allangba Koné	direction@isittci.com	$2y$12$Mol8.5JirRg2x5JWu2cQ7.Q2jEBFG8HyI95Hxzh8Es2I8JNaZK39m	+2250000000010	+2250000000011	a0acfc77-bb3b-43a5-9449-7f81b9daf3be	2025-12-25 07:38:26	1	2025-12-25 07:38:26	2025-12-25 07:38:26	\N	\N	\N	\N
+c10a2c28-bcbd-477a-aa10-73ddee5200ac	DJOBO NDRI	nfcdjobo@gmail.com	$2y$12$zU4v.W9XvdUWE7fBZ8zr6.XgQGFBN/C9.ysKgma2vCW.asUauVdmO	+2250200000000	+225010100000	a0acfc77-bb3b-43a5-9449-7f81b9daf3be	2025-12-25 19:32:55	1	2025-12-25 07:38:26	2025-12-25 19:32:55	\N	\N	\N	\N
 \.
 
 
 --
--- TOC entry 5516 (class 0 OID 0)
+-- TOC entry 5626 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 136, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 27, true);
 
 
 --
--- TOC entry 5116 (class 2606 OID 40292)
+-- TOC entry 5158 (class 2606 OID 49037)
 -- Name: alertes alertes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2361,7 +2994,7 @@ ALTER TABLE ONLY public.alertes
 
 
 --
--- TOC entry 5077 (class 2606 OID 38304)
+-- TOC entry 5102 (class 2606 OID 48358)
 -- Name: appels_offres appels_offres_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2370,7 +3003,25 @@ ALTER TABLE ONLY public.appels_offres
 
 
 --
--- TOC entry 5098 (class 2606 OID 39990)
+-- TOC entry 5126 (class 2606 OID 48699)
+-- Name: banques banques_code_banque_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.banques
+    ADD CONSTRAINT banques_code_banque_unique UNIQUE (code_banque);
+
+
+--
+-- TOC entry 5128 (class 2606 OID 48701)
+-- Name: banques banques_numero_compte_banque_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.banques
+    ADD CONSTRAINT banques_numero_compte_banque_unique UNIQUE (numero_compte_banque);
+
+
+--
+-- TOC entry 5130 (class 2606 OID 48697)
 -- Name: banques banques_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2379,7 +3030,7 @@ ALTER TABLE ONLY public.banques
 
 
 --
--- TOC entry 5100 (class 2606 OID 40021)
+-- TOC entry 5132 (class 2606 OID 48732)
 -- Name: capacites_techniques capacites_techniques_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2388,7 +3039,7 @@ ALTER TABLE ONLY public.capacites_techniques
 
 
 --
--- TOC entry 5079 (class 2606 OID 38338)
+-- TOC entry 5104 (class 2606 OID 48394)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2397,7 +3048,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5085 (class 2606 OID 38466)
+-- TOC entry 5112 (class 2606 OID 48533)
 -- Name: criteres_evaluations criteres_evaluations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2406,7 +3057,7 @@ ALTER TABLE ONLY public.criteres_evaluations
 
 
 --
--- TOC entry 5087 (class 2606 OID 38591)
+-- TOC entry 5124 (class 2606 OID 48665)
 -- Name: documents documents_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2415,25 +3066,16 @@ ALTER TABLE ONLY public.documents
 
 
 --
--- TOC entry 5114 (class 2606 OID 40253)
+-- TOC entry 5151 (class 2606 OID 49013)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations_lots_prestataires
-    ADD CONSTRAINT evaluations_lots_prestataires_pkey PRIMARY KEY (critere_evaluation_id, evaluation_id, prestatiare_id);
+    ADD CONSTRAINT evaluations_lots_prestataires_pkey PRIMARY KEY (id_evaluation_critere);
 
 
 --
--- TOC entry 5091 (class 2606 OID 39959)
--- Name: evaluations evaluations_numero_evaluation_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.evaluations
-    ADD CONSTRAINT evaluations_numero_evaluation_unique UNIQUE (numero_evaluation);
-
-
---
--- TOC entry 5093 (class 2606 OID 39957)
+-- TOC entry 5116 (class 2606 OID 48628)
 -- Name: evaluations evaluations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2442,7 +3084,7 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5104 (class 2606 OID 40085)
+-- TOC entry 5136 (class 2606 OID 48796)
 -- Name: evaluations_prestataires evaluations_prestataires_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2451,7 +3093,25 @@ ALTER TABLE ONLY public.evaluations_prestataires
 
 
 --
--- TOC entry 5047 (class 2606 OID 38120)
+-- TOC entry 5138 (class 2606 OID 48836)
+-- Name: factures factures_numero_facture_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_numero_facture_unique UNIQUE (numero_facture);
+
+
+--
+-- TOC entry 5140 (class 2606 OID 48834)
+-- Name: factures factures_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_pkey PRIMARY KEY (id_facture);
+
+
+--
+-- TOC entry 5072 (class 2606 OID 48174)
 -- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2460,7 +3120,7 @@ ALTER TABLE ONLY public.failed_jobs
 
 
 --
--- TOC entry 5049 (class 2606 OID 38122)
+-- TOC entry 5074 (class 2606 OID 48176)
 -- Name: failed_jobs failed_jobs_uuid_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2469,7 +3129,16 @@ ALTER TABLE ONLY public.failed_jobs
 
 
 --
--- TOC entry 5083 (class 2606 OID 38426)
+-- TOC entry 5156 (class 2606 OID 49008)
+-- Name: evaluations_lots_prestataires idx_unique_eval_critere_prestataire; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.evaluations_lots_prestataires
+    ADD CONSTRAINT idx_unique_eval_critere_prestataire UNIQUE (critere_evaluation_id, evaluation_id, prestataire_id);
+
+
+--
+-- TOC entry 5110 (class 2606 OID 48489)
 -- Name: lots lots_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2478,7 +3147,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5033 (class 2606 OID 34852)
+-- TOC entry 5058 (class 2606 OID 48094)
 -- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2487,7 +3156,7 @@ ALTER TABLE ONLY public.migrations
 
 
 --
--- TOC entry 5106 (class 2606 OID 40117)
+-- TOC entry 5142 (class 2606 OID 48874)
 -- Name: paiements paiements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2496,7 +3165,7 @@ ALTER TABLE ONLY public.paiements
 
 
 --
--- TOC entry 5045 (class 2606 OID 38105)
+-- TOC entry 5070 (class 2606 OID 48159)
 -- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2505,7 +3174,7 @@ ALTER TABLE ONLY public.password_reset_tokens
 
 
 --
--- TOC entry 5062 (class 2606 OID 38175)
+-- TOC entry 5087 (class 2606 OID 48229)
 -- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2514,7 +3183,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- TOC entry 5064 (class 2606 OID 38177)
+-- TOC entry 5089 (class 2606 OID 48231)
 -- Name: permissions permissions_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2523,7 +3192,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- TOC entry 5051 (class 2606 OID 38135)
+-- TOC entry 5076 (class 2606 OID 48189)
 -- Name: personal_access_tokens personal_access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2532,7 +3201,7 @@ ALTER TABLE ONLY public.personal_access_tokens
 
 
 --
--- TOC entry 5053 (class 2606 OID 38137)
+-- TOC entry 5078 (class 2606 OID 48191)
 -- Name: personal_access_tokens personal_access_tokens_token_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2541,16 +3210,16 @@ ALTER TABLE ONLY public.personal_access_tokens
 
 
 --
--- TOC entry 5112 (class 2606 OID 40223)
+-- TOC entry 5149 (class 2606 OID 48943)
 -- Name: prestataires_lots prestataires_lots_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.prestataires_lots
-    ADD CONSTRAINT prestataires_lots_pkey PRIMARY KEY (prestataire_id, lot_id, proforma_id);
+    ADD CONSTRAINT prestataires_lots_pkey PRIMARY KEY (id_attribution);
 
 
 --
--- TOC entry 5089 (class 2606 OID 39891)
+-- TOC entry 5114 (class 2606 OID 48571)
 -- Name: prestataires prestataires_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2559,7 +3228,7 @@ ALTER TABLE ONLY public.prestataires
 
 
 --
--- TOC entry 5081 (class 2606 OID 38382)
+-- TOC entry 5106 (class 2606 OID 48443)
 -- Name: proformas proformas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2568,7 +3237,7 @@ ALTER TABLE ONLY public.proformas
 
 
 --
--- TOC entry 5073 (class 2606 OID 38207)
+-- TOC entry 5098 (class 2606 OID 48261)
 -- Name: role_permissions role_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2577,7 +3246,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5035 (class 2606 OID 38055)
+-- TOC entry 5060 (class 2606 OID 48109)
 -- Name: roles roles_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2586,7 +3255,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 5037 (class 2606 OID 38053)
+-- TOC entry 5062 (class 2606 OID 48107)
 -- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2595,7 +3264,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 5039 (class 2606 OID 38057)
+-- TOC entry 5064 (class 2606 OID 48111)
 -- Name: roles roles_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2604,7 +3273,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 5102 (class 2606 OID 40053)
+-- TOC entry 5134 (class 2606 OID 48764)
 -- Name: situations_financieres situations_financieres_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2613,7 +3282,7 @@ ALTER TABLE ONLY public.situations_financieres
 
 
 --
--- TOC entry 5075 (class 2606 OID 38264)
+-- TOC entry 5100 (class 2606 OID 48318)
 -- Name: types_appels_offres types_appels_offres_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2622,7 +3291,7 @@ ALTER TABLE ONLY public.types_appels_offres
 
 
 --
--- TOC entry 5066 (class 2606 OID 38163)
+-- TOC entry 5091 (class 2606 OID 48217)
 -- Name: permissions unique_permission_per_guard; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2631,7 +3300,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- TOC entry 5041 (class 2606 OID 38081)
+-- TOC entry 5066 (class 2606 OID 48135)
 -- Name: users users_email_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2640,7 +3309,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5043 (class 2606 OID 38079)
+-- TOC entry 5068 (class 2606 OID 48133)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2649,23 +3318,63 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5094 (class 1259 OID 39953)
--- Name: idx_evaluation_ao_lot; Type: INDEX; Schema: public; Owner: postgres
+-- TOC entry 5152 (class 1259 OID 49011)
+-- Name: idx_elp_critere; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_evaluation_ao_lot ON public.evaluations USING btree (appel_offre_id, lot_id);
-
-
---
--- TOC entry 5095 (class 1259 OID 39954)
--- Name: idx_evaluation_prestataire; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_evaluation_prestataire ON public.evaluations USING btree (prestataire_id, statut_evaluation);
+CREATE INDEX idx_elp_critere ON public.evaluations_lots_prestataires USING btree (critere_evaluation_id);
 
 
 --
--- TOC entry 5096 (class 1259 OID 39955)
+-- TOC entry 5153 (class 1259 OID 49009)
+-- Name: idx_elp_evaluation; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elp_evaluation ON public.evaluations_lots_prestataires USING btree (evaluation_id);
+
+
+--
+-- TOC entry 5154 (class 1259 OID 49010)
+-- Name: idx_elp_prestataire; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_elp_prestataire ON public.evaluations_lots_prestataires USING btree (prestataire_id);
+
+
+--
+-- TOC entry 5117 (class 1259 OID 48955)
+-- Name: idx_evaluation_attribution; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_evaluation_attribution ON public.evaluations USING btree (attribution_id);
+
+
+--
+-- TOC entry 5118 (class 1259 OID 48626)
+-- Name: idx_evaluation_is_current; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_evaluation_is_current ON public.evaluations USING btree (is_current);
+
+
+--
+-- TOC entry 5119 (class 1259 OID 48625)
+-- Name: idx_evaluation_numero_current; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_evaluation_numero_current ON public.evaluations USING btree (numero_evaluation, is_current);
+
+
+--
+-- TOC entry 5120 (class 1259 OID 48634)
+-- Name: idx_evaluation_parent; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_evaluation_parent ON public.evaluations USING btree (evaluation_parent_id);
+
+
+--
+-- TOC entry 5121 (class 1259 OID 48624)
 -- Name: idx_evaluation_rang; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2673,7 +3382,39 @@ CREATE INDEX idx_evaluation_rang ON public.evaluations USING btree (rang);
 
 
 --
--- TOC entry 5055 (class 1259 OID 38158)
+-- TOC entry 5122 (class 1259 OID 48623)
+-- Name: idx_evaluation_statut; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_evaluation_statut ON public.evaluations USING btree (statut_evaluation);
+
+
+--
+-- TOC entry 5143 (class 1259 OID 48937)
+-- Name: idx_lot_active; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_lot_active ON public.prestataires_lots USING btree (lot_id, is_active);
+
+
+--
+-- TOC entry 5144 (class 1259 OID 48938)
+-- Name: idx_lot_statut; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_lot_statut ON public.prestataires_lots USING btree (lot_id, statut_attribution);
+
+
+--
+-- TOC entry 5145 (class 1259 OID 48941)
+-- Name: idx_numero_attribution; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_numero_attribution ON public.prestataires_lots USING btree (numero_attribution);
+
+
+--
+-- TOC entry 5080 (class 1259 OID 48212)
 -- Name: idx_permissions_category; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2681,7 +3422,7 @@ CREATE INDEX idx_permissions_category ON public.permissions USING btree (categor
 
 
 --
--- TOC entry 5056 (class 1259 OID 38161)
+-- TOC entry 5081 (class 1259 OID 48215)
 -- Name: idx_permissions_complete; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2689,7 +3430,7 @@ CREATE INDEX idx_permissions_complete ON public.permissions USING btree (resourc
 
 
 --
--- TOC entry 5057 (class 1259 OID 38157)
+-- TOC entry 5082 (class 1259 OID 48211)
 -- Name: idx_permissions_guard_active; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2697,7 +3438,7 @@ CREATE INDEX idx_permissions_guard_active ON public.permissions USING btree (gua
 
 
 --
--- TOC entry 5058 (class 1259 OID 38156)
+-- TOC entry 5083 (class 1259 OID 48210)
 -- Name: idx_permissions_resource_action; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2705,7 +3446,7 @@ CREATE INDEX idx_permissions_resource_action ON public.permissions USING btree (
 
 
 --
--- TOC entry 5059 (class 1259 OID 38159)
+-- TOC entry 5084 (class 1259 OID 48213)
 -- Name: idx_permissions_slug; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2713,7 +3454,7 @@ CREATE INDEX idx_permissions_slug ON public.permissions USING btree (slug);
 
 
 --
--- TOC entry 5060 (class 1259 OID 38160)
+-- TOC entry 5085 (class 1259 OID 48214)
 -- Name: idx_permissions_system_active; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2721,7 +3462,23 @@ CREATE INDEX idx_permissions_system_active ON public.permissions USING btree (is
 
 
 --
--- TOC entry 5067 (class 1259 OID 38227)
+-- TOC entry 5146 (class 1259 OID 48940)
+-- Name: idx_prestataire_active; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_prestataire_active ON public.prestataires_lots USING btree (prestataire_id, is_active);
+
+
+--
+-- TOC entry 5147 (class 1259 OID 48939)
+-- Name: idx_prestataire_statut; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_prestataire_statut ON public.prestataires_lots USING btree (prestataire_id, statut_attribution);
+
+
+--
+-- TOC entry 5092 (class 1259 OID 48281)
 -- Name: idx_role_permissions_actif_deleted; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2729,7 +3486,7 @@ CREATE INDEX idx_role_permissions_actif_deleted ON public.role_permissions USING
 
 
 --
--- TOC entry 5068 (class 1259 OID 38225)
+-- TOC entry 5093 (class 1259 OID 48279)
 -- Name: idx_role_permissions_attribue_par; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2737,7 +3494,7 @@ CREATE INDEX idx_role_permissions_attribue_par ON public.role_permissions USING 
 
 
 --
--- TOC entry 5069 (class 1259 OID 38226)
+-- TOC entry 5094 (class 1259 OID 48280)
 -- Name: idx_role_permissions_expiration; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2745,7 +3502,7 @@ CREATE INDEX idx_role_permissions_expiration ON public.role_permissions USING bt
 
 
 --
--- TOC entry 5070 (class 1259 OID 38224)
+-- TOC entry 5095 (class 1259 OID 48278)
 -- Name: idx_role_permissions_perm_actif; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2753,7 +3510,7 @@ CREATE INDEX idx_role_permissions_perm_actif ON public.role_permissions USING bt
 
 
 --
--- TOC entry 5071 (class 1259 OID 38223)
+-- TOC entry 5096 (class 1259 OID 48277)
 -- Name: idx_role_permissions_role_actif; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2761,7 +3518,23 @@ CREATE INDEX idx_role_permissions_role_actif ON public.role_permissions USING bt
 
 
 --
--- TOC entry 5054 (class 1259 OID 38133)
+-- TOC entry 5107 (class 1259 OID 48486)
+-- Name: lots_id_lot_numero_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX lots_id_lot_numero_index ON public.lots USING btree (id_lot, numero);
+
+
+--
+-- TOC entry 5108 (class 1259 OID 48487)
+-- Name: lots_id_lot_version_lot_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX lots_id_lot_version_lot_index ON public.lots USING btree (id_lot, version_lot);
+
+
+--
+-- TOC entry 5079 (class 1259 OID 48187)
 -- Name: personal_access_tokens_tokenable_type_tokenable_id_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2769,39 +3542,7 @@ CREATE INDEX personal_access_tokens_tokenable_type_tokenable_id_index ON public.
 
 
 --
--- TOC entry 5107 (class 1259 OID 40226)
--- Name: prestataires_lots_idx_date_debut; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX prestataires_lots_idx_date_debut ON public.prestataires_lots USING btree (date_debut_reelle);
-
-
---
--- TOC entry 5108 (class 1259 OID 40227)
--- Name: prestataires_lots_idx_date_fin; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX prestataires_lots_idx_date_fin ON public.prestataires_lots USING btree (date_fin_reelle);
-
-
---
--- TOC entry 5109 (class 1259 OID 40224)
--- Name: prestataires_lots_idx_lot_statut; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX prestataires_lots_idx_lot_statut ON public.prestataires_lots USING btree (lot_id, statut_attribution);
-
-
---
--- TOC entry 5110 (class 1259 OID 40225)
--- Name: prestataires_lots_idx_prestataire_statut; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX prestataires_lots_idx_prestataire_statut ON public.prestataires_lots USING btree (prestataire_id, statut_attribution);
-
-
---
--- TOC entry 5202 (class 2606 OID 40276)
+-- TOC entry 5251 (class 2606 OID 49021)
 -- Name: alertes alertes_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2810,7 +3551,7 @@ ALTER TABLE ONLY public.alertes
 
 
 --
--- TOC entry 5203 (class 2606 OID 40286)
+-- TOC entry 5252 (class 2606 OID 49031)
 -- Name: alertes alertes_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2819,7 +3560,7 @@ ALTER TABLE ONLY public.alertes
 
 
 --
--- TOC entry 5204 (class 2606 OID 40281)
+-- TOC entry 5253 (class 2606 OID 49026)
 -- Name: alertes alertes_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2828,7 +3569,7 @@ ALTER TABLE ONLY public.alertes
 
 
 --
--- TOC entry 5133 (class 2606 OID 38288)
+-- TOC entry 5175 (class 2606 OID 48342)
 -- Name: appels_offres appels_offres_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2837,7 +3578,7 @@ ALTER TABLE ONLY public.appels_offres
 
 
 --
--- TOC entry 5134 (class 2606 OID 38298)
+-- TOC entry 5176 (class 2606 OID 48352)
 -- Name: appels_offres appels_offres_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2846,7 +3587,7 @@ ALTER TABLE ONLY public.appels_offres
 
 
 --
--- TOC entry 5135 (class 2606 OID 38283)
+-- TOC entry 5177 (class 2606 OID 48337)
 -- Name: appels_offres appels_offres_type_appel_offre_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2855,7 +3596,7 @@ ALTER TABLE ONLY public.appels_offres
 
 
 --
--- TOC entry 5136 (class 2606 OID 38293)
+-- TOC entry 5178 (class 2606 OID 48347)
 -- Name: appels_offres appels_offres_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2864,7 +3605,7 @@ ALTER TABLE ONLY public.appels_offres
 
 
 --
--- TOC entry 5170 (class 2606 OID 39974)
+-- TOC entry 5213 (class 2606 OID 48681)
 -- Name: banques banques_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2873,7 +3614,7 @@ ALTER TABLE ONLY public.banques
 
 
 --
--- TOC entry 5171 (class 2606 OID 39984)
+-- TOC entry 5214 (class 2606 OID 48691)
 -- Name: banques banques_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2882,7 +3623,7 @@ ALTER TABLE ONLY public.banques
 
 
 --
--- TOC entry 5172 (class 2606 OID 39969)
+-- TOC entry 5215 (class 2606 OID 48676)
 -- Name: banques banques_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2891,7 +3632,7 @@ ALTER TABLE ONLY public.banques
 
 
 --
--- TOC entry 5173 (class 2606 OID 39979)
+-- TOC entry 5216 (class 2606 OID 48686)
 -- Name: banques banques_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2900,7 +3641,7 @@ ALTER TABLE ONLY public.banques
 
 
 --
--- TOC entry 5174 (class 2606 OID 40005)
+-- TOC entry 5217 (class 2606 OID 48716)
 -- Name: capacites_techniques capacites_techniques_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2909,7 +3650,7 @@ ALTER TABLE ONLY public.capacites_techniques
 
 
 --
--- TOC entry 5175 (class 2606 OID 40015)
+-- TOC entry 5218 (class 2606 OID 48726)
 -- Name: capacites_techniques capacites_techniques_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2918,7 +3659,7 @@ ALTER TABLE ONLY public.capacites_techniques
 
 
 --
--- TOC entry 5176 (class 2606 OID 40000)
+-- TOC entry 5219 (class 2606 OID 48711)
 -- Name: capacites_techniques capacites_techniques_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2927,7 +3668,7 @@ ALTER TABLE ONLY public.capacites_techniques
 
 
 --
--- TOC entry 5177 (class 2606 OID 40010)
+-- TOC entry 5220 (class 2606 OID 48721)
 -- Name: capacites_techniques capacites_techniques_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2936,7 +3677,7 @@ ALTER TABLE ONLY public.capacites_techniques
 
 
 --
--- TOC entry 5137 (class 2606 OID 38317)
+-- TOC entry 5179 (class 2606 OID 48373)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_appel_offre_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2945,7 +3686,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5138 (class 2606 OID 38322)
+-- TOC entry 5180 (class 2606 OID 48378)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2954,7 +3695,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5139 (class 2606 OID 38332)
+-- TOC entry 5181 (class 2606 OID 48388)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2963,7 +3704,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5140 (class 2606 OID 38339)
+-- TOC entry 5182 (class 2606 OID 48395)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_parent_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2972,7 +3713,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5141 (class 2606 OID 38327)
+-- TOC entry 5183 (class 2606 OID 48383)
 -- Name: caracteristiques_appels_offres caracteristiques_appels_offres_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2981,7 +3722,7 @@ ALTER TABLE ONLY public.caracteristiques_appels_offres
 
 
 --
--- TOC entry 5151 (class 2606 OID 38450)
+-- TOC entry 5193 (class 2606 OID 48517)
 -- Name: criteres_evaluations criteres_evaluations_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2990,7 +3731,7 @@ ALTER TABLE ONLY public.criteres_evaluations
 
 
 --
--- TOC entry 5152 (class 2606 OID 38460)
+-- TOC entry 5194 (class 2606 OID 48527)
 -- Name: criteres_evaluations criteres_evaluations_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2999,7 +3740,7 @@ ALTER TABLE ONLY public.criteres_evaluations
 
 
 --
--- TOC entry 5153 (class 2606 OID 38445)
+-- TOC entry 5195 (class 2606 OID 48512)
 -- Name: criteres_evaluations criteres_evaluations_lot_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3008,7 +3749,7 @@ ALTER TABLE ONLY public.criteres_evaluations
 
 
 --
--- TOC entry 5154 (class 2606 OID 38455)
+-- TOC entry 5196 (class 2606 OID 48522)
 -- Name: criteres_evaluations criteres_evaluations_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3017,7 +3758,7 @@ ALTER TABLE ONLY public.criteres_evaluations
 
 
 --
--- TOC entry 5155 (class 2606 OID 38575)
+-- TOC entry 5209 (class 2606 OID 48649)
 -- Name: documents documents_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3026,7 +3767,7 @@ ALTER TABLE ONLY public.documents
 
 
 --
--- TOC entry 5156 (class 2606 OID 38585)
+-- TOC entry 5210 (class 2606 OID 48659)
 -- Name: documents documents_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3035,7 +3776,7 @@ ALTER TABLE ONLY public.documents
 
 
 --
--- TOC entry 5157 (class 2606 OID 38570)
+-- TOC entry 5211 (class 2606 OID 48644)
 -- Name: documents documents_lot_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3044,7 +3785,7 @@ ALTER TABLE ONLY public.documents
 
 
 --
--- TOC entry 5158 (class 2606 OID 38580)
+-- TOC entry 5212 (class 2606 OID 48654)
 -- Name: documents documents_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3053,16 +3794,16 @@ ALTER TABLE ONLY public.documents
 
 
 --
--- TOC entry 5162 (class 2606 OID 39913)
--- Name: evaluations evaluations_appel_offre_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 5200 (class 2606 OID 48950)
+-- Name: evaluations evaluations_attribution_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations
-    ADD CONSTRAINT evaluations_appel_offre_id_foreign FOREIGN KEY (appel_offre_id) REFERENCES public.appels_offres(id_appel_offre) ON DELETE CASCADE;
+    ADD CONSTRAINT evaluations_attribution_id_foreign FOREIGN KEY (attribution_id) REFERENCES public.prestataires_lots(id_attribution) ON DELETE CASCADE;
 
 
 --
--- TOC entry 5163 (class 2606 OID 39938)
+-- TOC entry 5201 (class 2606 OID 48608)
 -- Name: evaluations evaluations_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3071,7 +3812,16 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5164 (class 2606 OID 39948)
+-- TOC entry 5202 (class 2606 OID 49045)
+-- Name: evaluations evaluations_critere_evaluation_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.evaluations
+    ADD CONSTRAINT evaluations_critere_evaluation_id_foreign FOREIGN KEY (critere_evaluation_id) REFERENCES public.criteres_evaluations(id_critere_evaluation) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5203 (class 2606 OID 48618)
 -- Name: evaluations evaluations_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3080,7 +3830,7 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5165 (class 2606 OID 39928)
+-- TOC entry 5204 (class 2606 OID 48593)
 -- Name: evaluations evaluations_evaluateur_principal_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3089,16 +3839,16 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5166 (class 2606 OID 39918)
--- Name: evaluations evaluations_lot_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 5205 (class 2606 OID 48629)
+-- Name: evaluations evaluations_evaluation_parent_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations
-    ADD CONSTRAINT evaluations_lot_id_foreign FOREIGN KEY (lot_id) REFERENCES public.lots(id_lot) ON DELETE CASCADE;
+    ADD CONSTRAINT evaluations_evaluation_parent_id_foreign FOREIGN KEY (evaluation_parent_id) REFERENCES public.evaluations(id_evaluation) ON DELETE SET NULL;
 
 
 --
--- TOC entry 5196 (class 2606 OID 40254)
+-- TOC entry 5245 (class 2606 OID 48992)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3107,16 +3857,16 @@ ALTER TABLE ONLY public.evaluations_lots_prestataires
 
 
 --
--- TOC entry 5197 (class 2606 OID 40237)
+-- TOC entry 5246 (class 2606 OID 48977)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_critere_evaluation_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations_lots_prestataires
-    ADD CONSTRAINT evaluations_lots_prestataires_critere_evaluation_id_foreign FOREIGN KEY (critere_evaluation_id) REFERENCES public.criteres_evaluations(id_critere_evaluation) ON DELETE SET NULL;
+    ADD CONSTRAINT evaluations_lots_prestataires_critere_evaluation_id_foreign FOREIGN KEY (critere_evaluation_id) REFERENCES public.criteres_evaluations(id_critere_evaluation) ON DELETE CASCADE;
 
 
 --
--- TOC entry 5198 (class 2606 OID 40264)
+-- TOC entry 5247 (class 2606 OID 49002)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3125,25 +3875,25 @@ ALTER TABLE ONLY public.evaluations_lots_prestataires
 
 
 --
--- TOC entry 5199 (class 2606 OID 40242)
+-- TOC entry 5248 (class 2606 OID 48982)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_evaluation_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations_lots_prestataires
-    ADD CONSTRAINT evaluations_lots_prestataires_evaluation_id_foreign FOREIGN KEY (evaluation_id) REFERENCES public.evaluations(id_evaluation) ON DELETE SET NULL;
+    ADD CONSTRAINT evaluations_lots_prestataires_evaluation_id_foreign FOREIGN KEY (evaluation_id) REFERENCES public.evaluations(id_evaluation) ON DELETE CASCADE;
 
 
 --
--- TOC entry 5200 (class 2606 OID 40247)
--- Name: evaluations_lots_prestataires evaluations_lots_prestataires_prestatiare_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 5249 (class 2606 OID 48987)
+-- Name: evaluations_lots_prestataires evaluations_lots_prestataires_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.evaluations_lots_prestataires
-    ADD CONSTRAINT evaluations_lots_prestataires_prestatiare_id_foreign FOREIGN KEY (prestatiare_id) REFERENCES public.prestataires(id_prestataire) ON DELETE SET NULL;
+    ADD CONSTRAINT evaluations_lots_prestataires_prestataire_id_foreign FOREIGN KEY (prestataire_id) REFERENCES public.prestataires(id_prestataire) ON DELETE CASCADE;
 
 
 --
--- TOC entry 5201 (class 2606 OID 40259)
+-- TOC entry 5250 (class 2606 OID 48997)
 -- Name: evaluations_lots_prestataires evaluations_lots_prestataires_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3152,16 +3902,7 @@ ALTER TABLE ONLY public.evaluations_lots_prestataires
 
 
 --
--- TOC entry 5167 (class 2606 OID 39923)
--- Name: evaluations evaluations_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.evaluations
-    ADD CONSTRAINT evaluations_prestataire_id_foreign FOREIGN KEY (prestataire_id) REFERENCES public.prestataires(id_prestataire) ON DELETE CASCADE;
-
-
---
--- TOC entry 5182 (class 2606 OID 40069)
+-- TOC entry 5225 (class 2606 OID 48780)
 -- Name: evaluations_prestataires evaluations_prestataires_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3170,7 +3911,7 @@ ALTER TABLE ONLY public.evaluations_prestataires
 
 
 --
--- TOC entry 5183 (class 2606 OID 40079)
+-- TOC entry 5226 (class 2606 OID 48790)
 -- Name: evaluations_prestataires evaluations_prestataires_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3179,7 +3920,7 @@ ALTER TABLE ONLY public.evaluations_prestataires
 
 
 --
--- TOC entry 5184 (class 2606 OID 40064)
+-- TOC entry 5227 (class 2606 OID 48775)
 -- Name: evaluations_prestataires evaluations_prestataires_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3188,7 +3929,7 @@ ALTER TABLE ONLY public.evaluations_prestataires
 
 
 --
--- TOC entry 5185 (class 2606 OID 40074)
+-- TOC entry 5228 (class 2606 OID 48785)
 -- Name: evaluations_prestataires evaluations_prestataires_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3197,7 +3938,16 @@ ALTER TABLE ONLY public.evaluations_prestataires
 
 
 --
--- TOC entry 5168 (class 2606 OID 39943)
+-- TOC entry 5206 (class 2606 OID 48603)
+-- Name: evaluations evaluations_rejete_par_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.evaluations
+    ADD CONSTRAINT evaluations_rejete_par_foreign FOREIGN KEY (rejete_par) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5207 (class 2606 OID 48613)
 -- Name: evaluations evaluations_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3206,7 +3956,7 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5169 (class 2606 OID 39933)
+-- TOC entry 5208 (class 2606 OID 48598)
 -- Name: evaluations evaluations_valide_par_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3215,7 +3965,43 @@ ALTER TABLE ONLY public.evaluations
 
 
 --
--- TOC entry 5146 (class 2606 OID 38405)
+-- TOC entry 5229 (class 2606 OID 48818)
+-- Name: factures factures_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_created_by_foreign FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5230 (class 2606 OID 48828)
+-- Name: factures factures_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_deleted_by_foreign FOREIGN KEY (deleted_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5231 (class 2606 OID 48813)
+-- Name: factures factures_proforma_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_proforma_id_foreign FOREIGN KEY (proforma_id) REFERENCES public.proformas(id_proforma) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5232 (class 2606 OID 48823)
+-- Name: factures factures_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.factures
+    ADD CONSTRAINT factures_updated_by_foreign FOREIGN KEY (updated_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5188 (class 2606 OID 48466)
 -- Name: lots lots_appel_offre_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3224,7 +4010,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5147 (class 2606 OID 38410)
+-- TOC entry 5189 (class 2606 OID 48471)
 -- Name: lots lots_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3233,7 +4019,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5148 (class 2606 OID 38420)
+-- TOC entry 5190 (class 2606 OID 48481)
 -- Name: lots lots_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3242,7 +4028,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5149 (class 2606 OID 38427)
+-- TOC entry 5191 (class 2606 OID 48490)
 -- Name: lots lots_parent_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3251,7 +4037,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5150 (class 2606 OID 38415)
+-- TOC entry 5192 (class 2606 OID 48476)
 -- Name: lots lots_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3260,7 +4046,7 @@ ALTER TABLE ONLY public.lots
 
 
 --
--- TOC entry 5186 (class 2606 OID 40096)
+-- TOC entry 5233 (class 2606 OID 48853)
 -- Name: paiements paiements_banque_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3269,7 +4055,7 @@ ALTER TABLE ONLY public.paiements
 
 
 --
--- TOC entry 5187 (class 2606 OID 40101)
+-- TOC entry 5234 (class 2606 OID 48858)
 -- Name: paiements paiements_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3278,7 +4064,7 @@ ALTER TABLE ONLY public.paiements
 
 
 --
--- TOC entry 5188 (class 2606 OID 40111)
+-- TOC entry 5235 (class 2606 OID 48868)
 -- Name: paiements paiements_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3287,7 +4073,16 @@ ALTER TABLE ONLY public.paiements
 
 
 --
--- TOC entry 5189 (class 2606 OID 40106)
+-- TOC entry 5236 (class 2606 OID 48848)
+-- Name: paiements paiements_facture_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.paiements
+    ADD CONSTRAINT paiements_facture_id_foreign FOREIGN KEY (facture_id) REFERENCES public.factures(id_facture) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5237 (class 2606 OID 48863)
 -- Name: paiements paiements_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3296,7 +4091,7 @@ ALTER TABLE ONLY public.paiements
 
 
 --
--- TOC entry 5121 (class 2606 OID 38164)
+-- TOC entry 5163 (class 2606 OID 48218)
 -- Name: permissions permissions_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3305,7 +4100,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- TOC entry 5122 (class 2606 OID 38169)
+-- TOC entry 5164 (class 2606 OID 48223)
 -- Name: permissions permissions_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3314,7 +4109,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- TOC entry 5159 (class 2606 OID 39875)
+-- TOC entry 5197 (class 2606 OID 48555)
 -- Name: prestataires prestataires_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3323,7 +4118,7 @@ ALTER TABLE ONLY public.prestataires
 
 
 --
--- TOC entry 5160 (class 2606 OID 39885)
+-- TOC entry 5198 (class 2606 OID 48565)
 -- Name: prestataires prestataires_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3332,7 +4127,7 @@ ALTER TABLE ONLY public.prestataires
 
 
 --
--- TOC entry 5190 (class 2606 OID 40207)
+-- TOC entry 5238 (class 2606 OID 48922)
 -- Name: prestataires_lots prestataires_lots_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3341,7 +4136,7 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5191 (class 2606 OID 40217)
+-- TOC entry 5239 (class 2606 OID 48932)
 -- Name: prestataires_lots prestataires_lots_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3350,7 +4145,7 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5192 (class 2606 OID 40197)
+-- TOC entry 5240 (class 2606 OID 48912)
 -- Name: prestataires_lots prestataires_lots_lot_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3359,7 +4154,16 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5193 (class 2606 OID 40192)
+-- TOC entry 5241 (class 2606 OID 48944)
+-- Name: prestataires_lots prestataires_lots_parent_attribution_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.prestataires_lots
+    ADD CONSTRAINT prestataires_lots_parent_attribution_id_foreign FOREIGN KEY (parent_attribution_id) REFERENCES public.prestataires_lots(id_attribution) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 5242 (class 2606 OID 48907)
 -- Name: prestataires_lots prestataires_lots_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3368,7 +4172,7 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5194 (class 2606 OID 40202)
+-- TOC entry 5243 (class 2606 OID 48917)
 -- Name: prestataires_lots prestataires_lots_proforma_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3377,7 +4181,7 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5195 (class 2606 OID 40212)
+-- TOC entry 5244 (class 2606 OID 48927)
 -- Name: prestataires_lots prestataires_lots_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3386,7 +4190,7 @@ ALTER TABLE ONLY public.prestataires_lots
 
 
 --
--- TOC entry 5161 (class 2606 OID 39880)
+-- TOC entry 5199 (class 2606 OID 48560)
 -- Name: prestataires prestataires_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3395,7 +4199,7 @@ ALTER TABLE ONLY public.prestataires
 
 
 --
--- TOC entry 5142 (class 2606 OID 38366)
+-- TOC entry 5184 (class 2606 OID 48427)
 -- Name: proformas proformas_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3404,7 +4208,7 @@ ALTER TABLE ONLY public.proformas
 
 
 --
--- TOC entry 5143 (class 2606 OID 38376)
+-- TOC entry 5185 (class 2606 OID 48437)
 -- Name: proformas proformas_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3413,7 +4217,7 @@ ALTER TABLE ONLY public.proformas
 
 
 --
--- TOC entry 5144 (class 2606 OID 38385)
+-- TOC entry 5186 (class 2606 OID 48444)
 -- Name: proformas proformas_parent_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3422,7 +4226,7 @@ ALTER TABLE ONLY public.proformas
 
 
 --
--- TOC entry 5145 (class 2606 OID 38371)
+-- TOC entry 5187 (class 2606 OID 48432)
 -- Name: proformas proformas_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3431,7 +4235,7 @@ ALTER TABLE ONLY public.proformas
 
 
 --
--- TOC entry 5123 (class 2606 OID 38218)
+-- TOC entry 5165 (class 2606 OID 48272)
 -- Name: role_permissions role_permissions_attribue_par_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3440,7 +4244,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5124 (class 2606 OID 38191)
+-- TOC entry 5166 (class 2606 OID 48245)
 -- Name: role_permissions role_permissions_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3449,7 +4253,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5125 (class 2606 OID 38201)
+-- TOC entry 5167 (class 2606 OID 48255)
 -- Name: role_permissions role_permissions_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3458,7 +4262,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5126 (class 2606 OID 38213)
+-- TOC entry 5168 (class 2606 OID 48267)
 -- Name: role_permissions role_permissions_permission_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3467,7 +4271,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5127 (class 2606 OID 38208)
+-- TOC entry 5169 (class 2606 OID 48262)
 -- Name: role_permissions role_permissions_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3476,7 +4280,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5128 (class 2606 OID 38196)
+-- TOC entry 5170 (class 2606 OID 48250)
 -- Name: role_permissions role_permissions_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3485,7 +4289,7 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
--- TOC entry 5178 (class 2606 OID 40037)
+-- TOC entry 5221 (class 2606 OID 48748)
 -- Name: situations_financieres situations_financieres_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3494,7 +4298,7 @@ ALTER TABLE ONLY public.situations_financieres
 
 
 --
--- TOC entry 5179 (class 2606 OID 40047)
+-- TOC entry 5222 (class 2606 OID 48758)
 -- Name: situations_financieres situations_financieres_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3503,7 +4307,7 @@ ALTER TABLE ONLY public.situations_financieres
 
 
 --
--- TOC entry 5180 (class 2606 OID 40032)
+-- TOC entry 5223 (class 2606 OID 48743)
 -- Name: situations_financieres situations_financieres_prestataire_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3512,7 +4316,7 @@ ALTER TABLE ONLY public.situations_financieres
 
 
 --
--- TOC entry 5181 (class 2606 OID 40042)
+-- TOC entry 5224 (class 2606 OID 48753)
 -- Name: situations_financieres situations_financieres_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3521,7 +4325,7 @@ ALTER TABLE ONLY public.situations_financieres
 
 
 --
--- TOC entry 5129 (class 2606 OID 38248)
+-- TOC entry 5171 (class 2606 OID 48302)
 -- Name: types_appels_offres types_appels_offres_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3530,7 +4334,7 @@ ALTER TABLE ONLY public.types_appels_offres
 
 
 --
--- TOC entry 5130 (class 2606 OID 38258)
+-- TOC entry 5172 (class 2606 OID 48312)
 -- Name: types_appels_offres types_appels_offres_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3539,7 +4343,7 @@ ALTER TABLE ONLY public.types_appels_offres
 
 
 --
--- TOC entry 5131 (class 2606 OID 40757)
+-- TOC entry 5173 (class 2606 OID 49040)
 -- Name: types_appels_offres types_appels_offres_parent_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3548,7 +4352,7 @@ ALTER TABLE ONLY public.types_appels_offres
 
 
 --
--- TOC entry 5132 (class 2606 OID 38253)
+-- TOC entry 5174 (class 2606 OID 48307)
 -- Name: types_appels_offres types_appels_offres_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3557,7 +4361,7 @@ ALTER TABLE ONLY public.types_appels_offres
 
 
 --
--- TOC entry 5117 (class 2606 OID 38082)
+-- TOC entry 5159 (class 2606 OID 48136)
 -- Name: users users_created_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3566,7 +4370,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5118 (class 2606 OID 38092)
+-- TOC entry 5160 (class 2606 OID 48146)
 -- Name: users users_deleted_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3575,7 +4379,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5119 (class 2606 OID 38073)
+-- TOC entry 5161 (class 2606 OID 48127)
 -- Name: users users_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3584,7 +4388,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 5120 (class 2606 OID 38087)
+-- TOC entry 5162 (class 2606 OID 48141)
 -- Name: users users_updated_by_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3592,11 +4396,11 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_updated_by_foreign FOREIGN KEY (updated_by) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
--- Completed on 2025-12-10 16:26:41
+-- Completed on 2025-12-26 18:25:11
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict gPqK2KaMpLWgIPgXhxUvKzgqycGkGtpq5vGeHgBKqaPI1qiqk1v2w1DqFwqRxyr
+\unrestrict f8MIHsFnpXyqj0srlTV7lVZIEScMP5zVBMZrUAK7cJele1mwg5ELgJjquV0aQWf
 

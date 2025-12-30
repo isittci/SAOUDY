@@ -3,14 +3,34 @@
 @section('breadcrumb')
     <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $lot->appelOffre->numero_appel_offre }}</a>
+    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->appelOffre->numero_appel_offre }} - {{ $lot->appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.index', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
+    <a href="{{ route('lots-appels-offres.index', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="Liste des lots de l'appel d'offre {{ $lot->appelOffre->libelle_critere_appel_offre }} - {{ $lot->appelOffre->numero_appel_offre }}">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">{{ $lot->numero }}</a>
+    <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->libelle .' - '. $lot->numero }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 20) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">Historique</span>
+    <span class="text-white font-medium" title="Historiques du lot {{$lot->numero}} - {{ $lot->libelle }}">Historique</span>
 @endsection
+
+
+
+{{-- @section('breadcrumb')
+    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+
+
+    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste de lots - {{ $lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->libelle }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 15) }}</a>
+
+
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <a href="{{ route('criteres-evaluations.index', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste des critères d'évaluation - {{ $lot->libelle }}">Critères d'évaluation</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <span class="text-white font-medium">Nouveau</span>
+@endsection --}}
 
 @section('content')
     <!-- Header -->

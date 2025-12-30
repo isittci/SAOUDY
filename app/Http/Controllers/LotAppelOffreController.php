@@ -285,7 +285,22 @@ class LotAppelOffreController extends Controller
             $prestataires = Prestataire::actif()->orderBy('raison_sociale_prestataire')->get();
             $proformas = Proforma::actif()->orderBy('numero_proforma', 'desc')->get();
 
-            return view('appels-offres.lot-show', compact('lot', 'prestataires', 'proformas'));
+            // $proformas = $lot->appelOffre->lots()->with('attributionActive.proforma')
+            //     ->get();
+
+            // Méthode 2 : Plus concise avec pluck et sum
+            $sommeMontantsRetenus = $lot->appelOffre->lots()
+                ->with('attributionActive.proforma')
+                ->get()
+                ->pluck('attributionActive.proforma.montant_retenu_proforma')
+                ->sum();
+
+            // Montant total des montants retenus restant pour l'appel d'offres
+            $montantRestant = $lot->appelOffre->typeAppelOffre->valeur_maximuim_type_appel_offre - $sommeMontantsRetenus;
+
+                // dd($sommeMontantsRetenus, $montantRestant);
+
+            return view('appels-offres.lot-show', compact('lot', 'prestataires', 'proformas', 'montantRestant'));
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du lot: ' . $e->getMessage());
 

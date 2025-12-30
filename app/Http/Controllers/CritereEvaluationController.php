@@ -34,8 +34,7 @@ class CritereEvaluationController extends Controller
             // Validation de hiérarchie
             $lot = $this->getLotWithValidation($appelOffreId, $lotId);
 
-            $query = CritereEvaluation::with(['lot', 'creator', 'updater'])
-                ->where('lot_id', $lotId);
+            $query = CritereEvaluation::with(['lot', 'creator', 'updater'])->where('lot_id', $lotId);
 
             // Filtres
             if ($request->filled('statut')) {
@@ -46,7 +45,7 @@ class CritereEvaluationController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('numero_critere_evaluation', 'like', "%{$search}%")
-                      ->orWhere('libelle_critere_evaluation', 'like', "%{$search}%");
+                        ->orWhere('libelle_critere_evaluation', 'like', "%{$search}%");
                 });
             }
 
@@ -74,9 +73,8 @@ class CritereEvaluationController extends Controller
                 ]);
             }
 
-           
-            return view('criteres-evaluations.index', compact('criteres', 'lot', 'totalNotes'));
 
+            return view('criteres-evaluations.index', compact('criteres', 'lot', 'totalNotes'));
         } catch (ModelNotFoundException $e) {
             Log::error('Lot introuvable ou incohérent: ' . $e->getMessage());
 
@@ -88,7 +86,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Lot introuvable ou ne correspond pas à cet appel d\'offres');
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des critères: ' . $e->getMessage());
 
@@ -150,7 +147,6 @@ class CritereEvaluationController extends Controller
                 'totalNotesExistantes',
                 'noteRestante'
             ));
-
         } catch (ModelNotFoundException $e) {
             return back()->with('error', 'Lot introuvable ou ne correspond pas à cet appel d\'offres');
         } catch (Exception $e) {
@@ -263,12 +259,11 @@ class CritereEvaluationController extends Controller
             }
 
             return redirect()->route('criteres-evaluations.show', [
-                    'appel_offre' => $appelOffreId,
-                    'lot' => $lotId,
-                    'critere' => $critere->id_critere_evaluation
-                ])
+                'appel_offre' => $appelOffreId,
+                'lot' => $lotId,
+                'critere' => $critere->id_critere_evaluation
+            ])
                 ->with('success', 'Critère d\'évaluation créé avec succès');
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::error('Lot introuvable: ' . $e->getMessage());
@@ -281,7 +276,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Lot introuvable ou ne correspond pas à cet appel d\'offres')->withInput();
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création du critère: ' . $e->getMessage());
@@ -312,9 +306,9 @@ class CritereEvaluationController extends Controller
                 'creator',
                 'updater'
             ])
-            ->where('lot_id', $lotId)
-            ->where('id_critere_evaluation', $id)
-            ->firstOrFail();
+                ->where('lot_id', $lotId)
+                ->where('id_critere_evaluation', $id)
+                ->firstOrFail();
 
             // Calculer des statistiques
             $totalNotes = CritereEvaluation::where('lot_id', $lotId)
@@ -342,7 +336,6 @@ class CritereEvaluationController extends Controller
             }
 
             return view('criteres-evaluations.show', compact('critere', 'lot', 'totalNotes', 'pourcentage', 'nombreCriteres'));
-
         } catch (ModelNotFoundException $e) {
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
 
@@ -354,7 +347,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Critère introuvable');
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du critère: ' . $e->getMessage());
 
@@ -402,7 +394,6 @@ class CritereEvaluationController extends Controller
             $noteMaximaleAutorisee = 100 - $totalAutresNotes;
 
             return view('criteres-evaluations.edit', compact('critere', 'lot', 'totalAutresNotes', 'noteMaximaleAutorisee'));
-
         } catch (ModelNotFoundException $e) {
             return back()->with('error', 'Critère introuvable ou ne correspond pas à ce lot');
         } catch (Exception $e) {
@@ -508,12 +499,11 @@ class CritereEvaluationController extends Controller
             }
 
             return redirect()->route('criteres-evaluations.show', [
-                    'appel_offre' => $appelOffreId,
-                    'lot' => $lotId,
-                    'critere' => $id
-                ])
+                'appel_offre' => $appelOffreId,
+                'lot' => $lotId,
+                'critere' => $id
+            ])
                 ->with('success', 'Critère d\'évaluation mis à jour avec succès');
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
@@ -526,7 +516,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Critère introuvable ou ne correspond pas à ce lot')->withInput();
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour: ' . $e->getMessage());
@@ -586,11 +575,10 @@ class CritereEvaluationController extends Controller
             }
 
             return redirect()->route('criteres-evaluations.index', [
-                    'appel_offre' => $appelOffreId,
-                    'lot' => $lotId
-                ])
+                'appel_offre' => $appelOffreId,
+                'lot' => $lotId
+            ])
                 ->with('success', 'Critère d\'évaluation supprimé avec succès');
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
@@ -603,7 +591,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Critère introuvable');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la suppression: ' . $e->getMessage());
@@ -653,7 +640,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('success', 'Critère activé avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de l\'activation: ' . $e->getMessage());
@@ -703,7 +689,6 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('success', 'Critère désactivé avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la désactivation: ' . $e->getMessage());
@@ -767,7 +752,6 @@ class CritereEvaluationController extends Controller
                 'data' => $critere,
                 'message' => 'Critère réordonné avec succès'
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors du réordonnancement: ' . $e->getMessage());
@@ -807,7 +791,6 @@ class CritereEvaluationController extends Controller
                 'data' => $stats,
                 'message' => 'Statistiques récupérées avec succès'
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des statistiques: ' . $e->getMessage());
 
@@ -870,12 +853,11 @@ class CritereEvaluationController extends Controller
             }
 
             return redirect()->route('criteres-evaluations.edit', [
-                    'appel_offre' => $appelOffreId,
-                    'lot' => $lotId,
-                    'critere' => $nouveauCritere->id_critere_evaluation
-                ])
+                'appel_offre' => $appelOffreId,
+                'lot' => $lotId,
+                'critere' => $nouveauCritere->id_critere_evaluation
+            ])
                 ->with('success', 'Critère dupliqué avec succès');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la duplication: ' . $e->getMessage());
@@ -889,6 +871,169 @@ class CritereEvaluationController extends Controller
             }
 
             return back()->with('error', 'Erreur: ' . $e->getMessage());
+        }
+    }
+
+
+
+    /**
+     * Mise à jour en masse des ordres des critères
+     * Utile pour le drag-and-drop avec sauvegarde optimisée
+     */
+    public function reordonnerBatch(Request $request, $appelOffreId, $lotId)
+    {
+        $validator = Validator::make($request->all(), [
+            'ordres' => 'required|array|min:1',
+            'ordres.*.id' => 'required|string',
+            'ordres.*.ordre' => 'required|integer|min:1',
+        ], [
+            'ordres.required' => 'La liste des ordres est obligatoire',
+            'ordres.array' => 'Les ordres doivent être un tableau',
+            'ordres.*.id.required' => 'L\'identifiant du critère est obligatoire',
+            'ordres.*.ordre.required' => 'L\'ordre est obligatoire',
+            'ordres.*.ordre.min' => 'L\'ordre doit être au moins 1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Validation de hiérarchie
+            $lot = $this->getLotWithValidation($appelOffreId, $lotId);
+
+            if ($lot->isAttribue()) {
+                throw new Exception("Impossible de réordonner les critères d'un lot déjà attribué");
+            }
+
+            if ($lot->isRetire()) {
+                throw new Exception("Impossible de réordonner les critères d'un lot retiré");
+            }
+
+            // Mise à jour de chaque critère
+            foreach ($request->ordres as $item) {
+                CritereEvaluation::where('lot_id', $lotId)
+                    ->where('id_critere_evaluation', $item['id'])
+                    ->update([
+                        'ordre_execution_critere_evaluation' => $item['ordre'],
+                        'updated_by' => auth()->id()
+                    ]);
+            }
+
+            DB::commit();
+
+            Log::info("Réordonnancement en masse des critères", [
+                'lot_id' => $lotId,
+                'count' => count($request->ordres)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ordres mis à jour avec succès',
+                'count' => count($request->ordres)
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors du réordonnancement en masse: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du réordonnancement',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Permute l'ordre entre deux critères
+     * Optimisé pour les boutons monter/descendre
+     */
+    public function permuter(Request $request, $appelOffreId, $lotId)
+    {
+        $validator = Validator::make($request->all(), [
+            'critere_1' => 'required|string',
+            'critere_2' => 'required|string',
+        ], [
+            'critere_1.required' => 'Le premier critère est obligatoire',
+            'critere_2.required' => 'Le second critère est obligatoire',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Validation de hiérarchie
+            $lot = $this->getLotWithValidation($appelOffreId, $lotId);
+
+            if ($lot->isAttribue()) {
+                throw new Exception("Impossible de permuter les critères d'un lot déjà attribué");
+            }
+
+            // Récupérer les deux critères
+            $critere1 = CritereEvaluation::where('lot_id', $lotId)
+                ->where('id_critere_evaluation', $request->critere_1)
+                ->firstOrFail();
+
+            $critere2 = CritereEvaluation::where('lot_id', $lotId)
+                ->where('id_critere_evaluation', $request->critere_2)
+                ->firstOrFail();
+
+            // Permuter les ordres
+            $ordre1 = $critere1->ordre_execution_critere_evaluation;
+            $ordre2 = $critere2->ordre_execution_critere_evaluation;
+
+            $critere1->update([
+                'ordre_execution_critere_evaluation' => $ordre2,
+                'updated_by' => auth()->id()
+            ]);
+
+            $critere2->update([
+                'ordre_execution_critere_evaluation' => $ordre1,
+                'updated_by' => auth()->id()
+            ]);
+
+            DB::commit();
+
+            Log::info("Permutation de critères", [
+                'critere_1' => $request->critere_1,
+                'critere_2' => $request->critere_2
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Critères permutés avec succès',
+                'data' => [
+                    'critere_1' => [
+                        'id' => $critere1->id_critere_evaluation,
+                        'nouvel_ordre' => $ordre2
+                    ],
+                    'critere_2' => [
+                        'id' => $critere2->id_critere_evaluation,
+                        'nouvel_ordre' => $ordre1
+                    ]
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la permutation: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la permutation',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

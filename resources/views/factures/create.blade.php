@@ -2,87 +2,50 @@
 
 @section('title', 'Nouvelle Facture')
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <style>
+        .ts-wrapper.form-control { padding: 0; border: none; }
+        .ts-control { border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.75rem 1rem; min-height: 48px; }
+        .ts-control:focus, .ts-wrapper.focus .ts-control { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
+
+        /* Force z-index élevé pour le dropdown */
+        .ts-dropdown {
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            z-index: 9999 !important;
+            position: absolute !important;
+        }
+
+        .ts-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ts-wrapper.dropdown-active {
+            z-index: 9998 !important;
+        }
+
+        .ts-dropdown .option { padding: 0.75rem 1rem; }
+        .ts-dropdown .option.active { background-color: #fff7ed; color: #ea580c; }
+
+        .info-card { transition: all 0.3s ease; }
+        .info-card.loading { opacity: 0.5; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .detail-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #e5e7eb; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #6b7280; font-size: 0.875rem; }
+        .detail-value { color: #1f2937; font-weight: 500; text-align: right; max-width: 60%; }
+    </style>
+@endpush
+
 @section('breadcrumb')
     <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Nouvelle Facture</span>
 @endsection
-
-@push('styles')
-
-<style>
-    /* Personnalisation Tom Select pour correspondre au design */
-    .ts-wrapper.single .ts-control {
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        border-color: #d1d5db;
-        min-height: 48px;
-        background: #fff;
-    }
-    .ts-wrapper.single .ts-control:focus,
-    .ts-wrapper.single.focus .ts-control {
-        border-color: #f97316;
-        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
-    }
-    .ts-dropdown {
-        border-radius: 0.5rem;
-        border-color: #e5e7eb;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        margin-top: 4px;
-        z-index: 9999 !important;
-        position: absolute !important;
-    }
-    .ts-wrapper {
-        position: relative;
-        z-index: 100;
-    }
-    .ts-wrapper.dropdown-active {
-        z-index: 9999;
-    }
-    .ts-dropdown .option {
-        padding: 0.875rem 1rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-    .ts-dropdown .option:last-child {
-        border-bottom: none;
-    }
-    .ts-dropdown .option.active {
-        background-color: #fff7ed;
-        color: #ea580c;
-    }
-    .ts-dropdown .option:hover {
-        background-color: #fef3e2;
-    }
-    .ts-wrapper.single .ts-control input {
-        font-size: 0.9375rem;
-    }
-    .ts-control > input::placeholder {
-        color: #9ca3af;
-    }
-    .proforma-option {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .proforma-option .numero {
-        font-weight: 600;
-        color: #1f2937;
-    }
-    .proforma-option .montant {
-        font-size: 0.875rem;
-        color: #ea580c;
-        font-weight: 600;
-    }
-    .proforma-option .details {
-        font-size: 0.75rem;
-        color: #6b7280;
-        margin-top: 2px;
-    }
-    .ts-wrapper.has-error .ts-control {
-        border-color: #ef4444;
-    }
-</style>
-@endpush
 
 @section('content')
     <!-- Header -->
@@ -109,70 +72,225 @@
         <form action="{{ route('factures.store') }}" method="POST" id="factureForm">
             @csrf
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <!-- Colonne principale -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="xl:col-span-2 space-y-6">
 
-                    <!-- Sélection de la proforma -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
+                    <!-- Section Sélection Hiérarchique -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-visible">
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-file-alt text-indigo-500 mr-2"></i>
-                                Proforma Source
+                                <i class="fas fa-sitemap text-blue-500 mr-2"></i>
+                                Sélection de la Proforma
                             </h2>
+                            <p class="text-sm text-gray-500 mt-1">Sélectionnez l'appel d'offre, puis le lot concerné</p>
                         </div>
-                        <div class="p-6">
-                            <div class="mb-4">
-                                <label for="proforma_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Rechercher et sélectionner une proforma <span class="text-red-500">*</span>
-                                </label>
-                                <select name="proforma_id" id="proforma_id" required
-                                    class="w-full @error('proforma_id') border-red-500 @enderror"
-                                    placeholder="Tapez pour rechercher une proforma...">
-                                    <option value="">-- Rechercher une proforma --</option>
-                                    @foreach($proformas as $proforma)
-                                        @php
-                                            $montantTTC = $proforma->montant_retenu_proforma + $proforma->taxe_montant - $proforma->remise_montant_proforma + $proforma->penalites_proforma;
-                                        @endphp
-                                        <option value="{{ $proforma->id_proforma }}"
-                                            data-montant="{{ $montantTTC }}"
-                                            data-numero="{{ $proforma->numero_proforma }}"
-                                            data-date="{{ $proforma->date_proforma ? \Carbon\Carbon::parse($proforma->date_proforma)->format('d/m/Y') : 'N/A' }}"
-                                            {{ old('proforma_id', $proformaSelectionnee->id_proforma ?? '') == $proforma->id_proforma ? 'selected' : '' }}>
-                                            {{ $proforma->numero_proforma }} - {{ number_format($montantTTC, 0, ',', ' ') }} FCFA
+                        <div class="p-6 space-y-6" style="overflow: visible;">
+
+                            <!-- Étape 1: Appel d'Offre -->
+                            <div class="relative">
+                                <div class="flex items-center mb-3">
+                                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-600 font-bold text-sm mr-3">1</span>
+                                    <label for="appel_offre" class="block text-sm font-semibold text-gray-700">
+                                        Sélectionnez l'Appel d'Offre <span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <select id="appel_offre"
+                                    class="w-full tom-select-ao"
+                                    placeholder="Rechercher un appel d'offre...">
+                                    <option value="">Sélectionnez un appel d'offre</option>
+                                    @foreach($appelsOffres as $ao)
+                                        <option value="{{ $ao->id_appel_offre }}"
+                                            data-numero="{{ $ao->numero_appel_offre }}"
+                                            data-objet="{{ $ao->libelle_critere_appel_offre }}"
+                                            data-montant="{{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }}"
+                                            data-date-pub="{{ $ao->date_publication_critere_appel_offre }}"
+                                            data-date-limite="{{ $ao->date_limite_depot_critere_appel_offre }}"
+                                            data-type="{{ $ao->typeAppelOffre->code_type_appel_offre ?? '' }}"
+                                            data-lots-count="{{ $ao->lots->count() }}">
+                                            {{ $ao->numero_appel_offre }} - {{ Str::limit($ao->libelle_critere_appel_offre, 50) }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('proforma_id')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p class="mt-2 text-xs text-gray-500">
-                                    <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                                    Tapez le numéro de proforma ou le montant pour filtrer rapidement la liste
-                                </p>
                             </div>
 
-                            <!-- Détails de la proforma sélectionnée -->
-                            <div id="proformaDetails" class="hidden mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                                <h3 class="text-sm font-semibold text-indigo-800 mb-3 flex items-center">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Détails de la proforma sélectionnée
-                                </h3>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <span class="text-indigo-600 block text-xs uppercase tracking-wide">Numéro</span>
-                                        <span id="proformaNumero" class="font-semibold text-gray-900">-</span>
+                            <!-- Info Appel d'Offre -->
+                            <div id="infoAO" class="hidden info-card bg-green-50 rounded-xl p-4 border border-green-100 fade-in">
+                                <div class="flex items-center mb-3">
+                                    <i class="fas fa-file-contract text-green-500 mr-2"></i>
+                                    <span class="font-semibold text-green-800">Informations Appel d'Offre</span>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Numéro</span>
+                                        <span id="infoAONumero" class="detail-value font-mono bg-green-100 px-2 py-0.5 rounded">-</span>
                                     </div>
-                                    <div>
-                                        <span class="text-indigo-600 block text-xs uppercase tracking-wide">Montant TTC</span>
-                                        <span id="proformaMontant" class="font-bold text-indigo-700">-</span>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Type</span>
+                                        <span id="infoAOType" class="detail-value">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">-</span>
+                                        </span>
                                     </div>
-                                    <div>
-                                        <span class="text-indigo-600 block text-xs uppercase tracking-wide">Date</span>
-                                        <span id="proformaDate" class="font-medium text-gray-900">-</span>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Objet</span>
+                                        <span id="infoAOObjet" class="detail-value">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Montant Global</span>
+                                        <span id="infoAOMontant" class="detail-value text-green-700 font-bold">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Date Publication</span>
+                                        <span id="infoAODatePub" class="detail-value">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Date Limite Dépôt</span>
+                                        <span id="infoAODateLimite" class="detail-value text-orange-600">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Nombre de Lots</span>
+                                        <span id="infoAOLotsCount" class="detail-value">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">-</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Étape 2: Lot -->
+                            <div class="relative">
+                                <div class="flex items-center mb-3">
+                                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500 font-bold text-sm mr-3" id="step2Badge">2</span>
+                                    <label for="lot" class="block text-sm font-semibold text-gray-700">
+                                        Sélectionnez le lot concerné <span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <select id="lot"
+                                    class="w-full tom-select-lot"
+                                    placeholder="Sélectionnez d'abord un appel d'offre..."
+                                    disabled>
+                                    <option value="">Sélectionnez un lot</option>
+                                </select>
+                                <p id="lotHelpText" class="mt-2 text-xs text-gray-500 hidden">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Seuls les lots avec une attribution et une proforma sont affichés
+                                </p>
+                            </div>
+
+                            <!-- Info Lot -->
+                            <div id="infoLot" class="hidden info-card bg-purple-50 rounded-xl p-4 border border-purple-100 fade-in">
+                                <div class="flex items-center mb-3">
+                                    <i class="fas fa-cubes text-purple-500 mr-2"></i>
+                                    <span class="font-semibold text-purple-800">Informations du Lot</span>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Numéro Lot</span>
+                                        <span id="infoLotNumero" class="detail-value font-mono bg-purple-100 px-2 py-0.5 rounded">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Libellé</span>
+                                        <span id="infoLotLibelle" class="detail-value">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Date Attribution</span>
+                                        <span id="infoLotDateAttrib" class="detail-value">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Taux Pénalités</span>
+                                        <span id="infoLotPenalite" class="detail-value text-red-600">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Attribution & Prestataire -->
+                            <div id="infoAttribution" class="hidden info-card bg-indigo-50 rounded-xl p-4 border border-indigo-100 fade-in">
+                                <div class="flex items-center mb-3">
+                                    <i class="fas fa-handshake text-indigo-500 mr-2"></i>
+                                    <span class="font-semibold text-indigo-800">Attribution & Prestataire</span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Attribution -->
+                                    <div class="space-y-2 text-sm">
+                                        <h4 class="font-semibold text-indigo-700 border-b border-indigo-200 pb-1">Attribution</h4>
+                                        <div class="detail-row">
+                                            <span class="detail-label">N° Attribution</span>
+                                            <span id="infoAttribNumero" class="detail-value font-mono text-xs bg-indigo-100 px-2 py-0.5 rounded">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date</span>
+                                            <span id="infoAttribDate" class="detail-value">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Avancement</span>
+                                            <span id="infoAttribAvancement" class="detail-value">-</span>
+                                        </div>
+                                    </div>
+                                    <!-- Prestataire -->
+                                    <div class="space-y-2 text-sm">
+                                        <h4 class="font-semibold text-indigo-700 border-b border-indigo-200 pb-1">Prestataire</h4>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Raison Sociale</span>
+                                            <span id="infoPrestaRaison" class="detail-value text-xs">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">N° Identification</span>
+                                            <span id="infoPrestaNumero" class="detail-value font-mono text-xs">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Email</span>
+                                            <span id="infoPrestaEmail" class="detail-value text-xs truncate">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Téléphone</span>
+                                            <span id="infoPrestaTel" class="detail-value">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Proforma -->
+                            <div id="infoProforma" class="hidden info-card bg-orange-50 rounded-xl p-4 border border-orange-100 fade-in">
+                                <div class="flex items-center mb-3">
+                                    <i class="fas fa-file-invoice text-orange-500 mr-2"></i>
+                                    <span class="font-semibold text-orange-800">Proforma associée</span>
+                                    <span class="ml-auto px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+                                        <i class="fas fa-check mr-1"></i>Disponible
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div class="space-y-2">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Numéro</span>
+                                            <span id="infoProformaNumero" class="detail-value font-mono bg-orange-100 px-2 py-0.5 rounded">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date</span>
+                                            <span id="infoProformaDate" class="detail-value">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Modalité</span>
+                                            <span id="infoProformaModalite" class="detail-value text-xs">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Montant HT</span>
+                                            <span id="infoProformaMontant" class="detail-value text-orange-700 font-bold">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">TVA</span>
+                                            <span id="infoProformaTaxe" class="detail-value text-blue-600">-</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Remise</span>
+                                            <span id="infoProformaRemise" class="detail-value text-green-600">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Champ hidden pour l'ID de la proforma -->
+                                <input type="hidden" name="proforma_id" id="proforma_id" value="">
+                            </div>
+
                         </div>
                     </div>
 
@@ -189,12 +307,11 @@
                                 <!-- Numéro de facture -->
                                 <div>
                                     <label for="numero_facture" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro de facture
-                                        <span class="text-gray-400 font-normal">(optionnel)</span>
+                                        Numéro de facture <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="numero_facture" id="numero_facture"
+                                    <input type="text" name="numero_facture" id="numero_facture" required
                                         value="{{ old('numero_facture') }}"
-                                        placeholder="Auto-généré si vide"
+                                        placeholder="FACT-REF-001"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent @error('numero_facture') border-red-500 @enderror">
                                     @error('numero_facture')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -278,10 +395,25 @@
                             </h2>
                         </div>
                         <div class="p-6 space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                <span class="text-sm text-green-700">Appel d'Offre</span>
+                                <span id="resumeAO" class="font-medium text-green-900 text-right truncate ml-2 max-w-[140px]">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                                <span class="text-sm text-purple-700">Lot</span>
+                                <span id="resumeLot" class="font-medium text-purple-900 text-right truncate ml-2 max-w-[140px]">-</span>
+                            </div>
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <span class="text-sm text-gray-600">Proforma</span>
                                 <span id="resumeProforma" class="font-medium text-gray-900 text-right truncate ml-2 max-w-[140px]">Non sélectionnée</span>
                             </div>
+                            <div class="flex justify-between items-center p-3 bg-indigo-50 rounded-lg">
+                                <span class="text-sm text-indigo-700">Prestataire</span>
+                                <span id="resumePrestataire" class="font-medium text-indigo-900 text-right truncate ml-2 max-w-[140px] text-xs">-</span>
+                            </div>
+
+                            <hr class="border-gray-200">
+
                             <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                                 <span class="text-sm text-orange-700">Montant TTC</span>
                                 <span id="resumeMontant" class="font-bold text-orange-700">0 FCFA</span>
@@ -298,8 +430,9 @@
                             </div>
 
                             <div class="pt-4 border-t border-gray-200 space-y-3">
-                                <button type="submit"
-                                    class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center shadow-md">
+                                <button type="submit" id="btnSubmit"
+                                    disabled
+                                    class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                                     <i class="fas fa-save mr-2"></i>
                                     Créer la Facture
                                 </button>
@@ -318,133 +451,323 @@
 @endsection
 
 @push('scripts')
-<!-- Tom Select JS -->
-
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
+    // Données des appels d'offres avec leurs lots
+    const appelsOffres = @json($appelsOffres);
+
+    // Variables globales pour Tom Select
+    let selectAO, selectLot;
+
+    // Données sélectionnées
+    let selectedAO = null;
+    let selectedLot = null;
+
+    // Fonctions utilitaires
+    function formatNumber(num) {
+        if (!num) return '0';
+        return parseFloat(num).toLocaleString('fr-FR');
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('fr-FR');
+    }
+
+    function truncateText(text, maxLength = 50) {
+        if (!text) return '-';
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+
+    // Initialisation des Tom Select
     document.addEventListener('DOMContentLoaded', function() {
-        // Éléments du formulaire
-        const montantInput = document.getElementById('montant_facture');
-        const dateFactureInput = document.getElementById('date_facture');
-        const dateReceptionInput = document.getElementById('date_reception_facture');
-        const proformaDetails = document.getElementById('proformaDetails');
-        const proformaNumero = document.getElementById('proformaNumero');
-        const proformaMontant = document.getElementById('proformaMontant');
-        const proformaDate = document.getElementById('proformaDate');
-        const resumeProforma = document.getElementById('resumeProforma');
-        const resumeMontant = document.getElementById('resumeMontant');
-        const resumeDateFacture = document.getElementById('resumeDateFacture');
 
-        // Fonction de formatage du montant
-        function formatMontant(montant) {
-            return new Intl.NumberFormat('fr-FR').format(montant) + ' FCFA';
-        }
-
-        // Fonction de formatage de la date
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('fr-FR');
-        }
-
-        // Initialisation de Tom Select pour la recherche de proforma
-        const proformaSelect = new TomSelect('#proforma_id', {
-            placeholder: 'Tapez pour rechercher une proforma...',
+        // Tom Select pour Appel d'Offre
+        selectAO = new TomSelect('#appel_offre', {
+            placeholder: 'Rechercher un appel d\'offre...',
             searchField: ['text'],
-            maxOptions: 100,
-            dropdownParent: 'body',
+            maxOptions: null,
             render: {
                 option: function(data, escape) {
-                    const optionEl = document.querySelector(`option[value="${data.value}"]`);
-                    const montant = optionEl ? formatMontant(optionEl.dataset.montant) : '';
-                    const date = optionEl ? optionEl.dataset.date : '';
-                    const numero = optionEl ? optionEl.dataset.numero : data.text;
-
-                    return `
-                        <div class="proforma-option">
-                            <div>
-                                <div class="numero">${escape(numero)}</div>
-                                <div class="details"><i class="fas fa-calendar-alt mr-1"></i>${escape(date)}</div>
-                            </div>
-                            <div class="montant">${escape(montant)}</div>
+                    return `<div class="py-2">
+                        <div class="font-semibold">${escape(data.text)}</div>
+                        <div class="text-xs text-gray-500">
+                            Type: ${escape(data.type || '-')} | Montant: ${escape(data.montant || '-')} FCFA
                         </div>
-                    `;
+                    </div>`;
                 },
                 item: function(data, escape) {
-                    const optionEl = document.querySelector(`option[value="${data.value}"]`);
-                    const numero = optionEl ? optionEl.dataset.numero : data.text;
-                    return `<div><i class="fas fa-file-alt text-indigo-500 mr-2"></i>${escape(numero)}</div>`;
-                },
-                no_results: function(data, escape) {
-                    return '<div class="no-results p-4 text-gray-500 text-center"><i class="fas fa-search mr-2"></i>Aucune proforma trouvée</div>';
+                    return `<div>${escape(data.text)}</div>`;
                 }
             },
             onChange: function(value) {
-                if (value) {
-                    const optionEl = document.querySelector(`option[value="${value}"]`);
-                    if (optionEl) {
-                        const montant = optionEl.dataset.montant || 0;
-                        const numero = optionEl.dataset.numero || '';
-                        const date = optionEl.dataset.date || '';
+                onAOChange(value);
+            }
+        });
 
-                        // Afficher les détails
-                        proformaDetails.classList.remove('hidden');
-                        proformaNumero.textContent = numero;
-                        proformaMontant.textContent = formatMontant(montant);
-                        proformaDate.textContent = date;
+        // Ajouter les données supplémentaires aux options
+        appelsOffres.forEach(ao => {
+            const option = selectAO.options[ao.id_appel_offre];
+            if (option) {
+                option.type = ao.type_appel_offre?.code_type_appel_offre || '-';
+                option.montant = formatNumber(ao.montant_global_appel_offre);
+            }
+        });
 
-                        // Pré-remplir le montant
-                        montantInput.value = montant;
-
-                        // Mettre à jour le résumé
-                        resumeProforma.textContent = numero;
-                        resumeMontant.textContent = formatMontant(montant);
-                    }
-                } else {
-                    proformaDetails.classList.add('hidden');
-                    montantInput.value = '';
-                    resumeProforma.textContent = 'Non sélectionnée';
-                    resumeMontant.textContent = '0 FCFA';
+        // Tom Select pour Lot
+        selectLot = new TomSelect('#lot', {
+            placeholder: 'Sélectionnez d\'abord un appel d\'offre...',
+            searchField: ['text'],
+            maxOptions: null,
+            render: {
+                option: function(data, escape) {
+                    return `<div class="py-2">
+                        <div class="font-semibold">${escape(data.text)}</div>
+                        <div class="text-xs text-gray-500">${escape(data.description || '')}</div>
+                    </div>`;
                 }
+            },
+            onChange: function(value) {
+                onLotChange(value);
             }
         });
+        selectLot.disable();
 
-        // Mise à jour du résumé lors de la saisie du montant
-        montantInput.addEventListener('input', function() {
-            const montant = parseFloat(this.value.replace(/\s/g, '').replace(',', '.')) || 0;
-            resumeMontant.textContent = formatMontant(montant);
-        });
-
-        // Mise à jour du résumé lors du changement de date
-        dateFactureInput.addEventListener('change', function() {
-            resumeDateFacture.textContent = formatDate(this.value);
-        });
-
-        // Validation: date de réception >= date de facture
-        dateFactureInput.addEventListener('change', function() {
-            dateReceptionInput.min = this.value;
-            if (dateReceptionInput.value && dateReceptionInput.value < this.value) {
-                dateReceptionInput.value = this.value;
-            }
-        });
-
-        // Initialiser si une proforma est pré-sélectionnée
-        if (proformaSelect.getValue()) {
-            const value = proformaSelect.getValue();
-            const optionEl = document.querySelector(`option[value="${value}"]`);
-            if (optionEl) {
-                proformaDetails.classList.remove('hidden');
-                proformaNumero.textContent = optionEl.dataset.numero;
-                proformaMontant.textContent = formatMontant(optionEl.dataset.montant);
-                proformaDate.textContent = optionEl.dataset.date;
-                resumeProforma.textContent = optionEl.dataset.numero;
-                resumeMontant.textContent = formatMontant(optionEl.dataset.montant);
-            }
-        }
-
-        // Initialiser la date
-        if (dateFactureInput.value) {
-            resumeDateFacture.textContent = formatDate(dateFactureInput.value);
-        }
+        // Écouteurs pour les champs de facture
+        document.getElementById('montant_facture').addEventListener('input', updateResume);
+        document.getElementById('date_facture').addEventListener('change', updateResume);
     });
+
+    // Changement d'Appel d'Offre
+    function onAOChange(aoId) {
+        // Reset le lot
+        resetLot();
+        hideAllInfos();
+
+        if (!aoId) {
+            document.getElementById('step2Badge').className = 'flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500 font-bold text-sm mr-3';
+            document.getElementById('resumeAO').textContent = '-';
+            return;
+        }
+
+        // Trouver l'appel d'offre sélectionné
+        selectedAO = appelsOffres.find(ao => ao.id_appel_offre === aoId);
+
+        if (selectedAO) {
+            // Afficher les infos de l'AO
+            showAOInfo(selectedAO);
+
+            // Charger les lots
+            loadLots(selectedAO.lots || []);
+
+            // Activer l'étape 2
+            document.getElementById('step2Badge').className = 'flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-600 font-bold text-sm mr-3';
+
+            // Mettre à jour le résumé
+            document.getElementById('resumeAO').textContent = selectedAO.numero_appel_offre;
+        }
+    }
+
+    // Afficher les infos de l'AO
+    function showAOInfo(ao) {
+        document.getElementById('infoAONumero').textContent = ao.numero_appel_offre || '-';
+        document.getElementById('infoAOType').innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${ao.type_appel_offre?.code_type_appel_offre || '-'}</span>`;
+        document.getElementById('infoAOObjet').textContent = truncateText(ao.libelle_critere_appel_offre, 60);
+        document.getElementById('infoAOMontant').textContent = formatNumber(ao.montant_global_appel_offre) + ' FCFA';
+        document.getElementById('infoAODatePub').textContent = formatDate(ao.date_publication_critere_appel_offre);
+        document.getElementById('infoAODateLimite').textContent = formatDate(ao.date_limite_depot_critere_appel_offre);
+        document.getElementById('infoAOLotsCount').innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">${ao.lots?.length || 0} lot(s)</span>`;
+
+        document.getElementById('infoAO').classList.remove('hidden');
+    }
+
+    // Charger les lots dans le select
+    function loadLots(lots) {
+        selectLot.clear();
+        selectLot.clearOptions();
+
+        // Filtrer uniquement les lots qui ont une attribution active avec proforma
+        const lotsAvecProforma = lots.filter(lot =>
+            lot.attribution_active && lot.attribution_active.proforma
+        );
+
+        if (lotsAvecProforma.length === 0) {
+            selectLot.settings.placeholder = 'Aucun lot avec proforma disponible';
+            selectLot.disable();
+            document.getElementById('lotHelpText').classList.remove('hidden');
+            document.getElementById('lotHelpText').innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Aucun lot avec proforma n\'est disponible pour cet appel d\'offre';
+            return;
+        }
+
+        lotsAvecProforma.forEach(lot => {
+            selectLot.addOption({
+                value: lot.id_lot,
+                text: lot.numero + ' - ' + truncateText(lot.libelle, 30),
+                description: truncateText(lot.description_critere, 50)
+            });
+        });
+
+        selectLot.settings.placeholder = 'Rechercher un lot...';
+        selectLot.enable();
+        selectLot.refreshOptions(false);
+
+        document.getElementById('lotHelpText').classList.remove('hidden');
+        document.getElementById('lotHelpText').innerHTML = `<i class="fas fa-info-circle mr-1"></i> ${lotsAvecProforma.length} lot(s) avec proforma disponible(s)`;
+
+        updateResume();
+    }
+
+    // Changement de Lot
+    function onLotChange(lotId) {
+        hideProformaInfo();
+
+        if (!lotId || !selectedAO) {
+            disableSubmit();
+            return;
+        }
+
+        // Trouver le lot sélectionné
+        selectedLot = selectedAO.lots.find(l => l.id_lot === lotId);
+
+        if (selectedLot && selectedLot.attribution_active) {
+            // Afficher les infos du lot
+            showLotInfo(selectedLot);
+
+            // Afficher les infos de l'attribution et prestataire
+            showAttributionInfo(selectedLot.attribution_active);
+
+            // Afficher les infos de la proforma
+            if (selectedLot.attribution_active.proforma) {
+                showProformaInfo(selectedLot.attribution_active.proforma);
+                enableSubmit();
+            }
+
+            // Mettre à jour le résumé
+            document.getElementById('resumeLot').textContent = selectedLot.numero;
+        }
+        updateResume();
+    }
+
+    // Afficher les infos du lot
+    function showLotInfo(lot) {
+        document.getElementById('infoLotNumero').textContent = lot.numero || '-';
+        document.getElementById('infoLotLibelle').textContent = truncateText(lot.libelle, 50);
+        document.getElementById('infoLotDateAttrib').textContent = formatDate(lot.date_attribution);
+        document.getElementById('infoLotPenalite').textContent = (lot.taux_penalites || '0') + ' %';
+
+        document.getElementById('infoLot').classList.remove('hidden');
+    }
+
+    // Afficher les infos de l'attribution et prestataire
+    function showAttributionInfo(attribution) {
+        // Attribution
+        document.getElementById('infoAttribNumero').textContent = attribution.numero_attribution || '-';
+        document.getElementById('infoAttribDate').textContent = formatDate(attribution.date_attribution);
+        document.getElementById('infoAttribAvancement').innerHTML = `
+            <div class="flex items-center">
+                <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: ${attribution.pourcentage_avancement || 0}%"></div>
+                </div>
+                <span>${attribution.pourcentage_avancement || 0}%</span>
+            </div>
+        `;
+
+        // Prestataire
+        if (attribution.prestataire) {
+            const p = attribution.prestataire;
+            document.getElementById('infoPrestaRaison').textContent = truncateText(p.raison_sociale_prestataire, 30);
+            document.getElementById('infoPrestaNumero').textContent = p.numero_identification_prestataire || '-';
+            document.getElementById('infoPrestaEmail').textContent = p.email_prestataire || '-';
+            document.getElementById('infoPrestaTel').textContent = p.telephone_principal_prestataire || '-';
+
+            // Résumé
+            document.getElementById('resumePrestataire').textContent = truncateText(p.raison_sociale_prestataire, 20);
+        }
+
+        document.getElementById('infoAttribution').classList.remove('hidden');
+    }
+
+    // Afficher les infos de la proforma
+    function showProformaInfo(proforma) {
+        document.getElementById('infoProformaNumero').textContent = proforma.numero_proforma || '-';
+        document.getElementById('infoProformaDate').textContent = formatDate(proforma.date_proforma);
+        document.getElementById('infoProformaMontant').textContent = formatNumber(proforma.montant_retenu_proforma) + ' FCFA';
+        document.getElementById('infoProformaTaxe').textContent = '+ ' + formatNumber(proforma.taxe_montant) + ' FCFA';
+        document.getElementById('infoProformaRemise').textContent = '- ' + formatNumber(proforma.remise_montant_proforma) + ' FCFA';
+        document.getElementById('infoProformaModalite').textContent = truncateText(proforma.modalite_proforma, 40);
+
+        // Calculer le montant TTC
+        const montantTTC = parseInt(proforma.montant_retenu_proforma || 0) + parseInt(proforma.taxe_montant || 0) - parseInt(proforma.remise_montant_proforma || 0);
+        document.getElementById('montant_facture').value = montantTTC;
+
+        // Définir l'ID de la proforma dans le champ hidden
+        document.getElementById('proforma_id').value = proforma.id_proforma;
+
+        // Mettre à jour le résumé
+        document.getElementById('resumeProforma').textContent = proforma.numero_proforma;
+
+        document.getElementById('infoProforma').classList.remove('hidden');
+
+        updateResume();
+    }
+
+    // Reset functions
+    function resetLot() {
+        selectLot.clear();
+        selectLot.clearOptions();
+        selectLot.disable();
+        selectLot.settings.placeholder = 'Sélectionnez d\'abord un appel d\'offre...';
+        selectedLot = null;
+        document.getElementById('resumeLot').textContent = '-';
+        document.getElementById('resumeProforma').textContent = 'Non sélectionnée';
+        document.getElementById('resumePrestataire').textContent = '-';
+        document.getElementById('proforma_id').value = '';
+        document.getElementById('lotHelpText').classList.add('hidden');
+        disableSubmit();
+    }
+
+    function hideAllInfos() {
+        document.getElementById('infoAO').classList.add('hidden');
+        document.getElementById('infoLot').classList.add('hidden');
+        document.getElementById('infoAttribution').classList.add('hidden');
+        document.getElementById('infoProforma').classList.add('hidden');
+    }
+
+    function hideProformaInfo() {
+        document.getElementById('infoLot').classList.add('hidden');
+        document.getElementById('infoAttribution').classList.add('hidden');
+        document.getElementById('infoProforma').classList.add('hidden');
+        document.getElementById('resumeLot').textContent = '-';
+        document.getElementById('resumeProforma').textContent = 'Non sélectionnée';
+        document.getElementById('resumePrestataire').textContent = '-';
+    }
+
+    function enableSubmit() {
+        document.getElementById('btnSubmit').disabled = false;
+    }
+
+    function disableSubmit() {
+        document.getElementById('btnSubmit').disabled = true;
+    }
+
+    // Mise à jour du résumé
+    function updateResume() {
+        const montant = document.getElementById('montant_facture').value;
+        const dateFacture = document.getElementById('date_facture').value;
+
+        // Formater le montant
+        if (montant) {
+            const montantNum = parseFloat(montant.replace(/\s/g, '').replace(',', '.')) || 0;
+            document.getElementById('resumeMontant').textContent = formatNumber(montantNum) + ' FCFA';
+        } else {
+            document.getElementById('resumeMontant').textContent = '0 FCFA';
+        }
+
+        // Formater la date
+        if (dateFacture) {
+            document.getElementById('resumeDateFacture').textContent = formatDate(dateFacture);
+        }
+    }
 </script>
 @endpush

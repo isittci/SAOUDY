@@ -7,27 +7,26 @@
             <i class="fas fa-bars text-xl text-white"></i>
         </button>
 
-        <!-- Search Bar avec animation -->
-        <div class="flex-1 max-w-3xl">
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i
-                        class="fas fa-search text-gray-400 text-sm group-focus-within:text-orange-500 transition-colors"></i>
+        <!-- Nom de l'Application -->
+        <div class="flex-1 flex items-center justify-center lg:justify-start">
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex items-center justify-center w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
+                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="w-8 h-8 object-contain">
                 </div>
-                <input type="text" placeholder="Rechercher un appel d'offres, prestataire..."
-                    class="w-full pl-10 pr-4 py-2.5 text-sm bg-white/95 backdrop-blur-sm border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 shadow-lg hover:shadow-xl transition-all duration-200 placeholder:text-gray-400" />
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <kbd
-                        class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-100 border border-gray-200 rounded">
-                        Ctrl+K
-                    </kbd>
+                <div class="flex flex-col">
+                    <h1 class="text-white font-bold text-base sm:text-lg lg:text-xl leading-tight tracking-wide">
+                        Gestion d'Appels d'Offres
+                    </h1>
+                    <span class="hidden sm:block text-orange-100 text-xs font-medium">
+                        Plateforme de gestion des marchés
+                    </span>
                 </div>
             </div>
         </div>
 
         <!-- Right Section -->
         <div class="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 ml-2 sm:ml-4">
-            <!-- Notifications -->
+            {{-- <!-- Notifications -->
             <div class="relative">
                 <button
                     class="text-white hover:bg-orange-600/80 p-2.5 rounded-xl transition-all duration-200 relative group active:scale-95 shadow-md">
@@ -46,7 +45,7 @@
             </div>
 
             <!-- Divider -->
-            <div class="hidden sm:block h-8 w-px bg-white/30"></div>
+            <div class="hidden sm:block h-8 w-px bg-white/30"></div> --}}
 
             <!-- User Profile -->
             <div class="relative">
@@ -166,7 +165,7 @@
     <!-- Breadcrumb (Optional) -->
     <div class="hidden lg:block px-6 pb-3">
         <nav class="flex items-center space-x-2 text-sm">
-            <a href="#" class="text-white/80 hover:text-white transition-colors flex items-center space-x-1">
+            <a href="{{ route('dashboard') }}" class="text-white/80 hover:text-white transition-colors flex items-center space-x-1">
                 <i class="fas fa-home text-xs"></i>
                 <span>Accueil</span>
             </a>

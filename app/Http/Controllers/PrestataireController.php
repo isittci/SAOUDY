@@ -267,7 +267,7 @@ class PrestataireController extends Controller
                 'banques',
                 'capacitesTechniques',
                 'situationsFinancieres',
-                'evaluations',
+                // 'evaluations',
                 'creator',
                 'updater'
             ])->findOrFail($id);
@@ -287,6 +287,7 @@ class PrestataireController extends Controller
             return view('prestataires.show', compact('prestataire', 'statistiques'));
 
         } catch (ModelNotFoundException $e) {
+            dd($e->getMessage());
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
@@ -296,6 +297,7 @@ class PrestataireController extends Controller
             return redirect()->route('prestataires.index')->with('error', 'Prestataire non trouvé.');
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             Log::error('Erreur lors de la récupération du prestataire: ' . $e->getMessage());
 
             if ($request->wantsJson() || $request->is('api/*')) {

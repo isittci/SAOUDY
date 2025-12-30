@@ -126,9 +126,36 @@ class AppelOffre extends Model
         return $this->date_limite_depot_critere_appel_offre >= now();
     }
 
+
+    public function peutEtreCloture(){
+        $lots = $this->lots();
+        // dd($this);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function isCloture()
     {
-        return $this->date_limite_depot_critere_appel_offre < now();
+
+        $dateLivraisonPrevisionnelleCaracteristiqueAppelOffre = $this->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre;
+        //  dd($dateLivraisonPrevisionnelleCaracteristiqueAppelOffre);
+        if($dateLivraisonPrevisionnelleCaracteristiqueAppelOffre){
+            return $this->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre < now();
+        }
+
+        return false;
+
+        // return $this->date_limite_depot_critere_appel_offre < now();
     }
 
     public function joursRestants(): int

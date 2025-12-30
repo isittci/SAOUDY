@@ -337,14 +337,6 @@
                                                     <i class="fas fa-ban text-sm"></i>
                                                 </button>
                                             @endif
-
-                                            @if($attribution->statut_attribution === 1)
-                                                <button onclick="openAvancementModal('{{ $attribution->id_attribution }}', {{ $attribution->pourcentage_avancement }})"
-                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                    title="Avancement">
-                                                    <i class="fas fa-tasks text-sm"></i>
-                                                </button>
-                                            @endif
                                         @else
                                             <!-- Réattribuer depuis l'historique -->
                                             <button onclick="window.location.href='{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}'"
@@ -502,7 +494,7 @@
     </div>
 
     <!-- Modal Avancement -->
-    <div id="avancementModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    {{-- <div id="avancementModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeAvancementModal()"></div>
             <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
@@ -547,7 +539,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
 @endsection
 

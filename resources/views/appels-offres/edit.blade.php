@@ -122,10 +122,10 @@
                                 </div>
                             </div>
 
-                            <!-- Montant Global -->
+                            <!-- Montant Retenu -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Montant Global (FCFA) <span class="text-red-500">*</span>
+                                    Montant retenu (FCFA) <span class="text-red-500">*</span>
                                 </label>
                                 <input type="number" name="montant_global_appel_offre" id="montant_global" required
                                     min="0" step="0.01"
@@ -287,6 +287,30 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="flex flex-col md:flex-row justify-center gap-4 p-4">
+
+                            <button type="submit" id="submitBtn"
+                                class="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg
+                                hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg
+                                flex items-center justify-center">
+                                <i class="fas fa-save mr-2"></i>
+                                <span id="submitText">Enregistrer les modifications</span>
+                            </button>
+
+                            <a href="{{ route('appels-offres.index') }}"
+                                class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg
+                                hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg
+                                flex items-center justify-center">
+                                <i class="fas fa-times mr-2"></i>
+                                Annuler
+                            </a>
+
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Sidebar -->
@@ -347,7 +371,7 @@
                     </div>
 
                     <!-- Actions -->
-                    <div
+                    {{-- <div
                         class="bg-gradient-to-br from-orange-50 to-white rounded-2xl shadow-lg p-6 border border-orange-100">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                             <i class="fas fa-check-circle text-orange-500 mr-2"></i>
@@ -368,7 +392,7 @@
                                 Annuler
                             </button>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Aide -->
                     <div class="bg-yellow-50 rounded-2xl shadow-lg p-6 border border-yellow-100">

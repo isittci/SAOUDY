@@ -279,6 +279,7 @@ class Evaluation extends Model
 
     public function getStatutBadgeClassAttribute(): string
     {
+        
         $colors = [
             self::STATUT_EN_ATTENTE => 'bg-gray-100 text-gray-800',
             self::STATUT_EN_COURS => 'bg-blue-100 text-blue-800',
@@ -692,6 +693,8 @@ class Evaluation extends Model
 
         $validateurId = $userId ?? Auth::id();
 
+        // dd($this, $this->critereEvaluation, $this->critereEvaluation->lot->attributionActive);
+
         $updated = $this->update([
             'statut_evaluation' => self::STATUT_VALIDEE,
             'valide_par' => $validateurId,
@@ -703,6 +706,10 @@ class Evaluation extends Model
         if ($updated) {
             $this->calculerRang();
         }
+
+        $attributionActive = $this->critereEvaluation->lot->attributionActive;
+        $attributionActive->pourcentage_avancement += $this->resultat_evaluation;
+        $attributionActive->save();
 
         return [
             'success' => $updated,

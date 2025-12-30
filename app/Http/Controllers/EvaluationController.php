@@ -127,6 +127,7 @@ class EvaluationController extends Controller
      */
     public function pourAttribution(Request $request, $attributionId)
     {
+
         try {
             $attribution = PrestataireLot::with([
                     'lot.appelOffre',
@@ -191,7 +192,7 @@ class EvaluationController extends Controller
 
             return back()->with('error', 'Attribution introuvable');
         } catch (Exception $e) {
-            dd($e->getMessage(), 2);
+            // dd($e->getMessage(), 2);
             Log::error('Erreur: ' . $e->getMessage());
 
             if ($request->wantsJson()) {
@@ -412,6 +413,7 @@ class EvaluationController extends Controller
      */
     public function show(Request $request, $id)
     {
+        // dd(25);
         try {
             $evaluation = Evaluation::with([
                     'attribution.lot.appelOffre',
@@ -429,6 +431,8 @@ class EvaluationController extends Controller
                 ])
                 ->findOrFail($id);
 
+                // dd($evaluation);
+
             // Historique des versions
             $historiqueVersions = $evaluation->getHistoriqueVersions();
 
@@ -440,7 +444,7 @@ class EvaluationController extends Controller
                 ->with(['creator', 'validateur'])
                 ->orderBy('created_at', 'asc')
                 ->get();
-// dd($autresEvaluationsCritere);
+
             // Statistiques du critère
             $totalEvalueCritere = Evaluation::getTotalEvaluePourCritere(
                 $evaluation->critere_evaluation_id,
@@ -503,25 +507,37 @@ class EvaluationController extends Controller
     }
 
     /**
-     * Affiche le formulaire de modification
+     * Affiche le formulaire de modification d'une évaluation
      */
     public function edit(Request $request, $id)
     {
         try {
             $evaluation = Evaluation::with([
                     'attribution.lot.appelOffre',
+                    'attribution.lot.criteresEvaluation' => function ($q) {
+                        $q->actif()->ordonne();
+                    },
                     'attribution.prestataire',
+                    'attribution.proforma',
                     'critereEvaluation',
-                    'notesCriteres.critereEvaluation',
+                    'notesCriteres',
+                    'evaluateurPrincipal',
+                    'creator'
                 ])
                 ->findOrFail($id);
 
+            // Vérifier que l'évaluation peut être modifiée
             if (!$evaluation->peutEtreModifiee()) {
-                return back()->with('error', 'Cette évaluation ne peut plus être modifiée');
+                return redirect()
+                    ->route('evaluations.show', $id)
+                    ->with('error', 'Cette évaluation ne peut plus être modifiée');
             }
 
-            // Calculer le reste à évaluer (en excluant cette évaluation)
-            $totalAutres = Evaluation::where('critere_evaluation_id', $evaluation->critere_evaluation_id)
+            $attribution = $evaluation->attribution;
+
+            // Calculer le max modifiable pour ce critère
+            // (note référence - somme des autres évaluations du même critère)
+            $totalAutresEvaluations = Evaluation::where('critere_evaluation_id', $evaluation->critere_evaluation_id)
                 ->where('attribution_id', $evaluation->attribution_id)
                 ->where('id_evaluation', '!=', $evaluation->id_evaluation)
                 ->where('is_current', true)
@@ -532,26 +548,62 @@ class EvaluationController extends Controller
                 ])
                 ->sum('resultat_evaluation');
 
+            $noteReferenceCritere = $evaluation->critereEvaluation->note_reference_critere_evaluation;
+            $maxModifiable = $noteReferenceCritere - $totalAutresEvaluations;
 
-                // dd($totalAutres);
+            // Récupérer l'observation et justification depuis la table pivot
+            $noteCritere = EvaluationLotPrestataire::where('evaluation_id', $id)->first();
 
-            $noteReference = $evaluation->note_reference_critere;
-            $maxModifiable = $noteReference - $totalAutres;
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'evaluation' => $evaluation,
+                    'attribution' => $attribution,
+                    'max_modifiable' => $maxModifiable,
+                    'note_reference' => $noteReferenceCritere,
+                    'total_autres' => $totalAutresEvaluations,
+                    'note_critere' => $noteCritere,
+                ]);
+            }
 
             return view('evaluations.edit', compact(
                 'evaluation',
+                'attribution',
                 'maxModifiable',
-                'noteReference',
-                'totalAutres'
+                'noteReferenceCritere',
+                'totalAutresEvaluations',
+                'noteCritere'
             ));
 
         } catch (ModelNotFoundException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Évaluation introuvable',
+                ], 404);
+            }
+
             return back()->with('error', 'Évaluation introuvable');
         } catch (Exception $e) {
-            Log::error('Erreur: ' . $e->getMessage());
+            Log::error('Erreur édition évaluation: ' . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors du chargement du formulaire',
+                ], 500);
+            }
+
             return back()->with('error', 'Erreur lors du chargement du formulaire');
         }
     }
+
+
+
+
+
+
+
 
     /**
      * Met à jour une évaluation
@@ -755,6 +807,13 @@ class EvaluationController extends Controller
 
                 return back()->with('error', $messageErreur);
             }
+
+
+
+            $attribution = $evaluation->attribution;
+            $attribution->pourcentage_avancement += $evaluation->note_reference_critere_evaluation;
+            $attribution->save();
+
 
             DB::commit();
 

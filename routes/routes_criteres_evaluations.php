@@ -53,6 +53,19 @@ Route::middleware(['auth'])->prefix('appels-offres/{appel_offre}/lots/{lot}')->g
     // Route de statistiques
     Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])
         ->name('criteres-evaluations.statistiques');
+
+
+        // Mise à jour en masse des ordres (pour drag-and-drop optimisé)
+    Route::post('criteres-reordonner-batch', [CritereEvaluationController::class, 'reordonnerBatch'])
+        ->name('criteres-evaluations.reordonner-batch');
+
+    // Permutation de deux critères (pour boutons monter/descendre)
+    Route::post('criteres-permuter', [CritereEvaluationController::class, 'permuter'])
+        ->name('criteres-evaluations.permuter');
+
+    // Route de statistiques
+    Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])
+        ->name('criteres-evaluations.statistiques');
 });
 
 /*

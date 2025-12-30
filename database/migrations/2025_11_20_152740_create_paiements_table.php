@@ -42,6 +42,7 @@ return new class extends Migration
                 ->onDelete('set null')
                 ->comment('Référence vers la banque du prestataire destinataire du paiement. Identifie le compte bancaire crédité lors du virement. Essentiel pour la réconciliation bancaire et l\'émission des ordres de virement.');
 
+
             // ============================================================
             // INFORMATIONS FINANCIÈRES DU PAIEMENT
             // ============================================================

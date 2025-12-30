@@ -128,7 +128,7 @@
                             <!-- Numéro CC -->
                             <div>
                                 <label for="numero_cc_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    N° Carte de Contribuable <span class="text-red-500">*</span>
+                                    N° Compte Contribuable <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="numero_cc_prestataire" id="numero_cc_prestataire"
                                     value="{{ old('numero_cc_prestataire', $prestataire->numero_cc_prestataire) }}" required maxlength="50"

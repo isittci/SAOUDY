@@ -248,7 +248,7 @@
                 </div>
 
                 <!-- Garanties et Pénalités -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
                         <h2 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-shield-alt text-purple-500 mr-2"></i>
@@ -375,7 +375,7 @@
                             @enderror
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Boutons d'action -->
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

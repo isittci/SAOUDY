@@ -80,21 +80,21 @@
                             </button>
                         @endif
 
-                        @if($attribution->peutEtreTerminee())
+                        {{-- @if($attribution->peutEtreTerminee())
                             <button onclick="openTerminerModal()"
                                 class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                                 <i class="fas fa-check-double text-sm"></i>
                                 <span class="text-sm font-medium">Terminer</span>
                             </button>
-                        @endif
+                        @endif --}}
 
-                        @if($attribution->statut_attribution === 1)
-                            <button onclick="openAvancementModal()"
+                        {{-- @if($attribution->statut_attribution === 1)
+                            <button onclick="openAvancementModal()" disabled
                                 class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
                                 <i class="fas fa-tasks text-sm"></i>
                                 <span class="text-sm font-medium">Avancement</span>
                             </button>
-                        @endif
+                        @endif --}}
                     @else
                         <a href="{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}"
                             class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
@@ -506,6 +506,7 @@
                             {{ $attribution->proforma->date_debut_validee_proforma ? $attribution->proforma->date_debut_validee_proforma->format('d/m/Y') : '-' }}
                         </p>
                     </div>
+                    {{-- {{ dd($attribution->proforma) }} --}}
                     <div class="bg-white/70 rounded-lg p-3">
                         <label class="block text-xs text-gray-500 mb-1">Date fin validée</label>
                         <p class="text-sm font-semibold text-gray-800">
@@ -581,7 +582,7 @@
             </div>
 
             {{-- Pénalités si existantes --}}
-            @if($attribution->proforma->penalites_proforma > 0)
+            {{-- @if($attribution->proforma->penalites_proforma > 0)
                 <div class="bg-red-50 rounded-xl p-4 border border-red-100">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-semibold text-red-700">
@@ -592,7 +593,7 @@
                         </span>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             {{-- Modalités de paiement --}}
             @if($attribution->proforma->modalite_proforma)

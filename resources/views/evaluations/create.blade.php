@@ -155,11 +155,11 @@
                                     </span>
                                 </label>
                                 <div class="flex items-center space-x-4">
-                                    <input type="number"
+                                    <input type="number" required
                                         name="resultat_evaluation"
                                         id="resultatEvaluation"
                                         class="w-40 px-4 py-3 text-xl font-bold border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400"
-                                        min="0"
+                                        min="1"
                                         step="0.01"
                                         max="{{ $resteAEvaluer ?? '' }}"
                                         value="{{ old('resultat_evaluation', 0) }}"

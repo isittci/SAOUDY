@@ -80,8 +80,8 @@
                     @endif
 
                     @if($facture->peutRecevoirPaiement())
-                    {{-- {{ route('paiements.create', ['facture_id' => $facture->id_facture]) }} --}}
-                        <a href="#"
+
+                        <a href="{{ route('paiements.create', $facture->id_facture) }}"
                             class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                             <i class="fas fa-money-bill-wave text-sm"></i>
                             <span class="text-sm font-medium">Ajouter Paiement</span>
@@ -229,8 +229,7 @@
                             </span>
                         </h2>
                         @if($facture->peutRecevoirPaiement())
-                        {{-- {{ route('paiements.create', ['facture_id' => $facture->id_facture]) }} --}}
-                            <a href="#"
+                            <a href="{{ route('paiements.create',  $facture->id_facture) }}"
                                 class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm rounded-lg transition-colors">
                                 <i class="fas fa-plus mr-1"></i> Ajouter
                             </a>
@@ -283,7 +282,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <a href="{{ route('paiements.show', $paiement->id_paiement) }}"
+                                                <a href="{{ route('paiements.show', [$paiement->facture_id, $paiement->id_paiement]) }}"
                                                     class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors inline-flex">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
@@ -316,24 +315,36 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500">Montant HT</span>
-                                <span class="text-gray-900">{{ number_format($facture->proforma->montant_retenu_proforma, 0, ',', ' ') }} FCFA</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500">TVA (18%)</span>
-                                <span class="text-gray-900">{{ number_format($facture->proforma->taxe_montant, 0, ',', ' ') }} FCFA</span>
+                                <span class="text-gray-900">{{ number_format($facture->proforma->montant_ht_apres_remise, 0, ',', ' ') }} FCFA</span>
                             </div>
                             @if($facture->proforma->remise_montant_proforma > 0)
                                 <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Remise</span>
+                                    <span class="text-sm text-gray-500">Remise ({{ $facture->proforma?->pourcentage_remise ?? 0 }}% du montant HT)</span>
+
                                     <span class="text-green-600">-{{ number_format($facture->proforma->remise_montant_proforma, 0, ',', ' ') }} FCFA</span>
                                 </div>
                             @endif
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500">TVA ({{$facture->proforma?->taux_taxe ?? 0}}%)</span>
+                                <span class="text-gray-900">{{ number_format($facture->proforma->taxe_montant, 0, ',', ' ') }} FCFA</span>
+                            </div>
+
                             @if($facture->proforma->penalites_proforma > 0)
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-gray-500">Pénalités</span>
                                     <span class="text-red-600">+{{ number_format($facture->proforma->penalites_proforma, 0, ',', ' ') }} FCFA</span>
                                 </div>
                             @endif
+
+                            {{-- @if($facture->proforma->penalites_proforma > 0) --}}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Montant TTC</span>
+                                    @php
+                                        $montantTTC = $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma + $facture->proforma->penalites_proforma;
+                                    @endphp
+                                    <span class="font-semibold text-blue-600">{{ number_format($montantTTC, 0, ',', ' ') }} FCFA</span>
+                                </div>
+                            {{-- @endif --}}
                             <div class="pt-4 border-t border-gray-200">
                                 <a href="{{ route('proformas.show', $facture->proforma->id_proforma) }}"
                                     class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors">

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->text('modalites_execution_caracteristique_appel_offre')->nullable()->comment('Exigences particulières.');
             $table->text('documents_requis_caracteristique_appel_offre')->nullable()->comment("Liste des pièces à fournir (ex: [Attestation fiscale, Assurance, Caution]).");
 
-            $table->boolean('is_active')->default(true)->comment('Indique si cette version est active ou obsolète.');
+            $table->boolean('is_active_caracteristique_appel_offre')->default(true)->comment('Indique si cette version est active ou obsolète.');
             $table->text('autres_informations_caracteristique_appel_offre')->nullable()->comment("Infos diverses.");
 
             $table->text('motif_modification_caracteristique_appel_offre')->nullable()->comment("Pourquoi cette modification (ex: Demande du maître d'ouvrage, Erreur initiale, Force majeure).");

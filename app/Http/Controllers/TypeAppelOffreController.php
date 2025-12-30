@@ -29,12 +29,14 @@ class TypeAppelOffreController extends Controller
                 $query->where('actif_type_appel_offre', $request->actif);
             }
 
+            
+
             if ($request->filled('search')) {
-                $search = $request->search;
+                $search = strtolower($request->search);
                 $query->where(function ($q) use ($search) {
-                    $q->where('libelle_type_appel_offre', 'like', "%{$search}%")
-                        ->orWhere('code_type_appel_offre', 'like', "%{$search}%");
-                });
+                    $q->whereRaw('LOWER(libelle_type_appel_offre) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(code_type_appel_offre) LIKE ?', ["%{$search}%"]);
+                 });
             }
 
             // Tri

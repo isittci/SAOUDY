@@ -83,6 +83,18 @@ return new class extends Migration
         Schema::table('prestataires_lots', function (Blueprint $table) {
             $table->foreignUuid('parent_attribution_id')->nullable()->after('id_attribution')->comment('Attribution précédente (chaînage)')->references('id_attribution')->on('prestataires_lots')->onDelete('set null');
         });
+
+
+        Schema::table('evaluations', function (Blueprint $table) {
+
+            // ============================================
+            // RELATION AVEC L'ATTRIBUTION
+            // ============================================
+            $table->foreignUuid('attribution_id')->comment('Référence vers l\'attribution (prestataires_lots)')->references('id_attribution')->on('prestataires_lots')->onDelete('cascade');
+
+            $table->index('attribution_id', 'idx_evaluation_attribution');
+        });
+
     }
 
     /**

@@ -23,20 +23,24 @@
                 <!-- Filtres et actions -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <!-- Recherche -->
+
                     <div class="relative flex-1 sm:min-w-[300px]">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" id="searchInput" placeholder="Rechercher par code ou libellé..."
+                        <input type="text" id="searchInput" name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Rechercher par code ou libellé..."
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all" />
                     </div>
 
+
                     <!-- Filtre statut -->
-                    <select id="statutFilter"
+                    <select id="statutFilter" name="actif"
                         class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
                         <option value="">Tous les statuts</option>
-                        <option value="1">Actifs</option>
-                        <option value="0">Inactifs</option>
+                        <option value="1" @selected(request('actif') === '1')>Actifs</option>
+                        <option value="0" @selected(request('actif') === '0')>Inactifs</option>
                     </select>
 
                     <!-- Bouton créer (desktop) -->
@@ -81,10 +85,10 @@
                         Liste des types (<span id="totalCount">{{ $typesAO->total() }}</span>)
                     </h2>
                     <div class="flex items-center space-x-2">
-                        <button onclick="refreshTable()"
+                        <a href="{{ route('types-appels-offres.index') }}"
                             class="px-3 py-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200">
                             <i class="fas fa-sync-alt text-sm"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -102,8 +106,8 @@
                                 Intervalle de valeur</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Appels d'Offre</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Version</th>
+                            {{-- <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Version</th> --}}
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -175,14 +179,14 @@
                                     </a>
                                 </td>
 
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
 
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 border border-purple-200">
                                         <i class="fas fa-code-branch mr-1"></i>
                                         {{ 'V.' . $type->version_type_appel_offre }}
                                     </span>
-                                </td>
+                                </td> --}}
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @if ($type->actif_type_appel_offre)
                                         <span
@@ -205,19 +209,22 @@
                                             <i class="fas fa-eye text-sm"></i>
                                         </button>
 
-                                        <!-- Modifier -->
-                                        <button onclick='openEditModal(@json($type))'
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
+                                        @if ($type->actif_type_appel_offre)
+                                            <!-- Modifier -->
+                                            <button onclick='openEditModal(@json($type))'
+                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                title="Modifier">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        @endif
 
-                                        <!-- Activer/Désactiver -->
+
+
                                         <button
                                             onclick="toggleStatus('{{ $type->id_type_appel_offre }}', {{ $type->actif_type_appel_offre ? 'true' : 'false' }})"
-                                            class="p-2 {{ $type->actif_type_appel_offre ? 'text-gray-600 hover:bg-gray-50' : 'text-green-600 hover:bg-green-50' }} rounded-lg transition-all duration-200"
+                                            class="p-2 rounded-lg transition-all duration-200 {{ $type->actif_type_appel_offre ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50' }}"
                                             title="{{ $type->actif_type_appel_offre ? 'Désactiver' : 'Activer' }}">
-                                            <i class="fas fa-power-off text-sm"></i>
+                                            <i class="fas {{ $type->actif_type_appel_offre ? 'fa-toggle-on' : 'fa-toggle-off' }} text-sm"></i>
                                         </button>
 
                                         <!-- Supprimer -->
@@ -598,15 +605,50 @@
                         });
                 });
 
-                // Recherche en temps réel
-                let searchTimeout;
-                document.getElementById('searchInput').addEventListener('input', function(e) {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        const search = e.target.value;
-                        const statut = document.getElementById('statutFilter').value;
-                        window.location.href = `?search=${search}&actif=${statut}`;
-                    }, 500);
+                // // Recherche en temps réel
+                // let searchTimeout;
+                // document.getElementById('searchInput').addEventListener('input', function(e) {
+                //     clearTimeout(searchTimeout);
+                //     searchTimeout = setTimeout(() => {
+                //         const search = e.target.value;
+                //         const statut = document.getElementById('statutFilter').value;
+                //         window.location.href = `?search=${search}&actif=${statut}`;
+                //     }, 500);
+                // });
+
+                // Recherche sur perte de focus ou touche Entrée
+                const searchInput = document.getElementById('searchInput');
+                const statutFilter = document.getElementById('statutFilter');
+                let initialValue = searchInput.value;
+
+                function executeSearch() {
+                    const search = searchInput.value.trim();
+                    const statut = statutFilter.value;
+
+                    // Éviter une requête si la valeur n'a pas changé
+                    if (search === initialValue.trim()) {
+                        return;
+                    }
+
+                    window.location.href = `?search=${encodeURIComponent(search)}&actif=${statut}`;
+                }
+
+                // Déclencher sur perte de focus
+                searchInput.addEventListener('blur', function() {
+                    executeSearch();
+                });
+
+                // Déclencher sur touche Entrée
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        executeSearch();
+                    }
+                });
+
+                // Mettre à jour la valeur initiale après chargement
+                document.addEventListener('DOMContentLoaded', function() {
+                    initialValue = searchInput.value;
                 });
 
                 // Filtre statut

@@ -2,7 +2,7 @@
 <aside id="sidebar" class="w-64 bg-gradient-to-b from-green-700 to-green-800 text-white flex-shrink-0 overflow-y-auto fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 shadow-2xl">
 
     <!-- Logo/Header avec gradient -->
-    <div class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
+    {{-- <div class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
         <div class="flex items-center space-x-3">
             <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transform hover:scale-110 transition-transform duration-300">
                 <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -11,7 +11,7 @@
             </div>
             <div class="flex flex-col">
                 <span class="text-white font-bold text-sm lg:text-base">{{env('APP_NAME')}}</span>
-                <span class="text-gray-300 text-xs">Gestion d'appels d'offres</span>
+                <span class="text-gray-300 text-xs">Gestion des marchés</span>
             </div>
         </div>
         <!-- Close button for mobile -->
@@ -19,7 +19,23 @@
             class="lg:hidden text-white hover:bg-gray-700 p-2 rounded-lg transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50">
             <i class="fas fa-times text-lg"></i>
         </button>
+    </div> --}}
+    <div class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
+    <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transform hover:scale-110 transition-transform duration-300 overflow-hidden">
+            <img src="{{ asset('favicon.png') }}" alt="Logo" class="w-7 h-7 lg:w-8 lg:h-8 object-contain">
+        </div>
+        <div class="flex flex-col">
+            <span class="text-white font-bold text-sm lg:text-base">{{env('APP_NAME')}}</span>
+            <span class="text-gray-300 text-xs">Gestion des marchés</span>
+        </div>
     </div>
+    <!-- Close button for mobile -->
+    <button onclick="closeMobileMenu()" type="button"
+        class="lg:hidden text-white hover:bg-gray-700 p-2 rounded-lg transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50">
+        <i class="fas fa-times text-lg"></i>
+    </button>
+</div>
 
     <!-- Navigation Menu avec scroll personnalisé -->
     <nav class="py-4 px-2 space-y-1">
@@ -127,8 +143,9 @@
                         <i class="fas fa-plus text-xs"></i>
                         <span>Liste facture</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
+
+                    {{-- href="{{ route('paiements.create') }}" --}}
+                    <a  class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Nouveau paiement</span>
                     </a>

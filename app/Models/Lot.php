@@ -136,7 +136,7 @@ class Lot extends Model
 
     public function attributionActive()
     {
-        // dd(25);
+       
         return $this->hasOne(PrestataireLot::class, 'lot_id', 'id_lot')
             ->whereIn('statut_attribution', [
                 PrestataireLot::STATUT_ATTRIBUE,

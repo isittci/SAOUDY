@@ -142,6 +142,7 @@ class PrestataireLot extends Model
 
     public function proforma(): BelongsTo
     {
+        // dd(52);
         return $this->belongsTo(Proforma::class, 'proforma_id', 'id_proforma');
     }
 
@@ -228,7 +229,7 @@ class PrestataireLot extends Model
             });
     }
 
-    // ==================== ACCESSEURS ==================== 
+    // ==================== ACCESSEURS ====================
 
     public function getStatutLabelAttribute(): string
     {
@@ -330,9 +331,7 @@ class PrestataireLot extends Model
     {
         return DB::transaction(function () use ($data) {
             // Désactiver toute attribution active existante pour ce lot
-            self::where('lot_id', $data['lot_id'])
-                ->where('is_active', true)
-                ->update(['is_active' => false]);
+            self::where('lot_id', $data['lot_id'])->where('is_active', true)->update(['is_active' => false]);
 
             // Récupérer la dernière attribution pour ce lot
             $derniereAttribution = self::where('lot_id', $data['lot_id'])
@@ -382,10 +381,7 @@ class PrestataireLot extends Model
         $annee = date('Y');
         $prefix = 'ATT';
 
-        $dernierNumero = self::whereYear('created_at', $annee)
-            ->where('numero_attribution', 'like', "{$prefix}-{$annee}-%")
-            ->orderBy('numero_attribution', 'desc')
-            ->value('numero_attribution');
+        $dernierNumero = self::whereYear('created_at', $annee)->where('numero_attribution', 'like', "{$prefix}-{$annee}-%")->orderBy('numero_attribution', 'desc')->value('numero_attribution');
 
         $sequence = 1;
         if ($dernierNumero) {
@@ -565,10 +561,7 @@ class PrestataireLot extends Model
      */
     public function getHistoriqueComplet()
     {
-        return self::where('lot_id', $this->lot_id)
-            ->with(['prestataire', 'proforma', 'createdBy'])
-            ->orderBy('version_attribution', 'asc')
-            ->get();
+        return self::where('lot_id', $this->lot_id)->with(['prestataire', 'proforma', 'createdBy'])->orderBy('version_attribution', 'asc')->get();
     }
 
     /**
@@ -576,10 +569,7 @@ class PrestataireLot extends Model
      */
     public static function lotEstAttribue(string $lotId): bool
     {
-        return self::where('lot_id', $lotId)
-            ->where('is_active', true)
-            ->where('statut_attribution', self::STATUT_ATTRIBUE)
-            ->exists();
+        return self::where('lot_id', $lotId)->where('is_active', true)->where('statut_attribution', self::STATUT_ATTRIBUE)->exists();
     }
 
     /**
@@ -587,9 +577,7 @@ class PrestataireLot extends Model
      */
     public static function getAttributionActiveDuLot(string $lotId): ?self
     {
-        return self::where('lot_id', $lotId)
-            ->where('is_active', true)
-            ->first();
+        return self::where('lot_id', $lotId)->where('is_active', true)->first();
     }
 
     /**

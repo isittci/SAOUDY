@@ -112,7 +112,7 @@
 
 
                             <!-- Libellé -->
-                            <div>
+                            {{-- <div>
                                 <label for="numero_appel_offre" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Numéro de l'appel d'offre <span class="text-red-500">*</span>
                                 </label>
@@ -126,7 +126,7 @@
                                     @enderror
                                     <p class="text-xs text-gray-500 ml-auto"><span id="numeroCount">0</span>/35</p>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
 
@@ -145,10 +145,10 @@
                                 </div>
                             </div>
 
-                            <!-- Montant Global -->
+                            <!-- Montant Retenu -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Montant Global (FCFA) <span class="text-red-500">*</span>
+                                    Montant retenu (FCFA) <span class="text-red-500">*</span>
                                 </label>
                                 <input type="number" name="montant_global_appel_offre" id="montant_global" required
                                     min="0" step="0.01" value="{{ old('montant_global_appel_offre') }}"
@@ -256,31 +256,53 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Colonne latérale -->
-                <div class="space-y-6">
-                    <!-- Actions -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                            <i class="fas fa-tasks text-orange-500 mr-2"></i>
-                            Actions
-                        </h3>
+                    {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <button type="submit" id="submitBtn" class="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                    <i class="fas fa-save mr-2"></i>
+                                    <span id="submitText">Enregistrer</span>
+                                </button>
+                            </div>
 
-                        <div class="space-y-3">
+                            <div>
+                                <a href="{{ route('appels-offres.index') }}" class="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Annuler
+                                </a>
+                            </div>
+                        </div>
+                    </div> --}}
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="flex flex-col md:flex-row justify-center gap-4 p-4">
+
                             <button type="submit" id="submitBtn"
-                                class="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                class="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg
+                                hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg
+                                flex items-center justify-center">
                                 <i class="fas fa-save mr-2"></i>
                                 <span id="submitText">Enregistrer</span>
                             </button>
 
                             <a href="{{ route('appels-offres.index') }}"
-                                class="w-full px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all duration-200 flex items-center justify-center">
+                                class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg
+                                hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg
+                                flex items-center justify-center">
                                 <i class="fas fa-times mr-2"></i>
                                 Annuler
                             </a>
+
                         </div>
                     </div>
+
+
+                </div>
+
+                <!-- Colonne latérale -->
+                <div class="space-y-6">
+                    <!-- Actions -->
+
 
                     <!-- Aide -->
                     <div class="bg-blue-50 rounded-2xl shadow-lg p-6 border border-blue-100">

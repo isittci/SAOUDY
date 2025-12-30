@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/prestataire/{prestataire}/historique', [PrestataireLotController::class, 'historiquePrestataire'])->name('historique.prestataire');
     });
 
-    // ==================== ROUTES CONTEXTUELLES ==================== 
+    // ==================== ROUTES CONTEXTUELLES ====================  
 
     // Depuis un lot
     Route::prefix('lots/{lot}')->name('lots.')->group(function () {

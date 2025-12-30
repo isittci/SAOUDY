@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 class PrestataireLotController extends Controller
@@ -45,13 +46,13 @@ class PrestataireLotController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('numero_attribution', 'like', "%{$search}%")
-                      ->orWhereHas('prestataire', function ($subQ) use ($search) {
-                          $subQ->where('raison_sociale_prestataire', 'like', "%{$search}%");
-                      })
-                      ->orWhereHas('lot', function ($subQ) use ($search) {
-                          $subQ->where('numero', 'like', "%{$search}%")
-                               ->orWhere('libelle', 'like', "%{$search}%");
-                      });
+                        ->orWhereHas('prestataire', function ($subQ) use ($search) {
+                            $subQ->where('raison_sociale_prestataire', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('lot', function ($subQ) use ($search) {
+                            $subQ->where('numero', 'like', "%{$search}%")
+                                ->orWhere('libelle', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -87,7 +88,6 @@ class PrestataireLotController extends Controller
             $lots = Lot::orderBy('numero')->get();
 
             return view('attributions.index', compact('attributions', 'statistiques', 'prestataires', 'lots'));
-
         } catch (\Exception $e) {
             Log::error('Erreur index attributions: ' . $e->getMessage());
 
@@ -135,23 +135,61 @@ class PrestataireLotController extends Controller
         return view('attributions.create', compact('prestataires', 'lots', 'proformas', 'lotPreselectionne'));
     }
 
+
+
+
     /**
      * Enregistrer une nouvelle attribution.
+     * Gère deux modes : sélection proforma existante OU création nouvelle proforma
+     *
+     * Adapté au modèle Proforma existant (sans tva_pourcentage/remise_pourcentage)
      */
     // public function store(Request $request)
     // {
-    //     $validator = Validator::make($request->all(), [
+    //     // Règles de base
+    //     $rules = [
     //         'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
     //         'lot_id' => 'required|uuid|exists:lots,id_lot',
-    //         'proforma_id' => 'required|uuid|exists:proformas,id_proforma',
+    //         'proforma_mode' => 'required|in:select,create',
     //         'date_attribution' => 'required|date|before_or_equal:today',
-    //         'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
-    //         'date_fin_prevue' => 'required|date|after:date_debut_prevue',
     //         'taux_penalites' => 'nullable|numeric|min:0|max:100',
     //         'montant_engage' => 'nullable|numeric|min:0',
     //         'observations' => 'nullable|string|max:2000',
     //         'conditions_particulieres' => 'nullable|string|max:5000',
-    //     ], $this->validationMessages());
+    //     ];
+
+    //     // Règles conditionnelles selon le mode proforma
+    //     if ($request->proforma_mode === 'select') {
+    //         $rules['proforma_id'] = 'required|uuid|exists:proformas,id_proforma';
+    //     } else {
+    //         // Mode création : champs nouvelle proforma
+    //         // Note: numero_proforma peut être auto-généré si vide
+    //         $rules['new_numero_proforma'] = 'nullable|string|max:20|unique:proformas,numero_proforma';
+    //         $rules['new_date_proforma'] = 'required|date|before_or_equal:today';
+    //         $rules['new_date_redemarrage'] = 'required|date';
+    //         $rules['new_montant_retenu'] = 'required|numeric|min:0';
+    //         // On stocke les montants directement (pas les pourcentages dans le modèle)
+    //         $rules['new_taxe_montant'] = 'nullable|numeric|min:0';
+    //         $rules['new_remise_montant'] = 'nullable|numeric|min:0';
+    //         $rules['new_penalites'] = 'nullable|numeric|min:0';
+    //         $rules['new_modalite'] = 'nullable|string|max:500';
+    //     }
+
+    //     $messages = array_merge($this->validationMessages(), [
+    //         'proforma_mode.required' => 'Veuillez choisir un mode de proforma.',
+    //         'proforma_mode.in' => 'Mode de proforma invalide.',
+    //         'new_numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
+    //         'new_numero_proforma.max' => 'Le numéro ne peut pas dépasser 20 caractères.',
+    //         'new_date_proforma.required' => 'La date de proforma est obligatoire.',
+    //         'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
+    //         'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
+    //         'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
+    //         'new_montant_retenu.min' => 'Le montant retenu doit être positif.',
+    //         'new_taxe_montant.min' => 'Le montant de la taxe doit être positif.',
+    //         'new_remise_montant.min' => 'Le montant de la remise doit être positif.',
+    //     ]);
+
+    //     $validator = Validator::make($request->all(), $rules, $messages);
 
     //     if ($validator->fails()) {
     //         if ($request->expectsJson()) {
@@ -163,29 +201,93 @@ class PrestataireLotController extends Controller
     //     try {
     //         DB::beginTransaction();
 
-    //         // Vérifications
+    //         // Vérifications lot
     //         $lot = Lot::findOrFail($request->lot_id);
     //         if (PrestataireLot::lotEstAttribue($request->lot_id)) {
     //             throw new \Exception('Ce lot est déjà attribué à un prestataire actif.');
     //         }
 
+    //         // Vérification prestataire
     //         $prestataire = Prestataire::findOrFail($request->prestataire_id);
     //         if (!$prestataire->statut_prestataire) {
     //             throw new \Exception('Le prestataire sélectionné n\'est pas actif.');
     //         }
 
-    //         $proforma = Proforma::findOrFail($request->proforma_id);
-    //         if (!$proforma->actif_proforma) {
-    //             throw new \Exception('La proforma sélectionnée n\'est pas active.');
+    //         // Gestion de la proforma selon le mode
+    //         if ($request->proforma_mode === 'select') {
+    //             // Mode sélection : vérifier la proforma existante
+    //             $proforma = Proforma::findOrFail($request->proforma_id);
+    //             if (!$proforma->actif_proforma) {
+    //                 throw new \Exception('La proforma sélectionnée n\'est pas active.');
+    //             }
+    //             $proformaId = $proforma->id_proforma;
+    //         } else {
+    //             // Mode création : créer la nouvelle proforma
+    //             // Le numéro sera auto-généré si vide (voir boot() du modèle)
+    //             $proformaData = [
+    //                 'date_proforma' => $request->new_date_proforma,
+    //                 'date_redemarrage_proforma' => $request->new_date_redemarrage,
+    //                 'montant_retenu_proforma' => $request->new_montant_retenu,
+    //                 'taxe_montant' => $request->new_taxe_montant ?? 0,
+    //                 'remise_montant_proforma' => $request->new_remise_montant ?? 0,
+    //                 'penalites_proforma' => $request->new_penalites ?? 0,
+    //                 'modalite_proforma' => $request->new_modalite,
+    //                 'actif_proforma' => true,
+    //                 'version_proforma' => 1,
+    //                 'created_by' => Auth::id(),
+    //             ];
+
+    //             // Numéro personnalisé si fourni, sinon auto-généré
+    //             if (!empty($request->new_numero_proforma)) {
+    //                 $proformaData['numero_proforma'] = $request->new_numero_proforma;
+    //             }
+
+    //             $proforma = Proforma::create($proformaData);
+
+    //             Log::info('Nouvelle proforma créée', [
+    //                 'id' => $proforma->id_proforma,
+    //                 'numero' => $proforma->numero_proforma,
+    //                 'montant_ht' => $proforma->montant_retenu_proforma,
+    //                 'taxe' => $proforma->taxe_montant,
+    //                 'remise' => $proforma->remise_montant_proforma,
+    //                 'ttc' => $proforma->calculerMontantTTC(),
+    //                 'user' => Auth::id()
+    //             ]);
+
+    //             $proformaId = $proforma->id_proforma;
     //         }
 
-    //         $attribution = PrestataireLot::attribuer($validator->validated());
+    //         // Préparer les données pour l'attribution
+    //         $attributionData = [
+    //             'prestataire_id' => $request->prestataire_id,
+    //             'lot_id' => $request->lot_id,
+    //             'proforma_id' => $proformaId,
+    //             'date_attribution' => $request->date_attribution,
+    //             'date_debut_prevue' => $proforma->date_debut_validee,
+    //             'date_fin_prevue' => $proforma->date_fin_validee,
+    //             'taux_penalites' => $request->taux_penalites ?? 0,
+    //             'montant_engage' => $request->montant_engage ?? 0,
+    //             'observations' => $request->observations,
+    //             'conditions_particulieres' => $request->conditions_particulieres,
+    //         ];
+
+    //         // Créer l'attribution
+    //         $attribution = PrestataireLot::attribuer($attributionData);
 
     //         DB::commit();
 
-    //         Log::info('Attribution créée', ['id' => $attribution->id_attribution, 'lot' => $lot->numero, 'user' => Auth::id()]);
+    //         Log::info('Attribution créée', [
+    //             'id' => $attribution->id_attribution,
+    //             'lot' => $lot->numero,
+    //             'proforma_mode' => $request->proforma_mode,
+    //             'user' => Auth::id()
+    //         ]);
 
     //         $message = "Le lot {$lot->numero} a été attribué avec succès à {$prestataire->raison_sociale_prestataire}.";
+
+    //         if ($request->proforma_mode === 'create') {
+    //             $message .= " Une nouvelle proforma ({$proforma->numero_proforma}) a été créée.";
+    //         }
 
     //         if ($request->expectsJson()) {
     //             return response()->json([
@@ -195,11 +297,15 @@ class PrestataireLotController extends Controller
     //             ]);
     //         }
 
-    //         return redirect()->route('attributions.show', $attribution->id_attribution)->with('success', $message);
-
+    //         return redirect()
+    //             ->route('attributions.show', $attribution->id_attribution)
+    //             ->with('success', $message);
     //     } catch (\Exception $e) {
     //         DB::rollBack();
-    //         Log::error('Erreur création attribution: ' . $e->getMessage());
+    //         Log::error('Erreur création attribution: ' . $e->getMessage(), [
+    //             'request' => $request->except(['_token']),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
 
     //         if ($request->expectsJson()) {
     //             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
@@ -214,187 +320,394 @@ class PrestataireLotController extends Controller
 
 
 
-/**
- * Enregistrer une nouvelle attribution.
- * Gère deux modes : sélection proforma existante OU création nouvelle proforma
- *
- * Adapté au modèle Proforma existant (sans tva_pourcentage/remise_pourcentage)
- */
-public function store(Request $request)
-{
-    // Règles de base
-    $rules = [
-        'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
-        'lot_id' => 'required|uuid|exists:lots,id_lot',
-        'proforma_mode' => 'required|in:select,create',
-        'date_attribution' => 'required|date|before_or_equal:today',
-        // 'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
-        // 'date_fin_prevue' => 'required|date|after:date_debut_prevue',
-        'taux_penalites' => 'nullable|numeric|min:0|max:100',
-        'montant_engage' => 'nullable|numeric|min:0',
-        'observations' => 'nullable|string|max:2000',
-        'conditions_particulieres' => 'nullable|string|max:5000',
-    ];
 
-    // Règles conditionnelles selon le mode proforma
-    if ($request->proforma_mode === 'select') {
-        $rules['proforma_id'] = 'required|uuid|exists:proformas,id_proforma';
-    } else {
-        // Mode création : champs nouvelle proforma
-        // Note: numero_proforma peut être auto-généré si vide
-        $rules['new_numero_proforma'] = 'nullable|string|max:20|unique:proformas,numero_proforma';
-        $rules['new_date_proforma'] = 'required|date|before_or_equal:today';
-        $rules['new_date_redemarrage'] = 'required|date';
-        $rules['new_montant_retenu'] = 'required|numeric|min:0';
-        // On stocke les montants directement (pas les pourcentages dans le modèle)
-        $rules['new_taxe_montant'] = 'nullable|numeric|min:0';
-        $rules['new_remise_montant'] = 'nullable|numeric|min:0';
-        $rules['new_penalites'] = 'nullable|numeric|min:0';
-        $rules['new_modalite'] = 'nullable|string|max:500';
+    /**
+     * Nettoie un nombre formaté (avec espaces et virgules) pour le convertir en nombre décimal
+     *
+     * @param mixed $value Valeur à nettoyer (ex: "1 000 000,50")
+     * @return float|null Valeur numérique (ex: 1000000.50) ou null
+     */
+    private function cleanFormattedNumber($value)
+    {
+        if (is_null($value) || $value === '') {
+            return null;
+        }
+
+        // Retirer les espaces (séparateurs de milliers)
+        $value = str_replace(' ', '', $value);
+
+        // Remplacer la virgule par un point (décimales)
+        $value = str_replace(',', '.', $value);
+
+        return $value;
     }
 
-    $messages = array_merge($this->validationMessages(), [
-        'proforma_mode.required' => 'Veuillez choisir un mode de proforma.',
-        'proforma_mode.in' => 'Mode de proforma invalide.',
-        'new_numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
-        'new_numero_proforma.max' => 'Le numéro ne peut pas dépasser 20 caractères.',
-        'new_date_proforma.required' => 'La date de proforma est obligatoire.',
-        'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
-        'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
-        'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
-        'new_montant_retenu.min' => 'Le montant retenu doit être positif.',
-        'new_taxe_montant.min' => 'Le montant de la taxe doit être positif.',
-        'new_remise_montant.min' => 'Le montant de la remise doit être positif.',
-    ]);
+    /**
+     * Enregistrer une nouvelle attribution.
+     * Gère deux modes : sélection proforma existante OU création nouvelle proforma
+     *
+     * VERSION AMÉLIORÉE avec support du formatage des nombres
+     */
+    public function store(Request $request)
+    {
+        // ==========================================
+        // NETTOYAGE DES MONTANTS FORMATÉS
+        // ==========================================
 
-    $validator = Validator::make($request->all(), $rules, $messages);
+        // Liste des champs numériques à nettoyer (reçus avec formatage : espaces + virgules)
+        $fieldsToClean = [
+            'new_montant_retenu',
+            'new_taux_tva',
+            'new_taux_remise',
+            'new_penalites',
+            'new_taxe_montant',
+            'new_remise_montant',
+            'new_total_ttc',
+            'taux_penalites',
+            'montant_engage',
+        ];
 
-    if ($validator->fails()) {
-        if ($request->expectsJson()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-        return back()->withErrors($validator)->withInput();
-    }
-
-    try {
-        DB::beginTransaction();
-
-        // Vérifications lot
-        $lot = Lot::findOrFail($request->lot_id);
-        if (PrestataireLot::lotEstAttribue($request->lot_id)) {
-            throw new \Exception('Ce lot est déjà attribué à un prestataire actif.');
-        }
-
-        // Vérification prestataire
-        $prestataire = Prestataire::findOrFail($request->prestataire_id);
-        if (!$prestataire->statut_prestataire) {
-            throw new \Exception('Le prestataire sélectionné n\'est pas actif.');
-        }
-
-        // Gestion de la proforma selon le mode
-        if ($request->proforma_mode === 'select') {
-            // Mode sélection : vérifier la proforma existante
-            $proforma = Proforma::findOrFail($request->proforma_id);
-            if (!$proforma->actif_proforma) {
-                throw new \Exception('La proforma sélectionnée n\'est pas active.');
+        foreach ($fieldsToClean as $field) {
+            if ($request->has($field)) {
+                $request->merge([
+                    $field => $this->cleanFormattedNumber($request->input($field))
+                ]);
             }
-            $proformaId = $proforma->id_proforma;
+        }
+
+        // ==========================================
+        // RÉCUPÉRATION DES LIMITES DU TYPE D'APPEL D'OFFRE
+        // ==========================================
+
+        // Récupérer le lot avec ses relations pour validation dynamique
+        $lot = null;
+        if ($request->has('lot_id')) {
+            try {
+                $lot = Lot::with('appelOffre.typeAppelOffre')->findOrFail($request->lot_id);
+            } catch (\Exception $e) {
+                // Le lot sera validé plus tard dans les règles exists
+            }
+        }
+
+        $valeurMin = $lot && $lot->appelOffre && $lot->appelOffre->typeAppelOffre
+            ? $lot->appelOffre->typeAppelOffre->valeur_minimuim_type_appel_offre
+            : 0;
+
+        $valeurMax = $lot && $lot->appelOffre && $lot->appelOffre->typeAppelOffre
+            ? $lot->appelOffre->typeAppelOffre->valeur_maximuim_type_appel_offre
+            : PHP_INT_MAX;
+
+        // ==========================================
+        // RÈGLES DE VALIDATION
+        // ==========================================
+
+        // Règles de base
+        $rules = [
+            'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
+            'lot_id' => 'required|uuid|exists:lots,id_lot',
+            'proforma_mode' => 'required|in:select,create',
+            'date_attribution' => 'required|date|before_or_equal:today',
+            'taux_penalites' => 'nullable|numeric|min:0|max:100',
+            'montant_engage' => 'nullable|numeric|min:0',
+            'observations' => 'nullable|string|max:2000',
+            'conditions_particulieres' => 'nullable|string|max:5000',
+        ];
+
+        // Règles conditionnelles selon le mode proforma
+        if ($request->proforma_mode === 'select') {
+            $rules['proforma_id'] = 'required|uuid|exists:proformas,id_proforma';
         } else {
-            // Mode création : créer la nouvelle proforma
-            // Le numéro sera auto-généré si vide (voir boot() du modèle)
-            $proformaData = [
-                'date_proforma' => $request->new_date_proforma,
-                'date_redemarrage_proforma' => $request->new_date_redemarrage,
-                'montant_retenu_proforma' => $request->new_montant_retenu,
-                'taxe_montant' => $request->new_taxe_montant ?? 0,
-                'remise_montant_proforma' => $request->new_remise_montant ?? 0,
-                'penalites_proforma' => $request->new_penalites ?? 0,
-                'modalite_proforma' => $request->new_modalite,
-                'actif_proforma' => true,
-                'version_proforma' => 1,
-                'created_by' => Auth::id(),
+            // Mode création : champs nouvelle proforma avec validation améliorée
+            $rules['new_numero_proforma'] = 'nullable|string|max:20|unique:proformas,numero_proforma';
+            $rules['new_date_proforma'] = 'required|date|before_or_equal:today';
+            $rules['new_date_debut_validee'] = 'required|date';
+            $rules['new_date_redemarrage'] = 'required|date|after_or_equal:new_date_debut_validee';
+            $rules['new_date_fin_validee'] = 'required|date|after:new_date_redemarrage';
+
+            // Montant retenu avec validation dynamique selon le type d'appel d'offre
+            $rules['new_montant_retenu'] = [
+                'required',
+                'numeric',
+                // 'min:' . $valeurMin,
+                // 'max:' . $valeurMax,
             ];
 
-            // Numéro personnalisé si fourni, sinon auto-généré
-            if (!empty($request->new_numero_proforma)) {
-                $proformaData['numero_proforma'] = $request->new_numero_proforma;
+            // Taux (en pourcentage)
+            $rules['new_taux_tva'] = 'required|numeric|min:0|max:100';
+            $rules['new_taux_remise'] = 'nullable|numeric|min:0|max:100';
+
+            // Montants calculés
+            $rules['new_taxe_montant'] = 'nullable|numeric|min:0';
+            $rules['new_remise_montant'] = 'nullable|numeric|min:0';
+            $rules['new_total_ttc'] = 'required|numeric|min:0';
+
+            // Pénalités (taux ou montant selon votre modèle)
+            $rules['new_penalites'] = 'nullable|numeric|min:0';
+
+            // Modalités de paiement
+            $rules['new_modalite_paiement'] = 'nullable|string|max:1000';
+        }
+
+        // ==========================================
+        // MESSAGES PERSONNALISÉS
+        // ==========================================
+
+        $messages = array_merge($this->validationMessages(), [
+            // Mode proforma
+            'proforma_mode.required' => 'Veuillez choisir un mode de proforma.',
+            'proforma_mode.in' => 'Mode de proforma invalide.',
+
+            // Proforma existante
+            'proforma_id.required' => 'Veuillez sélectionner une proforma.',
+            'proforma_id.exists' => 'La proforma sélectionnée est invalide.',
+
+            // Numéro proforma
+            'new_numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
+            'new_numero_proforma.max' => 'Le numéro ne peut pas dépasser 20 caractères.',
+
+            // Dates
+            'new_date_proforma.required' => 'La date de proforma est obligatoire.',
+            'new_date_proforma.before_or_equal' => 'La date de proforma ne peut pas être dans le futur.',
+
+            'new_date_debut_validee.required' => 'La date de début validée est obligatoire.',
+            'new_date_debut_validee.date' => 'La date de début validée doit être une date valide.',
+
+            'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
+            'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
+            'new_date_redemarrage.after_or_equal' => 'La date de redémarrage doit être postérieure ou égale à la date de début.',
+
+            'new_date_fin_validee.required' => 'La date de fin validée est obligatoire.',
+            'new_date_fin_validee.date' => 'La date de fin validée doit être une date valide.',
+            'new_date_fin_validee.after' => 'La date de fin validée doit être postérieure à la date de redémarrage.',
+
+            // Montant retenu avec limites dynamiques
+            'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
+            'new_montant_retenu.numeric' => 'Le montant retenu doit être un nombre.',
+            // 'new_montant_retenu.min' => 'Le montant retenu doit être au minimum de ' . number_format($valeurMin, 0, ',', ' ') . ' FCFA.',
+            // 'new_montant_retenu.max' => 'Le montant retenu ne peut pas dépasser ' . number_format($valeurMax, 0, ',', ' ') . ' FCFA.',
+
+            // Taux TVA
+            'new_taux_tva.required' => 'Le taux de TVA est obligatoire.',
+            'new_taux_tva.numeric' => 'Le taux de TVA doit être un nombre.',
+            'new_taux_tva.min' => 'Le taux de TVA doit être positif.',
+            'new_taux_tva.max' => 'Le taux de TVA ne peut pas dépasser 100%.',
+
+            // Taux remise
+            'new_taux_remise.numeric' => 'Le taux de remise doit être un nombre.',
+            'new_taux_remise.min' => 'Le taux de remise doit être positif.',
+            'new_taux_remise.max' => 'Le taux de remise ne peut pas dépasser 100%.',
+
+            // Montants calculés
+            'new_taxe_montant.numeric' => 'Le montant de la TVA doit être un nombre.',
+            'new_taxe_montant.min' => 'Le montant de la TVA doit être positif.',
+
+            'new_remise_montant.numeric' => 'Le montant de la remise doit être un nombre.',
+            'new_remise_montant.min' => 'Le montant de la remise doit être positif.',
+
+            'new_total_ttc.required' => 'Le total TTC est obligatoire.',
+            'new_total_ttc.numeric' => 'Le total TTC doit être un nombre.',
+            'new_total_ttc.min' => 'Le total TTC doit être positif.',
+
+            // Pénalités
+            'new_penalites.numeric' => 'Les pénalités doivent être un nombre.',
+            'new_penalites.min' => 'Les pénalités doivent être positives.',
+
+            // Modalités
+            // 'new_modalite_paiement.required' => 'Les modalités de paiement sont obligatoires.',
+            'new_modalite_paiement.max' => 'Les modalités de paiement ne peuvent pas dépasser 1000 caractères.',
+
+            // Attribution
+            'date_attribution.before_or_equal' => 'La date d\'attribution ne peut pas être dans le futur.',
+            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%.',
+        ]);
+
+        $data = $request->all();
+        $data['new_date_debut_validee'] = $request->input('date_debut_prevue');
+        $data['new_date_fin_validee'] = $request->input('date_fin_prevue');
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        // ==========================================
+        // VALIDATION PERSONNALISÉE SUPPLÉMENTAIRE date_redemarrage_proforma
+        // ==========================================
+
+        $validator->after(function ($validator) use ($request) {
+            // Vérifier la cohérence des calculs si nouvelle proforma
+            if ($request->proforma_mode === 'create') {
+                $montantRetenu = (float) $request->new_montant_retenu;
+                $tauxTVA = (float) ($request->new_taux_tva ?? 0);
+                $tauxRemise = (float) ($request->new_taux_remise ?? 0);
+
+                // Recalculer pour vérifier la cohérence
+                $montantTVACalcule = $montantRetenu * ($tauxTVA / 100);
+                $montantRemiseCalcule = $montantRetenu * ($tauxRemise / 100);
+                $totalTTCCalcule = $montantRetenu + $montantTVACalcule - $montantRemiseCalcule;
+
+                $montantTVARecu = (float) ($request->new_taxe_montant ?? 0);
+                $totalTTCRecu = (float) ($request->new_total_ttc ?? 0);
+
+                // Tolérance de 1 FCFA pour les arrondis
+                if (abs($montantTVACalcule - $montantTVARecu) > 1) {
+                    $validator->errors()->add(
+                        'new_taxe_montant',
+                        'Le montant de la TVA (' . number_format($montantTVARecu, 0, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format($montantTVACalcule, 0, ',', ' ') . ' FCFA).'
+                    );
+                }
+
+                if (abs($totalTTCCalcule - $totalTTCRecu) > 1) {
+                    $validator->errors()->add(
+                        'new_total_ttc',
+                        'Le total TTC (' . number_format($totalTTCRecu, 0, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format($totalTTCCalcule, 0, ',', ' ') . ' FCFA).'
+                    );
+                }
+            }
+        });
+
+        if ($validator->fails()) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Vérifications lot
+            $lot = Lot::findOrFail($request->lot_id);
+            if (PrestataireLot::lotEstAttribue($request->lot_id)) {
+                throw new \Exception('Ce lot est déjà attribué à un prestataire actif.');
             }
 
-            $proforma = Proforma::create($proformaData);
+            // Vérification prestataire
+            $prestataire = Prestataire::findOrFail($request->prestataire_id);
+            if (!$prestataire->statut_prestataire) {
+                throw new \Exception('Le prestataire sélectionné n\'est pas actif.');
+            }
 
-            Log::info('Nouvelle proforma créée', [
-                'id' => $proforma->id_proforma,
-                'numero' => $proforma->numero_proforma,
-                'montant_ht' => $proforma->montant_retenu_proforma,
-                'taxe' => $proforma->taxe_montant,
-                'remise' => $proforma->remise_montant_proforma,
-                'ttc' => $proforma->calculerMontantTTC(),
+            // Gestion de la proforma selon le mode
+            if ($request->proforma_mode === 'select') {
+                // Mode sélection : vérifier la proforma existante
+                $proforma = Proforma::findOrFail($request->proforma_id);
+                if (!$proforma->actif_proforma) {
+                    throw new \Exception('La proforma sélectionnée n\'est pas active.');
+                }
+                $proformaId = $proforma->id_proforma;
+            } else {
+                // Mode création : créer la nouvelle proforma
+
+        //         $data['new_date_debut_validee'] = $request->input('date_debut_prevue');
+        // $data['new_date_fin_validee'] = $request->input('date_fin_prevue');
+                $proformaData = [
+                    'date_proforma' => $request->new_date_proforma,
+                    'date_debut_validee_proforma' => $request->date_debut_prevue,
+                    'date_redemarrage_proforma' => $request->new_date_redemarrage,
+                    'date_fin_validee_proforma' => $request->date_fin_prevue,
+                    'montant_retenu_proforma' => $request->new_montant_retenu,
+                    'taxe_montant' => $request->new_taxe_montant ?? 0,
+                    'remise_montant_proforma' => $request->new_remise_montant ?? 0,
+                    'penalites_proforma' => $request->new_penalites ?? 0,
+                    'modalite_proforma' => $request->new_modalite_paiement,
+                    'actif_proforma' => true,
+                    'version_proforma' => 1,
+                    'created_by' => Auth::id(),
+                ];
+
+                // Stocker aussi les taux pour référence (si votre modèle le supporte)
+                // Ajustez selon votre structure de table
+                if (Schema::hasColumn('proformas', 'taux_tva')) {
+                    $proformaData['taux_tva'] = $request->new_taux_tva ?? 0;
+                }
+                if (Schema::hasColumn('proformas', 'taux_remise')) {
+                    $proformaData['taux_remise'] = $request->new_taux_remise ?? 0;
+                }
+                if (Schema::hasColumn('proformas', 'total_ttc')) {
+                    $proformaData['total_ttc'] = $request->new_total_ttc ?? 0;
+                }
+
+                // Numéro personnalisé si fourni, sinon auto-généré
+                if (!empty($request->new_numero_proforma)) {
+                    $proformaData['numero_proforma'] = $request->new_numero_proforma;
+                }
+
+                $proforma = Proforma::create($proformaData);
+
+                Log::info('Nouvelle proforma créée avec formatage', [
+                    'id' => $proforma->id_proforma,
+                    'numero' => $proforma->numero_proforma,
+                    'montant_ht' => $proforma->montant_retenu_proforma,
+                    'taux_tva' => $request->new_taux_tva,
+                    'taxe' => $proforma->taxe_montant,
+                    'taux_remise' => $request->new_taux_remise,
+                    'remise' => $proforma->remise_montant_proforma,
+                    'ttc' => $request->new_total_ttc,
+                    'user' => Auth::id()
+                ]);
+
+                $proformaId = $proforma->id_proforma;
+            }
+
+            // Préparer les données pour l'attribution
+            $attributionData = [
+                'prestataire_id' => $request->prestataire_id,
+                'lot_id' => $request->lot_id,
+                'proforma_id' => $proformaId,
+                'date_attribution' => $request->date_attribution,
+                'date_debut_prevue' => $proforma->date_debut_validee ?? null,
+                'date_fin_prevue' => $proforma->date_fin_validee ?? null,
+                'taux_penalites' => $request->taux_penalites ?? 0,
+                'montant_engage' => $request->montant_engage ?? 0,
+                'observations' => $request->observations,
+                'conditions_particulieres' => $request->conditions_particulieres,
+            ];
+
+            // Créer l'attribution
+            $attribution = PrestataireLot::attribuer($attributionData);
+
+            DB::commit();
+
+            Log::info('Attribution créée', [
+                'id' => $attribution->id_attribution,
+                'lot' => $lot->numero,
+                'proforma_mode' => $request->proforma_mode,
+                'montant_formatage' => 'supporté',
                 'user' => Auth::id()
             ]);
 
-            $proformaId = $proforma->id_proforma;
-        }
+            $message = "Le lot {$lot->numero} a été attribué avec succès à {$prestataire->raison_sociale_prestataire}.";
 
-        // Préparer les données pour l'attribution
-        $attributionData = [
-            'prestataire_id' => $request->prestataire_id,
-            'lot_id' => $request->lot_id,
-            'proforma_id' => $proformaId,
-            'date_attribution' => $request->date_attribution,
-            'date_debut_prevue' => $proforma->date_debut_validee,
-            'date_fin_prevue' => $proforma->date_fin_validee,
-            'taux_penalites' => $request->taux_penalites ?? 0,
-            'montant_engage' => $request->montant_engage ?? 0,
-            'observations' => $request->observations,
-            'conditions_particulieres' => $request->conditions_particulieres,
-        ];
+            if ($request->proforma_mode === 'create') {
+                $message .= " Une nouvelle proforma ({$proforma->numero_proforma}) a été créée.";
+            }
 
-        // Créer l'attribution
-        $attribution = PrestataireLot::attribuer($attributionData);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'data' => $attribution->load(['prestataire', 'lot', 'proforma']),
+                ]);
+            }
 
-        DB::commit();
+            return redirect()
+                ->route('attributions.show', $attribution->id_attribution)
+                ->with('success', $message);
 
-        Log::info('Attribution créée', [
-            'id' => $attribution->id_attribution,
-            'lot' => $lot->numero,
-            'proforma_mode' => $request->proforma_mode,
-            'user' => Auth::id()
-        ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-        $message = "Le lot {$lot->numero} a été attribué avec succès à {$prestataire->raison_sociale_prestataire}.";
-
-        if ($request->proforma_mode === 'create') {
-            $message .= " Une nouvelle proforma ({$proforma->numero_proforma}) a été créée.";
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'data' => $attribution->load(['prestataire', 'lot', 'proforma']),
+            dd($e->getMessage());
+            Log::error('Erreur création attribution: ' . $e->getMessage(), [
+                'request' => $request->except(['_token']),
+                'trace' => $e->getTraceAsString()
             ]);
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            }
+
+            return back()->withInput()->with('error', $e->getMessage());
         }
-
-        return redirect()
-            ->route('attributions.show', $attribution->id_attribution)
-            ->with('success', $message);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Erreur création attribution: ' . $e->getMessage(), [
-            'request' => $request->except(['_token']),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        if ($request->expectsJson()) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
-        }
-
-        return back()->withInput()->with('error', $e->getMessage());
     }
-}
-
-
 
 
 
@@ -426,7 +739,6 @@ public function store(Request $request)
             }
 
             return view('attributions.show', compact('attribution', 'historiqueLot'));
-
         } catch (\Exception $e) {
             Log::error('Erreur affichage attribution: ' . $e->getMessage());
 
@@ -503,7 +815,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', 'Attribution mise à jour avec succès.');
-
         } catch (\Exception $e) {
             Log::error('Erreur mise à jour attribution: ' . $e->getMessage());
 
@@ -561,7 +872,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', $message);
-
         } catch (\Exception $e) {
             Log::error('Erreur suspension: ' . $e->getMessage());
 
@@ -600,7 +910,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', $message);
-
         } catch (\Exception $e) {
             Log::error('Erreur reprise: ' . $e->getMessage());
 
@@ -656,7 +965,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', $message);
-
         } catch (\Exception $e) {
             Log::error('Erreur retrait: ' . $e->getMessage());
 
@@ -723,8 +1031,10 @@ public function store(Request $request)
             DB::beginTransaction();
 
             // Retirer l'ancienne si encore active
-            if ($ancienneAttribution->is_active &&
-                $ancienneAttribution->statut_attribution === PrestataireLot::STATUT_ATTRIBUE) {
+            if (
+                $ancienneAttribution->is_active &&
+                $ancienneAttribution->statut_attribution === PrestataireLot::STATUT_ATTRIBUE
+            ) {
                 $ancienneAttribution->retirer(
                     $request->motif_reattribution,
                     PrestataireLot::TYPE_RETRAIT_RESILIATION
@@ -752,7 +1062,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $nouvelleAttribution->id_attribution)->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur réattribution: ' . $e->getMessage());
@@ -792,7 +1101,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', $message);
-
         } catch (\Exception $e) {
             Log::error('Erreur terminaison: ' . $e->getMessage());
 
@@ -849,7 +1157,6 @@ public function store(Request $request)
             }
 
             return redirect()->route('attributions.show', $id)->with('success', $message);
-
         } catch (\Exception $e) {
             Log::error('Erreur avancement: ' . $e->getMessage());
 
@@ -882,7 +1189,6 @@ public function store(Request $request)
             }
 
             return view('attributions.historique-lot', compact('lot', 'historique'));
-
         } catch (\Exception $e) {
             Log::error('Erreur historique lot: ' . $e->getMessage());
 
@@ -917,7 +1223,6 @@ public function store(Request $request)
             }
 
             return view('attributions.historique-prestataire', compact('prestataire', 'historique', 'statistiques'));
-
         } catch (\Exception $e) {
             Log::error('Erreur historique prestataire: ' . $e->getMessage());
 
@@ -968,31 +1273,31 @@ public function store(Request $request)
         return view('attributions.dashboard', compact('statistiques', 'dernieresAttributions', 'attributionsEnRetard'));
     }
 
-/**
- * Messages de validation personnalisés
- */
-private function validationMessages(): array
-{
-    return [
-        'prestataire_id.required' => 'Veuillez sélectionner un prestataire.',
-        'prestataire_id.exists' => 'Le prestataire sélectionné n\'existe pas.',
-        'lot_id.required' => 'Veuillez sélectionner un lot.',
-        'lot_id.exists' => 'Le lot sélectionné n\'existe pas.',
-        'proforma_id.required' => 'Veuillez sélectionner une proforma.',
-        'proforma_id.exists' => 'La proforma sélectionnée n\'existe pas.',
-        'date_attribution.required' => 'La date d\'attribution est obligatoire.',
-        'date_attribution.before_or_equal' => 'La date d\'attribution ne peut pas être dans le futur.',
-        'date_debut_prevue.required' => 'La date de début est obligatoire.',
-        'date_debut_prevue.after_or_equal' => 'La date de début doit être égale ou postérieure à la date d\'attribution.',
-        'date_fin_prevue.required' => 'La date de fin est obligatoire.',
-        'date_fin_prevue.after' => 'La date de fin doit être postérieure à la date de début.',
-        'taux_penalites.numeric' => 'Le taux de pénalités doit être un nombre.',
-        'taux_penalites.min' => 'Le taux de pénalités ne peut pas être négatif.',
-        'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%.',
-        'montant_engage.numeric' => 'Le montant engagé doit être un nombre.',
-        'montant_engage.min' => 'Le montant engagé ne peut pas être négatif.',
-        'observations.max' => 'Les observations ne peuvent pas dépasser 2000 caractères.',
-        'conditions_particulieres.max' => 'Les conditions particulières ne peuvent pas dépasser 5000 caractères.',
-    ];
-}
+    /**
+     * Messages de validation personnalisés
+     */
+    private function validationMessages(): array
+    {
+        return [
+            'prestataire_id.required' => 'Veuillez sélectionner un prestataire.',
+            'prestataire_id.exists' => 'Le prestataire sélectionné n\'existe pas.',
+            'lot_id.required' => 'Veuillez sélectionner un lot.',
+            'lot_id.exists' => 'Le lot sélectionné n\'existe pas.',
+            'proforma_id.required' => 'Veuillez sélectionner une proforma.',
+            'proforma_id.exists' => 'La proforma sélectionnée n\'existe pas.',
+            'date_attribution.required' => 'La date d\'attribution est obligatoire.',
+            'date_attribution.before_or_equal' => 'La date d\'attribution ne peut pas être dans le futur.',
+            'date_debut_prevue.required' => 'La date de début est obligatoire.',
+            'date_debut_prevue.after_or_equal' => 'La date de début doit être égale ou postérieure à la date d\'attribution.',
+            'date_fin_prevue.required' => 'La date de fin est obligatoire.',
+            'date_fin_prevue.after' => 'La date de fin doit être postérieure à la date de début.',
+            'taux_penalites.numeric' => 'Le taux de pénalités doit être un nombre.',
+            'taux_penalites.min' => 'Le taux de pénalités ne peut pas être négatif.',
+            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%.',
+            'montant_engage.numeric' => 'Le montant engagé doit être un nombre.',
+            'montant_engage.min' => 'Le montant engagé ne peut pas être négatif.',
+            'observations.max' => 'Les observations ne peuvent pas dépasser 2000 caractères.',
+            'conditions_particulieres.max' => 'Les conditions particulières ne peuvent pas dépasser 5000 caractères.',
+        ];
+    }
 }

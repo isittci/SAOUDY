@@ -15,6 +15,7 @@ require __DIR__ . '/banques.php';
 require __DIR__.'/attributions.php';
 require __DIR__.'/evaluations.php';
 require __DIR__.'/routes_factures.php';
+require __DIR__.'/paiements.php';
 
 Route::get('/test', function () {
     return view('test');

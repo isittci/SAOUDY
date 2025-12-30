@@ -118,9 +118,9 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Numéro</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Libellé / Type</th>
+                                Libellé</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Montant Global</th>
+                                Montant retenu</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Dates Clés</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -210,15 +210,16 @@
                                             <i class="fas fa-eye text-sm"></i>
                                         </button>
 
+                                        {{-- {{ dd(vars: $ao->statut_evaluation_critere_appel_offre) }} --}}
 
-
-
+                                        @if(!$ao->isCloture() && $ao->statut_evaluation_critere_appel_offre)
                                         <!-- Modifier -->
-                                        <button onclick="window.location.href='{{ route('appels-offres.edit', $ao->id_appel_offre) }}'"
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
+                                            <button onclick="window.location.href='{{ route('appels-offres.edit', $ao->id_appel_offre) }}'"
+                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                title="Modifier">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                        @endif
 
                                         <!-- Toggle Status -->
                                         <button
@@ -237,21 +238,21 @@
                                             </button>
                                             <div id="menu-{{ $ao->id_appel_offre }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                                                 <div class="py-1">
-                                                    <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    {{-- <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                             <i class="fas fa-boxes text-indigo-500 mr-2"></i>
                                                             Ajouter lot
-                                                    </button>
+                                                    </button> --}}
                                                     <a href="{{ route('caracteristiques-appels-offres.index', $ao->id_appel_offre) }}" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                             <i class="fas fa-thumbs-up text-indigo-500 mr-2"></i>
                                                             Caractéristiques
                                                     </a>
-                                                    @if(!$ao->date_publication_critere_appel_offre)
+                                                    {{-- @if(!$ao->date_publication_critere_appel_offre)
                                                         <button onclick="publier('{{ $ao->id_appel_offre }}')"
                                                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                             <i class="fas fa-paper-plane mr-2 text-blue-500"></i>
                                                             Publier
                                                         </button>
-                                                    @endif
+                                                    @endif --}}
                                                     @if($ao->isEnCours())
                                                         <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
                                                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -259,11 +260,11 @@
                                                             Clôturer
                                                         </button>
                                                     @endif
-                                                    <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
+                                                    {{-- <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-copy mr-2 text-purple-500"></i>
                                                         Dupliquer
-                                                    </button>
+                                                    </button> --}}
                                                     <button
                                                         onclick="confirmDelete('{{ $ao->id_appel_offre }}', '{{ $ao->numero_appel_offre }}', {{ $ao->lots_count }})"
                                                         class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">

@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Modifier évaluation ' . $evaluation->numero_evaluation)
+@section('title', 'Modifier l\'évaluation - ' . $evaluation->numero_evaluation)
 
 @section('breadcrumb')
     <a href="{{ route('evaluations.index') }}" class="text-white/80 hover:text-white transition-colors">Évaluations</a>
@@ -23,6 +23,7 @@
                     <div class="flex items-center space-x-3">
                         <h1 class="text-2xl font-bold text-gray-800">Modifier l'évaluation</h1>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $evaluation->statut_badge_class }}">
+                            <i class="fas fa-{{ $evaluation->statut_icon }} mr-1"></i>
                             {{ $evaluation->statut_label }}
                         </span>
                         @if($evaluation->version > 1)
@@ -31,7 +32,9 @@
                             </span>
                         @endif
                     </div>
-                    <p class="text-gray-600 mt-1">{{ $evaluation->numero_evaluation }}</p>
+                    <p class="text-gray-600 mt-1">
+                        {{ $evaluation->numero_evaluation }} - Lot {{ $attribution->lot->numero }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -42,7 +45,7 @@
 
         @include('partials.alerts')
 
-        <form action="{{ route('evaluations.update', $evaluation->id_evaluation) }}" method="POST" id="evaluationForm">
+        <form action="{{ route('evaluations.update', $evaluation->id_evaluation) }}" method="POST" id="evaluationEditForm">
             @csrf
             @method('PUT')
 
@@ -50,124 +53,115 @@
                 <!-- Colonne principale -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- Notes par critère -->
+                    <!-- Critère évalué (lecture seule) -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-list-check text-indigo-500 mr-2"></i>
-                                    Notation des critères
-                                </h2>
-                                <div class="flex items-center space-x-4 text-sm">
-                                    <span class="text-gray-500">Total référence:</span>
-                                    <span class="font-bold text-indigo-600">{{ $totalNotesReference }} pts</span>
-                                </div>
-                            </div>
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-list-check text-indigo-500 mr-2"></i>
+                                Critère d'évaluation
+                                <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">
+                                    <i class="fas fa-lock text-xs mr-1"></i>Non modifiable
+                                </span>
+                            </h2>
                         </div>
-
-                        <div class="divide-y divide-gray-200">
-                            @foreach($criteres as $index => $critere)
-                                @php
-                                    $noteCritere = $notesCriteres[$critere->id_critere_evaluation] ?? null;
-                                @endphp
-                                <div class="p-4 hover:bg-gray-50 transition-colors critere-row" data-note-ref="{{ $critere->note_reference_critere_evaluation }}">
-                                    <input type="hidden" name="notes[{{ $index }}][critere_id]" value="{{ $critere->id_critere_evaluation }}">
-
-                                    <div class="flex items-start gap-4">
-                                        <!-- Info critère -->
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-2 mb-2">
-                                                <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded">
-                                                    {{ $critere->numero_critere_evaluation }}
-                                                </span>
-                                                <h4 class="font-semibold text-gray-900">
-                                                    {{ $critere->libelle_critere_evaluation }}
-                                                </h4>
-                                            </div>
-                                            @if($critere->description_critere_evaluation)
-                                                <p class="text-sm text-gray-600 mb-3">{{ $critere->description_critere_evaluation }}</p>
-                                            @endif
-
-                                            <!-- Note input -->
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div>
-                                                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                                                        Note obtenue *
-                                                        <span class="text-gray-400">(max: {{ $critere->note_reference_critere_evaluation }})</span>
-                                                    </label>
-                                                    <div class="flex items-center space-x-2">
-                                                        <input type="number"
-                                                            name="notes[{{ $index }}][note_obtenue]"
-                                                            class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 note-input"
-                                                            min="0"
-                                                            max="{{ $critere->note_reference_critere_evaluation }}"
-                                                            step="0.5"
-                                                            value="{{ old('notes.' . $index . '.note_obtenue', $noteCritere->note_obtenue ?? 0) }}"
-                                                            required>
-                                                        <span class="text-gray-500">/ {{ $critere->note_reference_critere_evaluation }}</span>
-                                                        <span class="pourcentage-display text-sm font-medium text-gray-600"></span>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Conformité</label>
-                                                    <label class="flex items-center space-x-2 cursor-pointer">
-                                                        <input type="checkbox"
-                                                            name="notes[{{ $index }}][conforme]"
-                                                            value="1"
-                                                            class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                                                            {{ old('notes.' . $index . '.conforme', $noteCritere->conforme ?? false) ? 'checked' : '' }}>
-                                                        <span class="text-sm text-gray-700">Conforme</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <!-- Observation -->
-                                            <div class="mt-3">
-                                                <label class="block text-xs font-medium text-gray-700 mb-1">Observation</label>
-                                                <textarea name="notes[{{ $index }}][observation]" rows="2"
-                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 text-sm"
-                                                    placeholder="Observation sur ce critère...">{{ old('notes.' . $index . '.observation', $noteCritere->observation ?? '') }}</textarea>
-                                            </div>
-
-                                            <!-- Justification -->
-                                            <div class="mt-3">
-                                                <label class="block text-xs font-medium text-gray-700 mb-1">Justification <span class="text-red-500">*</span></label>
-                                                <textarea name="notes[{{ $index }}][justification]" rows="2" required
-                                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 text-sm"
-                                                    placeholder="Justification de la note...">{{ old('notes.' . $index . '.justification', $noteCritere->justification ?? '') }}</textarea>
-                                            </div>
-                                        </div>
+                        <div class="p-6">
+                            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="px-3 py-1 text-sm font-bold bg-indigo-100 text-indigo-700 rounded-lg">
+                                            {{ $evaluation->critereEvaluation->numero_critere_evaluation }}
+                                        </span>
+                                        <h4 class="font-semibold text-gray-900">{{ $evaluation->critereEvaluation->libelle_critere_evaluation }}</h4>
                                     </div>
+                                    <span class="text-lg font-bold text-indigo-600">
+                                        {{ number_format($noteReferenceCritere, 2) }} pts
+                                    </span>
                                 </div>
-                            @endforeach
-                        </div>
-
-                        <!-- Total calculé -->
-                        <div class="px-6 py-4 bg-gradient-to-r from-indigo-100 to-indigo-50 border-t">
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-gray-700">Total calculé</span>
-                                <div class="text-right">
-                                    <span id="totalObtenu" class="text-2xl font-bold text-indigo-600">0</span>
-                                    <span class="text-gray-500">/ {{ $totalNotesReference }}</span>
-                                    <span id="pourcentageTotal" class="ml-2 text-lg font-medium text-indigo-600">(0%)</span>
+                                @if($evaluation->critereEvaluation->description_critere_evaluation)
+                                    <p class="text-sm text-gray-600 mb-3">{{ $evaluation->critereEvaluation->description_critere_evaluation }}</p>
+                                @endif
+                                <div class="grid grid-cols-3 gap-4 pt-3 border-t border-indigo-200 text-sm">
+                                    <div>
+                                        <span class="text-indigo-600">Autres évaluations:</span>
+                                        <p class="font-bold text-indigo-800">{{ number_format($totalAutresEvaluations, 2) }} pts</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-indigo-600">Valeur actuelle:</span>
+                                        <p class="font-bold text-indigo-800">{{ number_format($evaluation->resultat_evaluation, 2) }} pts</p>
+                                    </div>
+                                    <div>
+                                        <span class="text-green-600">Max modifiable:</span>
+                                        <p class="font-bold text-green-700">{{ number_format($maxModifiable, 2) }} pts</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Commentaires -->
+                    <!-- Résultat de l'évaluation -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-star text-green-500 mr-2"></i>
+                                Résultat de l'évaluation
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Note attribuée *
+                                    <span id="maxNoteInfo" class="text-gray-400 font-normal">
+                                        (max: {{ number_format($maxModifiable, 2) }})
+                                    </span>
+                                </label>
+                                <div class="flex items-center space-x-4">
+                                    <input type="number" required
+                                        name="resultat_evaluation"
+                                        id="resultatEvaluation"
+                                        class="w-40 px-4 py-3 text-xl font-bold border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 @error('resultat_evaluation') border-red-500 @enderror"
+                                        min="0"
+                                        step="0.01"
+                                        max="{{ $maxModifiable }}"
+                                        value="{{ old('resultat_evaluation', $evaluation->resultat_evaluation) }}"
+                                        required>
+                                    <span class="text-gray-500 text-lg">pts</span>
+                                    <div id="pourcentageDisplay" class="text-lg font-semibold text-gray-600"></div>
+                                </div>
+                                @error('resultat_evaluation')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Observation -->
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Observation</label>
+                                <textarea name="observation" rows="3"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400"
+                                    placeholder="Observations sur cette évaluation...">{{ old('observation', $noteCritere?->observation) }}</textarea>
+                            </div>
+
+                            <!-- Justification -->
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Justification</label>
+                                <textarea name="justification" rows="3"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400"
+                                    placeholder="Justification de la note attribuée...">{{ old('justification', $noteCritere?->justification) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Commentaire général et recommandation -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
                                 <i class="fas fa-comment-alt text-gray-500 mr-2"></i>
-                                Commentaires et recommandations
+                                Commentaires
                             </h2>
                         </div>
                         <div class="p-6 space-y-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Commentaire général</label>
-                                <textarea name="commentaire_general" rows="4"
+                                <textarea name="commentaire_general" rows="3"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
                                     placeholder="Commentaire général sur l'évaluation...">{{ old('commentaire_general', $evaluation->commentaire_general) }}</textarea>
                             </div>
@@ -175,7 +169,7 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Recommandation</label>
                                 <textarea name="recommandation" rows="3"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400"
-                                    placeholder="Recommandation pour l'attribution...">{{ old('recommandation', $evaluation->recommandation) }}</textarea>
+                                    placeholder="Recommandations...">{{ old('recommandation', $evaluation->recommandation) }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -185,55 +179,65 @@
                 <!-- Colonne latérale -->
                 <div class="space-y-6">
 
-                    <!-- Informations -->
+                    <!-- Informations attribution -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-200">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-info-circle text-orange-500 mr-2"></i>
-                                Informations
+                                <i class="fas fa-file-contract text-orange-500 mr-2"></i>
+                                Attribution
                             </h2>
                         </div>
-                        <div class="p-6 space-y-3">
+                        <div class="p-6 space-y-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase">Attribution</label>
-                                <p class="text-gray-900 font-medium">{{ $evaluation->attribution->numero_attribution ?? 'N/A' }}</p>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Numéro</label>
+                                <p class="text-gray-900 font-medium">{{ $attribution->numero_attribution }}</p>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase">Lot</label>
-                                <p class="text-gray-900 font-medium">{{ $evaluation->attribution->lot->numero ?? 'N/A' }}</p>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Lot</label>
+                                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-700">
+                                    {{ $attribution->lot->numero ?? 'N/A' }}
+                                </span>
+                                <p class="text-sm text-gray-600 mt-1">{{ $attribution->lot->libelle ?? '' }}</p>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase">Prestataire</label>
-                                <p class="text-gray-900 font-medium">
-                                    {{ $evaluation->attribution->prestataire->raison_sociale_prestataire ?? 'N/A' }}
-                                </p>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Prestataire</label>
+                                <p class="text-gray-900 font-medium">{{ $attribution->prestataire->raison_sociale_prestataire ?? 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Responsables -->
+                    <!-- Responsables (OBLIGATOIRES) -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-white border-b border-gray-200">
+                        <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b border-gray-200">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-users text-green-500 mr-2"></i>
-                                Responsables
+                                <i class="fas fa-users text-red-500 mr-2"></i>
+                                Responsables *
                             </h2>
+                            <p class="text-xs text-red-600 mt-1">Tous les responsables sont obligatoires</p>
                         </div>
-                        <div class="p-6 space-y-4">
+                        <div class="p-6 space-y-6">
+
                             <!-- Responsable technique -->
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Responsable technique</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-user-cog text-blue-500 mr-1"></i>
+                                    Responsable technique *
+                                </label>
                                 <div class="space-y-2">
                                     <input type="text" name="respo_technique[nom_complet]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
-                                        placeholder="Nom complet"
-                                        value="{{ old('respo_technique.nom_complet', $evaluation->respo_technique_evaluation['nom_complet'] ?? '') }}">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 @error('respo_technique.nom_complet') border-red-500 @enderror"
+                                        placeholder="Nom complet *"
+                                        value="{{ old('respo_technique.nom_complet', $evaluation->respo_technique_evaluation['nom_complet'] ?? '') }}"
+                                        required>
+                                    @error('respo_technique.nom_complet')
+                                        <p class="text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                     <input type="email" name="respo_technique[email]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
                                         placeholder="Email"
                                         value="{{ old('respo_technique.email', $evaluation->respo_technique_evaluation['email'] ?? '') }}">
                                     <input type="text" name="respo_technique[telephone]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
                                         placeholder="Téléphone"
                                         value="{{ old('respo_technique.telephone', $evaluation->respo_technique_evaluation['telephone'] ?? '') }}">
                                 </div>
@@ -241,31 +245,45 @@
 
                             <!-- Superviseur -->
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Superviseur</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-user-shield text-purple-500 mr-1"></i>
+                                    Superviseur *
+                                </label>
                                 <div class="space-y-2">
                                     <input type="text" name="superviseur[nom_complet]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
-                                        placeholder="Nom complet"
-                                        value="{{ old('superviseur.nom_complet', $evaluation->superviseur_evaluation['nom_complet'] ?? '') }}">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-400 @error('superviseur.nom_complet') border-red-500 @enderror"
+                                        placeholder="Nom complet *"
+                                        value="{{ old('superviseur.nom_complet', $evaluation->superviseur_evaluation['nom_complet'] ?? '') }}"
+                                        required>
+                                    @error('superviseur.nom_complet')
+                                        <p class="text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                     <input type="email" name="superviseur[email]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-400"
                                         placeholder="Email"
                                         value="{{ old('superviseur.email', $evaluation->superviseur_evaluation['email'] ?? '') }}">
                                     <input type="text" name="superviseur[telephone]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-400"
                                         placeholder="Téléphone"
                                         value="{{ old('superviseur.telephone', $evaluation->superviseur_evaluation['telephone'] ?? '') }}">
                                 </div>
                             </div>
 
-                            <!-- Évalué par -->
+                            <!-- Évaluateur -->
                             <div class="bg-gray-50 p-4 rounded-lg">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">Évalué par</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-user-check text-green-500 mr-1"></i>
+                                    Évaluateur *
+                                </label>
                                 <div class="space-y-2">
                                     <input type="text" name="evalue_par[nom_complet]"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
-                                        placeholder="Nom complet"
-                                        value="{{ old('evalue_par.nom_complet', $evaluation->evalue_par['nom_complet'] ?? '') }}">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 @error('evalue_par.nom_complet') border-red-500 @enderror"
+                                        placeholder="Nom complet *"
+                                        value="{{ old('evalue_par.nom_complet', $evaluation->evalue_par['nom_complet'] ?? '') }}"
+                                        required>
+                                    @error('evalue_par.nom_complet')
+                                        <p class="text-xs text-red-600">{{ $message }}</p>
+                                    @enderror
                                     <input type="email" name="evalue_par[email]"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400"
                                         placeholder="Email"
@@ -276,6 +294,7 @@
                                         value="{{ old('evalue_par.telephone', $evaluation->evalue_par['telephone'] ?? '') }}">
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -293,6 +312,49 @@
                         </div>
                     </div>
 
+                    <!-- Note d'information -->
+                    <div class="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                        <div class="flex">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-1 mr-3"></i>
+                            <div class="text-sm text-amber-800">
+                                <p class="font-semibold mb-1">Important</p>
+                                <ul class="list-disc list-inside space-y-1 text-xs">
+                                    <li>Le critère ne peut pas être modifié</li>
+                                    <li>La note ne peut pas dépasser <strong>{{ number_format($maxModifiable, 2) }} pts</strong></li>
+                                    <li>Les 3 responsables restent <strong>obligatoires</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations audit -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                                Informations
+                            </h2>
+                        </div>
+                        <div class="p-6 space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Créé le</span>
+                                <span class="text-gray-900">{{ $evaluation->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            @if($evaluation->creator)
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Par</span>
+                                    <span class="text-gray-900">{{ $evaluation->creator->name ?? 'N/A' }}</span>
+                                </div>
+                            @endif
+                            @if($evaluation->updated_at != $evaluation->created_at)
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Modifié le</span>
+                                    <span class="text-gray-900">{{ $evaluation->updated_at->format('d/m/Y H:i') }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </form>
@@ -302,52 +364,61 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const totalRef = {{ $totalNotesReference }};
-        const noteInputs = document.querySelectorAll('.note-input');
+        const resultatInput = document.getElementById('resultatEvaluation');
+        const pourcentageDisplay = document.getElementById('pourcentageDisplay');
 
-        function updateTotals() {
-            let totalObtenu = 0;
+        const maxModifiable = {{ $maxModifiable }};
+        const noteReference = {{ $noteReferenceCritere }};
 
-            document.querySelectorAll('.critere-row').forEach(row => {
-                const noteRef = parseFloat(row.dataset.noteRef);
-                const input = row.querySelector('.note-input');
-                const pourcentageDisplay = row.querySelector('.pourcentage-display');
-                const noteValue = parseFloat(input.value) || 0;
+        function updatePourcentage() {
+            const resultat = parseFloat(resultatInput.value) || 0;
 
-                // Validation max
-                if (noteValue > noteRef) {
-                    input.value = noteRef;
-                }
+            // Validation du max
+            if (resultat > maxModifiable) {
+                resultatInput.value = maxModifiable;
+            }
 
-                totalObtenu += Math.min(noteValue, noteRef);
-
-                // Afficher pourcentage individuel
-                const pourcentage = noteRef > 0 ? (noteValue / noteRef * 100) : 0;
-                pourcentageDisplay.textContent = `(${pourcentage.toFixed(1)}%)`;
+            // Calcul du pourcentage
+            if (noteReference > 0) {
+                const pourcentage = (Math.min(resultat, maxModifiable) / noteReference * 100).toFixed(1);
+                pourcentageDisplay.textContent = `(${pourcentage}% du critère)`;
 
                 // Couleur selon pourcentage
                 if (pourcentage >= 70) {
-                    pourcentageDisplay.className = 'pourcentage-display text-sm font-medium text-green-600';
+                    pourcentageDisplay.className = 'text-lg font-semibold text-green-600';
                 } else if (pourcentage >= 50) {
-                    pourcentageDisplay.className = 'pourcentage-display text-sm font-medium text-yellow-600';
+                    pourcentageDisplay.className = 'text-lg font-semibold text-yellow-600';
                 } else {
-                    pourcentageDisplay.className = 'pourcentage-display text-sm font-medium text-red-600';
+                    pourcentageDisplay.className = 'text-lg font-semibold text-red-600';
                 }
-            });
-
-            document.getElementById('totalObtenu').textContent = totalObtenu.toFixed(1);
-
-            const pourcentageTotal = totalRef > 0 ? (totalObtenu / totalRef * 100) : 0;
-            document.getElementById('pourcentageTotal').textContent = `(${pourcentageTotal.toFixed(1)}%)`;
+            }
         }
 
-        noteInputs.forEach(input => {
-            input.addEventListener('input', updateTotals);
-            input.addEventListener('change', updateTotals);
-        });
+        // Écouter les changements de résultat
+        resultatInput.addEventListener('input', updatePourcentage);
+        resultatInput.addEventListener('change', updatePourcentage);
 
-        // Initial calculation
-        updateTotals();
+        // Calcul initial
+        updatePourcentage();
+
+        // Validation avant soumission
+        document.getElementById('evaluationEditForm').addEventListener('submit', function(e) {
+            const resultat = parseFloat(resultatInput.value) || 0;
+
+            if (resultat > maxModifiable) {
+                e.preventDefault();
+                alert(`La note ne peut pas dépasser ${maxModifiable.toFixed(2)} points`);
+                resultatInput.focus();
+                return false;
+            }
+
+            if (resultat < 0) {
+                e.preventDefault();
+                alert('La note ne peut pas être négative');
+                resultatInput.focus();
+                return false;
+            }
+        });
     });
 </script>
 @endpush

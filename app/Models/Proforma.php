@@ -107,7 +107,7 @@ class Proforma extends Model
     }
 
     /**
-     * Relations avec les prestataires et lots via table pivot 
+     * Relations avec les prestataires et lots via table pivot
      */
     public function prestataireLotsAttributions()
     {
@@ -431,6 +431,33 @@ public function scopeAvecFacture($query)
 
 
 
+
+
+
+public function prestatairePrincipal()
+{
+    return $this->hasOne(PrestataireLot::class, 'proforma_id', 'id_proforma')
+                ->where('is_active', true)
+                ->with('prestataire')
+                ->oldest('created_at');
+}
+
+public function getPrestataire()
+{
+    return $this->prestatairePrincipal?->prestataire;
+}
+
+public function getPrestataireId()
+{
+    return $this->prestatairePrincipal?->prestataire_id;
+}
+
+public function aUnPrestataire(): bool
+{
+    return $this->prestataireLotsAttributions()
+                ->where('is_active', true)
+                ->exists();
+}
 
 
 

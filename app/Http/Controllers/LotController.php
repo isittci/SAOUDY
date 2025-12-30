@@ -136,7 +136,7 @@ class LotController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'appel_offre_id' => 'required|exists:appels_offres,id_appel_offre',
-            'numero' => 'nullable|string|max:20',
+            'numero' => 'required|string|max:50|unique:lots,numero,except,numero',
             'libelle' => 'required|string|max:160',
             'description_critere' => 'nullable|string',
             'specifications_techniques' => 'nullable|string',
@@ -207,12 +207,7 @@ class LotController extends Controller
             }
 
             // Concaténation automatique formatée à 3 chiffres
-            $concatAuto = str_pad($lastNumber, 3, '0', STR_PAD_LEFT);
-
-            // Génération du numéro complet
-            $numeroLot = 'LOT-' . $numeroTypeAO . '-' . $numeroAO . '-' . $concatAuto;
-// return response()->json($numeroLot);
-            // return response()->json($numeroLot);
+            // $concatAuto = str_pad($lastNumber, 3, '0', STR_PAD_LEFT);
 
             $maxVersion = Lot::where('appel_offre_id', $request->appel_offre_id)->max('version_lot');
             $version = $maxVersion ? $maxVersion + 1 : 1;
@@ -220,7 +215,7 @@ class LotController extends Controller
             // Créer le lot
             $lot = Lot::create([
                 'appel_offre_id' => $request->appel_offre_id,
-                'numero' => $numeroLot,
+                'numero' => $request->numero,
                 'libelle' => $request->libelle,
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,

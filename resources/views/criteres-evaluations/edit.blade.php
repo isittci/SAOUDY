@@ -13,7 +13,7 @@
     <a href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">{{ $critere->lot->numero }}</a>
 
 
-    
+
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <a href="{{ route('criteres-evaluations.index', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors">Critères</a>
 
@@ -287,7 +287,7 @@
                             <div>
                                 <span class="text-gray-600">Dernière modification:</span>
                                 <span class="font-semibold text-gray-900 ml-2">{{ $critere->updated_at->format('d/m/Y à H:i') }}</span>
-                            </div>
+                            </div> 
                             <div>
                                 <span class="text-gray-600">Modifié par:</span>
                                 <span class="font-semibold text-gray-900 ml-2">{{ $critere->updater->nom_complet ?? 'N/A' }}</span>

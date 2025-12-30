@@ -63,6 +63,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
+    <link rel="shortcut icon" href="{{asset('favicon.png')}}" type="image/x-icon">
+
     {{-- DNS Prefetch --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">

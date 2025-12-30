@@ -15,7 +15,7 @@ return new class extends Migration
      * - CritereEvaluation appartient à un Lot (lot_id)
      * - Donc: Lot et Prestataire sont accessibles via la table pivot
      *
-     * A chaque mise à jour, on crée une nouvelle version (evaluation_parent_id)
+     * A chaque mise à jour, on crée une nouvelle version
      * Le numero_evaluation reste identique entre les versions
      */
     public function up(): void
@@ -32,10 +32,6 @@ return new class extends Migration
             $table->integer('version')->default(1)->comment('Numéro de version de l\'évaluation');
             $table->boolean('is_current')->default(true)->comment('Indique si c\'est la version active/courante');
 
-            // ============================================
-            // RELATION AVEC L'ATTRIBUTION
-            // ============================================
-            $table->foreignUuid('attribution_id')->comment('Référence vers l\'attribution (prestataires_lots)')->references('id_attribution')->on('prestataires_lots')->onDelete('cascade');
 
             // ============================================
             // INFORMATIONS D'ÉVALUATION
@@ -64,7 +60,7 @@ return new class extends Migration
 
             $table->json('evalue_par')->nullable()->comment('Évaluateur: {nom_complet, email, telephone}');
 
-            // ============================================ 
+            // ============================================
             // STATUT
             // ============================================
             $table->smallInteger('statut_evaluation')->default(0)->comment('0=En attente, 1=En cours, 2=Terminée, 3=Validée, 4=Rejetée');
@@ -126,7 +122,8 @@ return new class extends Migration
             $table->index('rang', 'idx_evaluation_rang');
             $table->index(['numero_evaluation', 'is_current'], 'idx_evaluation_numero_current');
             $table->index('is_current', 'idx_evaluation_is_current');
-            $table->index('attribution_id', 'idx_evaluation_attribution');
+
+
         });
 
         // Auto-relation pour traçabilité des versions

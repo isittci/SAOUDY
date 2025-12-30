@@ -144,7 +144,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-600 mb-2">
                                     <i class="fas fa-file-invoice text-gray-400 mr-1"></i>
-                                    N° Carte de Contribuable
+                                    N° Compte Contribuable
                                 </label>
                                 <p class="text-gray-900 font-medium">
                                     {{ $prestataire->numero_cc_prestataire ?? 'Non renseigné' }}</p>
@@ -464,7 +464,7 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
+                        {{-- <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-200 transition-colors">
                                 <i class="fas fa-star text-yellow-600"></i>
@@ -475,7 +475,7 @@
                                     évaluation(s)</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
 
@@ -540,19 +540,34 @@
 
     <div class="p-6">
         @if ($prestataire->attributions()->count() > 0)
+
             <div class="space-y-4">
-                @foreach ($prestataire->attributions()->with('lot')->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
-                    {{-- IMPORTANT: Ajouter relative et z-index ici pour créer un nouveau contexte d'empilement --}}
+                @foreach ($prestataire->attributions()->with(['lot.appelOffre'])->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
                     <div class="relative flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-box text-indigo-600"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900">
+                                {{-- Lot avec lien --}}
+                                <a href="{{ route('lots.show', $attribution->lot_id) }}"
+                                class="font-medium text-gray-900 hover:text-indigo-600 transition-colors">
                                     {{ $attribution->lot->libelle ?? 'Lot inconnu' }}
-                                </p>
+                                </a>
                                 <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
+
+                                {{-- Appel d'offre avec lien --}}
+                                @if($attribution->lot && $attribution->lot->appelOffre)
+                                    <a href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}"
+                                    class="inline-flex items-center text-xs text-indigo-600 hover:text-indigo-800 mt-1 transition-colors">
+                                        <i class="fas fa-file-contract mr-1"></i>
+                                        {{ $attribution->lot->appelOffre->numero_appel_offre }}
+                                        <span class="mx-1">-</span>
+                                        <span class="text-gray-500 hover:text-indigo-600 truncate max-w-[200px]">
+                                            {{ Str::limit($attribution->lot->appelOffre->libelle_critere_appel_offre, 30) }}
+                                        </span>
+                                    </a>
+                                @endif
                             </div>
                         </div>
 
@@ -568,9 +583,9 @@
                             </div>
 
                             {{-- Actions --}}
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-end space-x-2">
                                 {{-- Bouton Voir détails --}}
-                                <a href="{{ route('prestataires.lots.show', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
+                                <a href="{{ route('attributions.show',  $attribution->id_attribution) }}"
                                     class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                                     title="Voir les détails">
                                     <i class="fas fa-eye"></i>
@@ -605,19 +620,22 @@
                                         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"
                                         style="position: absolute;">
 
-                                        <a href="{{ route('prestataires.lots.show', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
+                                        {{-- Lien vers l'appel d'offre --}}
+                                        @if($attribution->lot && $attribution->lot->appelOffre)
+                                            <a href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}"
+                                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-file-contract mr-3 text-gray-400"></i>
+                                                Voir l'appel d'offre
+                                            </a>
+                                        @endif
+
+                                        <a href="{{ route('lots.show', $attribution->lot_id) }}"
                                             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <i class="fas fa-eye mr-3 text-gray-400"></i>
-                                            Voir détails
+                                            Voir le lot
                                         </a>
 
                                         @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
-                                            {{-- <a href="{{ route('prestataires.lots.edit', [$prestataire->id_prestataire, $attribution->lot_id]) }}"
-                                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                <i class="fas fa-edit mr-3 text-gray-400"></i>
-                                                Modifier
-                                            </a> --}}
-
                                             <hr class="my-1 border-gray-100">
 
                                             <button onclick="confirmerSuspension('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
@@ -787,19 +805,19 @@
                 document.getElementById('formSuspension').reset();
             }
 
-            // function confirmerSuspension(attributionId) {
-            //     // if (confirm('Êtes-vous sûr de vouloir suspendre cette attribution ?')) {
-            //     //     // Implémenter la logique de suspension
-            //     //     window.location.href = "{{ route('attributions.suspendre', ':id') }}".replace(':id', attributionId);
-            //     //     // /`/prestataires/{{ $prestataire->id }}/lots/${attributionId}/suspendre`;
-            //     // }
-            // }
+            function confirmerSuspension(attributionId) {
+                if (confirm('Êtes-vous sûr de vouloir suspendre cette attribution ?')) {
+                    // Implémenter la logique de suspension
+                    window.location.href = "{{ route('attributions.suspendre', ':id') }}".replace(':id', attributionId);
+                    // /`/prestataires/{{ $prestataire->id }}/lots/${attributionId}/suspendre`;
+                }
+            }
 
             function confirmerReactivation(attributionId) {
-                // if (confirm('Êtes-vous sûr de vouloir réactiver cette attribution ?')) {
-                //     // Implémenter la logique de réactivation
-                //     // window.location.href = `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/reactiver`;
-                // }
+                if (confirm('Êtes-vous sûr de vouloir réactiver cette attribution ?')) {
+                    // Implémenter la logique de réactivation
+                    window.location.href = `/prestataires/{{ $prestataire->id }}/lots/${attributionId}/reactiver`;
+                }
             }
         </script>
 

@@ -137,11 +137,11 @@
                             <!-- Numéro CC -->
                             <div>
                                 <label for="numero_cc_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    N° Carte de Contribuable <span class="text-red-500">*</span>
+                                    N° Compte Contribuable <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="numero_cc_prestataire" id="numero_cc_prestataire"
                                     value="{{ old('numero_cc_prestataire') }}" required maxlength="50"
-                                    data-label="N° Carte de Contribuable"
+                                    data-label="N° Compte Contribuable"
                                     class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_cc_prestataire') border-red-500 @enderror"
                                     placeholder="Ex: CC-123456789">
                                 @error('numero_cc_prestataire')

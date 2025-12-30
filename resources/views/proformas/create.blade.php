@@ -67,10 +67,10 @@
                                 <!-- Numéro proforma -->
                                 <div>
                                     <label for="numero_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro de proforma
+                                        Numéro de proforma <span class="text-red-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <input type="text" id="numero_proforma" name="numero_proforma"
+                                        <input type="text" id="numero_proforma" name="numero_proforma" required
                                             value="{{ old('numero_proforma', $numeroSuggere) }}"
                                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-gray-50 @error('numero_proforma') border-red-500 @enderror"
                                             placeholder="PROF-2025-0001" readonly>

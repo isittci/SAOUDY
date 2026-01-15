@@ -1,7 +1,8 @@
 @extends('layouts.main')
 @section('title', 'Dashboard Attributions')
 @section('breadcrumb')
-    <a href="{{ route('attributions.index') }}" class="text-white/80 hover:text-white transition-colors">Attributions</a>
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Attributions</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Dashboard</span>
 @endsection
@@ -11,9 +12,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('attributions.index') }}" class="p-2 hover:bg-gray-100 rounded-lg">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('attributions_lots.read')
+                        <a href="{{ route('attributions.index') }}" class="p-2 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
+                    
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-chart-pie text-orange-500 mr-3"></i>
@@ -22,10 +26,7 @@
                         <p class="text-gray-600 mt-1">Vue d'ensemble des attributions de lots</p>
                     </div>
                 </div>
-                <a href="{{ route('attributions.create') }}" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-md flex items-center space-x-2">
-                    <i class="fas fa-plus"></i>
-                    <span class="font-medium">Nouvelle attribution</span>
-                </a>
+
             </div>
         </div>
     </div>
@@ -70,7 +71,8 @@
                         <p class="text-xs text-gray-500 uppercase font-semibold">Terminées</p>
                         <p class="text-3xl font-bold text-blue-600">{{ number_format($statistiques['terminees']) }}</p>
                     </div>
-                    <div class="p-3 bg-blue-100 rounded-full"><i class="fas fa-check-double text-blue-500 text-xl"></i></div>
+                    <div class="p-3 bg-blue-100 rounded-full"><i class="fas fa-check-double text-blue-500 text-xl"></i>
+                    </div>
                 </div>
             </div>
 
@@ -80,7 +82,8 @@
                         <p class="text-xs text-gray-500 uppercase font-semibold">En retard</p>
                         <p class="text-3xl font-bold text-red-600">{{ number_format($statistiques['en_retard']) }}</p>
                     </div>
-                    <div class="p-3 bg-red-100 rounded-full"><i class="fas fa-exclamation-triangle text-red-500 text-xl"></i></div>
+                    <div class="p-3 bg-red-100 rounded-full"><i
+                            class="fas fa-exclamation-triangle text-red-500 text-xl"></i></div>
                 </div>
             </div>
         </div>
@@ -91,7 +94,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium">Montant total engagé</p>
-                        <p class="text-3xl font-bold mt-1">{{ number_format($statistiques['montant_total_engage'], 0, ',', ' ') }} FCFA</p>
+                        <p class="text-3xl font-bold mt-1">
+                            {{ number_format($statistiques['montant_total_engage'], 0, ',', ' ') }} FCFA</p>
                     </div>
                     <div class="p-4 bg-white/20 rounded-full"><i class="fas fa-coins text-3xl"></i></div>
                 </div>
@@ -101,7 +105,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-blue-100 text-sm font-medium">Montant total payé</p>
-                        <p class="text-3xl font-bold mt-1">{{ number_format($statistiques['montant_total_paye'], 0, ',', ' ') }} FCFA</p>
+                        <p class="text-3xl font-bold mt-1">
+                            {{ number_format($statistiques['montant_total_paye'], 0, ',', ' ') }} FCFA</p>
                     </div>
                     <div class="p-4 bg-white/20 rounded-full"><i class="fas fa-check-circle text-3xl"></i></div>
                 </div>
@@ -117,26 +122,32 @@
                             <i class="fas fa-clock text-orange-500 mr-2"></i>
                             Dernières attributions
                         </h2>
-                        <a href="{{ route('attributions.index') }}" class="text-sm text-orange-600 hover:text-orange-800">
-                            Voir tout <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
+                        @can('attributions_lots.read')
+                            <a href="{{ route('attributions.index') }}" class="text-sm text-orange-600 hover:text-orange-800">
+                                Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        @endcan
                     </div>
                 </div>
                 <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                     @forelse($dernieresAttributions as $attr)
-                        <a href="{{ route('attributions.show', $attr->id_attribution) }}" class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                        <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attr->id_attribution) }}" @endcan
+                            class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2">
                                     <span class="font-semibold text-gray-800">{{ $attr->numero_attribution }}</span>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $attr->statut_badge_class }}">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $attr->statut_badge_class }}">
                                         {{ $attr->statut_label }}
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-1">{{ Str::limit($attr->prestataire->raison_sociale_prestataire ?? '', 30) }}</p>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    {{ Str::limit($attr->prestataire->raison_sociale_prestataire ?? '', 30) }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium text-gray-800">{{ $attr->lot->numero ?? '' }}</p>
-                                <p class="text-xs text-gray-500">{{ $attr->created_at ? $attr->created_at->diffForHumans() : '' }}</p>
+                                <p class="text-xs text-gray-500">
+                                    {{ $attr->created_at ? $attr->created_at->diffForHumans() : '' }}</p>
                             </div>
                         </a>
                     @empty
@@ -163,20 +174,24 @@
                 </div>
                 <div class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                     @forelse($attributionsEnRetard as $attr)
-                        <a href="{{ route('attributions.show', $attr->id_attribution) }}" class="flex items-center justify-between p-4 hover:bg-red-50 transition-colors">
+                        <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attr->id_attribution) }}" @endcan
+                            class="flex items-center justify-between p-4 hover:bg-red-50 transition-colors">
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2">
                                     <span class="font-semibold text-gray-800">{{ $attr->numero_attribution }}</span>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>
                                         {{ $attr->jours_retard_actuels }}j
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-1">{{ Str::limit($attr->prestataire->raison_sociale_prestataire ?? '', 30) }}</p>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    {{ Str::limit($attr->prestataire->raison_sociale_prestataire ?? '', 30) }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm font-medium text-gray-800">{{ $attr->lot->numero ?? '' }}</p>
-                                <p class="text-xs text-red-600">Fin: {{ $attr->date_fin_prevue ? $attr->date_fin_prevue->format('d/m/Y') : '' }}</p>
+                                <p class="text-xs text-red-600">Fin:
+                                    {{ $attr->date_fin_prevue ? $attr->date_fin_prevue->format('d/m/Y') : '' }}</p>
                             </div>
                         </a>
                     @empty

@@ -115,8 +115,6 @@ class Proforma extends Model
     }
 
 
-
-
     /**
      * ================================================================
      * SCOPES
@@ -196,7 +194,6 @@ class Proforma extends Model
      */
     public function creerNouvelleVersion(array $donnees, $motif = null)
     {
-
 
         // Désactiver la version actuelle
         $this->actif_proforma = false;
@@ -384,83 +381,87 @@ class Proforma extends Model
     }
 
 
-
+    /**
+     * Relation avec la facture associée.
+     * Une proforma peut avoir une seule facture (relation 1:1)
+     *
+     * @return HasOne
+     */
+    public function facture(): HasOne
+    {
+        return $this->hasOne(Facture::class, 'proforma_id', 'id_proforma');
+    }
 
     /**
- * Relation avec la facture associée.
- * Une proforma peut avoir une seule facture (relation 1:1)
- *
- * @return HasOne
- */
-public function facture(): HasOne
-{
-    return $this->hasOne(Facture::class, 'proforma_id', 'id_proforma');
-}
+     * Vérifier si la proforma a une facture.
+     *
+     * @return bool
+     */
+    public function aUneFacture(): bool
+    {
+        return $this->facture()->exists();
+    }
 
-/**
- * Vérifier si la proforma a une facture.
- *
- * @return bool
- */
-public function aUneFacture(): bool
-{
-    return $this->facture()->exists();
-}
+    /**
+     * Scope pour les proformas sans facture.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSansFacture($query)
+    {
+        return $query->whereDoesntHave('facture');
+    }
 
-/**
- * Scope pour les proformas sans facture.
- *
- * @param \Illuminate\Database\Eloquent\Builder $query
- * @return \Illuminate\Database\Eloquent\Builder
- */
-public function scopeSansFacture($query)
-{
-    return $query->whereDoesntHave('facture');
-}
-
-/**
- * Scope pour les proformas avec facture.
- *
- * @param \Illuminate\Database\Eloquent\Builder $query
- * @return \Illuminate\Database\Eloquent\Builder
- */
-public function scopeAvecFacture($query)
-{
-    return $query->whereHas('facture');
-}
+    /**
+     * Scope pour les proformas avec facture.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAvecFacture($query)
+    {
+        return $query->whereHas('facture');
+    }
 
 
+    public function prestatairePrincipal()
+    {
+        return $this->hasOne(PrestataireLot::class, 'proforma_id', 'id_proforma')
+            ->where('is_active', true)
+            ->with(['prestataire', 'lot'])
+            ->oldest('created_at');
+    }
 
+    public function prestataireRetire()
+    {
+        return $this->hasOne(PrestataireLot::class, 'proforma_id', 'id_proforma')
+            ->where('is_active', false)
+            ->with(['prestataire', 'lot'])
+            ->oldest('created_at');
+    }
 
+    public function getPrestataire()
+    {
+        return $this->prestatairePrincipal?->prestataire;
+    }
 
+     public function getPrestataireRetire()
+    {
+        return $this->prestataireRetire?->prestataire;
+    }
 
-public function prestatairePrincipal()
-{
-    return $this->hasOne(PrestataireLot::class, 'proforma_id', 'id_proforma')
-                ->where('is_active', true)
-                ->with('prestataire')
-                ->oldest('created_at');
-}
+    public function getPrestataireId()
+    {
+        return $this->prestatairePrincipal?->prestataire_id;
+    }
 
-public function getPrestataire()
-{
-    return $this->prestatairePrincipal?->prestataire;
-}
-
-public function getPrestataireId()
-{
-    return $this->prestatairePrincipal?->prestataire_id;
-}
-
-public function aUnPrestataire(): bool
-{
-    return $this->prestataireLotsAttributions()
-                ->where('is_active', true)
-                ->exists();
-}
-
-
-
+    public function aUnPrestataire(): bool
+    {
+        return $this->prestataireLotsAttributions()
+            ->where('is_active', true)
+            ->exists();
+    }
 
 
     /**

@@ -1,14 +1,14 @@
 @extends('layouts.main')
 @section('title', 'Critères d\'Évaluation - ' . $lot->numero)
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors" title="{{ $lot->appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
 
-    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste de lots - {{ $lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
+    <a @can('lots.read') href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" @endcan class="text-white/80 hover:text-white transition-colors" title="Liste de lots - {{ $lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $lot->libelle }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 15) }}</a>
+    <a @can('lots.view-details') href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}" @endcan class="text-white/80 hover:text-white transition-colors" title="{{ $lot->libelle }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 15) }}</a>
 
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium" title="Critères d'évaluation du lot - {{ $lot->numero }} : ">Critères d'évaluation</span>
@@ -24,10 +24,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-center space-x-4">
+                    @can('lots.view-details')
                     <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
                         class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                             <i class="fas fa-clipboard-check text-blue-500"></i>
@@ -37,6 +39,7 @@
                     </div>
                 </div>
 
+                @can('criteres_evaluations.create')
                 <div class="flex items-center space-x-2">
                     @if(!$lot->isAttribue() && !$lot->isRetire() && number_format($totalNotes, 0) < 100)
                         <a href="{{ route('criteres-evaluations.create', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
@@ -46,6 +49,7 @@
                         </a>
                     @endif
                 </div>
+                @endcan
             </div>
         </div>
     </div>
@@ -216,7 +220,9 @@
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Note (/100)</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">% du Total</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Statut</th>
+                            @canany(['criteres_evaluations.view-details', 'criteres_evaluations.update', 'criteres_evaluations.delete'])
                             <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody id="criteres-tbody" class="divide-y divide-gray-200">
@@ -300,30 +306,40 @@
                                     @endif
                                 </td>
 
+                                @canany(['criteres_evaluations.view-details', 'criteres_evaluations.update', 'criteres_evaluations.delete'])
                                 <!-- Actions -->
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
+                                        @can('criteres_evaluations.view-details')
                                         <a href="{{ route('criteres-evaluations.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}"
                                            class="text-blue-600 hover:text-blue-900 transition-colors"
                                            title="Voir">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @endcan
 
+                                        @canany(['criteres_evaluations.update', 'criteres_evaluations.delete'])
                                         @if(!$lot->isAttribue() && !$lot->isRetire())
+                                        @can('criteres_evaluations.update')
                                             <a href="{{ route('criteres-evaluations.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}"
                                                class="text-orange-600 hover:text-orange-900 transition-colors"
                                                title="Modifier">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            @endcan
 
+                                            @can('criteres_evaluations.delete')
                                             <button onclick="confirmDelete('{{ $critere->id_critere_evaluation }}', '{{ $critere->libelle_critere_evaluation }}')"
                                                     class="text-red-600 hover:text-red-900 transition-colors"
                                                     title="Supprimer">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+                                            @endcan
                                         @endif
+                                        @endcanany
                                     </div>
                                 </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -332,12 +348,14 @@
                                         <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-4"></i>
                                         <p class="text-gray-500 text-lg font-medium">Aucun critère d'évaluation</p>
                                         <p class="text-gray-400 text-sm mt-1">Commencez par créer votre premier critère</p>
+                                        @can('criteres_evaluations.create')
                                         @if(!$lot->isAttribue() && !$lot->isRetire())
                                             <a href="{{ route('criteres-evaluations.create', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
                                                 class="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all">
                                                 <i class="fas fa-plus mr-2"></i>Créer un critère
                                             </a>
                                         @endif
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -372,6 +390,7 @@
                             class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all">
                         Annuler
                     </button>
+                    @can('criteres_evaluations.delete')
                     <form id="deleteForm" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
@@ -380,15 +399,17 @@
                             Supprimer
                         </button>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>
     </div>
 
+    @can('criteres_evaluations.read')
     @push('scripts')
         <script>
             // Configuration des URLs
-            const BASE_URL = `/appels-offres/{{ $lot->appelOffre->id_appel_offre }}/lots/{{ $lot->id_lot }}/criteres`;
+            const BASE_URL = "{{ route('criteres-evaluations.index', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}";
             const CSRF_TOKEN = '{{ csrf_token() }}';
             const CAN_REORDER = {{ (!$lot->isAttribue() && !$lot->isRetire()) ? 'true' : 'false' }};
 
@@ -756,4 +777,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

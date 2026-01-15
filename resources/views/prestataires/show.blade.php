@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('title', 'Détails Prestataire - ' . $prestataire->raison_sociale_prestataire)
 @section('breadcrumb')
-    <a href="{{ route('prestataires.index') }}" class="text-white/80 hover:text-white transition-colors">Prestataires</a>
+    <a @can('prestataires.read') href="{{ route('prestataires.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Prestataires</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">{{ Str::limit($prestataire->raison_sociale_prestataire, 30) }}</span>
 @endsection
@@ -13,10 +13,12 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Titre et retour -->
                 <div class="flex items-center space-x-4">
+                    @can('prestataires.read')
                     <a href="{{ route('prestataires.index') }}"
                         class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
                     <div>
                         <div class="flex items-center space-x-3 flex-wrap">
                             <h1 class="text-2xl font-bold text-gray-800">{{ $prestataire->raison_sociale_prestataire }}</h1>
@@ -40,19 +42,24 @@
 
                 <!-- Actions -->
                 <div class="flex items-center space-x-2 flex-wrap">
+                    @can('prestataires.update')
                     <button onclick="window.location.href='{{ route('prestataires.edit', $prestataire->id_prestataire) }}'"
                         class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                         <i class="fas fa-edit text-sm"></i>
                         <span class="text-sm font-medium">Modifier</span>
                     </button>
+                    @endcan
 
+                    @can('prestataires.toggle-status')
                     <button onclick="toggleStatus({{ $prestataire->statut_prestataire ? 'true' : 'false' }})"
                         class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                         <i class="fas fa-power-off text-sm"></i>
                         <span
                             class="text-sm font-medium">{{ $prestataire->statut_prestataire ? 'Désactiver' : 'Activer' }}</span>
                     </button>
+                    @endcan
 
+                    @canany(['prestataires.view-details', 'prestataires.delete'])
                     <!-- Menu dropdown -->
                     <div class="relative">
                         <button onclick="toggleMenu()" id="menuBtn"
@@ -62,24 +69,25 @@
                         <div id="actionMenu"
                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
                             <div class="py-1">
+                                @can('prestataires.view-details')
                                 <button onclick="viewStatistiques()"
                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                     <i class="fas fa-chart-bar mr-2 text-blue-500"></i>
                                     Statistiques
                                 </button>
-                                <button onclick="printPrestataire()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-print mr-2 text-gray-500"></i>
-                                    Imprimer
-                                </button>
+                                @endcan
+
+                                @can('prestataires.delete')
                                 <button onclick="confirmDelete()"
                                     class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
                                     <i class="fas fa-trash mr-2"></i>
                                     Supprimer
                                 </button>
+                                @endcan
                             </div>
                         </div>
                     </div>
+                    @endcanany
                 </div>
             </div>
         </div>
@@ -366,12 +374,7 @@
                                 class="text-lg font-bold text-orange-600">{{ $prestataire->calculerTauxReussite() ?? 0 }}%</span>
                         </div>
 
-                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                            <span class="text-sm text-gray-600">Pénalités totales</span>
-                            <span class="text-lg font-bold text-red-600">
-                                {{ number_format($prestataire->calculerPenalitesTotales() ?? 0, 0, ',', ' ') }} FCFA
-                            </span>
-                        </div>
+
 
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <span class="text-sm text-gray-600">Retard moyen</span>
@@ -391,16 +394,7 @@
                     </div>
 
                     <div class="p-4 space-y-2">
-                        {{-- <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-file-alt text-blue-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-900">Documents</p>
-                                <p class="text-xs text-gray-500">{{ $prestataire->documents()->count() ?? 0 }} fichier(s)</p>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a> --}}
+
 
                         <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
@@ -414,18 +408,9 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        {{-- <a href="{{ route('banques.index', $prestataire) }}" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">
-                                <i class="fas fa-university text-green-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-900">Banques</p>
-                                <p class="text-xs text-gray-500">{{ $prestataire->banques()->count() ?? 0 }} lot(s)</p>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a> --}}
 
-                        <a href="{{ route('banques.index', $prestataire) }}"
+
+                        <a @can('banques_prestataires.read') href="{{ route('banques.index', $prestataire) }}" @endcan
                             class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">
@@ -438,7 +423,7 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
+                        <a @can('capacites_techniques.read') href="{{ route('prestataires.capacites-techniques.index', $prestataire->id_prestataire) }}" @endcan class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 transition-colors">
                                 <i class="fas fa-cogs text-purple-600"></i>
@@ -451,7 +436,7 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
+                        <a @can('situations_financieres.read') href="{{ route('prestataires.situations-financieres.index', $prestataire->id_prestataire) }}" @endcan class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-indigo-200 transition-colors">
                                 <i class="fas fa-chart-line text-indigo-600"></i>
@@ -464,18 +449,7 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        {{-- <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
-                            <div
-                                class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-200 transition-colors">
-                                <i class="fas fa-star text-yellow-600"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-900">Évaluations</p>
-                                <p class="text-xs text-gray-500">{{ $prestataire->evaluations()->count() ?? 0 }}
-                                    évaluation(s)</p>
-                            </div>
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a> --}}
+
                     </div>
                 </div>
 
@@ -519,173 +493,192 @@
 
 
 
-<div class="mt-6 bg-white rounded-2xl shadow-lg">
-    {{-- En-tête - Retirer overflow-hidden du conteneur parent --}}
-    <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200 rounded-t-2xl flex items-center justify-between">
-        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-            <i class="fas fa-history text-indigo-500 mr-2"></i>
-            Historique des attributions
-        </h2>
-        <div class="flex items-center space-x-3">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
-                {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
-            </span>
-            <a href="{{ route('prestataires.lots.index', $prestataire) }}"
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-list mr-2"></i>
-                Voir tous les lots
-            </a>
-        </div>
-    </div>
+        <div class="mt-6 bg-white rounded-2xl shadow-lg">
+            {{-- En-tête - Retirer overflow-hidden du conteneur parent --}}
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200 rounded-t-2xl flex items-center justify-between">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-history text-indigo-500 mr-2"></i>
+                    Historique des attributions
+                </h2>
+                <div class="flex items-center space-x-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
+                        {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
+                    </span>
+                    @can('lots.read')
+                    <a href="{{ route('prestataires.lots.index', $prestataire) }}"
+                        class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-list mr-2"></i>
+                        Voir tous les lots
+                    </a>
+                    @endcan
+                </div>
+            </div>
 
-    <div class="p-6">
-        @if ($prestataire->attributions()->count() > 0)
+            <div class="p-6">
+                @if ($prestataire->attributions()->count() > 0)
 
-            <div class="space-y-4">
-                @foreach ($prestataire->attributions()->with(['lot.appelOffre'])->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
-                    <div class="relative flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-box text-indigo-600"></i>
-                            </div>
-                            <div>
-                                {{-- Lot avec lien --}}
-                                <a href="{{ route('lots.show', $attribution->lot_id) }}"
-                                class="font-medium text-gray-900 hover:text-indigo-600 transition-colors">
-                                    {{ $attribution->lot->libelle ?? 'Lot inconnu' }}
-                                </a>
-                                <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
-
-                                {{-- Appel d'offre avec lien --}}
-                                @if($attribution->lot && $attribution->lot->appelOffre)
-                                    <a href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}"
-                                    class="inline-flex items-center text-xs text-indigo-600 hover:text-indigo-800 mt-1 transition-colors">
-                                        <i class="fas fa-file-contract mr-1"></i>
-                                        {{ $attribution->lot->appelOffre->numero_appel_offre }}
-                                        <span class="mx-1">-</span>
-                                        <span class="text-gray-500 hover:text-indigo-600 truncate max-w-[200px]">
-                                            {{ Str::limit($attribution->lot->appelOffre->libelle_critere_appel_offre, 30) }}
-                                        </span>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-4">
-                            {{-- Statut --}}
-                            <div class="text-right">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
-                                    {{ $attribution->getStatutLabelAttribute() }}
-                                </span>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    {{ $attribution->created_at->format('d/m/Y') }}
-                                </p>
-                            </div>
-
-                            {{-- Actions --}}
-                            <div class="flex items-end space-x-2">
-                                {{-- Bouton Voir détails --}}
-                                <a href="{{ route('attributions.show',  $attribution->id_attribution) }}"
-                                    class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                    title="Voir les détails">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-
-                                {{-- Bouton Retirer --}}
-                                @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
-                                    <button type="button"
-                                        onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
-                                        class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                        title="Retirer l'attribution">
-                                        <i class="fas fa-times-circle"></i>
-                                    </button>
-                                @endif
-
-                                {{-- Menu déroulant pour plus d'actions --}}
-                                <div x-data="{ open: false }" class="relative">
-                                    <button @click="open = !open"
-                                        class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-
-                                    {{-- Menu dropdown avec z-index élevé et positionnement fixe --}}
-                                    <div x-show="open"
-                                        @click.away="open = false"
-                                        x-transition:enter="transition ease-out duration-100"
-                                        x-transition:enter-start="transform opacity-0 scale-95"
-                                        x-transition:enter-end="transform opacity-100 scale-100"
-                                        x-transition:leave="transition ease-in duration-75"
-                                        x-transition:leave-start="transform opacity-100 scale-100"
-                                        x-transition:leave-end="transform opacity-0 scale-95"
-                                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"
-                                        style="position: absolute;">
-
-                                        {{-- Lien vers l'appel d'offre --}}
-                                        @if($attribution->lot && $attribution->lot->appelOffre)
-                                            <a href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}"
-                                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                <i class="fas fa-file-contract mr-3 text-gray-400"></i>
-                                                Voir l'appel d'offre
-                                            </a>
-                                        @endif
-
-                                        <a href="{{ route('lots.show', $attribution->lot_id) }}"
-                                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <i class="fas fa-eye mr-3 text-gray-400"></i>
-                                            Voir le lot
+                    <div class="space-y-4">
+                        @foreach ($prestataire->attributions()->with(['lot.appelOffre'])->orderBy('created_at', 'desc')->take(5)->get() as $attribution)
+                            <div class="relative flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-box text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        {{-- Lot avec lien --}}
+                                        <a @can('lots.view-details') href="{{ route('lots.show', $attribution->lot_id) }}" @endcan
+                                        class="font-medium text-gray-900 hover:text-indigo-600 transition-colors">
+                                            {{ $attribution->lot->libelle ?? 'Lot inconnu' }}
                                         </a>
+                                        <p class="text-sm text-gray-500">{{ $attribution->lot->numero ?? '-' }}</p>
 
-                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
-                                            <hr class="my-1 border-gray-100">
-
-                                            <button onclick="confirmerSuspension('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
-                                                class="w-full flex items-center px-4 py-2 text-sm text-amber-700 hover:bg-amber-50">
-                                                <i class="fas fa-pause-circle mr-3 text-amber-500"></i>
-                                                Suspendre
-                                            </button>
-
-                                            <button onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
-                                                class="w-full flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
-                                                <i class="fas fa-times-circle mr-3 text-red-500"></i>
-                                                Retirer
-                                            </button>
-                                        @endif
-
-                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_SUSPENDU)
-                                            <button onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
-                                                class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">
-                                                <i class="fas fa-play-circle mr-3 text-green-500"></i>
-                                                Réactiver
-                                            </button>
+                                        {{-- Appel d'offre avec lien --}}
+                                        @if($attribution->lot && $attribution->lot->appelOffre)
+                                            <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}" @endcan
+                                            class="inline-flex items-center text-xs text-indigo-600 hover:text-indigo-800 mt-1 transition-colors">
+                                                <i class="fas fa-file-contract mr-1"></i>
+                                                {{ $attribution->lot->appelOffre->numero_appel_offre }}
+                                                <span class="mx-1">-</span>
+                                                <span class="text-gray-500 hover:text-indigo-600 truncate max-w-[200px]">
+                                                    {{ Str::limit($attribution->lot->appelOffre->libelle_critere_appel_offre, 30) }}
+                                                </span>
+                                            </a>
                                         @endif
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
 
-            @if ($prestataire->attributions()->count() > 5)
-                <div class="mt-4 text-center">
-                    <a href="{{ route('prestataires.lots.index', $prestataire) }}"
-                        class="inline-flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-colors">
-                        Voir tout l'historique ({{ $prestataire->attributions()->count() - 5 }} de plus)
-                        <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div>
-            @endif
-        @else
-            <div class="text-center py-8">
-                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-inbox text-gray-400 text-2xl"></i>
-                </div>
-                <p class="text-gray-500 font-medium">Aucune attribution pour ce prestataire</p>
-                <p class="text-sm text-gray-400 mt-1">Les attributions de lots apparaîtront ici</p>
+                                <div class="flex items-center space-x-4">
+                                    {{-- Statut --}}
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
+                                            {{ $attribution->getStatutLabelAttribute() }}
+                                        </span>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            {{ $attribution->created_at->format('d/m/Y') }}
+                                        </p>
+                                    </div>
+
+                                    @canany(['attributions_lots.view-details', 'appels_offres.view-details', 'lots.view-details', 'attributions_lots.assign', 'attributions_lots.suspend', 'attributions_lots.withdraw'])
+                                    {{-- Actions --}}
+                                    <div class="flex items-end space-x-2">
+                                        @can('attributions_lots.view-details')
+                                        {{-- Bouton Voir détails --}}
+                                        <a  href="{{ route('attributions.show',  $attribution->id_attribution) }}"
+                                            class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                            title="Voir les détails">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @endcan
+
+                                        @can('attributions_lots.withdraw')
+                                        {{-- Bouton Retirer --}}
+                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+                                            <button type="button"
+                                                onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Retirer l'attribution">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        @endif
+                                        @endcan
+
+                                        {{-- Menu déroulant pour plus d'actions --}}
+                                        <div x-data="{ open: false }" class="relative">
+                                            <button @click="open = !open"
+                                                class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+
+                                            {{-- Menu dropdown avec z-index élevé et positionnement fixe --}}
+                                            <div x-show="open"
+                                                @click.away="open = false"
+                                                x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="transform opacity-0 scale-95"
+                                                x-transition:enter-end="transform opacity-100 scale-100"
+                                                x-transition:leave="transition ease-in duration-75"
+                                                x-transition:leave-start="transform opacity-100 scale-100"
+                                                x-transition:leave-end="transform opacity-0 scale-95"
+                                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"
+                                                style="position: absolute;">
+
+                                                @can('appels_offres.view-details')
+                                                    {{-- Lien vers l'appel d'offre --}}
+                                                    @if($attribution->lot && $attribution->lot->appelOffre)
+                                                        <a href="{{ route('appels-offres.show', $attribution->lot->appelOffre->id_appel_offre) }}"
+                                                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <i class="fas fa-file-contract mr-3 text-gray-400"></i>
+                                                            Voir l'appel d'offre
+                                                        </a>
+                                                    @endif
+                                                @endcan
+
+                                                @can('lots.view-details')
+                                                <a href="{{ route('lots.show', $attribution->lot_id) }}"
+                                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    <i class="fas fa-eye mr-3 text-gray-400"></i>
+                                                    Voir le lot
+                                                </a>
+                                                @endcan
+
+                                                @canany(['attributions_lots.assign', 'attributions_lots.suspend', 'attributions_lots.withdraw'])
+                                                    @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+                                                        <hr class="my-1 border-gray-100">
+                                                        @can('attributions_lots.suspend')
+                                                            <button onclick="confirmerSuspension('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                                class="w-full flex items-center px-4 py-2 text-sm text-amber-700 hover:bg-amber-50">
+                                                                <i class="fas fa-pause-circle mr-3 text-amber-500"></i>
+                                                                Suspendre
+                                                            </button>
+                                                        @endcan
+
+                                                        @can('attributions_lots.withdraw')
+                                                            <button onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                                class="w-full flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
+                                                                <i class="fas fa-times-circle mr-3 text-red-500"></i>
+                                                                Retirer
+                                                            </button>
+                                                        @endcan
+                                                    @endif
+
+                                                    @can('attributions_lots.assign')
+                                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_SUSPENDU)
+                                                            <button onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
+                                                                class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">
+                                                                <i class="fas fa-play-circle mr-3 text-green-500"></i>
+                                                                Réactiver
+                                                            </button>
+                                                        @endif
+                                                    @endcan
+                                                @endcanany
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endcanany
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if ($prestataire->attributions()->count() > 5)
+                        <div class="mt-4 text-center">
+                            <a @can('attributions_lots.read') href="{{ route('prestataires.lots.index', $prestataire) }}" @endcan
+                                class="inline-flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-colors">
+                                Voir tout l'historique ({{ $prestataire->attributions()->count() - 5 }} de plus)
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    @endif
+                @else
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">Aucune attribution pour ce prestataire</p>
+                        <p class="text-sm text-gray-400 mt-1">Les attributions de lots apparaîtront ici</p>
+                    </div>
+                @endif
             </div>
-        @endif
-    </div>
-</div>
+        </div>
 
         {{-- Modal de confirmation de retrait --}}
         <div id="modalRetrait" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -722,11 +715,13 @@
                                     class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
                                     Annuler
                                 </button>
-                                <button type="submit"
-                                    class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
-                                    <i class="fas fa-times-circle mr-2"></i>
-                                    Retirer
-                                </button>
+                                @can('attributions_lots.withdraw')
+                                    <button type="submit"
+                                        class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
+                                        <i class="fas fa-times-circle mr-2"></i>
+                                        Retirer
+                                    </button>
+                                @endcan
                             </div>
                         </form>
                     </div>
@@ -768,11 +763,13 @@
                                     class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
                                     Annuler
                                 </button>
+                                @can('attributions_lots.suspend')
                                 <button type="submit"
                                     class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
                                     <i class="fas fa-times-circle mr-2"></i>
                                     Suspendre
                                 </button>
+                                @endcan
                             </div>
                         </form>
                     </div>
@@ -780,6 +777,7 @@
             </div>
         </div>
 
+        @can('attributions_lots.view-details')
         <script>
             function confirmerRetrait(attributionId, nomLot) {
                 document.getElementById('nomLotRetrait').textContent = nomLot;
@@ -820,6 +818,7 @@
                 }
             }
         </script>
+        @endcan
 
     </main>
 
@@ -842,16 +841,19 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
+                        @can('prestataires.delete')
                         <button onclick="executeDelete()"
                             class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
                             Supprimer
                         </button>
+                        @endcan
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    @can('prestataires.view-details')
     @push('scripts')
         <script>
             const prestataireId = '{{ $prestataire->id_prestataire }}';
@@ -975,4 +977,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

@@ -13,11 +13,13 @@
                         <i class="fas fa-building text-orange-500"></i>
                         <span>Prestataires</span>
                     </h1>
+                    @can('prestataires.create')
                     <button onclick="window.location.href='{{ route('prestataires.create') }}'"
                         class="md:hidden px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
                         <i class="fas fa-plus text-sm"></i>
                         <span class="text-sm">Nouveau</span>
                     </button>
+                    @endcan
                 </div>
 
                 <!-- Filtres et actions -->
@@ -40,12 +42,14 @@
                         <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactifs</option>
                     </select>
 
+                    @can('prestataires.create')
                     <!-- Bouton créer (desktop) -->
                     <button onclick="window.location.href='{{ route('prestataires.create') }}'"
                         class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
                         <i class="fas fa-plus text-sm"></i>
                         <span class="text-sm">Créer</span>
                     </button>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -153,8 +157,10 @@
                                 Localisation</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
+                            @canany(['prestataires.view-details', 'prestataires.update', 'prestataires.toggle-status', 'banques_prestataires.read', 'capacites_techniques.read', 'situations_financieres.read', 'prestataires.delete'])
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -223,22 +229,28 @@
                                         </span>
                                     @endif
                                 </td>
+                                @canany(['prestataires.view-details', 'prestataires.update', 'prestataires.toggle-status', 'banques_prestataires.read', 'capacites_techniques.read', 'situations_financieres.read', 'prestataires.delete'])
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex items-center justify-center space-x-2">
+                                        @can('prestataires.view-details')
                                         <!-- Voir détails -->
                                         <button onclick="window.location.href='{{ route('prestataires.show', $prestataire->id_prestataire) }}'"
                                             class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
                                             title="Voir détails">
                                             <i class="fas fa-eye text-sm"></i>
                                         </button>
+                                        @endcan
 
+                                        @can('prestataires.update')
                                         <!-- Modifier -->
                                         <button onclick="window.location.href='{{ route('prestataires.edit', $prestataire->id_prestataire) }}'"
                                             class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
                                             title="Modifier">
                                             <i class="fas fa-edit text-sm"></i>
                                         </button>
+                                        @endcan
 
+                                        @can('prestataires.toggle-status')
                                         <!-- Toggle Status -->
                                         <button
                                             onclick="toggleStatus('{{ $prestataire->id_prestataire }}', {{ $prestataire->statut_prestataire ? 'true' : 'false' }})"
@@ -246,7 +258,9 @@
                                             title="{{ $prestataire->statut_prestataire ? 'Désactiver' : 'Activer' }}">
                                             <i class="fas fa-power-off text-sm"></i>
                                         </button>
+                                        @endcan
 
+                                        @canany(['banques_prestataires.read', 'capacites_techniques.read', 'situations_financieres.read', 'prestataires.delete'])
                                         <!-- Menu Actions -->
                                         <div class="relative">
                                             <button onclick="toggleMenu('{{ $prestataire->id_prestataire }}')"
@@ -256,26 +270,38 @@
                                             </button>
                                             <div id="menu-{{ $prestataire->id_prestataire }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                                                 <div class="py-1">
-                                                    <button onclick="viewDocuments('{{ $prestataire->id_prestataire }}')"
+
+                                                    {{-- <button onclick="viewDocuments('{{ $prestataire->id_prestataire }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-file-alt text-blue-500 mr-2"></i>
                                                         Documents
-                                                    </button>
+                                                    </button> --}}
+
+                                                    @can('banques_prestataires.read')
                                                     <button onclick="viewBanques('{{ $prestataire->id_prestataire }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-university text-green-500 mr-2"></i>
                                                         Banques
                                                     </button>
+                                                    @endcan
+
+                                                    @can('capacites_techniques.read')
                                                     <button onclick="viewCapacites('{{ $prestataire->id_prestataire }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-cogs text-purple-500 mr-2"></i>
                                                         Capacités techniques
                                                     </button>
+                                                    @endcan
+
+                                                    @can('situations_financieres.read')
                                                     <button onclick="viewFinances('{{ $prestataire->id_prestataire }}')"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-chart-line text-indigo-500 mr-2"></i>
                                                         Situation financière
                                                     </button>
+                                                    @endcan
+
+                                                    @can('prestataires.delete')
                                                     <hr class="my-1">
                                                     <button
                                                         onclick="confirmDelete('{{ $prestataire->id_prestataire }}', '{{ addslashes($prestataire->raison_sociale_prestataire) }}')"
@@ -283,11 +309,14 @@
                                                         <i class="fas fa-trash mr-2"></i>
                                                         Supprimer
                                                     </button>
+                                                    @endcan
                                                 </div>
                                             </div>
                                         </div>
+                                        @endcanany
                                     </div>
                                 </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -297,11 +326,13 @@
                                             <i class="fas fa-building text-gray-400 text-3xl"></i>
                                         </div>
                                         <h3 class="text-lg font-medium text-gray-700 mb-2">Aucun prestataire trouvé</h3>
-                                        <p class="text-gray-500 text-sm mb-4">Commencez par créer votre premier prestataire</p>
-                                        <button onclick="window.location.href='{{ route('prestataires.create') }}'"
-                                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
-                                            <i class="fas fa-plus mr-2"></i>Créer un prestataire
-                                        </button>
+                                        @can('prestataires.create')
+                                            <p class="text-gray-500 text-sm mb-4">Commencez par créer votre premier prestataire</p>
+                                            <button onclick="window.location.href='{{ route('prestataires.create') }}'"
+                                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
+                                                <i class="fas fa-plus mr-2"></i>Créer un prestataire
+                                            </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -335,16 +366,19 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
+                        @can('prestataires.delete')
                         <button onclick="executeDelete()"
                             class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
                             Supprimer
                         </button>
+                        @endcan
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    @can('prestataires.read')
     @push('scripts')
         <script>
             let deletePrestataireId = null;
@@ -440,9 +474,9 @@
             }
 
             // Actions supplémentaires
-            window.viewDocuments = function(id) {
-                window.location.href = `/prestataires/${id}/documents`;
-            }
+            // window.viewDocuments = function(id) {
+            //     window.location.href = `/prestataires/${id}/documents`;
+            // }
 
             window.viewBanques = function(id) {
                 window.location.href = "{{ route('banques.index', ':prestataireId') }}".replace(':prestataireId', id);
@@ -511,4 +545,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

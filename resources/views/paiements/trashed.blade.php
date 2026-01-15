@@ -1,11 +1,14 @@
 @extends('layouts.main')
 @section('title', 'Paiements supprimés')
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('factures.show', $factureId) }}" class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
+    <a @can('factures.view-details') href="{{ route('factures.show', $factureId) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('paiements.index', ['factureId' => $factureId]) }}" class="text-white/80 hover:text-white transition-colors">Paiements</a>
+    <a @can('paiements.read') href="{{ route('paiements.index', ['factureId' => $factureId]) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Paiements</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Corbeille</span>
 @endsection
@@ -15,10 +18,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('paiements.index', ['factureId' => $factureId]) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('paiements.read')
+                        <a href="{{ route('paiements.index', ['factureId' => $factureId]) }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                         <i class="fas fa-trash-restore text-red-500"></i>
                         <span>Paiements supprimés</span>
@@ -27,8 +32,7 @@
 
                 <div class="flex items-center space-x-2">
                     <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Rechercher..."
-                            value="{{ request('search') }}"
+                        <input type="text" id="searchInput" placeholder="Rechercher..." value="{{ request('search') }}"
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-400" />
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
@@ -41,7 +45,8 @@
             <div class="mt-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
                 <p class="text-sm text-blue-800">
                     <i class="fas fa-file-invoice mr-2"></i>
-                    Facture : <a href="{{ route('factures.show', $factureId) }}" class="font-bold hover:underline">{{ $facture->numero_facture }}</a>
+                    Facture : <a @can('factures.view-details') href="{{ route('factures.show', $factureId) }}" @endcan
+                        class="font-bold hover:underline">{{ $facture->numero_facture }}</a>
                 </p>
             </div>
         </div>
@@ -75,7 +80,9 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Banque</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Supprimé le</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Par</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                            @canany(['paiements.update', 'paiements.delete'])
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
@@ -94,22 +101,30 @@
                                     {{ $paiement->deleted_at->format('d/m/Y H:i') }}
                                 </td>
                                 <td class="px-6 py-4 text-center text-sm text-gray-900">
-                                    {{ $paiement->suppresseur->name ?? 'N/A' }}
+                                    {{ $paiement->suppresseur->nom_complet ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <button onclick="restore('{{ $paiement->id_paiement }}')"
-                                            class="text-green-600 hover:text-green-800 transition-colors" title="Restaurer">
-                                            <i class="fas fa-undo"></i>
-                                        </button>
-                                        @if($paiement->statut_paiement != 3)
-                                            <button onclick="confirmForceDelete('{{ $paiement->id_paiement }}')"
-                                                class="text-red-600 hover:text-red-800 transition-colors" title="Supprimer définitivement">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
+                                @canany(['paiements.update', 'paiements.delete'])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('paiements.update')
+                                                <button onclick="restore('{{ $paiement->id_paiement }}')"
+                                                    class="text-green-600 hover:text-green-800 transition-colors" title="Restaurer">
+                                                    <i class="fas fa-undo"></i>
+                                                </button>
+                                            @endcan
+
+                                            @can('paiements.delete')
+                                                @if ($paiement->statut_paiement != 3)
+                                                    <button onclick="confirmForceDelete('{{ $paiement->id_paiement }}')"
+                                                        class="text-red-600 hover:text-red-800 transition-colors"
+                                                        title="Supprimer définitivement">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @endif
+                                            @endcan
+                                        </div>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -140,21 +155,25 @@
                 <h3 class="text-lg font-bold text-gray-800">Suppression définitive</h3>
             </div>
             <div class="p-6">
-                <p class="text-gray-700">Êtes-vous sûr de vouloir supprimer définitivement ce paiement ? Cette action est irréversible.</p>
+                <p class="text-gray-700">Êtes-vous sûr de vouloir supprimer définitivement ce paiement ? Cette action est
+                    irréversible.</p>
             </div>
             <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
                 <button onclick="closeDeleteModal()"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
                     Annuler
                 </button>
+                @can('paiements.update')
                 <button onclick="executeForceDelete()"
                     class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
                     Supprimer définitivement
                 </button>
+                @endcan
             </div>
         </div>
     </div>
 
+    @can('paiements.update')
     @push('scripts')
         <script>
             const factureId = '{{ $factureId }}';
@@ -162,21 +181,22 @@
 
             function restore(id) {
                 if (confirm('Restaurer ce paiement ?')) {
-                    fetch(`/${factureId}/paiements/${id}/restore`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message);
-                        }
-                    });
+                    fetch("{{ route('paiements.restore', [':factureId', ':id']) }}".replace(':factureId', factureId).replace(
+                            ':id', id), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
                 }
             }
 
@@ -191,22 +211,23 @@
             }
 
             function executeForceDelete() {
-                fetch(`/${factureId}/paiements/${currentPaiementId}/force-delete`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                        closeDeleteModal();
-                    }
-                });
+                fetch("{{ route('paiements.force-delete', [':factureId', ':currentPaiementId']) }}".replace(':factureId',
+                        factureId).replace(':currentPaiementId', currentPaiementId), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                            closeDeleteModal();
+                        }
+                    });
             }
 
             let searchTimeout;
@@ -228,12 +249,21 @@
 
         <style>
             @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
+
             .animate-fadeIn {
                 animation: fadeIn 0.3s ease-out;
             }
         </style>
     @endpush
+    @endcan
 @endsection

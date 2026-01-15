@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('title', 'Historique du Lot ' . $lot->numero)
 @section('breadcrumb')
-    <a href="{{ route('attributions.index') }}" class="text-white/80 hover:text-white transition-colors">Attributions</a>
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Attributions</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Historique Lot {{ $lot->numero }}</span>
 @endsection
@@ -11,9 +11,11 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
+                    @can('attributions_lots.read')
                     <a href="{{ route('attributions.index') }}" class="p-2 hover:bg-gray-100 rounded-lg">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
                     <div>
                         <div class="flex items-center space-x-3">
                             <h1 class="text-2xl font-bold text-gray-800">Historique du Lot</h1>
@@ -24,13 +26,15 @@
                         <p class="text-gray-600 mt-1">{{ Str::limit($lot->libelle, 60) }}</p>
                     </div>
                 </div>
+                @can('attributions_lots.assign')
                 @if(!$lot->attribution_lot)
-                    <a href="{{ route('attributions.create', ['lot_id' => $lot->id_lot]) }}"
+                    <a href="{{ route('attributions.create',  $lot->id_lot) }}"
                         class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-md flex items-center space-x-2">
                         <i class="fas fa-plus"></i>
                         <span class="font-medium">Attribuer ce lot</span>
                     </a>
                 @endif
+                @endcan
             </div>
         </div>
     </div>
@@ -72,7 +76,7 @@
                                             <div class="flex-1 bg-gray-50 rounded-xl p-4 border {{ $attr->is_active ? 'border-orange-200' : 'border-gray-200' }}">
                                                 <div class="flex items-start justify-between">
                                                     <div>
-                                                        <a href="{{ route('attributions.show', $attr->id_attribution) }}"
+                                                        <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attr->id_attribution) }}" @endcan
                                                             class="font-semibold text-gray-800 hover:text-orange-600">
                                                             {{ $attr->numero_attribution }}
                                                         </a>
@@ -130,10 +134,12 @@
                             <div class="text-center py-12">
                                 <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
                                 <p class="text-gray-500">Aucune attribution pour ce lot</p>
-                                <a href="{{ route('attributions.create', ['lot_id' => $lot->id_lot]) }}"
-                                    class="mt-4 inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
-                                    <i class="fas fa-plus mr-2"></i>Créer une attribution
-                                </a>
+                                @can('attributions_lots.assign')
+                                    <a href="{{ route('attributions.create', $lot->id_lot) }}"
+                                        class="mt-4 inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+                                        <i class="fas fa-plus mr-2"></i>Créer une attribution
+                                    </a>
+                                @endcan
                             </div>
                         @endif
                     </div>

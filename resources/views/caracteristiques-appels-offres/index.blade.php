@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Gestion des Caractéristiques')
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{$appelOffre->numero_appel_offre}}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{$appelOffre->numero_appel_offre}}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Caractéristiques</span>
 @endsection
@@ -19,11 +19,13 @@
                         <i class="fas fa-thumbs-up text-indigo-500"></i>
                         <span>Gestion des Caractéristiques</span>
                     </h1>
+                    @can('caracteristiques_appels_offres.create')
                     <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.create', $appelOffre->id_appel_offre) }}'"
                         class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
                         <i class="fas fa-plus text-sm"></i>
                         <span class="text-sm">Nouveau</span>
                     </button>
+                    @endcan
                 </div>
 
                 <!-- Filtres et actions -->
@@ -54,6 +56,7 @@
                         <option value="version_asc" {{ request('sort') == 'version_asc' ? 'selected' : '' }}>Version (croissant)</option>
                     </select>
 
+                    @can('caracteristiques_appels_offres.create')
                     <!-- Bouton créer (desktop) -->
                     <button
                         onclick="window.location.href='{{ route('caracteristiques-appels-offres.create', $appelOffre->id_appel_offre) }}'"
@@ -61,6 +64,7 @@
                         <i class="fas fa-plus text-sm"></i>
                         <span class="text-sm">Créer</span>
                     </button>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -109,11 +113,13 @@
                             Montant global: <strong>{{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }} FCFA</strong>
                         </p>
                     </div>
+                    @can('appels_offres.view-details')
                     <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}"
                         class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                         title="Voir l'appel d'offres">
                         <i class="fas fa-external-link-alt"></i>
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -140,20 +146,14 @@
                 <table class="w-full">
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Version</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Lieu d'Exécution</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Dates Prévues</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Durée (jours)</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Pénalités/jour</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Garantie</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Version</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Lieu d'Exécution</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dates Prévues</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Durée (jours)</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Garantie</th>
+                            @canany(['caracteristiques_appels_offres.view-details', 'caracteristiques_appels_offres.update', 'caracteristiques_appels_offres.delete'])
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -215,18 +215,7 @@
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    @if($caract->penalites_retard_journalier_caracteristique_appel_offre)
-                                        <div class="text-sm">
-                                            <span class="font-semibold text-red-600">
-                                                {{ number_format($caract->penalites_retard_journalier_caracteristique_appel_offre, 0, ',', ' ') }}
-                                            </span>
-                                            <span class="text-xs text-gray-500">FCFA</span>
-                                        </div>
-                                    @else
-                                        <span class="text-gray-400 text-xs">-</span>
-                                    @endif
-                                </td>
+                                
                                 <td class="px-6 py-4 text-center">
                                     @if($caract->montant_garantie_caracteristique_appel_offre)
                                         <div class="text-sm">
@@ -243,30 +232,43 @@
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.show', [$appelOffre->id_appel_offre, $caract->id_caracteristique_appel_offre]) }}'"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                            title="Voir les détails">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </button>
-                                        <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.edit', [$appelOffre->id_appel_offre, $caract->id_caracteristique_appel_offre]) }}'"
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
-                                        <button onclick="showHistorique('{{ $caract->id_caracteristique_appel_offre }}')"
-                                            class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200"
-                                            title="Historique">
-                                            <i class="fas fa-history text-sm"></i>
-                                        </button>
-                                        <button onclick="confirmDelete('{{ $caract->id_caracteristique_appel_offre }}', 'V{{ $caract->version_caracteristique_appel_offre }}')"
-                                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                            title="Supprimer">
-                                            <i class="fas fa-trash text-sm"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                @canany(['caracteristiques_appels_offres.view-details', 'caracteristiques_appels_offres.update', 'caracteristiques_appels_offres.delete'])
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('caracteristiques_appels_offres.view-details')
+                                            <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.show', [$appelOffre->id_appel_offre, $caract->id_caracteristique_appel_offre]) }}'"
+                                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                                title="Voir les détails">
+                                                <i class="fas fa-eye text-sm"></i>
+                                            </button>
+                                            @endcan
+
+                                            @can('caracteristiques_appels_offres.update')
+                                            <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.edit', [$appelOffre->id_appel_offre, $caract->id_caracteristique_appel_offre]) }}'"
+                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                title="Modifier">
+                                                <i class="fas fa-edit text-sm"></i>
+                                            </button>
+                                            @endcan
+
+                                            @can('caracteristiques_appels_offres.view-details')
+                                            <button onclick="showHistorique('{{ $caract->id_caracteristique_appel_offre }}')"
+                                                class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-all duration-200"
+                                                title="Historique">
+                                                <i class="fas fa-history text-sm"></i>
+                                            </button>
+                                            @endcan
+
+                                            @can('caracteristiques_appels_offres.delete')
+                                            <button onclick="confirmDelete('{{ $caract->id_caracteristique_appel_offre }}', 'V{{ $caract->version_caracteristique_appel_offre }}')"
+                                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                title="Supprimer">
+                                                <i class="fas fa-trash text-sm"></i>
+                                            </button>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -276,11 +278,13 @@
                                             <i class="fas fa-cogs text-3xl text-gray-400"></i>
                                         </div>
                                         <p class="text-gray-500 font-medium">Aucune caractéristique trouvée</p>
-                                        <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.create', $appelOffre->id_appel_offre) }}'"
-                                            class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2">
-                                            <i class="fas fa-plus text-sm"></i>
-                                            <span>Créer la première caractéristique</span>
-                                        </button>
+                                        @can('caracteristiques_appels_offres.create')
+                                            <button onclick="window.location.href='{{ route('caracteristiques-appels-offres.create', $appelOffre->id_appel_offre) }}'"
+                                                class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2">
+                                                <i class="fas fa-plus text-sm"></i>
+                                                <span>Créer la première caractéristique</span>
+                                            </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -316,153 +320,157 @@
                         class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                         Annuler
                     </button>
-                    <button onclick="executeDelete()"
-                        class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                        Supprimer
-                    </button>
+                    @can('caracteristiques_appels_offres.delete')
+                        <button onclick="executeDelete()"
+                            class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                            Supprimer
+                        </button>
+                    @endcan
                 </div>
             </div>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            let deleteCaractId = null;
+    @can('caracteristiques_appels_offres.read')
+        @push('scripts')
+            <script>
+                let deleteCaractId = null;
 
-            // Afficher historique
-            window.showHistorique = function(id) {
-                fetch(`/appels-offres/{{ $appelOffre->id_appel_offre }}/caracteristiques/${id}/historique`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.data.length > 0) {
-                            let message = `Historique des versions:\n\n`;
-                            data.data.forEach(v => {
-                                message += `Version ${v.version_caracteristique_appel_offre} - ${new Date(v.created_at).toLocaleString('fr-FR')}\n`;
-                                if (v.motif_modification_caracteristique_appel_offre) {
-                                    message += `Motif: ${v.motif_modification_caracteristique_appel_offre}\n`;
-                                }
-                                message += '\n';
-                            });
-                            alert(message);
-                        } else {
-                            window.location.href = `/appels-offres/{{ $appelOffre->id_appel_offre }}/caracteristiques/${id}`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Erreur lors de la récupération de l\'historique');
-                    });
-            }
+                // Afficher historique
+                window.showHistorique = function(id) {
+                    fetch("{{ route('caracteristiques-appels-offres.historique', [$appelOffre->id_appel_offre, ':caracteristique']) }}".replace(':caracteristique', id), {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.data.length > 0) {
+                                let message = `Historique des versions:\n\n`;
+                                data.data.forEach(v => {
+                                    message += `Version ${v.version_caracteristique_appel_offre} - ${new Date(v.created_at).toLocaleString('fr-FR')}\n`;
+                                    if (v.motif_modification_caracteristique_appel_offre) {
+                                        message += `Motif: ${v.motif_modification_caracteristique_appel_offre}\n`;
+                                    }
+                                    message += '\n';
+                                });
+                                alert(message);
+                            } else {
+                                window.location.href = "{{ route('caracteristiques-appels-offres.historique', [$appelOffre->id_appel_offre, ':caracteristique']) }}".replace(':caracteristique', id);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                            alert('Erreur lors de la récupération de l\'historique');
+                        });
+                }
 
-            // Confirmer suppression
-            window.confirmDelete = function(id, version) {
-                deleteCaractId = id;
-                const message = `Êtes-vous sûr de vouloir supprimer la caractéristique "${version}" ?`;
-                document.getElementById('deleteMessage').textContent = message;
-                document.getElementById('deleteModal').classList.remove('hidden');
-            }
+                // Confirmer suppression
+                window.confirmDelete = function(id, version) {
+                    deleteCaractId = id;
+                    const message = `Êtes-vous sûr de vouloir supprimer la caractéristique "${version}" ?`;
+                    document.getElementById('deleteMessage').textContent = message;
+                    document.getElementById('deleteModal').classList.remove('hidden');
+                }
 
-            // Exécuter suppression
-            window.executeDelete = function() {
-                if (!deleteCaractId) return;
+                // Exécuter suppression
+                window.executeDelete = function() {
+                    if (!deleteCaractId) return;
 
-                fetch(`/appels-offres/{{ $appelOffre->id_appel_offre }}/caracteristiques/${deleteCaractId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
+                    fetch("{{ route('caracteristiques-appels-offres.destroy', [$appelOffre->id_appel_offre, ':caracteristique']) }}".replace(':caracteristique', deleteCaractId), {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message || 'Une erreur est survenue');
+                                closeDeleteModal();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur:', error);
+                            alert('Une erreur est survenue');
                             closeDeleteModal();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue');
+                        });
+                }
+
+                // Fermer modal suppression
+                window.closeDeleteModal = function() {
+                    document.getElementById('deleteModal').classList.add('hidden');
+                    deleteCaractId = null;
+                }
+
+                // Rafraîchir le tableau
+                window.refreshTable = function() {
+                    location.reload();
+                }
+
+                // Recherche en temps réel
+                let searchTimeout;
+                document.getElementById('searchInput').addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        applyFilters();
+                    }, 500);
+                });
+
+                // Filtres
+                document.getElementById('versionFilter').addEventListener('change', applyFilters);
+                document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+                function applyFilters() {
+                    const search = document.getElementById('searchInput').value;
+                    const version = document.getElementById('versionFilter').value;
+                    const sort = document.getElementById('sortFilter').value;
+
+                    const params = new URLSearchParams();
+                    if (search) params.append('search', search);
+                    if (version) params.append('version', version);
+                    if (sort) params.append('sort', sort);
+
+                    window.location.href = `?${params.toString()}`;
+                }
+
+                // Fermer modal avec Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
                         closeDeleteModal();
-                    });
-            }
+                    }
+                });
+            </script>
 
-            // Fermer modal suppression
-            window.closeDeleteModal = function() {
-                document.getElementById('deleteModal').classList.add('hidden');
-                deleteCaractId = null;
-            }
+            <style>
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
 
-            // Rafraîchir le tableau
-            window.refreshTable = function() {
-                location.reload();
-            }
-
-            // Recherche en temps réel
-            let searchTimeout;
-            document.getElementById('searchInput').addEventListener('input', function(e) {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    applyFilters();
-                }, 500);
-            });
-
-            // Filtres
-            document.getElementById('versionFilter').addEventListener('change', applyFilters);
-            document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
-            function applyFilters() {
-                const search = document.getElementById('searchInput').value;
-                const version = document.getElementById('versionFilter').value;
-                const sort = document.getElementById('sortFilter').value;
-
-                const params = new URLSearchParams();
-                if (search) params.append('search', search);
-                if (version) params.append('version', version);
-                if (sort) params.append('sort', sort);
-
-                window.location.href = `?${params.toString()}`;
-            }
-
-            // Fermer modal avec Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeDeleteModal();
-                }
-            });
-        </script>
-
-        <style>
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
                 }
 
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
                 }
-            }
 
-            .animate-fadeIn {
-                animation: fadeIn 0.3s ease-out;
-            }
-
-            .line-clamp-1 {
-                display: -webkit-box;
-                -webkit-line-clamp: 1;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-        </style>
-    @endpush
+                .line-clamp-1 {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+            </style>
+        @endpush
+    @endcan
 @endsection

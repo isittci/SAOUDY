@@ -97,8 +97,9 @@
         @yield('breadcrumb_schema')
     @endif
 
-    {{-- Styles --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="stylesheet" href="{{ asset('build/assets/app-COSr8-42.css') }}">
+    <script src="{{ asset('build/assets/app-CAiCLEjY.js') }}" defer></script>
     @stack('styles')
 </head>
 <body class="min-h-screen bg-gradient-to-br from-yellow-300 via-green-400 to-green-500 flex items-center justify-center p-4">
@@ -111,10 +112,9 @@
     <main id="main-content" class="w-full max-w-md bg-gradient-to-br from-yellow-200 to-green-300 rounded-3xl shadow-2xl p-8" role="main">
         {{-- Header avec logo accessible --}}
         <header class="flex justify-center mb-6">
-            <div class="w-20 h-20 bg-blue-400 rounded-full flex items-center justify-center shadow-lg" role="img" aria-label="Logo {{ config('app.name') }}">
-                <svg class="w-12 h-12 text-blue-900" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                </svg>
+
+            <div class="w-14 h-14 bg-white  flex items-center justify-center shadow-lg overflow-hidden" role="img" aria-label="Logo {{ config('app.name') }}">
+                <img src="{{ asset('favicon.png') }}" alt="Logo {{ config('app.name') }}" class="w-14 h-14 object-contain">
             </div>
         </header>
 

@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Modifier Prestataire - ' . $prestataire->raison_sociale_prestataire)
 @section('breadcrumb')
-    <a href="{{ route('prestataires.index') }}" class="text-white/80 hover:text-white transition-colors">Prestataires</a>
+    <a @can('prestataires.read') href="{{ route('prestataires.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Prestataires</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('prestataires.show', $prestataire->id_prestataire) }}" class="text-white/80 hover:text-white transition-colors">{{ Str::limit($prestataire->raison_sociale_prestataire, 20) }}</a>
+    <a @can('prestataires.view-details') href="{{ route('prestataires.show', $prestataire->id_prestataire) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ Str::limit($prestataire->raison_sociale_prestataire, 20) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Modifier</span>
 @endsection
@@ -14,10 +14,13 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
+                    @can('prestataires.view-details')
                     <a href="{{ route('prestataires.show', $prestataire->id_prestataire) }}"
                         class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
+
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-edit text-orange-500 mr-2"></i>
@@ -70,6 +73,7 @@
             </div>
         @endif
 
+        @can('prestataires.update')
         <form action="{{ route('prestataires.update', $prestataire->id_prestataire) }}" method="POST" id="prestataireForm" class="space-y-6">
             @csrf
             @method('PUT')
@@ -524,8 +528,10 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 
+     @can('prestataires.update')
     @push('scripts')
         <script>
             // Gestion des onglets
@@ -600,4 +606,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

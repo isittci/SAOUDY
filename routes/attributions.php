@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [PrestataireLotController::class, 'dashboard'])->name('dashboard');
 
         // Création
-        Route::get('/create', [PrestataireLotController::class, 'create'])->name('create');
+        // Route::get('/create', [PrestataireLotController::class, 'create'])->name('create');
         Route::post('/', [PrestataireLotController::class, 'store'])->name('store');
 
         // Affichage et Modification
@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/prestataire/{prestataire}/historique', [PrestataireLotController::class, 'historiquePrestataire'])->name('historique.prestataire');
     });
 
-    // ==================== ROUTES CONTEXTUELLES ====================  
+    // ==================== ROUTES CONTEXTUELLES ====================
 
     // Depuis un lot
     Route::prefix('lots/{lot}')->name('lots.')->group(function () {
@@ -64,31 +64,3 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| RÉSUMÉ DES ROUTES DISPONIBLES
-|--------------------------------------------------------------------------
-|
-| GET    /attributions                              Liste des attributions
-| GET    /attributions/dashboard                    Tableau de bord
-| GET    /attributions/create                       Formulaire création
-| POST   /attributions                              Enregistrer attribution
-| GET    /attributions/{id}                         Voir attribution
-| GET    /attributions/{id}/edit                    Formulaire modification
-| PUT    /attributions/{id}                         Mettre à jour
-| POST   /attributions/{id}/suspendre               Suspendre
-| POST   /attributions/{id}/reprendre               Reprendre
-| POST   /attributions/{id}/retirer                 Retirer
-| POST   /attributions/{id}/terminer                Terminer
-| POST   /attributions/{id}/avancement              Mettre à jour avancement
-| GET    /attributions/{id}/reattribuer             Formulaire réattribution
-| POST   /attributions/{id}/reattribuer             Réattribuer
-| GET    /attributions/lot/{id}/historique          Historique d'un lot
-| GET    /attributions/prestataire/{id}/historique  Historique d'un prestataire
-|
-| GET    /lots/{id}/attributions                    Attributions d'un lot
-| GET    /lots/{id}/attribuer                       Attribuer un lot
-| POST   /lots/{id}/attribuer                       Enregistrer attribution lot
-| GET    /prestataires/{id}/attributions            Attributions d'un prestataire
-|
-*/

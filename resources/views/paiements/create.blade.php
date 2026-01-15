@@ -45,11 +45,11 @@
 @endpush
 
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('factures.show', $factureId) }}" class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
+    <a @can('factures.view-details') href="{{ route('factures.show', $factureId) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('paiements.index', $factureId) }}" class="text-white/80 hover:text-white transition-colors">Paiements</a>
+    <a @can('paiements.read') href="{{ route('paiements.index', $factureId) }}" @endcan class="text-white/80 hover:text-white transition-colors">Paiements</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Nouveau paiement</span>
 @endsection
@@ -60,9 +60,11 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
+                    @can('paiements.read')
                     <a href="{{ route('paiements.index', $factureId) }}" class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Nouveau paiement</h1>
                         <p class="text-gray-600 mt-1">Enregistrer un paiement pour la facture {{ $facture->numero_facture }}</p>
@@ -242,6 +244,7 @@
                     </div>
                 </div>
 
+                @can('paiements.create')
                 <!-- Formulaire de paiement -->
                 @if($montantRestant > 0)
                 <form action="{{ route('paiements.store', $factureId) }}" method="POST" id="paiementForm">
@@ -356,6 +359,20 @@
                                 </div>
                             </div>
 
+                            <!-- Date effective du paiement -->
+                            <div>
+                                <label for="date_effectif_paiement" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-calendar-alt text-gray-400 mr-1"></i>
+                                    Date effective du paiement <span class="text-red-500">*</span>
+                                </label>
+                                <input type="date" required
+                                    name="date_effectif_paiement"
+                                    id="date_effectif_paiement"
+                                    value="{{ old('date_effectif_paiement') }}"
+                                    max="{{ date('Y-m-d') }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all">
+                            </div>
+
                             <!-- Observations -->
                             <div>
                                 <label for="observations_paiement" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -385,6 +402,7 @@
                     </div>
                 </form>
                 @endif
+                @endcan
 
                 <!-- Historique des paiements -->
                 @if($facture->paiements && $facture->paiements->count() > 0)
@@ -486,7 +504,7 @@
                                 <span class="ml-2">{{ $prestataire->getAdresseComplete() }}</span>
                             </div>
                             @endif
-                           
+
                             @if($prestataire->representant_legal_prestataire)
                                 @php
                                     $representant = is_array($prestataire->representant_legal_prestataire)
@@ -558,16 +576,6 @@
                                     </div>
                                 @endif
                             @endif
-
-
-
-
-
-
-
-
-
-
                         </div>
                     </div>
                 </div>

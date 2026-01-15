@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict f8MIHsFnpXyqj0srlTV7lVZIEScMP5zVBMZrUAK7cJele1mwg5ELgJjquV0aQWf
+\restrict LVznHaWGJiKFJbd6xZmxZ6505MdpyezjlY2aLM2SJU1xeXVq0bYXtXbrnCdFl8N
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
--- Started on 2025-12-26 18:25:10
+-- Started on 2025-12-31 15:11:48
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1362,7 +1362,8 @@ CREATE TABLE public.paiements (
     deleted_by uuid,
     created_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp(0) without time zone
+    deleted_at timestamp(0) without time zone,
+    date_effectif_paiement date
 );
 
 
@@ -1468,6 +1469,15 @@ COMMENT ON COLUMN public.paiements.deleted_at IS 'Date de suppression logique (s
 
 
 --
+-- TOC entry 5546 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: COLUMN paiements.date_effectif_paiement; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.paiements.date_effectif_paiement IS 'Date et heure exactes où le paiement a été effectivement réalisé (virement bancaire, chèque émis, etc.). Indique le moment où les fonds ont quitté le compte de l''organisation. Important pour la réconciliation bancaire et le suivi des délais de paiement.';
+
+
+--
 -- TOC entry 223 (class 1259 OID 48151)
 -- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -1512,7 +1522,7 @@ CREATE TABLE public.permissions (
 ALTER TABLE public.permissions OWNER TO postgres;
 
 --
--- TOC entry 5546 (class 0 OID 0)
+-- TOC entry 5547 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: TABLE permissions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1521,7 +1531,7 @@ COMMENT ON TABLE public.permissions IS 'Table des permissions du système de con
 
 
 --
--- TOC entry 5547 (class 0 OID 0)
+-- TOC entry 5548 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.name; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1530,7 +1540,7 @@ COMMENT ON COLUMN public.permissions.name IS 'Nom affiché de la permission';
 
 
 --
--- TOC entry 5548 (class 0 OID 0)
+-- TOC entry 5549 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.slug; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1539,7 +1549,7 @@ COMMENT ON COLUMN public.permissions.slug IS 'Identifiant unique pour la permiss
 
 
 --
--- TOC entry 5549 (class 0 OID 0)
+-- TOC entry 5550 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.description; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1548,7 +1558,7 @@ COMMENT ON COLUMN public.permissions.description IS 'Description détaillée de 
 
 
 --
--- TOC entry 5550 (class 0 OID 0)
+-- TOC entry 5551 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.resource; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1557,7 +1567,7 @@ COMMENT ON COLUMN public.permissions.resource IS 'Entité/ressource concernée (
 
 
 --
--- TOC entry 5551 (class 0 OID 0)
+-- TOC entry 5552 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.action; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1566,7 +1576,7 @@ COMMENT ON COLUMN public.permissions.action IS 'Action autorisée sur la ressour
 
 
 --
--- TOC entry 5552 (class 0 OID 0)
+-- TOC entry 5553 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.guard_name; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1575,7 +1585,7 @@ COMMENT ON COLUMN public.permissions.guard_name IS 'Guard utilisé (web, api, et
 
 
 --
--- TOC entry 5553 (class 0 OID 0)
+-- TOC entry 5554 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.category; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1584,7 +1594,7 @@ COMMENT ON COLUMN public.permissions.category IS 'Catégorie de permission pour 
 
 
 --
--- TOC entry 5554 (class 0 OID 0)
+-- TOC entry 5555 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.priority; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1593,7 +1603,7 @@ COMMENT ON COLUMN public.permissions.priority IS 'Priorité de la permission (0-
 
 
 --
--- TOC entry 5555 (class 0 OID 0)
+-- TOC entry 5556 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.is_active; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1602,7 +1612,7 @@ COMMENT ON COLUMN public.permissions.is_active IS 'Permission active/inactive';
 
 
 --
--- TOC entry 5556 (class 0 OID 0)
+-- TOC entry 5557 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.is_system; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1611,7 +1621,7 @@ COMMENT ON COLUMN public.permissions.is_system IS 'Permission système (non modi
 
 
 --
--- TOC entry 5557 (class 0 OID 0)
+-- TOC entry 5558 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.conditions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1620,7 +1630,7 @@ COMMENT ON COLUMN public.permissions.conditions IS 'Conditions supplémentaires 
 
 
 --
--- TOC entry 5558 (class 0 OID 0)
+-- TOC entry 5559 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.created_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1629,7 +1639,7 @@ COMMENT ON COLUMN public.permissions.created_by IS 'Membres qui a créé la perm
 
 
 --
--- TOC entry 5559 (class 0 OID 0)
+-- TOC entry 5560 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.updated_by; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1638,7 +1648,7 @@ COMMENT ON COLUMN public.permissions.updated_by IS 'Dernier membres ayant modifi
 
 
 --
--- TOC entry 5560 (class 0 OID 0)
+-- TOC entry 5561 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: COLUMN permissions.last_used_at; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1698,7 +1708,7 @@ CREATE TABLE public.prestataires (
 ALTER TABLE public.prestataires OWNER TO postgres;
 
 --
--- TOC entry 5561 (class 0 OID 0)
+-- TOC entry 5562 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.numero_cc_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1707,7 +1717,7 @@ COMMENT ON COLUMN public.prestataires.numero_cc_prestataire IS 'Numéro de la ca
 
 
 --
--- TOC entry 5562 (class 0 OID 0)
+-- TOC entry 5563 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.numero_rccm_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1716,7 +1726,7 @@ COMMENT ON COLUMN public.prestataires.numero_rccm_prestataire IS 'Numéro du Reg
 
 
 --
--- TOC entry 5563 (class 0 OID 0)
+-- TOC entry 5564 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.telephone_principal_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1725,7 +1735,7 @@ COMMENT ON COLUMN public.prestataires.telephone_principal_prestataire IS 'Numér
 
 
 --
--- TOC entry 5564 (class 0 OID 0)
+-- TOC entry 5565 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.telephone_secondaire_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1734,7 +1744,7 @@ COMMENT ON COLUMN public.prestataires.telephone_secondaire_prestataire IS 'Numé
 
 
 --
--- TOC entry 5565 (class 0 OID 0)
+-- TOC entry 5566 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.adresse_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1743,7 +1753,7 @@ COMMENT ON COLUMN public.prestataires.adresse_prestataire IS 'Adresse physique d
 
 
 --
--- TOC entry 5566 (class 0 OID 0)
+-- TOC entry 5567 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: COLUMN prestataires.representant_legal_prestataire; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1800,7 +1810,7 @@ CREATE TABLE public.prestataires_lots (
 ALTER TABLE public.prestataires_lots OWNER TO postgres;
 
 --
--- TOC entry 5567 (class 0 OID 0)
+-- TOC entry 5568 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.id_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1809,7 +1819,7 @@ COMMENT ON COLUMN public.prestataires_lots.id_attribution IS 'Identifiant unique
 
 
 --
--- TOC entry 5568 (class 0 OID 0)
+-- TOC entry 5569 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.prestataire_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1818,7 +1828,7 @@ COMMENT ON COLUMN public.prestataires_lots.prestataire_id IS 'Prestataire attrib
 
 
 --
--- TOC entry 5569 (class 0 OID 0)
+-- TOC entry 5570 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.lot_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1827,7 +1837,7 @@ COMMENT ON COLUMN public.prestataires_lots.lot_id IS 'Lot concerné';
 
 
 --
--- TOC entry 5570 (class 0 OID 0)
+-- TOC entry 5571 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.proforma_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1836,7 +1846,7 @@ COMMENT ON COLUMN public.prestataires_lots.proforma_id IS 'Proforma associée';
 
 
 --
--- TOC entry 5571 (class 0 OID 0)
+-- TOC entry 5572 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.version_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1845,7 +1855,7 @@ COMMENT ON COLUMN public.prestataires_lots.version_attribution IS 'Version de l'
 
 
 --
--- TOC entry 5572 (class 0 OID 0)
+-- TOC entry 5573 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.is_active; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1854,7 +1864,7 @@ COMMENT ON COLUMN public.prestataires_lots.is_active IS 'TRUE = attribution acti
 
 
 --
--- TOC entry 5573 (class 0 OID 0)
+-- TOC entry 5574 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.numero_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1863,7 +1873,7 @@ COMMENT ON COLUMN public.prestataires_lots.numero_attribution IS 'Numéro unique
 
 
 --
--- TOC entry 5574 (class 0 OID 0)
+-- TOC entry 5575 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1872,7 +1882,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_attribution IS 'Date officielle 
 
 
 --
--- TOC entry 5575 (class 0 OID 0)
+-- TOC entry 5576 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_debut_prevue; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1881,7 +1891,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_debut_prevue IS 'Date de début 
 
 
 --
--- TOC entry 5576 (class 0 OID 0)
+-- TOC entry 5577 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_fin_prevue; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1890,7 +1900,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_fin_prevue IS 'Date de fin prév
 
 
 --
--- TOC entry 5577 (class 0 OID 0)
+-- TOC entry 5578 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_debut_reelle; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1899,7 +1909,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_debut_reelle IS 'Date réelle de
 
 
 --
--- TOC entry 5578 (class 0 OID 0)
+-- TOC entry 5579 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_fin_reelle; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1908,7 +1918,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_fin_reelle IS 'Date réelle de f
 
 
 --
--- TOC entry 5579 (class 0 OID 0)
+-- TOC entry 5580 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.statut_attribution; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1917,7 +1927,7 @@ COMMENT ON COLUMN public.prestataires_lots.statut_attribution IS '0=En attente, 
 
 
 --
--- TOC entry 5580 (class 0 OID 0)
+-- TOC entry 5581 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.motif_suspension; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1926,7 +1936,7 @@ COMMENT ON COLUMN public.prestataires_lots.motif_suspension IS 'Raison de la sus
 
 
 --
--- TOC entry 5581 (class 0 OID 0)
+-- TOC entry 5582 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_suspension; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1935,7 +1945,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_suspension IS 'Date de suspensio
 
 
 --
--- TOC entry 5582 (class 0 OID 0)
+-- TOC entry 5583 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_reprise_prevue; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1944,7 +1954,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_reprise_prevue IS 'Date prévue 
 
 
 --
--- TOC entry 5583 (class 0 OID 0)
+-- TOC entry 5584 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_reprise_reelle; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1953,7 +1963,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_reprise_reelle IS 'Date réelle 
 
 
 --
--- TOC entry 5584 (class 0 OID 0)
+-- TOC entry 5585 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.motif_retrait; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1962,7 +1972,7 @@ COMMENT ON COLUMN public.prestataires_lots.motif_retrait IS 'Raison du retrait';
 
 
 --
--- TOC entry 5585 (class 0 OID 0)
+-- TOC entry 5586 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.date_retrait; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1971,7 +1981,7 @@ COMMENT ON COLUMN public.prestataires_lots.date_retrait IS 'Date du retrait';
 
 
 --
--- TOC entry 5586 (class 0 OID 0)
+-- TOC entry 5587 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.type_retrait; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1980,7 +1990,7 @@ COMMENT ON COLUMN public.prestataires_lots.type_retrait IS 'Type de retrait';
 
 
 --
--- TOC entry 5587 (class 0 OID 0)
+-- TOC entry 5588 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.jours_retard; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1989,7 +1999,7 @@ COMMENT ON COLUMN public.prestataires_lots.jours_retard IS 'Jours de retard accu
 
 
 --
--- TOC entry 5588 (class 0 OID 0)
+-- TOC entry 5589 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.taux_penalites; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1998,7 +2008,7 @@ COMMENT ON COLUMN public.prestataires_lots.taux_penalites IS 'Taux de pénalité
 
 
 --
--- TOC entry 5589 (class 0 OID 0)
+-- TOC entry 5590 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.penalites_appliquees; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2007,7 +2017,7 @@ COMMENT ON COLUMN public.prestataires_lots.penalites_appliquees IS 'Montant des 
 
 
 --
--- TOC entry 5590 (class 0 OID 0)
+-- TOC entry 5591 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.penalites_payees; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2016,7 +2026,7 @@ COMMENT ON COLUMN public.prestataires_lots.penalites_payees IS 'Pénalités pay�
 
 
 --
--- TOC entry 5591 (class 0 OID 0)
+-- TOC entry 5592 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.pourcentage_avancement; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2025,7 +2035,7 @@ COMMENT ON COLUMN public.prestataires_lots.pourcentage_avancement IS 'Avancement
 
 
 --
--- TOC entry 5592 (class 0 OID 0)
+-- TOC entry 5593 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.montant_engage; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2034,7 +2044,7 @@ COMMENT ON COLUMN public.prestataires_lots.montant_engage IS 'Montant engagé';
 
 
 --
--- TOC entry 5593 (class 0 OID 0)
+-- TOC entry 5594 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.montant_paye; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2043,7 +2053,7 @@ COMMENT ON COLUMN public.prestataires_lots.montant_paye IS 'Montant payé';
 
 
 --
--- TOC entry 5594 (class 0 OID 0)
+-- TOC entry 5595 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.observations; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2052,7 +2062,7 @@ COMMENT ON COLUMN public.prestataires_lots.observations IS 'Observations';
 
 
 --
--- TOC entry 5595 (class 0 OID 0)
+-- TOC entry 5596 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.conditions_particulieres; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2061,7 +2071,7 @@ COMMENT ON COLUMN public.prestataires_lots.conditions_particulieres IS 'Conditio
 
 
 --
--- TOC entry 5596 (class 0 OID 0)
+-- TOC entry 5597 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: COLUMN prestataires_lots.parent_attribution_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2102,7 +2112,7 @@ CREATE TABLE public.proformas (
 ALTER TABLE public.proformas OWNER TO postgres;
 
 --
--- TOC entry 5597 (class 0 OID 0)
+-- TOC entry 5598 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.version_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2111,7 +2121,7 @@ COMMENT ON COLUMN public.proformas.version_proforma IS 'Version du critère pour
 
 
 --
--- TOC entry 5598 (class 0 OID 0)
+-- TOC entry 5599 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.numero_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2120,7 +2130,7 @@ COMMENT ON COLUMN public.proformas.numero_proforma IS ' Référence dans tous le
 
 
 --
--- TOC entry 5599 (class 0 OID 0)
+-- TOC entry 5600 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.date_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2129,7 +2139,7 @@ COMMENT ON COLUMN public.proformas.date_proforma IS 'Date de création de la pro
 
 
 --
--- TOC entry 5600 (class 0 OID 0)
+-- TOC entry 5601 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.date_debut_validee_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2138,7 +2148,7 @@ COMMENT ON COLUMN public.proformas.date_debut_validee_proforma IS 'Date du débu
 
 
 --
--- TOC entry 5601 (class 0 OID 0)
+-- TOC entry 5602 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.date_redemarrage_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2147,7 +2157,7 @@ COMMENT ON COLUMN public.proformas.date_redemarrage_proforma IS 'Date de redemar
 
 
 --
--- TOC entry 5602 (class 0 OID 0)
+-- TOC entry 5603 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.date_fin_validee_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2156,7 +2166,7 @@ COMMENT ON COLUMN public.proformas.date_fin_validee_proforma IS 'Date  de fin va
 
 
 --
--- TOC entry 5603 (class 0 OID 0)
+-- TOC entry 5604 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.taxe_montant; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2165,7 +2175,7 @@ COMMENT ON COLUMN public.proformas.taxe_montant IS 'TVA par defaut 18% du monten
 
 
 --
--- TOC entry 5604 (class 0 OID 0)
+-- TOC entry 5605 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.remise_montant_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2174,7 +2184,7 @@ COMMENT ON COLUMN public.proformas.remise_montant_proforma IS 'La rémise (reduc
 
 
 --
--- TOC entry 5605 (class 0 OID 0)
+-- TOC entry 5606 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.modalite_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2183,7 +2193,7 @@ COMMENT ON COLUMN public.proformas.modalite_proforma IS 'Modalités de paiement 
 
 
 --
--- TOC entry 5606 (class 0 OID 0)
+-- TOC entry 5607 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.penalites_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2192,7 +2202,7 @@ COMMENT ON COLUMN public.proformas.penalites_proforma IS 'Pénalités associées
 
 
 --
--- TOC entry 5607 (class 0 OID 0)
+-- TOC entry 5608 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.motif_modification_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2201,7 +2211,7 @@ COMMENT ON COLUMN public.proformas.motif_modification_proforma IS 'Pourquoi cett
 
 
 --
--- TOC entry 5608 (class 0 OID 0)
+-- TOC entry 5609 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.actif_proforma; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2210,7 +2220,7 @@ COMMENT ON COLUMN public.proformas.actif_proforma IS 'Permet de désactiver temp
 
 
 --
--- TOC entry 5609 (class 0 OID 0)
+-- TOC entry 5610 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: COLUMN proformas.parent_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2244,7 +2254,7 @@ CREATE TABLE public.role_permissions (
 ALTER TABLE public.role_permissions OWNER TO postgres;
 
 --
--- TOC entry 5610 (class 0 OID 0)
+-- TOC entry 5611 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: TABLE role_permissions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2253,7 +2263,7 @@ COMMENT ON TABLE public.role_permissions IS 'Table pivot : association entre rô
 
 
 --
--- TOC entry 5611 (class 0 OID 0)
+-- TOC entry 5612 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.role_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2262,7 +2272,7 @@ COMMENT ON COLUMN public.role_permissions.role_id IS 'ID du rôle';
 
 
 --
--- TOC entry 5612 (class 0 OID 0)
+-- TOC entry 5613 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.permission_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2271,7 +2281,7 @@ COMMENT ON COLUMN public.role_permissions.permission_id IS 'ID de la permission'
 
 
 --
--- TOC entry 5613 (class 0 OID 0)
+-- TOC entry 5614 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.attribue_par; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2280,7 +2290,7 @@ COMMENT ON COLUMN public.role_permissions.attribue_par IS 'ID de l''utilisateur 
 
 
 --
--- TOC entry 5614 (class 0 OID 0)
+-- TOC entry 5615 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.attribue_le; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2289,7 +2299,7 @@ COMMENT ON COLUMN public.role_permissions.attribue_le IS 'Date et heure d''attri
 
 
 --
--- TOC entry 5615 (class 0 OID 0)
+-- TOC entry 5616 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.expire_le; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2298,7 +2308,7 @@ COMMENT ON COLUMN public.role_permissions.expire_le IS 'Date d''expiration (pour
 
 
 --
--- TOC entry 5616 (class 0 OID 0)
+-- TOC entry 5617 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.actif; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2307,7 +2317,7 @@ COMMENT ON COLUMN public.role_permissions.actif IS 'Permission active pour ce r�
 
 
 --
--- TOC entry 5617 (class 0 OID 0)
+-- TOC entry 5618 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.conditions; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2316,7 +2326,7 @@ COMMENT ON COLUMN public.role_permissions.conditions IS 'Conditions spécifiques
 
 
 --
--- TOC entry 5618 (class 0 OID 0)
+-- TOC entry 5619 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: COLUMN role_permissions.notes; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2427,7 +2437,7 @@ CREATE TABLE public.types_appels_offres (
 ALTER TABLE public.types_appels_offres OWNER TO postgres;
 
 --
--- TOC entry 5619 (class 0 OID 0)
+-- TOC entry 5620 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.libelle_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2436,7 +2446,7 @@ COMMENT ON COLUMN public.types_appels_offres.libelle_type_appel_offre IS 'Libell
 
 
 --
--- TOC entry 5620 (class 0 OID 0)
+-- TOC entry 5621 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.code_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2445,7 +2455,7 @@ COMMENT ON COLUMN public.types_appels_offres.code_type_appel_offre IS 'Code cour
 
 
 --
--- TOC entry 5621 (class 0 OID 0)
+-- TOC entry 5622 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.valeur_minimuim_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2454,7 +2464,7 @@ COMMENT ON COLUMN public.types_appels_offres.valeur_minimuim_type_appel_offre IS
 
 
 --
--- TOC entry 5622 (class 0 OID 0)
+-- TOC entry 5623 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.valeur_maximuim_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2463,7 +2473,7 @@ COMMENT ON COLUMN public.types_appels_offres.valeur_maximuim_type_appel_offre IS
 
 
 --
--- TOC entry 5623 (class 0 OID 0)
+-- TOC entry 5624 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.description_critere_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2472,7 +2482,7 @@ COMMENT ON COLUMN public.types_appels_offres.description_critere_type_appel_offr
 
 
 --
--- TOC entry 5624 (class 0 OID 0)
+-- TOC entry 5625 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.actif_type_appel_offre; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2481,7 +2491,7 @@ COMMENT ON COLUMN public.types_appels_offres.actif_type_appel_offre IS 'Permet d
 
 
 --
--- TOC entry 5625 (class 0 OID 0)
+-- TOC entry 5626 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: COLUMN types_appels_offres.parent_id; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -2542,7 +2552,8 @@ COPY public.alertes (id, created_by, updated_by, deleted_by, created_at, updated
 
 COPY public.appels_offres (id_appel_offre, type_appel_offre_id, numero_appel_offre, libelle_critere_appel_offre, objet_critere_appel_offre, montant_global_appel_offre, description_critere_critere_appel_offre, date_publication_critere_appel_offre, date_limite_depot_critere_appel_offre, date_ouverture_plis_critere_appel_offre, statut_evaluation_critere_appel_offre, conditions_participation_critere_appel_offre, criteres_selection_critere_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
 a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	a0ad6950-63ec-4588-a41c-14244604c6ec	CDPPT-2025-TIAS02	CONSTRUCTION DE DEUX ECOLE PRIMAIRE PUBLIQUE A TIASSALE	Le présent appel d’offres a pour objet la sélection d’une entreprise qualifiée pour la construction de deux (02) écoles primaires publiques à Tiassalé, dans le but de renforcer les infrastructures éducatives, d’améliorer l’accès à l’enseignement primaire et de contribuer à l’amélioration des conditions d’apprentissage des élèves.\r\n\r\nLes travaux à réaliser comprennent l’ensemble des prestations nécessaires à la réalisation complète des infrastructures, depuis les études techniques jusqu’à la livraison des ouvrages prêts à l’usage, conformément aux normes en vigueur.	195000000.00	Le projet porte sur la construction complète de deux écoles primaires publiques, incluant notamment :\r\na) Travaux de construction\r\nTravaux préparatoires et d’installation de chantier\r\nTerrassement et fondations\r\nConstruction des bâtiments scolaires (salles de classe, bureaux administratifs, magasins, sanitaires)\r\nRéalisation des murs, toitures, plafonds et menuiseries (bois, aluminium ou métallique)\r\nTravaux de revêtement (carrelage, peinture intérieure et extérieure)\r\n\r\nb) Équipements et aménagements\r\nInstallation électrique complète (éclairage, prises, tableaux électriques)\r\nInstallation sanitaire (points d’eau, latrines, fosses septiques ou systèmes adaptés)\r\nAménagement des cours d’école et des voies d’accès\r\nClôture et portails de sécurité (si requis)\r\n\r\nc) Normes et exigences\r\nRespect des normes de construction en vigueur en Côte d’Ivoire\r\nPrise en compte des règles de sécurité, d’hygiène et d’accessibilité\r\nUtilisation de matériaux durables et de qualité\r\nRespect des délais contractuels d’exécution\r\n\r\nd) Livraison\r\nRéception provisoire et définitive des ouvrages\r\nRemise des plans de récolement et documents techniques\r\nMise à disposition d’infrastructures fonctionnelles, sécurisées et adaptées à l’enseignement primaire	2025-12-25 00:00:00	2025-12-26 00:00:00	2025-12-27 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 13:01:02	2025-12-25 13:01:02	\N
-a0af4a2a-5f0b-4464-9cf6-d564b102c40f	a0af47a5-0c9b-4715-8616-40e2e7e15fe1	CDB	CONSTRUCTION DE BIBLIOTHEQUE	Le présent appel d’offres a pour objet la construction d’une bibliothèque destinée à favoriser l’accès à la connaissance, à la lecture et à la recherche, au profit des élèves, étudiants et de la communauté locale.\r\nLe projet vise la réalisation d’une infrastructure moderne, fonctionnelle et durable, conforme aux normes techniques, architecturales et environnementales en vigueur.	215000000.00	Les travaux à réaliser dans le cadre du présent marché comprennent la construction complète de la bibliothèque, incluant les études, les travaux de gros œuvre, de second œuvre, ainsi que les équipements essentiels à son fonctionnement.\r\n\r\nDe manière non exhaustive, les prestations comprennent :\r\n\r\nLes études techniques et architecturales d’exécution\r\n\r\nLes travaux de terrassement et de fondation\r\n\r\nLa réalisation du gros œuvre (élévation, dallage, charpente, couverture)\r\n\r\nLes travaux de second œuvre (maçonnerie, menuiserie, plomberie, électricité, peinture, revêtements)\r\n\r\nL’aménagement des espaces intérieurs (salles de lecture, rayonnages, bureaux, espaces numériques)\r\n\r\nL’installation des équipements électriques, informatiques et de sécurité\r\n\r\nLa mise en conformité aux normes de sécurité, d’accessibilité et de protection incendie\r\n\r\nLes essais, contrôles et la réception des ouvrages\r\n\r\nL’ouvrage devra être livré clé en main, prêt à l’exploitation, dans le respect des délais contractuels et des exigences de qualité définies par le maître d’ouvrage.	2025-12-26 00:00:00	2025-12-27 00:00:00	2025-12-28 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:07:20	2025-12-26 11:07:20	\N
+a0af4a2a-5f0b-4464-9cf6-d564b102c40f	a0af47a5-0c9b-4715-8616-40e2e7e15fe1	CDB	CONSTRUCTION DE BIBLIOTHEQUE	Le présent appel d’offres a pour objet la construction d’une bibliothèque destinée à favoriser l’accès à la connaissance, à la lecture et à la recherche, au profit des élèves, étudiants et de la communauté locale.\r\nLe projet vise la réalisation d’une infrastructure moderne, fonctionnelle et durable, conforme aux normes techniques, architecturales et environnementales en vigueur.	215000000.00	Les travaux à réaliser dans le cadre du présent marché comprennent la construction complète de la bibliothèque, incluant les études, les travaux de gros œuvre, de second œuvre, ainsi que les équipements essentiels à son fonctionnement.\r\n\r\nDe manière non exhaustive, les prestations comprennent :\r\n\r\nLes études techniques et architecturales d’exécution\r\n\r\nLes travaux de terrassement et de fondation\r\n\r\nLa réalisation du gros œuvre (élévation, dallage, charpente, couverture)\r\n\r\nLes travaux de second œuvre (maçonnerie, menuiserie, plomberie, électricité, peinture, revêtements)\r\n\r\nL’aménagement des espaces intérieurs (salles de lecture, rayonnages, bureaux, espaces numériques)\r\n\r\nL’installation des équipements électriques, informatiques et de sécurité\r\n\r\nLa mise en conformité aux normes de sécurité, d’accessibilité et de protection incendie\r\n\r\nLes essais, contrôles et la réception des ouvrages\r\n\r\nL’ouvrage devra être livré clé en main, prêt à l’exploitation, dans le respect des délais contractuels et des exigences de qualité définies par le maître d’ouvrage.	2025-12-26 00:00:00	2025-12-27 00:00:00	2025-12-28 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 11:07:20	2025-12-29 12:41:21	\N
+a0b5cc10-5576-4f4d-b604-f15713576d6e	a0af47a5-0c9b-4715-8616-40e2e7e15fe1	AOC-2025-002	DEVELOPPEMENT DES PROJET AGRICOLES	Le présent appel d’offres a pour objet la sélection d’un ou plusieurs prestataires qualifiés pour la mise en œuvre de projets agricoles intégrés, visant à améliorer la productivité, la durabilité et la rentabilité des exploitations agricoles, tout en contribuant à la sécurité alimentaire, à la création d’emplois et au développement socio-économique des zones d’intervention.	215000000.00	Description Détaillée des Prestations\r\n\r\nLes prestations attendues dans le cadre du présent appel d’offres comprennent, sans s’y limiter, les activités suivantes :\r\n\r\n2.1. Études et planification\r\nRéalisation de diagnostics agricoles et agro-économiques des zones ciblées ;\r\nIdentification des filières agricoles prioritaires et à fort potentiel ;\r\nÉlaboration de plans de développement agricole adaptés aux réalités locales.\r\n\r\n2.2. Mise en œuvre des projets agricoles\r\nAménagement et mise en valeur des périmètres agricoles (préparation des sols, irrigation, drainage, etc.) ;\r\nFourniture et installation d’équipements agricoles et d’intrants (semences améliorées, engrais, matériel agricole) ;\r\nMise en place de pratiques agricoles modernes, durables et respectueuses de l’environnement.\r\n\r\n2.3. Renforcement des capacités\r\nFormation et encadrement des producteurs et acteurs locaux sur les techniques agricoles améliorées ;\r\nAppui à l’organisation des producteurs (coopératives, groupements, associations) ;\r\nSensibilisation aux bonnes pratiques environnementales et à la gestion durable des ressources naturelles.\r\n\r\n2.4. Suivi, évaluation et accompagnement\r\nMise en place de mécanismes de suivi-évaluation des activités et des performances des projets ;\r\nAssistance technique continue durant la phase de mise en œuvre ;\r\nÉlaboration de rapports périodiques et finaux sur l’état d’avancement et les résultats obtenus.\r\n\r\n2.5. Résultats attendus\r\nAmélioration significative des rendements agricoles ;\r\nAugmentation des revenus des producteurs ;\r\nRenforcement de la sécurité alimentaire locale ;\r\nContribution au développement économique et social des zones concernées.	2025-12-29 00:00:00	2025-12-30 00:00:00	2025-12-31 00:00:00	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-29 16:45:31	2025-12-29 17:21:07	\N
 \.
 
 
@@ -2565,6 +2576,7 @@ a0af6d69-c12d-49bc-9e1b-a0b4c7b8eade	a0af6c59-ef06-4bf7-97ef-fec58547831c	ECOBAN
 --
 
 COPY public.capacites_techniques (id_capacite_technique, prestataire_id, effectif_permanent_capacite_technique, effectif_temporaire_capacite_technique, moyens_materiels_capacite_technique, certifications_capacite_technique, agrements_capacite_technique, references_capacite_technique, competences_cles_capacite_technique, domaines_expertise_capacite_technique, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0b9a96d-fa96-4e08-98b0-619572bdc9c0	a0af6c59-ef06-4bf7-97ef-fec58547831c	55	25	Matériels et équipements techniques spécialisés\r\nVéhicules utilitaires et logistiques\r\nOutillages professionnels\r\nÉquipements informatiques et logiciels spécialisés	ISO 9001 (Management de la qualité),ISO 14001 (Management environnemental),ISO 45001 (Santé et sécurité au travail)	Agrément ministériel ou sectoriel,Autorisation d’exercer,Inscription au registre professionnel,Agrément des organismes de régulation	75+	BTP ET INFORMATIQUE	BTP, agriculture, informatique, hydraulique, énergie	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 14:51:59	2025-12-31 15:02:32	\N
 \.
 
 
@@ -2577,6 +2589,7 @@ COPY public.capacites_techniques (id_capacite_technique, prestataire_id, effecti
 COPY public.caracteristiques_appels_offres (id_caracteristique_appel_offre, appel_offre_id, version_caracteristique_appel_offre, date_demarrage_prevue_caracteristique_appel_offre, duree_estimee_jours_caracteristique_appel_offre, date_livraison_previsionnelle_caracteristique_appel_offre, lieu_execution_caracteristique_appel_offre, penalites_retard_journalier_caracteristique_appel_offre, montant_garantie_caracteristique_appel_offre, delai_garantie_jours_caracteristique_appel_offre, conditions_paiement_caracteristique_appel_offre, modalites_execution_caracteristique_appel_offre, documents_requis_caracteristique_appel_offre, is_active_caracteristique_appel_offre, autres_informations_caracteristique_appel_offre, motif_modification_caracteristique_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
 a0ad74f3-7ceb-4d91-ab4d-c9db017eaedb	a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	1	2025-12-25	6	2025-12-31	TIASSALE (Région d'Agnéby-Tiassa)	\N	\N	\N	\N	\N	\N	t	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 13:15:19	2025-12-25 13:15:19	\N	\N
 a0af4c29-80d7-4ef4-8e2c-e5f344fc7ff2	a0af4a2a-5f0b-4464-9cf6-d564b102c40f	1	2025-12-28	34	2026-01-31	DISTRICT DE YAMOUSSOUKRO	\N	\N	\N	\N	\N	\N	t	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:12:55	2025-12-26 11:12:55	\N	\N
+a0b5dded-5aa9-4c36-b923-784563fd3cc8	a0b5cc10-5576-4f4d-b604-f15713576d6e	1	2025-12-31	11	2026-01-11	District Autonome de Yamoussoukro	\N	\N	\N	\N	\N	\N	t	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-29 17:35:28	2025-12-29 17:35:28	\N	\N
 \.
 
 
@@ -2587,6 +2600,10 @@ a0af4c29-80d7-4ef4-8e2c-e5f344fc7ff2	a0af4a2a-5f0b-4464-9cf6-d564b102c40f	1	2025
 --
 
 COPY public.criteres_evaluations (id_critere_evaluation, lot_id, numero_critere_evaluation, libelle_critere_evaluation, description_critere_evaluation, note_reference_critere_evaluation, statut_critere_evaluation, ordre_execution_critere_evaluation, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0b78a31-cfa8-469f-b9fd-e49be228ade7	a0b75ab3-080b-41d0-9eab-ea2f12b25190	CRIT-001	Qualité et pertinence de l’analyse diagnostique	Appréciation de la capacité du soumissionnaire à analyser correctement le contexte du projet (technique, environnemental, socio-économique).	50.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:32:59	2025-12-30 13:32:59	\N
+a0b78a6a-8a7d-429c-810f-e212dc321822	a0b75ab3-080b-41d0-9eab-ea2f12b25190	CRIT-002	Méthodologie et outils d’étude proposés	Évaluation de la pertinence des méthodes, outils et approches techniques utilisés pour les études préliminaires.	50.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:33:36	2025-12-30 13:33:36	\N
+a0b7934a-9b1a-49cb-83a2-f26d55411dd3	a0b75b2a-ae5b-4e68-90a5-9a8902d80cac	CRIT-001	Pertinence et cohérence de la solution technique proposée	Évaluation de l’adéquation des solutions techniques proposées avec les résultats des études préliminaires et les objectifs du projet.	80.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:58:26	2025-12-30 13:58:26	\N
+a0b79385-af9f-43aa-99a1-29ad9f01a27f	a0b75b2a-ae5b-4e68-90a5-9a8902d80cac	CRIT-002	Qualité des études techniques et des livrables	Appréciation de la qualité, de la précision et de l’exploitabilité des documents techniques fournis.\r\n\r\nÉléments d’évaluation :\r\n\r\nClarté et exhaustivité des plans, schémas et notes de calcul\r\n\r\nNiveau de détail de l’APS et de l’APD\r\n\r\nFaisabilité technique et optimisation des coûts de réalisation	20.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:59:04	2025-12-30 13:59:04	\N
 a0ae147c-080e-46b5-be1a-82cb41dd6374	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-006	Délai et planning de livraison	Mesure la capacité du soumissionnaire à respecter les délais de livraison proposés, la pertinence du planning, ainsi que la rapidité de mobilisation des moyens logistiques.	15.00	1	4	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:41:24	2025-12-25 20:58:30	\N
 a0ae131a-6d1b-4a5e-a5ed-d845fc514104	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-005	Garanties, service après-livraison et engagements	Apprécie les garanties offertes, les modalités de remplacement des matériaux non conformes, le service après-livraison et les engagements contractuels du soumissionnaire.	5.00	1	5	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:37:32	2025-12-25 20:58:41	\N
 a0ae1277-3d61-40b2-b013-8314f03f55c3	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-003	Capacité logistique et moyens matériels	Apprécie les moyens de transport, d’entreposage, de manutention et l’organisation logistique mise en place pour assurer une livraison efficace et sécurisée des matériaux.	10.00	1	6	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:35:45	2025-12-25 20:58:41	\N
@@ -2595,6 +2612,8 @@ a0af51a0-0987-4026-9881-e5bbdb740974	a0af507f-239c-4b4b-8598-34f54238aa16	CRIT-0
 a0ae1204-1dda-4b7f-8186-217334a97501	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-002	Prix et compétitivité de l’offre financière	Évalue le montant total de l’offre financière, la cohérence des prix unitaires, la compétitivité par rapport aux prix du marché et la clarté du devis détaillé.	30.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 20:34:30	2025-12-25 20:57:37	\N
 a0ae12b2-98cb-470a-8315-a3bbb28e0a05	a0ae0f46-357b-43e2-af5e-f2e422a91e41	CRIT-004	Expérience et références du soumissionnaire	Évalue l’expérience du fournisseur dans la livraison de matériels de construction similaires, les références récentes, ainsi que la satisfaction des clients précédents.	10.00	1	3	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:36:24	2025-12-25 20:57:53	\N
 a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af507f-239c-4b4b-8598-34f54238aa16	CRIT-002	Prix et compétitivité de l’offre financière	Évalue le montant global de l’offre, la cohérence des prix unitaires, la compétitivité par rapport aux prix du marché et la clarté du devis.	70.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:29:53	2025-12-26 11:29:53	\N
+a0b7690e-0b41-4601-a664-0d3916239c1b	a0b75169-b3a6-44b0-9765-e59fba89f945	CRIT-001	Conformité et Qualité Technique	Évaluation de la conformité des matériels proposés aux spécifications techniques du cahier des charges. Ce critère prend en compte la qualité des équipements (robustesse, durabilité, normes de fabrication), les caractéristiques techniques (puissance, capacité, rendement), la garantie offerte (durée et couverture), ainsi que le service après-vente (disponibilité des pièces de rechange, assistance technique, délai d'intervention).	45.00	1	1	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 12:00:19	2025-12-30 12:00:19	\N
+a0b76983-99f7-4f5d-b1e0-6074a1527970	a0b75169-b3a6-44b0-9765-e59fba89f945	CRIT-002	Offre Financière et Conditions Commerciales	Évaluation du montant global de l'offre financière et des conditions commerciales proposées. Ce critère analyse la compétitivité des prix unitaires et totaux, les modalités de paiement proposées, les délais de livraison, ainsi que les éventuelles remises ou avantages commerciaux. La cohérence entre le prix et la qualité technique sera également examinée.	55.00	1	2	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 12:01:36	2025-12-30 12:01:36	\N
 \.
 
 
@@ -2605,6 +2624,7 @@ a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af507f-239c-4b4b-8598-34f54238aa16	CRIT-0
 --
 
 COPY public.documents (id_document, lot_id, type_document, titre_document, fichier_nom_document, fichier_path_document, fichier_type_document, fichier_taille_document, description_document, date_document, version_document, est_valide_document, valide_par, valide_at, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0b99886-6008-49bb-9de0-abe5a153c219	a0b75ab3-080b-41d0-9eab-ea2f12b25190	autre	Titre du document	Bishop-Moude-S-e1747746199916-1024x623.jpg	documents/lots/a0b75ab3-080b-41d0-9eab-ea2f12b25190/bishop-moude-s-e1747746199916-1024x623_1767190311_iDZRDMyz.jpg	image/jpeg	0.28	Description	2025-12-31 00:00:00	2	f	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 14:04:44	2025-12-31 14:11:51	\N
 \.
 
 
@@ -2624,6 +2644,7 @@ a0ae9bc3-2465-4c4c-af9c-004cfe796cc0	1	t	EVAL-LOT-2025-AZ0025-CRIT-005-2025-0001
 a0aea233-92de-4a14-86da-76be74a32058	1	t	EVAL-LOT-2025-AZ0025-CRIT-006-2025-0001	2025-12-26 03:17:40	15.00	15.00	100.00	1	{"nom_complet":"M. COULIBALY AMINATOU","email":"coulb@gmail.com","telephone":"+2250101230010"}	{"nom_complet":"M. OUATTARA BAMOUSSA","email":"ouattarabamoussa@gmail.com","telephone":"+2251210121000"}	{"nom_complet":"M. DAGRI LEKIGNOUA PIERRE","email":"pierredagry01@gmail.com","telephone":"+2250202021200"}	3	L’offre présente un excellent niveau de performance en matière de délai et de planification de la livraison. L’organisation proposée garantit une exécution efficace et sécurisée des prestations, contribuant au bon déroulement global du projet. Ces éléments justifient l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:19:13	À l’issue de l’analyse technique, financière et administrative, l’offre du soumissionnaire a été jugée conforme aux exigences du dossier d’appel d’offres relatif au lot « Livraison de matériels de construction ». Les matériels proposés répondent aux spécifications techniques requises et présentent des garanties satisfaisantes de qualité et de conformité.\r\n\r\nL’offre financière est compétitive et économiquement avantageuse, tandis que les délais et le planning de livraison proposés sont réalistes et compatibles avec les contraintes du projet. Le soumissionnaire justifie par ailleurs d’une expérience et de références pertinentes, ainsi que de capacités logistiques adéquates.\r\n\r\nEn conséquence, la commission d’évaluation valide l’offre et recommande son attribution conformément aux dispositions en vigueur.	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:17:40	2025-12-26 03:19:13	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae147c-080e-46b5-be1a-82cb41dd6374
 a0ae9e5c-83dc-4b39-89ec-07f0a83c17e2	1	t	EVAL-LOT-2025-AZ0025-CRIT-004-2025-0001	2025-12-26 03:06:56	10.00	10.00	100.00	1	{"nom_complet":"N'THE THETIE ANNE","email":"ntheanne@gmail.com","telephone":"+2250101002023"}	{"nom_complet":"TRA BI IRIE","email":"biirietra@gmail.com","telephone":"+2250020001000"}	{"nom_complet":"OBITE AUGUSTIN","email":null,"telephone":null}	3	L’offre présente un excellent niveau d’expérience et de références. Le soumissionnaire dispose des compétences techniques et organisationnelles nécessaires pour mener à bien les prestations prévues, ce qui justifie pleinement l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:07:30	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:06:56	2025-12-26 03:07:30	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae12b2-98cb-470a-8315-a3bbb28e0a05
 a0aea4b6-ef68-48b2-a00b-9dae74032a03	1	t	EVAL-LOT-2025-AZ0025-CRIT-003-2025-0001	2025-12-26 03:24:42	10.00	10.00	100.00	1	{"nom_complet":"M. DAMBELE KONATE ALBERT","email":"albertdamb@gmail.com","telephone":"+2250785001241"}	{"nom_complet":"M. KOFFI ADOU RICHARD","email":"koffi.adou@gmail.com","telephone":"+2250101013321"}	{"nom_complet":"Mme. ALANGBA AHOU PAULINE","email":"pauline02alangba@gmail.com","telephone":"+2250320012012"}	3	L’offre présente un excellent niveau de capacité logistique et de moyens matériels. Le soumissionnaire est pleinement en mesure d’assurer la livraison sécurisée et ponctuelle des matériaux, ce qui justifie l’attribution de la note maximale pour ce critère.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 03:26:02	À l’issue de l’analyse technique, financière et administrative, l’offre du soumissionnaire a été jugée pleinement conforme aux exigences du dossier d’appel d’offres pour le lot « Livraison de matériels de construction ».\r\n\r\nTous les critères d’évaluation ont été satisfaits :\r\n\r\nConformité technique des matériels proposés : 30/30\r\n\r\nPrix et compétitivité de l’offre : 30/30\r\n\r\nDélai et planning de livraison : 15/15\r\n\r\nCapacité logistique et moyens matériels : 10/10\r\n\r\nExpérience et références : 10/10\r\n\r\nGaranties et service après-livraison : 5/5\r\n\r\nLes matériels proposés respectent les normes et spécifications techniques, le prix est compétitif, les délais réalistes et le soumissionnaire dispose des moyens logistiques, de l’expérience et des garanties nécessaires. L’offre est donc validée et son attribution recommandée.	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 03:24:42	2025-12-26 03:26:02	\N	\N	a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae1277-3d61-40b2-b013-8314f03f55c3
+a0b7bd63-d9f5-412b-9e67-7553a8028277	1	t	EVAL-LOT-EPD-2025-CRIT-001-2025-0001	2025-12-30 15:56:08	50.00	50.00	100.00	1	{"nom_complet":"KOBENAN KAN","email":"kobenakan@gmail.com","telephone":null}	{"nom_complet":"AFFI KASSI","email":"affi@gmail.com","telephone":null}	{"nom_complet":"BLE AHOULOU","email":"bleahoulou@gmail.com","telephone":"+2250100121011"}	3	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-30 16:17:55	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 15:56:08	2025-12-30 16:17:55	\N	\N	a0b78fd6-4ecd-4bfa-ba55-0966d0180d9c	a0b78a31-cfa8-469f-b9fd-e49be228ade7
 a0af9b6d-9d7a-4ab9-af85-3a6a4e8d9f1a	1	t	EVAL-LMC-2026-001-CRIT-001-2025-0002	2025-12-26 14:54:33	15.00	30.00	50.00	1	{"nom_complet":"KONE ABOLY","email":null,"telephone":null}	{"nom_complet":"KASSI KADJO PIERRE","email":null,"telephone":null}	{"nom_complet":"ADDY CHRISTIANE","email":null,"telephone":null}	3	L’offre est jugée techniquement conforme et satisfaisante. Elle présente des garanties suffisantes quant à la qualité, à la performance et à la durabilité des matériels proposés, permettant ainsi une exécution correcte des prestations prévues.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 14:55:53	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:54:33	2025-12-26 14:55:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af51a0-0987-4026-9881-e5bbdb740974
 a0af9a45-5c85-4a87-899f-e0482c6bc3fe	1	t	EVAL-LMC-2026-001-CRIT-001-2025-0001	2025-12-26 14:51:19	15.00	30.00	50.00	2	{"nom_complet":"KOFFI YAO","email":null,"telephone":null}	{"nom_complet":"KACOU BAH","email":"bah@gmail.com","telephone":"+2250212142201"}	{"nom_complet":"KONE BAMOUSSI","email":"kone@gmail.com","telephone":"+2251400120021"}	3	L’offre est jugée techniquement conforme et satisfaisante. Elle présente des garanties suffisantes quant à la qualité, à la performance et à la durabilité des matériels proposés, permettant ainsi une exécution correcte des prestations prévues.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 14:55:14	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 14:51:19	2025-12-26 14:55:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af51a0-0987-4026-9881-e5bbdb740974
 a0af9e40-1447-47a7-b54e-116b36b5e8a5	1	t	EVAL-LMC-2026-001-CRIT-002-2025-0001	2025-12-26 15:02:27	30.00	70.00	42.86	1	{"nom_complet":"DAN LUC","email":null,"telephone":null}	{"nom_complet":"LOBA PIERRE","email":null,"telephone":null}	{"nom_complet":"TRAORE KANE","email":null,"telephone":null}	3	L’offre financière est très satisfaisante et offre un excellent rapport qualité/prix. Elle constitue la solution économiquement optimale pour le projet.	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	2025-12-26 15:22:53	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:02:27	2025-12-26 15:22:53	\N	\N	a0af67ef-65a2-468b-a3d4-234546270174	a0af523b-851c-4f6b-be59-5a0bedc4b6ea
@@ -2655,6 +2676,7 @@ a0af9eda-a35b-4035-963b-1307b6b472f6	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af9e
 a0af9f6d-4fe9-43e3-ab38-59bb533a1a8a	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0af9f6d-3a50-4740-869f-c3e56641fa68	a0ae078c-1897-48de-8e7a-867ef2d066d8	0.00	70.00	0.00	0.00	f	L’offre financière est acceptable, mais certains prix unitaires apparaissent légèrement élevés par rapport aux références du marché.	Les écarts de prix sont justifiés par la qualité ou les garanties proposées, mais l’offre n’est pas la plus compétitive.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:05:44	2025-12-26 15:05:44	\N
 a0afa3da-5984-4f50-a9e5-ba59f65e6713	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0afa3da-2bbe-4d07-932d-774abaf8a565	a0ae078c-1897-48de-8e7a-867ef2d066d8	15.00	70.00	15.00	21.43	f	L’offre financière est acceptable, mais certains prix unitaires apparaissent légèrement élevés par rapport aux références du marché.	Les écarts de prix sont justifiés par la qualité ou les garanties proposées, mais l’offre n’est pas la plus compétitive.	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:18:07	2025-12-26 15:18:07	\N
 a0afa499-a07e-44d9-ae30-004392d4d518	a0af523b-851c-4f6b-be59-5a0bedc4b6ea	a0afa499-91a8-4528-9d2e-29f2cb78d982	a0ae078c-1897-48de-8e7a-867ef2d066d8	10.00	70.00	10.00	14.29	f	L’offre financière présente un coût global élevé ou des incohérences dans le détail des prix unitaires.	Certains postes sont surévalués ou non justifiés, réduisant la compétitivité de l’offre par rapport aux	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:20:12	2025-12-26 15:20:12	\N
+a0b7bd63-f7cd-4860-950d-2e70bfb6f206	a0b78a31-cfa8-469f-b9fd-e49be228ade7	a0b7bd63-d9f5-412b-9e67-7553a8028277	a0af6c59-ef06-4bf7-97ef-fec58547831c	50.00	50.00	50.00	100.00	f	Très bien	Travail bien fait	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 15:56:09	2025-12-30 15:56:09	\N
 \.
 
 
@@ -2676,7 +2698,8 @@ COPY public.evaluations_prestataires (id_evaluation_prestataire, prestataire_id,
 
 COPY public.factures (id_facture, proforma_id, numero_facture, montant_facture, date_facture, date_reception_facture, statut_facture, comment_facture, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
 a0af3c84-842c-4de1-ba2b-6babad8c8d28	a0ae6915-de64-4c5b-acd2-df2742e3bdcc	FACT-85REJDFD58DF5	192093000.00	2025-12-26	2025-12-26	partiellement_payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 10:29:11	2025-12-26 10:42:01	\N
-a0afad02-02c7-4eb0-abea-f0699eaf505d	a0af67ef-39bd-4b60-aab7-f7f55dabd04e	FACT-250MK54452	100300000.00	2025-12-26	2025-12-26	partiellement_payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:43:43	2025-12-26 15:46:04	\N
+a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0b794c1-aa70-4771-bf98-1a57e0c854ff	FACT-REFR25U012-451L	15000000.00	2025-12-30	2025-12-30	payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 16:49:01	2025-12-30 17:36:57	\N
+a0afad02-02c7-4eb0-abea-f0699eaf505d	a0af67ef-39bd-4b60-aab7-f7f55dabd04e	FACT-250MK54452	100300000.00	2025-12-26	2025-12-26	payee	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:43:43	2025-12-31 07:25:22	\N
 \.
 
 
@@ -2699,6 +2722,11 @@ COPY public.failed_jobs (id, uuid, connection, queue, payload, exception, failed
 COPY public.lots (id_lot, appel_offre_id, numero, libelle, description_critere, specifications_techniques, motif_retrait, version_lot, date_attribution, date_debut_prevue, date_fin_prevue, date_retrait, attribution_lot, statut_lot, taux_penalites, statut_retrait, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
 a0ae0f46-357b-43e2-af5e-f2e422a91e41	a0ad6fd8-b11a-4eef-98d6-6a74a8e9d54d	LOT-2025-AZ0025	LIVRAISON DE MATERIELS DE CONSTRUCTION	Le présent marché porte sur la livraison de matériels et matériaux de construction destinés à la réalisation de travaux de bâtiment et d’infrastructures.\r\nLa prestation comprend l’approvisionnement, le transport, la livraison sur site, ainsi que le déchargement des matériels conformément aux besoins exprimés par le maître d’ouvrage.\r\n\r\nLes matériels fournis devront être neufs, de qualité supérieure, conformes aux normes nationales et internationales en vigueur, et adaptés aux conditions climatiques locales.\r\nLa livraison devra être effectuée dans les délais contractuels, avec un conditionnement garantissant la protection et l’intégrité des produits jusqu’à leur réception définitive.	1. Nature des matériels à livrer (à titre indicatif)\r\nCiment (CPJ, CEM II ou équivalent)\r\nSable (lavé, propre et sans impuretés)\r\nGravier (différentes granulométries selon besoins)\r\nFer à béton (HA Ø6, Ø8, Ø10, Ø12, Ø14, Ø16, etc.)\r\nBriques, parpaings ou blocs creux normalisés\r\nBois de coffrage traité\r\nTôles de couverture (selon spécifications)\r\nAutres matériels de construction selon le bordereau des quantités\r\n\r\n2. Exigences de qualité\r\nTous les matériaux doivent être neufs, non utilisés\r\nConformité aux normes techniques en vigueur (ISO, NF, normes nationales)\r\nRésistance mécanique et durabilité adaptées aux travaux prévus\r\nCertificats de conformité ou fiches techniques fournis sur demande\r\n\r\n3. Conditions de livraison\r\nLivraison effectuée sur le site désigné par le maître d’ouvrage\r\nRespect strict du calendrier de livraison\r\nMatériels livrés en quantités exactes et en bon état\r\nDéchargement à la charge du fournisseur\r\nÉtablissement d’un procès-verbal de réception après contrôle\r\n\r\n4. Transport et sécurité\r\nMoyens de transport adaptés au type de matériaux\r\nProtection contre les intempéries et chocs durant le transport\r\nRespect des règles de sécurité et de manutention\r\n\r\n5. Garanties\r\nGarantie de conformité des matériels livrés\r\nRemplacement immédiat de tout matériel non conforme ou défectueux\r\nResponsabilité du fournisseur engagée jusqu’à la réception définitive	\N	1	2025-12-26	2025-12-26 00:00:00	2025-12-28 00:00:00	\N	1	1	5.50	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 20:26:50	2025-12-26 00:37:58	\N	\N
 a0af507f-239c-4b4b-8598-34f54238aa16	a0af4a2a-5f0b-4464-9cf6-d564b102c40f	LMC-2026-001	LIVRAISON DE MATERIELS DE CONSTRUCTION	Le présent marché porte sur la livraison de matériels et matériaux de construction destinés à la réalisation de travaux de bâtiment et d’infrastructures. La prestation comprend l’approvisionnement, le transport, la livraison sur site et le déchargement des matériaux conformément aux besoins exprimés par le maître d’ouvrage.\r\n\r\nLes matériels fournis devront être neufs, de qualité conforme aux normes en vigueur, adaptés aux conditions d’utilisation prévues et livrés dans les délais contractuels. Le fournisseur est tenu de garantir l’intégrité des matériaux jusqu’à leur réception définitive et de remplacer tout matériel non conforme ou défectueux.\r\n\r\nLa livraison devra s’effectuer selon un planning préalablement validé, dans le respect des règles de sécurité et de manutention, afin d’assurer la bonne exécution des travaux auxquels les matériels sont destinés.	Les matériels et matériaux de construction à livrer devront répondre strictement aux exigences techniques ci-après :\r\n\r\n1. Nature des matériels\r\n\r\nCiment (CPJ, CEM II ou équivalent) conforme aux normes en vigueur\r\n\r\nSable propre, lavé, exempt d’argile et de matières organiques\r\n\r\nGravier concassé ou roulé, de granulométrie conforme aux prescriptions techniques\r\n\r\nFer à béton (HA Ø6, Ø8, Ø10, Ø12, Ø14, Ø16 et plus selon besoins), conforme aux normes de résistance\r\nBriques, parpaings ou blocs creux normalisés\r\nBois de coffrage sec et traité\r\nTôles de couverture ou matériaux de toiture conformes aux spécifications\r\nAutres matériaux selon le bordereau des quantités	\N	1	2025-12-26	2025-12-30 00:00:00	2026-01-26 00:00:00	\N	1	1	2.50	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 11:25:02	2025-12-26 12:30:34	\N	\N
+a0b75944-eb3a-429b-a4bc-68670f6385c7	a0b5cc10-5576-4f4d-b604-f15713576d6e	LOT-REE-2025	RAVITAILLEMENT EN EAU	Le ravitaillement en eau consiste à assurer l’approvisionnement régulier, fiable et sécurisé en eau potable ou en eau à usage domestique et agricole au profit des populations, des établissements publics ou des exploitations agricoles.\r\nCe système vise à répondre aux besoins essentiels en eau pour la consommation humaine, l’hygiène, l’irrigation légère et les activités communautaires, notamment dans les zones rurales ou insuffisamment desservies par les réseaux publics.\r\n\r\nLe dispositif de ravitaillement peut inclure le captage, le stockage, le transport et la distribution de l’eau, tout en respectant les normes de qualité, de sécurité et de durabilité environnementale.	🔹 Source d’Eau\r\n\r\nType : Forage, puits amélioré, réseau public ou eau de surface traitée\r\n\r\nProfondeur du forage (si applicable) : 30 à 80 m\r\n\r\nDébit minimal requis : 2 à 10 m³/heure\r\n\r\n🔹 Équipement de Pompage\r\n\r\nType de pompe :\r\n\r\nPompe immergée électrique ou solaire\r\n\r\nPompe thermique (diesel ou essence)\r\n\r\nPuissance : 1 à 5 HP (selon débit)\r\n\r\nDébit nominal : 2 000 à 10 000 L/h\r\n\r\nMatériau : Inox ou fonte traitée anticorrosion\r\n\r\n🔹 Stockage de l’Eau\r\n\r\nType de réservoir : Cuve plastique alimentaire ou château d’eau métallique\r\n\r\nCapacité : 2 000 à 50 000 litres\r\n\r\nRésistance : UV, chaleur, intempéries\r\n\r\nSupport : Socle béton armé ou structure métallique\r\n\r\n🔹 Réseau de Distribution\r\n\r\nTuyauterie : PVC pression ou PEHD\r\n\r\nDiamètre nominal : 32 à 90 mm\r\n\r\nPression de service : 6 à 10 bars\r\n\r\nPoints de puisage : Bornes-fontaines, robinets, abreuvoirs\r\n\r\n🔹 Traitement & Qualité de l’Eau\r\n\r\nSystème de filtration : Sable, cartouche ou filtre à tamis\r\n\r\nDésinfection : Chloration manuelle ou automatique\r\n\r\nConformité : Normes OMS pour l’eau potable\r\n\r\n🔹 Alimentation Énergétique\r\n\r\nÉlectricité réseau ou groupe électrogène\r\n\r\nOption solaire :\r\n\r\nPanneaux solaires : 500 à 3 000 W\r\n\r\nRégulateur et batteries adaptées\r\n\r\nAutonomie minimale : 8 à 12 heures/jour\r\n\r\n🔹 Sécurité & Exploitation\r\n\r\nClapets anti-retour\r\n\r\nVannes de contrôle\r\n\r\nCoffret de commande sécurisé\r\n\r\nManuel d’exploitation et de maintenance\r\n\r\nAvantages du Système\r\n\r\n✔ Approvisionnement continu en eau\r\n✔ Amélioration des conditions sanitaires\r\n✔ Réduction des maladies hydriques\r\n✔ Solution adaptée aux zones rurales et périurbaines\r\n✔ Maintenance simple et durable	\N	1	\N	2025-12-31 00:00:00	2026-01-01 00:00:00	\N	0	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 11:16:11	2025-12-30 11:16:11	\N	\N
+a0b75169-b3a6-44b0-9765-e59fba89f945	a0b5cc10-5576-4f4d-b604-f15713576d6e	LOT-AMA-2025	ACHAT DE METERIELS AGRICOLE	🚜 Mini-Tracteur Agricole – Description\r\n\r\nLe mini-tracteur est un tracteur agricole de petite taille, polyvalent et maniable, conçu pour effectuer diverses tâches agricoles telles que le labour, le hersage, l’andainage, le semis, le transport de charges, l’entretien des cultures et des allées. Adapté aux exploitations maraîchères, aux vergers, aux petites fermes, aux terrains irréguliers ou restreints, il offre un excellent compromis entre puissance, consommation et coût d’entretien.\r\n\r\nCe type de tracteur peut être équipé de divers outils adaptables : charrue, fraise rotative, porte-outils, remorque, broyeur, bineuse, etc.	🔧 Moteur\r\nType : Diesel 3 cylindres, refroidissement liquide\r\nPuissance nette : 20 à 35 CV (chevaux)\r\nVitesse maximale : ~25–30 km/h\r\nDémarrage : Électrique\r\n\r\n🔄 Transmission\r\nType : Manuel ou synchronisé\r\nVitesses avant : 8 à 12\r\nVitesses arrière : 2 à 4\r\nEmbrayage : Sec à friction\r\n\r\n🚜 Essieu & Direction\r\nDirection : Assistée / mécanique (selon version)\r\nFreins : À disque à bain d’huile\r\nDifférentiel : Blocable\r\n\r\n⚙️ Système Hydraulique\r\nPompe hydraulique : Débit moyen ~15–25 L/min\r\nCatégorie 1 attelage 3 points\r\nCapacité de levage : 500 à 1200 kg\r\n\r\nPrise de force (PDF) :\r\nRégime : 540 et/ou 1000 tr/min\r\nEmbrayage de PDF indépendant\r\n\r\n🛞 Dimensions & Poids\r\nPoids en ordre de marche : 800 à 1500 kg\r\nEmpattement : ~1500–1800 mm\r\nGarde au sol : ~300 mm\r\n\r\nPneus :\r\nAvant : 6.00–12\r\nArrière : 9.5–24\r\n\r\n⛽ Capacités & Performances\r\nRéservoir carburant : 30–50 L\r\nConsommation moyenne : 2–4 L/h (selon charge)\r\nAutorisation de charge à l’attelage : selon modèle\r\n\r\n💺 Confort & Sécurité\r\nSiège réglable\r\nCeinture de sécurité\r\nProtection ROPS (barre anti-renversement)\r\nÉclairage avant/arrière\r\nTableau de bord avec indicateurs essentiels\r\n\r\n🧩 Accessoires & Outils Compatibles\r\nVoici des outils fréquemment utilisés avec un mini-tracteur :\r\nFraise rotative — pour préparer le sol\r\nCharrue réversible — pour labourer\r\nHerse ou herse rotative — pour émietter\r\nRemorque agricole — pour le transport\r\nBroyeur de végétation — entretien des broussailles\r\nPlanteuse / semoir — pour cultures spécifiques\r\n\r\n🛒 Pourquoi Choisir Ce Type de Matériel\r\n✔ Polyvalent et adapté aux petites exploitations\r\n✔ Coût d’achat et d’entretien raisonnable\r\n✔ Facile à manœuvrer même en terrains étroits\r\n✔ Compatible avec plusieurs outils agricoles\r\n✔ Bon rendement pour travaux saisonniers	\N	1	2025-12-30	2025-12-31 00:00:00	2026-01-01 00:00:00	\N	1	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 10:54:15	2025-12-30 13:20:31	\N	\N
+a0b75bf3-b691-4e2d-95c0-a519d84916ee	a0b5cc10-5576-4f4d-b604-f15713576d6e	LOT-MR-2025	Mobilisation des Ressources	La mobilisation des ressources vise à identifier, planifier et sécuriser l’ensemble des moyens nécessaires à la mise en œuvre efficace du projet.\r\nElle concerne aussi bien les ressources financières, humaines, matérielles que logistiques, afin d’assurer une exécution conforme aux objectifs, aux délais et aux exigences de qualité du projet. Cette étape garantit la disponibilité des intrants essentiels et la coordination optimale des parties prenantes.	Mobilisation des ressources financières\r\n\r\nIdentification des sources de financement (fonds propres, subventions, partenaires techniques et financiers)\r\n\r\nÉlaboration du budget prévisionnel détaillé\r\n\r\nPlanification des décaissements selon le calendrier du projet\r\n\r\nMobilisation des ressources humaines\r\n\r\nDéfinition des profils techniques requis (ingénieurs, techniciens, ouvriers spécialisés)\r\n\r\nRecrutement et affectation du personnel\r\n\r\nOrganisation des équipes et répartition des responsabilités\r\n\r\nMobilisation des ressources matérielles\r\n\r\nIdentification et acquisition des équipements, matériels et intrants nécessaires\r\n\r\nApprovisionnement en matériels agricoles, hydrauliques et de chantier\r\n\r\nContrôle de la conformité et de la qualité des équipements\r\n\r\nMobilisation logistique\r\n\r\nOrganisation du transport, du stockage et de la manutention\r\n\r\nMise en place des bases de chantier et des zones de stockage\r\n\r\nGestion des délais d’approvisionnement\r\n\r\nCoordination et partenariats\r\n\r\nCollaboration avec les autorités locales et services techniques\r\n\r\nImplication des bénéficiaires et parties prenantes\r\n\r\nMise en place des mécanismes de suivi des ressources mobilisées\r\n\r\nLivrables attendus\r\n\r\nPlan de mobilisation des ressources\r\n\r\nBudget détaillé et plan de financement\r\n\r\nPlanning d’affectation des ressources\r\n\r\nRapports de suivi de la mobilisation	\N	1	\N	2025-12-31 00:00:00	2026-01-02 00:00:00	\N	0	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 11:23:41	2025-12-30 11:23:41	\N	\N
+a0b75ab3-080b-41d0-9eab-ea2f12b25190	a0b5cc10-5576-4f4d-b604-f15713576d6e	LOT-EPD-2025	Études Préliminaires et Diagnostic	Les études préliminaires et le diagnostic constituent la phase initiale du projet. Elles visent à analyser la situation existante afin d’identifier les besoins réels, les contraintes techniques, environnementales, socio-économiques et institutionnelles, ainsi que les opportunités de développement.\r\nCette étape permet de collecter et d’analyser les données de base nécessaires à la conception d’un projet pertinent, durable et techniquement faisable. Elle aboutit à un diagnostic détaillé servant de fondement aux choix techniques, économiques et organisationnels du projet.	Collecte de données\r\n\r\nDonnées physiques et environnementales (climat, sols, ressources en eau, topographie)\r\n\r\nDonnées socio-économiques (population cible, activités agricoles, pratiques existantes)\r\n\r\nDonnées institutionnelles et réglementaires applicables\r\n\r\nAnalyses techniques\r\n\r\nÉtat des infrastructures existantes (forages, réseaux d’irrigation, équipements agricoles, etc.)\r\n\r\nAnalyse des capacités de production et des contraintes techniques\r\n\r\nIdentification des risques techniques et environnementaux\r\n\r\nÉtudes spécifiques (selon le projet)\r\n\r\nÉtude hydrologique et hydrogéologique\r\n\r\nÉtude agronomique (types de cultures, rendements, besoins en eau)\r\n\r\nAnalyse environnementale et sociale préliminaire\r\n\r\nDiagnostic global\r\n\r\nIdentification des besoins prioritaires\r\n\r\nDéfinition des problèmes majeurs et de leurs causes\r\n\r\nÉvaluation des potentialités et des limites du site\r\n\r\nLivrables attendus\r\n\r\nRapport d’études préliminaires et de diagnostic\r\n\r\nCartes thématiques et schémas explicatifs\r\n\r\nRecommandations techniques pour la phase de conception du projet	\N	1	2025-12-30	2025-12-31 00:00:00	2026-01-02 00:00:00	\N	1	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 11:20:11	2025-12-30 13:48:46	\N	\N
+a0b75b2a-ae5b-4e68-90a5-9a8902d80cac	a0b5cc10-5576-4f4d-b604-f15713576d6e	LOT-CTP-2025	Conception Technique du Projet	La conception technique du projet consiste à traduire les résultats des études préliminaires et du diagnostic en solutions techniques concrètes, adaptées aux besoins identifiés.\r\nElle vise à définir l’ensemble des ouvrages, équipements et systèmes nécessaires à la mise en œuvre du projet, en tenant compte des contraintes techniques, économiques, environnementales et réglementaires, afin de garantir la faisabilité, la durabilité et la performance du projet.	Définition des solutions techniques\r\n\r\nChoix des technologies adaptées (forage, pompage, stockage, irrigation, équipements agricoles)\r\n\r\nDimensionnement des infrastructures selon les besoins réels et les normes en vigueur\r\n\r\nSélection des matériaux et équipements conformes aux standards de qualité\r\n\r\nÉtudes et calculs techniques\r\n\r\nCalculs hydrauliques (débits, pressions, volumes de stockage)\r\n\r\nDimensionnement des réseaux (adduction, distribution, irrigation)\r\n\r\nÉtudes énergétiques (pompes électriques, solaires ou thermiques)\r\n\r\nConception des ouvrages\r\n\r\nPlans détaillés des ouvrages (forages, châteaux d’eau, bassins, réseaux)\r\n\r\nSchémas de principe et plans d’exécution\r\n\r\nIntégration des dispositifs de sécurité et de protection\r\n\r\nPrise en compte des aspects environnementaux et sociaux\r\n\r\nMesures de protection de l’environnement\r\n\r\nGestion durable des ressources en eau\r\n\r\nAdaptation aux usages locaux et aux capacités de maintenance\r\n\r\nEstimation technique et financière\r\n\r\nQuantitatif des travaux et équipements\r\n\r\nEstimation des coûts de réalisation\r\n\r\nAnalyse des options techniques et optimisation des coûts\r\n\r\nLivrables attendus\r\n\r\nDossier de conception technique (plans, notes de calcul, schémas)\r\n\r\nCahier des spécifications techniques\r\n\r\nAvant-projet sommaire (APS) et avant-projet détaillé (APD)\r\n\r\nRecommandations pour la phase d’exécution	\N	1	2025-12-30	2025-12-31 00:00:00	2026-01-02 00:00:00	\N	1	1	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 11:21:29	2025-12-30 14:02:31	\N	\N
 \.
 
 
@@ -2745,9 +2773,20 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 -- Data for Name: paiements; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.paiements (id_paiement, facture_id, banque_id, montant_net_paye_paiement, statut_paiement, date_validation_paiement, motif_rejet_paiement, observations_paiement, valide_par, paye_par, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
-a0af3d14-19c3-426d-b3d0-acd65ab68a3b	a0af3c84-842c-4de1-ba2b-6babad8c8d28	a0ae0b56-e1a8-4753-987f-d12f5d29544d	20000000.00	3	2025-12-26 10:31:01	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 10:30:44	2025-12-26 10:42:01	\N
-a0afadc7-bac5-4c4b-9e52-3309a1d8f233	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	15000000.00	3	2025-12-26 15:46:04	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:45:52	2025-12-26 15:46:11	\N
+COPY public.paiements (id_paiement, facture_id, banque_id, montant_net_paye_paiement, statut_paiement, date_validation_paiement, motif_rejet_paiement, observations_paiement, valide_par, paye_par, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, date_effectif_paiement) FROM stdin;
+a0b901e9-f053-4623-b96d-1b444c777fd9	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	5328125.00	3	2025-12-31 07:23:46	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 07:03:35	2025-12-31 07:24:04	\N	\N
+a0af3d14-19c3-426d-b3d0-acd65ab68a3b	a0af3c84-842c-4de1-ba2b-6babad8c8d28	a0ae0b56-e1a8-4753-987f-d12f5d29544d	20000000.00	3	2025-12-26 10:31:01	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 10:30:44	2025-12-26 10:42:01	\N	\N
+a0afadc7-bac5-4c4b-9e52-3309a1d8f233	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	15000000.00	3	2025-12-26 15:46:04	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 15:45:52	2025-12-26 15:46:11	\N	\N
+a0b909ad-878d-4572-85d5-4c6255fbed33	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	5328125.00	3	2025-12-31 07:25:22	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 07:25:17	2025-12-31 07:25:26	\N	\N
+a0b7d973-73d9-4c63-a15d-bc54235cb1e6	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	7500000.00	3	2025-12-30 17:28:39	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:14:36	2025-12-30 17:28:57	\N	\N
+a0b7deec-838e-49ce-9ddf-4bccdd2d6076	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	3750000.00	3	2025-12-30 17:30:00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:29:55	2025-12-30 17:30:04	\N	\N
+a0b7df20-1e5e-4805-8564-110b82063ab3	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	1875000.00	3	2025-12-30 17:30:33	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:30:28	2025-12-30 17:30:37	\N	\N
+a0b7e083-28c8-430c-af4e-c86937080ed7	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	937500.00	3	2025-12-30 17:34:29	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:34:21	2025-12-30 17:34:35	\N	\N
+a0b7e0bb-1817-4312-9777-8149e69f1396	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	468750.00	3	2025-12-30 17:35:03	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:34:58	2025-12-30 17:35:26	\N	\N
+a0b7e165-f681-48da-800d-c17efb821689	a0b7d04d-2133-4ad8-bdca-b4f51ac4c4da	a0ae0b56-e1a8-4753-987f-d12f5d29544d	468750.00	3	2025-12-30 17:36:57	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 17:36:50	2025-12-30 17:37:05	\N	\N
+a0b5305d-9927-45fa-a938-2be331ac432e	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	50000.00	3	2025-12-30 17:56:20	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-29 09:30:11	2025-12-30 17:56:24	\N	\N
+a0b8f480-cc68-49c0-b5eb-47d303f6e119	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	63937500.00	3	2025-12-31 06:32:19	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 06:26:06	2025-12-31 06:32:25	\N	2025-12-31
+a0b8ff29-a231-4725-b409-b7ab4fce1916	a0afad02-02c7-4eb0-abea-f0699eaf505d	a0ae0b56-e1a8-4753-987f-d12f5d29544d	10656250.00	3	2025-12-31 06:56:04	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 06:55:53	2025-12-31 07:03:13	\N	\N
 \.
 
 
@@ -2831,6 +2870,9 @@ a0af6c59-ef06-4bf7-97ef-fec58547831c	SOCIETE APHA GOF (SAG)	SA-12525845	societea
 COPY public.prestataires_lots (id_attribution, prestataire_id, lot_id, proforma_id, version_attribution, is_active, numero_attribution, date_attribution, date_debut_prevue, date_fin_prevue, date_debut_reelle, date_fin_reelle, statut_attribution, motif_suspension, date_suspension, date_reprise_prevue, date_reprise_reelle, motif_retrait, date_retrait, type_retrait, jours_retard, taux_penalites, penalites_appliquees, penalites_payees, pourcentage_avancement, montant_engage, montant_paye, observations, conditions_particulieres, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_attribution_id) FROM stdin;
 a0ae6916-365e-4cfa-98c7-437f0b1250e5	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0ae0f46-357b-43e2-af5e-f2e422a91e41	a0ae6915-de64-4c5b-acd2-df2742e3bdcc	1	t	ATT-2025-0001	2025-12-26	\N	\N	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	100.00	0.00	0.00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 00:37:58	2025-12-26 03:26:02	\N	\N
 a0af67ef-65a2-468b-a3d4-234546270174	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0af507f-239c-4b4b-8598-34f54238aa16	a0af67ef-39bd-4b60-aab7-f7f55dabd04e	1	t	ATT-2025-0002	2025-12-26	\N	\N	\N	2025-12-26	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	100.00	100300000.00	0.00	\n[Terminé] Observations	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 12:30:34	2025-12-26 15:26:38	\N	\N
+a0b785bc-65ad-4c09-b5e4-e7dc85f8a93c	a0af6c59-ef06-4bf7-97ef-fec58547831c	a0b75169-b3a6-44b0-9765-e59fba89f945	a0b785bc-2847-4902-9fa0-f7aa03a41e73	1	t	ATT-2025-0003	2025-12-30	\N	\N	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	0.00	0.00	0.00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:20:31	2025-12-30 13:20:31	\N	\N
+a0b794c1-d15a-4d33-af88-862e6ece9753	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0b75b2a-ae5b-4e68-90a5-9a8902d80cac	a0b794c1-aa70-4771-bf98-1a57e0c854ff	1	t	ATT-2025-0005	2025-12-30	\N	\N	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	0.00	0.00	0.00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 14:02:31	2025-12-30 14:02:31	\N	\N
+a0b78fd6-4ecd-4bfa-ba55-0966d0180d9c	a0af6c59-ef06-4bf7-97ef-fec58547831c	a0b75ab3-080b-41d0-9eab-ea2f12b25190	a0b78fd1-998b-437c-9ff6-75cdb3a45f46	1	t	ATT-2025-0004	2025-12-30	\N	\N	\N	\N	1	\N	\N	\N	\N	\N	\N	\N	0	0.00	0.00	0.00	50.00	0.00	0.00	\N	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-30 13:48:46	2025-12-30 16:17:55	\N	\N
 \.
 
 
@@ -2843,6 +2885,9 @@ a0af67ef-65a2-468b-a3d4-234546270174	a0ae078c-1897-48de-8e7a-867ef2d066d8	a0af50
 COPY public.proformas (id_proforma, version_proforma, numero_proforma, date_proforma, date_debut_validee_proforma, date_redemarrage_proforma, date_fin_validee_proforma, montant_retenu_proforma, taxe_montant, remise_montant_proforma, modalite_proforma, penalites_proforma, motif_modification_proforma, actif_proforma, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id) FROM stdin;
 a0ae6915-de64-4c5b-acd2-df2742e3bdcc	1	PROF-2025-0001	2025-12-26	2025-12-27	2025-12-28	2025-12-29	165000000.00	29700000.00	2607000.00	30% avant livraison et 70% après livraison.	5.50	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 00:37:58	2025-12-26 00:37:58	\N	\N
 a0af67ef-39bd-4b60-aab7-f7f55dabd04e	1	PF2026	2025-12-26	2025-12-18	2025-12-18	2026-01-31	85000000.00	15300000.00	0.00	\N	0.00	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-26 12:30:34	2025-12-26 12:30:34	\N	\N
+a0b785bc-2847-4902-9fa0-f7aa03a41e73	1	PROF-2025-0002	2025-12-30	2025-12-31	2025-12-31	2026-01-02	25000000.00	0.00	0.00	30% à la commande et 70% à la livraison.	0.00	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:20:31	2025-12-30 13:20:31	\N	\N
+a0b78fd1-998b-437c-9ff6-75cdb3a45f46	1	PROF-2025-0003	2025-12-30	2025-12-31	2025-12-31	2026-01-02	35000000.00	0.00	0.00	40% à l'initialisation	0.00	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 13:48:46	2025-12-30 13:48:46	\N	\N
+a0b794c1-aa70-4771-bf98-1a57e0c854ff	1	PROF-2025-0004	2025-12-30	2025-12-31	2025-12-31	2026-01-01	15000000.00	0.00	0.00	25% au début et 75% à la livraison.	0.00	\N	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-30 14:02:31	2025-12-30 14:02:31	\N	\N
 \.
 
 
@@ -2943,6 +2988,7 @@ a0acfc77-c32c-4526-b84e-b09dcf38b0fa	Utilisateur	user	Accès de base au système
 --
 
 COPY public.situations_financieres (id_situation_financiere, prestataire_id, exercice_fiscal_situation_financiere, chiffre_affaire_situation_financiere, fonds_propres_situation_financiere, capacite_emprunt_situation_financiere, ratio_solvabilite_situation_financiere, ratio_liquidite_situation_financiere, resultat_net_situation_financiere, total_actif_situation_financiere, total_passif_situation_financiere, observations_situation_financiere, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at) FROM stdin;
+a0b9ab16-2037-4eab-8ecb-ce284c05dbde	a0af6c59-ef06-4bf7-97ef-fec58547831c	2025	15000000000.00	25000000000.00	17000000000.00	15.00	0.50	14000000000.00	17000000000.00	14000000000.00	\N	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-31 14:56:37	2025-12-31 14:57:22	\N
 \.
 
 
@@ -2953,13 +2999,13 @@ COPY public.situations_financieres (id_situation_financiere, prestataire_id, exe
 --
 
 COPY public.types_appels_offres (id_type_appel_offre, libelle_type_appel_offre, code_type_appel_offre, valeur_minimuim_type_appel_offre, valeur_maximuim_type_appel_offre, description_critere_type_appel_offre, actif_type_appel_offre, created_by, updated_by, deleted_by, created_at, updated_at, deleted_at, parent_id, version_type_appel_offre, motif_modification_type_appel_offre) FROM stdin;
-a0ad5e41-dfe1-4695-94c8-f15afad2678d	APPEL D'OFFRE OUVERT	AOO	1.00	20000000.00	Procédure dans laquelle toute entreprise qualifiée peut soumettre une offre, sans restriction préalable.\r\nCaractéristiques :\r\nLarge concurrence\r\nPublication publique (journaux, plateformes officielles)\r\nTransparence élevée\r\nAvantages :\r\nMeilleur rapport qualité/prix\r\nÉgalité de traitement	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:11:51	2025-12-25 12:11:51	\N	\N	1	\N
 a0ad5ed9-6b40-4295-b11f-bb294113e2af	APPEL D'OFFRE RESTREINT	AOR	20000001.00	50000000.00	Seules les entreprises pré-sélectionnées ou invitées peuvent soumissionner.\r\n\r\nCaractéristiques :\r\n\r\nNombre limité de candidats\r\n\r\nSélection basée sur des critères techniques et financiers\r\nAvantages :\r\nGain de temps\r\nOffres plus ciblées et qualitatives	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:13:30	2025-12-25 12:13:30	\N	\N	1	\N
-a0ad5f61-0932-4ae3-9e7e-820c18024099	APPEL D'OFFRE NATIONAL	AON	50000001.00	90000000.00	Réservé aux entreprises du pays concerné.\r\nCaractéristiques :\r\nFavorise les entreprises locales\r\nProcédures adaptées au contexte national\r\nAvantages :\r\nDéveloppement économique local\r\nRéduction des coûts logistiques	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:14:59	2025-12-25 12:14:59	\N	\N	1	\N
-a0ad5ffe-56d8-4593-adbc-dcbf4e4b25d9	APPEL D'OFFRE INTERNATIONAL	AOI	90000001.00	150000000.00	Ouvert aux entreprises étrangères et nationales.	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:16:42	2025-12-25 12:16:42	\N	\N	1	\N
-a0ad60cb-b4c2-44f6-89bd-3818680c67fa	APPEL D'OFFRE AVEC PREQUALIFICATION	AOAP	15000001.00	250000000.00	Étape préalable visant à vérifier la capacité technique, financière et administrative des entreprises avant l’appel d’offres final.	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:18:57	2025-12-25 12:18:57	\N	\N	1	\N
 a0ad6950-63ec-4588-a41c-14244604c6ec	APPEL D'OFFRES A DEUX ENVELOPPES	AODE	150000001.00	200000000.00	Les soumissionnaires déposent :\r\nune offre technique\r\nune offre financière, analysées séparément	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	\N	2025-12-25 12:42:46	2025-12-25 12:42:46	\N	\N	1	\N
+a0ad60cb-b4c2-44f6-89bd-3818680c67fa	APPEL D'OFFRE AVEC PREQUALIFICATION	AOAP	15000001.00	250000000.00	Étape préalable visant à vérifier la capacité technique, financière et administrative des entreprises avant l’appel d’offres final.	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 12:18:57	2025-12-29 11:24:06	\N	\N	1	\N
+a0ad5ffe-56d8-4593-adbc-dcbf4e4b25d9	APPEL D'OFFRE INTERNATIONAL	AOI	90000001.00	150000000.00	Ouvert aux entreprises étrangères et nationales.	f	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 12:16:42	2025-12-29 11:56:55	\N	\N	1	\N
 a0af47a5-0c9b-4715-8616-40e2e7e15fe1	Appel d’offres sur concours	AOC	200000001.00	250000000.00	L’appel d’offres sur concours est une procédure de passation de marché par laquelle le maître d’ouvrage invite des candidats à proposer des solutions techniques, architecturales ou conceptuelles répondant à un besoin spécifique. Les offres sont évaluées principalement sur la qualité technique, la créativité, l’innovation et la pertinence des solutions proposées, et non uniquement sur le prix.\r\n\r\nCette procédure est généralement utilisée pour des projets nécessitant un haut niveau d’expertise, tels que les études architecturales, l’ingénierie, l’urbanisme ou le design. Les propositions sont examinées par un jury ou une commission spécialisée, qui sélectionne la meilleure solution. Le lauréat du concours peut ensuite se voir attribuer le marché correspondant, conformément aux règles en vigueur...	t	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-26 11:00:17	2025-12-26 11:01:31	\N	\N	1	\N
+a0ad5f61-0932-4ae3-9e7e-820c18024099	APPEL D'OFFRE NATIONAL	AON	50000001.00	90000000.00	Réservé aux entreprises du pays concerné.\r\nCaractéristiques :\r\nFavorise les entreprises locales\r\nProcédures adaptées au contexte national\r\nAvantages :\r\nDéveloppement économique local\r\nRéduction des coûts logistiques	f	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 12:14:59	2025-12-29 11:57:05	\N	\N	1	\N
+a0ad5e41-dfe1-4695-94c8-f15afad2678d	APPEL D'OFFRE OUVERT	AOO	1.00	20000000.00	Procédure dans laquelle toute entreprise qualifiée peut soumettre une offre, sans restriction préalable.\r\nCaractéristiques :\r\nLarge concurrence\r\nPublication publique (journaux, plateformes officielles)\r\nTransparence élevée\r\nAvantages :\r\nMeilleur rapport qualité/prix\r\nÉgalité de traitement	f	c10a2c28-bcbd-477a-aa10-73ddee5200ac	c10a2c28-bcbd-477a-aa10-73ddee5200ac	\N	2025-12-25 12:11:51	2025-12-29 11:58:28	\N	\N	1	\N
 \.
 
 
@@ -2971,12 +3017,12 @@ a0af47a5-0c9b-4715-8616-40e2e7e15fe1	Appel d’offres sur concours	AOC	200000001
 
 COPY public.users (id, nom_complet, email, password, telephone_principal, telephone_secondaire, role_id, email_verified_at, statut, created_at, updated_at, deleted_at, created_by, updated_by, deleted_by) FROM stdin;
 cbce60ed-83a3-4a39-8331-e3a4d9660d25	Allangba Koné	direction@isittci.com	$2y$12$Mol8.5JirRg2x5JWu2cQ7.Q2jEBFG8HyI95Hxzh8Es2I8JNaZK39m	+2250000000010	+2250000000011	a0acfc77-bb3b-43a5-9449-7f81b9daf3be	2025-12-25 07:38:26	1	2025-12-25 07:38:26	2025-12-25 07:38:26	\N	\N	\N	\N
-c10a2c28-bcbd-477a-aa10-73ddee5200ac	DJOBO NDRI	nfcdjobo@gmail.com	$2y$12$zU4v.W9XvdUWE7fBZ8zr6.XgQGFBN/C9.ysKgma2vCW.asUauVdmO	+2250200000000	+225010100000	a0acfc77-bb3b-43a5-9449-7f81b9daf3be	2025-12-25 19:32:55	1	2025-12-25 07:38:26	2025-12-25 19:32:55	\N	\N	\N	\N
+c10a2c28-bcbd-477a-aa10-73ddee5200ac	DJOBO NDRI	nfcdjobo@gmail.com	$2y$12$zU4v.W9XvdUWE7fBZ8zr6.XgQGFBN/C9.ysKgma2vCW.asUauVdmO	+2250200000000	+225010100000	a0acfc77-bb3b-43a5-9449-7f81b9daf3be	2025-12-31 06:15:40	1	2025-12-25 07:38:26	2025-12-31 06:15:40	\N	\N	\N	\N
 \.
 
 
 --
--- TOC entry 5626 (class 0 OID 0)
+-- TOC entry 5627 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -4396,11 +4442,11 @@ ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_updated_by_foreign FOREIGN KEY (updated_by) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
--- Completed on 2025-12-26 18:25:11
+-- Completed on 2025-12-31 15:11:49
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict f8MIHsFnpXyqj0srlTV7lVZIEScMP5zVBMZrUAK7cJele1mwg5ELgJjquV0aQWf
+\unrestrict LVznHaWGJiKFJbd6xZmxZ6505MdpyezjlY2aLM2SJU1xeXVq0bYXtXbrnCdFl8N
 

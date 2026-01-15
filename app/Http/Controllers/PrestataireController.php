@@ -696,39 +696,7 @@ class PrestataireController extends Controller
     }
 
 
-    // public function retirer(Request $request, $id, $lotId){
-    //     try{
-    //         $prestataire = Prestataire::find($id);
-    //         if(!$prestataire){
-    //             if($request->acceptsJson() || $request->wantsJson()){
-    //                 return response()->json([
-    //                     "errors" => "Données invalides",
-    //                     "succes" => false,
-    //                     "message" => "Le prestataire concerné n'existe pas."
-    //                 ], 200);
-    //             }
-    //             return redirect()->back()->with('error', "Le prestataire concerné n'existe pas.");
-    //         }
-    //         $lot = Lot::find($lotId);
-    //         if(!$lot){
-    //             if($request->acceptsJson() || $request->wantsJson()){
-    //                 return response()->json([
-    //                     "errors" => "Données invalides",
-    //                     "succes" => false,
-    //                     "message" => "Le lot concerné n'existe pas."
-    //                 ], 200);
-    //             }
-    //             return redirect()->back()->with('error', "Le lot concerné n'existe pas.");
-    //         }
-
-    //         $prestataireLot = PrestataireLot::
-
-
-
-    //     }catch(\Exception $e){
-    //         //
-    //     }
-    // }
+  
 
     /**
      * Get validation messages for prestataire.

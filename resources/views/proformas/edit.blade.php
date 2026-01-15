@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Modifier Proforma - ' . $proforma->numero_proforma)
 @section('breadcrumb')
-    <a href="{{ route('proformas.index') }}" class="text-white/80 hover:text-white transition-colors">Proformas</a>
+    <a @can('proformas.read') href="{{ route('proformas.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Proformas</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('proformas.show', $proforma->id_proforma) }}" class="text-white/80 hover:text-white transition-colors">{{ $proforma->numero_proforma }}</a>
+    <a @can('proformas.view-details') href="{{ route('proformas.show', $proforma->id_proforma) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $proforma->numero_proforma }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Modifier</span>
 @endsection
@@ -13,10 +13,12 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('proformas.view-details')
                 <a href="{{ route('proformas.show', $proforma->id_proforma) }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-edit text-orange-500 mr-3"></i>
@@ -82,6 +84,7 @@
             </div>
         @endif
 
+        @can('proformas.update')
         <form action="{{ route('proformas.update', $proforma->id_proforma) }}" method="POST" id="proformaForm">
             @csrf
             @method('PUT')
@@ -110,7 +113,7 @@
                                         value="{{ old('numero_proforma', $proforma->numero_proforma) }}" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-gray-50"
                                         readonly>
-                                    <p class="text-xs text-gray-500 mt-1">Le numéro ne peut pas être modifié</p>
+                                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-lock mr-1"></i>Le numéro ne peut pas être modifié</p>
                                 </div>
 
                                 <!-- Date proforma -->
@@ -120,117 +123,152 @@
                                     </label>
                                     <input type="date" id="date_proforma" name="date_proforma"
                                         value="{{ old('date_proforma', $proforma->date_proforma ? $proforma->date_proforma->format('Y-m-d') : '') }}" required
+                                        max="{{ date('Y-m-d') }}"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent @error('date_proforma') border-red-500 @enderror">
                                     @error('date_proforma')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
-
-                            <!-- Modalité de paiement -->
-                            <div>
-                                <label for="modalite_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Modalités de paiement
-                                </label>
-                                <select id="modalite_select"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent mb-2"
-                                    onchange="selectModalite(this.value)">
-                                    <option value="">-- Choisir une modalité prédéfinie --</option>
-                                    @foreach($modalites as $modalite)
-                                        <option value="{{ $modalite }}" {{ $proforma->modalite_proforma == $modalite ? 'selected' : '' }}>
-                                            {{ $modalite }}
-                                        </option>
-                                    @endforeach
-                                    <option value="custom">Autre (personnalisé)</option>
-                                </select>
-                                <textarea id="modalite_proforma" name="modalite_proforma" rows="2"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                                    placeholder="Détails des modalités de paiement...">{{ old('modalite_proforma', $proforma->modalite_proforma) }}</textarea>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Montants -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-white border-b border-gray-200">
-                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-calculator text-green-500 mr-2"></i>
-                                Montants
+                    <!-- Proforma - Section Montants stylisée comme create -->
+                    <div class="bg-white rounded-2xl shadow-lg">
+                        <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b rounded-t-2xl">
+                            <h2 class="text-lg font-bold text-gray-800">
+                                <i class="fas fa-file-invoice text-purple-500 mr-2"></i>Proforma
                             </h2>
                         </div>
-
                         <div class="p-6 space-y-5">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <!-- Montant HT -->
-                                <div>
-                                    <label for="montant_retenu_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Montant HT <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input type="number" id="montant_retenu_proforma" name="montant_retenu_proforma"
-                                            value="{{ old('montant_retenu_proforma', $proforma->montant_retenu_proforma) }}" required min="0" step="0.01"
-                                            class="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 overflow-hidden">
+                                <div class="px-5 py-4 bg-purple-100/50 border-b border-purple-200">
+                                    <h3 class="font-semibold text-purple-800">
+                                        <i class="fas fa-edit mr-2"></i>Modification Proforma
+                                    </h3>
+                                    <p class="text-xs text-purple-600 mt-1">Champs * obligatoires</p>
+                                </div>
+                                <div class="p-5 space-y-5">
+                                    <!-- Budget Global HT -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Budget Global HT (FCFA) <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" name="montant_retenu_proforma" id="montant_retenu_proforma"
+                                            value="{{ old('montant_retenu_proforma', $proforma->montant_retenu_proforma) }}"
+                                            min="0" step="0.01" required
+                                            class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
                                             onchange="calculerTotaux()" onkeyup="calculerTotaux()">
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">FCFA</span>
                                     </div>
-                                </div>
 
-                                <!-- Remise -->
-                                <div>
-                                    <label for="remise_montant_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Remise
-                                    </label>
-                                    <div class="flex space-x-2">
-                                        <div class="relative flex-1">
-                                            <input type="number" id="remise_montant_proforma" name="remise_montant_proforma"
-                                                value="{{ old('remise_montant_proforma', $proforma->remise_montant_proforma) }}" min="0" step="0.01"
-                                                class="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                                onchange="calculerTotaux()" onkeyup="calculerTotaux()">
-                                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">FCFA</span>
+                                    <!-- TVA et Remise -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <!-- TVA -->
+                                        <div class="bg-white/60 p-4 rounded-lg border border-purple-100">
+                                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                                <i class="fas fa-percentage text-orange-500 mr-1"></i>TVA
+                                            </label>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">Taux TVA (%)</label>
+                                                <div class="relative">
+                                                    <input type="number" id="taxe_pourcentage"
+                                                        value="{{ old('taux_taxe', $proforma->taux_taxe ?? 18) }}"
+                                                        min="0" max="100" step="0.01"
+                                                        name="taux_taxe"
+                                                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400 pr-10"
+                                                        onchange="calculerTaxeFromPourcentage()" onkeyup="calculerTaxeFromPourcentage()">
+                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                                </div>
+                                                <p class="text-xs text-gray-400 mt-1 italic">Pour calcul automatique</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label class="block text-xs text-gray-500 mb-1">Montant TVA (FCFA)</label>
+                                                <input type="number" name="taxe_montant" id="taxe_montant"
+                                                    value="{{ old('taxe_montant', $proforma->taxe_montant) }}" min="0" step="0.01"
+                                                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400 bg-orange-50 font-semibold"
+                                                    onchange="calculerTotaux()" onkeyup="calculerTotaux()">
+                                                <p class="text-xs text-orange-600 mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>Modifiable si besoin
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="relative w-24">
-                                            <input type="number" id="remise_pourcentage" min="0" max="100" step="0.01"
-                                                class="w-full px-3 py-3 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent text-center"
-                                                onchange="calculerRemiseFromPourcentage()" onkeyup="calculerRemiseFromPourcentage()"
-                                                value="{{ $proforma->pourcentage_remise }}">
-                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">%</span>
+
+                                        <!-- Remise -->
+                                        <div class="bg-white/60 p-4 rounded-lg border border-purple-100">
+                                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                                <i class="fas fa-tags text-green-500 mr-1"></i>Remise
+                                            </label>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">Taux remise (%)</label>
+                                                <div class="relative">
+                                                    <input type="number" id="remise_pourcentage"
+                                                        value="{{ old('pourcentage_remise', $proforma->pourcentage_remise ?? 0) }}"
+                                                        min="0" max="100" step="0.01"
+                                                        class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-400 pr-10"
+                                                        onchange="calculerRemiseFromPourcentage()" onkeyup="calculerRemiseFromPourcentage()">
+                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                                </div>
+                                                <p class="text-xs text-gray-400 mt-1 italic">Pour calcul automatique</p>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label class="block text-xs text-gray-500 mb-1">Montant remise (FCFA)</label>
+                                                <input type="number" name="remise_montant_proforma" id="remise_montant_proforma"
+                                                    value="{{ old('remise_montant_proforma', $proforma->remise_montant_proforma) }}" min="0" step="0.01"
+                                                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-400 bg-green-50 font-semibold"
+                                                    onchange="calculerTotaux()" onkeyup="calculerTotaux()">
+                                                <p class="text-xs text-green-600 mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>Modifiable si besoin
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Taxes -->
-                                <div>
-                                    <label for="taxe_montant" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Taxes (TVA, etc.)
-                                    </label>
-                                    <div class="flex space-x-2">
-                                        <div class="relative flex-1">
-                                            <input type="number" id="taxe_montant" name="taxe_montant"
-                                                value="{{ old('taxe_montant', $proforma->taxe_montant) }}" min="0" step="0.01"
-                                                class="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                                onchange="calculerTotaux()" onkeyup="calculerTotaux()">
-                                            <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">FCFA</span>
-                                        </div>
-                                        <div class="relative w-24">
-                                            <input type="number" id="taxe_pourcentage" min="0" max="100" step="0.01"
-                                                class="w-full px-3 py-3 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent text-center"
-                                                onchange="calculerTaxeFromPourcentage()" onkeyup="calculerTaxeFromPourcentage()"
-                                                value="{{ $proforma->taux_taxe }}">
-                                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">%</span>
-                                        </div>
+                                    <!-- Modalités paiement -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Modalités paiement
+                                        </label>
+                                        <select id="modalite_select"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent mb-2"
+                                            onchange="selectModalite(this.value)">
+                                            <option value="">-- Choisir une modalité prédéfinie --</option>
+                                            @foreach($modalites as $modalite)
+                                                <option value="{{ $modalite }}" {{ $proforma->modalite_proforma == $modalite ? 'selected' : '' }}>
+                                                    {{ $modalite }}
+                                                </option>
+                                            @endforeach
+                                            <option value="custom">Autre (personnalisé)</option>
+                                        </select>
+                                        <textarea id="modalite_proforma" name="modalite_proforma" rows="2"
+                                            class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400 resize-none"
+                                            placeholder="30% commande, 70% livraison">{{ old('modalite_proforma', $proforma->modalite_proforma) }}</textarea>
                                     </div>
-                                </div>
 
-                                <!-- Pénalités -->
-                                <div>
-                                    <label for="penalites_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Pénalités éventuelles
-                                    </label>
-                                    <div class="relative">
-                                        <input type="number" id="penalites_proforma" name="penalites_proforma"
-                                            value="{{ old('penalites_proforma', $proforma->penalites_proforma) }}" min="0" step="0.01"
-                                            class="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">FCFA</span>
+                                    <!-- Récap calculs -->
+                                    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-5 text-white">
+                                        <h4 class="font-semibold mb-4">
+                                            <i class="fas fa-calculator mr-2"></i>Récapitulatif
+                                        </h4>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span class="text-purple-200">Montant HT</span>
+                                                <span id="calc_montant_ht">0 FCFA</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-purple-200">TVA (<span id="calc_tva_pct">18</span>%)</span>
+                                                <span id="calc_tva" class="text-orange-300">+ 0 FCFA</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-purple-200">Remise (<span id="calc_remise_pct">0</span>%)</span>
+                                                <span id="calc_remise" class="text-green-300">- 0 FCFA</span>
+                                            </div>
+                                            <hr class="border-purple-400 my-2">
+                                            <div class="flex justify-between text-lg">
+                                                <span class="font-semibold">Total TTC</span>
+                                                <span id="calc_ttc" class="font-bold text-yellow-300">0 FCFA</span>
+                                            </div>
+                                            <input type="hidden" name="total_ttc" id="total_ttc">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -253,7 +291,7 @@
                                 placeholder="Décrivez la raison de cette modification (ex: Correction d'erreur, Demande client, Ajustement tarifaire...)">{{ old('motif_modification_proforma') }}</textarea>
                             <p class="text-xs text-gray-500 mt-2">
                                 <i class="fas fa-info-circle mr-1"></i>
-                                Si non renseigné, un motif sera généré automatiquement en fonction des modifications détectées.
+                                Ce motif sera enregistré dans l'historique des versions.
                             </p>
                         </div>
                     </div>
@@ -261,9 +299,8 @@
 
                 <!-- Colonne latérale -->
                 <div class="space-y-6">
-
                     <!-- Résumé -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
                             <h2 class="text-lg font-bold text-gray-800 flex items-center">
                                 <i class="fas fa-receipt text-blue-500 mr-2"></i>
@@ -369,6 +406,7 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 
     <!-- Modal Nouvelle Version -->
@@ -409,18 +447,27 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
                             Annuler
                         </button>
+                        @can('proformas.create-version')
                         <button type="submit"
                             class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">
                             Créer la version
                         </button>
+                        @endcan
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    @can('proformas.update')
     @push('scripts')
         <script>
+            // Fonction de formatage des montants
+            function formatMontant(montant) {
+                return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(montant);
+            }
+
+            // Sélection modalité prédéfinie
             window.selectModalite = function(value) {
                 const textarea = document.getElementById('modalite_proforma');
                 if (value && value !== 'custom') {
@@ -431,20 +478,32 @@
                 }
             }
 
+            // Calcul principal des totaux
             window.calculerTotaux = function() {
                 const montantHT = parseFloat(document.getElementById('montant_retenu_proforma').value) || 0;
                 const remise = parseFloat(document.getElementById('remise_montant_proforma').value) || 0;
                 const taxe = parseFloat(document.getElementById('taxe_montant').value) || 0;
+                const tauxTVA = parseFloat(document.getElementById('taxe_pourcentage').value) || 0;
+                const tauxRemise = parseFloat(document.getElementById('remise_pourcentage').value) || 0;
+
                 const sousTotal = montantHT - remise;
                 const totalTTC = sousTotal + taxe;
 
+                // Mise à jour des pourcentages affichés
                 if (montantHT > 0) {
                     document.getElementById('remise_pourcentage').value = ((remise / montantHT) * 100).toFixed(2);
                 }
-                if (sousTotal > 0) {
-                    document.getElementById('taxe_pourcentage').value = ((taxe / sousTotal) * 100).toFixed(2);
-                }
 
+                // Mise à jour du récapitulatif principal (section violette)
+                document.getElementById('calc_montant_ht').textContent = formatMontant(montantHT) + ' FCFA';
+                document.getElementById('calc_tva_pct').textContent = tauxTVA.toFixed(0);
+                document.getElementById('calc_tva').textContent = '+ ' + formatMontant(taxe) + ' FCFA';
+                document.getElementById('calc_remise_pct').textContent = tauxRemise.toFixed(0);
+                document.getElementById('calc_remise').textContent = '- ' + formatMontant(remise) + ' FCFA';
+                document.getElementById('calc_ttc').textContent = formatMontant(totalTTC) + ' FCFA';
+                document.getElementById('total_ttc').value = totalTTC;
+
+                // Mise à jour du résumé latéral
                 document.getElementById('resume_montant_ht').textContent = formatMontant(montantHT) + ' FCFA';
                 document.getElementById('resume_remise').textContent = '- ' + formatMontant(remise) + ' FCFA';
                 document.getElementById('resume_sous_total').textContent = formatMontant(sousTotal) + ' FCFA';
@@ -452,26 +511,27 @@
                 document.getElementById('resume_total_ttc').textContent = formatMontant(totalTTC) + ' FCFA';
             }
 
+            // Calcul de la remise à partir du pourcentage
             window.calculerRemiseFromPourcentage = function() {
                 const montantHT = parseFloat(document.getElementById('montant_retenu_proforma').value) || 0;
                 const pourcentage = parseFloat(document.getElementById('remise_pourcentage').value) || 0;
-                document.getElementById('remise_montant_proforma').value = ((montantHT * pourcentage) / 100).toFixed(2);
+                const remise = (montantHT * pourcentage) / 100;
+                document.getElementById('remise_montant_proforma').value = remise.toFixed(2);
                 calculerTotaux();
             }
 
+            // Calcul de la TVA à partir du pourcentage
             window.calculerTaxeFromPourcentage = function() {
                 const montantHT = parseFloat(document.getElementById('montant_retenu_proforma').value) || 0;
                 const remise = parseFloat(document.getElementById('remise_montant_proforma').value) || 0;
                 const sousTotal = montantHT - remise;
                 const pourcentage = parseFloat(document.getElementById('taxe_pourcentage').value) || 0;
-                document.getElementById('taxe_montant').value = ((sousTotal * pourcentage) / 100).toFixed(2);
+                const taxe = (sousTotal * pourcentage) / 100;
+                document.getElementById('taxe_montant').value = taxe.toFixed(2);
                 calculerTotaux();
             }
 
-            function formatMontant(montant) {
-                return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(montant);
-            }
-
+            // Modal version
             window.creerNouvelleVersion = function() {
                 document.getElementById('versionModal').classList.remove('hidden');
             }
@@ -480,23 +540,28 @@
                 document.getElementById('versionModal').classList.add('hidden');
             }
 
+            // Initialisation au chargement
             document.addEventListener('DOMContentLoaded', function() {
                 calculerTotaux();
             });
 
+            // Validation avant soumission
             document.getElementById('proformaForm').addEventListener('submit', function(e) {
                 const montantHT = parseFloat(document.getElementById('montant_retenu_proforma').value) || 0;
                 const remise = parseFloat(document.getElementById('remise_montant_proforma').value) || 0;
+
                 if (remise > montantHT) {
                     e.preventDefault();
                     alert('La remise ne peut pas être supérieure au montant HT.');
                     return false;
                 }
+
                 const submitBtn = this.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enregistrement...';
             });
 
+            // Fermeture modal avec Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') closeVersionModal();
             });
@@ -506,4 +571,5 @@
             .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
         </style>
     @endpush
+    @endcan
 @endsection

@@ -59,6 +59,11 @@ return new class extends Migration
             // DATES ET VALIDATION
             // ============================================================
 
+            //Date de paiement effective (date du virement ou émission du chèque)
+            $table->dateTime('date_effectif_paiement')
+                ->nullable()
+                ->comment('Date et heure exactes où le paiement a été effectivement réalisé (virement bancaire, chèque émis, etc.). Indique le moment où les fonds ont quitté le compte de l\'organisation. Important pour la réconciliation bancaire et le suivi des délais de paiement.');
+
             $table->dateTime('date_validation_paiement')
                 ->nullable()
                 ->comment('Date et heure exactes de la validation/approbation du paiement par l\'autorité compétente. Marque le moment où le paiement est autorisé pour exécution. NULL tant que le paiement n\'est pas validé. Important pour les délais de traitement et l\'audit.');

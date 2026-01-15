@@ -26,6 +26,8 @@ return new class extends Migration
             // ============================================
             $table->uuid('id_evaluation')->primary();
 
+            $table->foreignUuid('critere_evaluation_id')->nullable()->after('id_evaluation')->references('id_critere_evaluation')->on('criteres_evaluations')->onDelete('set null');
+
             // ============================================
             // VERSIONING
             // ============================================

@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Gestion des Lots')
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $appelOffre->libelle_critere_appel_offre }}">{{\Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50)}}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors" title="{{ $appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Lots</span>
 @endsection
@@ -19,11 +19,14 @@
                         <i class="fas fa-boxes text-indigo-500"></i>
                         <span>Gestion des Lots</span>
                     </h1>
-                    <button onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                        class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Nouveau</span>
-                    </button>
+                    @can('lots.create')
+                        <button
+                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
+                            class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fas fa-plus text-sm"></i>
+                            <span class="text-sm">Nouveau</span>
+                        </button>
+                    @endcan
                 </div>
 
                 <!-- Filtres et actions -->
@@ -66,13 +69,15 @@
                         <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactifs</option>
                     </select>
 
-                    <!-- Bouton créer (desktop) -->
-                    <button
-                        onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                        class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Créer</span>
-                    </button>
+                    @can('lots.create')
+                        <!-- Bouton créer (desktop) -->
+                        <button
+                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
+                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fas fa-plus text-sm"></i>
+                            <span class="text-sm">Créer</span>
+                        </button>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -137,8 +142,11 @@
                                 Attribution</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
+                            @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read', 'attributions_lots.assign',
+                                            'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete', ])
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -224,77 +232,107 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <!-- Voir détails -->
-                                        <button onclick="window.location.href='{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                            title="Voir détails">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </button>
+                                @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read', 'attributions_lots.assign',
+                                            'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete', ])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('lots.view-details')
+                                                <!-- Voir détails -->
+                                                <button
+                                                    onclick="window.location.href='{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                                    title="Voir détails">
+                                                    <i class="fas fa-eye text-sm"></i>
+                                                </button>
+                                            @endcan
 
-                                        <!-- Modifier -->
-                                        @if (!$lot->attribution_lot)
-                                            <button onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                title="Modifier">
-                                                <i class="fas fa-edit text-sm"></i>
-                                            </button>
-                                        @endif
-
-                                        <!-- Menu Actions -->
-                                        <div class="relative">
-                                            <button onclick="toggleMenu('{{ $lot->id_lot }}')"
-                                                class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                title="Plus d'actions">
-                                                <i class="fas fa-ellipsis-v text-sm"></i>
-                                            </button>
-                                            <div id="menu-{{ $lot->id_lot }}"
-                                                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                <div class="py-1">
-                                                    <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-history mr-2 text-blue-500"></i>
-                                                        Critère d'évaluation
-                                                    </a>
-
-                                                    @if (!$lot->attribution_lot)
-                                                        <button onclick="openAttributionModal('{{ $lot->appel_offre_id }}', '{{ $lot->id_lot }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-user-check mr-2 text-green-500"></i>
-                                                            Attribuer
-                                                        </button>
-                                                    @endif
-                                                    @if ($lot->isAttribue() && !$lot->isRetire())
-                                                        <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-ban mr-2 text-red-500"></i>
-                                                            Retirer
-                                                        </button>
-                                                    @endif
-                                                    <button onclick="viewHistorique('{{ $lot->id_lot }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-history mr-2 text-blue-500"></i>
-                                                        Historique
+                                            @can('lots.update')
+                                                <!-- Modifier -->
+                                                @if (!$lot->attribution_lot)
+                                                    <button
+                                                        onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
+                                                        class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                        title="Modifier">
+                                                        <i class="fas fa-edit text-sm"></i>
                                                     </button>
-                                                    <button onclick="duplicate('{{ $lot->id_lot }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                        Dupliquer
+                                                @endif
+                                            @endcan
+
+                                            @canany(['criteres_evaluations.read', 'attributions_lots.assign',
+                                                'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete'])
+                                                <!-- Menu Actions -->
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu('{{ $lot->id_lot }}')"
+                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
                                                     </button>
-                                                    @if (!$lot->isAttribue())
-                                                        <button
-                                                            onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                            <i class="fas fa-trash mr-2"></i>
-                                                            Supprimer
-                                                        </button>
-                                                    @endif
+                                                    <div id="menu-{{ $lot->id_lot }}"
+                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                                        <div class="py-1">
+
+                                                            @can('criteres_evaluations.read')
+                                                                <a href="{{ route('criteres-evaluations.index', [$lot->appel_offre_id, $lot->id_lot]) }}"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-history mr-2 text-blue-500"></i>
+                                                                    Critère d'évaluation
+                                                                </a>
+                                                            @endcan
+
+                                                            @can('attributions_lots.assign')
+                                                                @if (!$lot->attribution_lot)
+                                                                    <button
+                                                                        onclick="openAttributionModal('{{ $lot->appel_offre_id }}', '{{ $lot->id_lot }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-user-check mr-2 text-green-500"></i>
+                                                                        Attribuer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('attributions_lots.withdraw')
+                                                                @if ($lot->isAttribue() && !$lot->isRetire())
+                                                                    <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-ban mr-2 text-red-500"></i>
+                                                                        Retirer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('lot.view-history')
+                                                                <button onclick="viewHistorique('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-history mr-2 text-blue-500"></i>
+                                                                    Historique
+                                                                </button>
+                                                            @endcan
+
+                                                            @can('lots.duplicate')
+                                                                <button onclick="duplicate('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
+                                                                    Dupliquer
+                                                                </button>
+                                                            @endcan
+
+                                                            @can('lots.delete')
+                                                                @if (!$lot->isAttribue())
+                                                                    <button
+                                                                        onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}', '{{ $lot->appel_offre_id }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                        <i class="fas fa-trash mr-2"></i>
+                                                                        Supprimer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endcanany
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -302,11 +340,13 @@
                                     <div class="flex flex-col items-center justify-center space-y-3">
                                         <i class="fas fa-inbox text-gray-300 text-5xl"></i>
                                         <p class="text-gray-500 font-medium">Aucun lot trouvé</p>
-                                        <button
-                                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                                            class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-200">
-                                            Créer le premier lot
-                                        </button>
+                                        @can('lots.create')
+                                            <button
+                                                onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
+                                                class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-200">
+                                                Créer le premier lot
+                                            </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -340,10 +380,13 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
-                        <button onclick="executeDelete()"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+
+                        @can('lots.delete')
+                            <button onclick="executeDelete()"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -353,6 +396,7 @@
     @push('scripts')
         <script>
             let deleteLotId = null;
+            let appelOffreId = null;
 
             // Toggle menu
             window.toggleMenu = function(id) {
@@ -403,7 +447,7 @@
 
             // Voir historique
             window.viewHistorique = function(id) {
-                fetch(`/lots/${id}/historique`, {
+                fetch("{{ route('lots.historique', ':id') }}".replace(':id', id), {
                         headers: {
                             'Accept': 'application/json'
                         }
@@ -413,7 +457,7 @@
                         if (data.success) {
                             // Afficher l'historique dans une alerte simple ou rediriger
                             alert('Historique disponible. Consultez la page de détails pour plus d\'informations.');
-                            window.location.href = `/lots/${id}`;
+                            window.location.href = "{{ route('lots.show', ':id') }}".replace(':id', id);
                         }
                     })
                     .catch(error => {
@@ -423,8 +467,9 @@
             }
 
             // Confirmer suppression
-            window.confirmDelete = function(id, numero) {
+            window.confirmDelete = function(id, numero, id_appel_offre) {
                 deleteLotId = id;
+                appelOffreId = id_appel_offre;
                 const message = `Êtes-vous sûr de vouloir supprimer le lot "${numero}" ?`;
                 document.getElementById('deleteMessage').textContent = message;
                 document.getElementById('deleteModal').classList.remove('hidden');
@@ -434,7 +479,7 @@
             window.executeDelete = function() {
                 if (!deleteLotId) return;
 
-                fetch(`/lots/${deleteLotId}`, {
+                fetch("{{ route('lots-appels-offres.destroy', [':appelOffreId', ':id']) }}".replace(':appelOffreId', appelOffreId).replace(':id', deleteLotId), {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -509,7 +554,8 @@
             // Placeholder pour modales d'attribution et retrait
             window.openAttributionModal = function(appelOffreId, lotId) {
                 // alert('Modal d\'attribution à implémenter. Redirection vers la page de détails...');
-                window.location.href = "{{ route('lots-appels-offres.show', [':appel_offre', ':id']) }}".replace(':appelOffreId', appelOffreId).replace(':id', lotId);
+                window.location.href = "{{ route('lots-appels-offres.show', [':appel_offre', ':id']) }}".replace(
+                    ':appelOffreId', appelOffreId).replace(':id', lotId);
             }
 
 

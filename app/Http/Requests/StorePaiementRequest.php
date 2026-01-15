@@ -53,6 +53,11 @@ class StorePaiementRequest extends FormRequest
                 'date',
                 'before_or_equal:now',
             ],
+            'date_effectif_paiement' => [
+                'nullable',
+                'date',
+                'before_or_equal:now',
+            ],
             'observations_paiement' => [
                 'nullable',
                 'string',
@@ -103,6 +108,9 @@ class StorePaiementRequest extends FormRequest
             'date_validation_paiement.date' => 'La date de validation doit être une date valide.',
             'date_validation_paiement.before_or_equal' => 'La date de validation ne peut pas être dans le futur.',
 
+            'date_effectif_paiement.date' => 'La date effective doit être une date valide.',
+            'date_effectif_paiement.before_or_equal' => 'La date effective ne peut pas être dans le futur.',
+
             'observations_paiement.string' => 'Les observations doivent être du texte.',
             'observations_paiement.max' => 'Les observations sont trop longues.',
 
@@ -130,6 +138,7 @@ class StorePaiementRequest extends FormRequest
             'montant_net_paye_paiement' => 'montant du paiement',
             'statut_paiement' => 'statut',
             'date_validation_paiement' => 'date de validation',
+            'date_effectif_paiement' => 'date effective',
             'observations_paiement' => 'observations',
             'motif_rejet_paiement' => 'motif de rejet',
             'valide_par' => 'validateur',

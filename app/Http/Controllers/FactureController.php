@@ -222,7 +222,6 @@ class FactureController extends Controller
                 ->get();
 
 
-
                 // Si lot_id est passé en paramètre, pré-sélectionner le lot et sa proforma
                 $lotSelectionne = null;
                 if ($request->filled('lot_id')) {
@@ -250,9 +249,8 @@ class FactureController extends Controller
                         ],
                     ]);
                 }
-                // proformaSelectionnee
-                // dd($typesAppelsOffres, $lotSelectionne);
 
+                // proformaSelectionnee
                 return view('factures.create', compact(
                     'typesAppelsOffres',
                     'lotSelectionne', 'appelsOffres'
@@ -344,6 +342,7 @@ class FactureController extends Controller
         try {
             $facture = Facture::with([
                 'proforma',
+                // 'proforma.prestataireLotsAttributions',
                 'paiements.banque',
                 'paiements.validateur',
                 'paiements.payeur',

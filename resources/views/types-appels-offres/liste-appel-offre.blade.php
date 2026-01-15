@@ -1,11 +1,13 @@
 @extends('layouts.main')
 @section('title', 'Appels d\'Offres')
 @section('breadcrumb')
-<a href="{{ route('types-appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Types AO</a>
-<i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-<a href="{{ route('types-appels-offres.show', $typeAO->id_type_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $typeAO->code_type_appel_offre }}</a>
-<i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-<span class="text-white font-medium">Appels d'offres</span>
+    <a @can('type_appels_offres.read') href="{{ route('types-appels-offres.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Types AO</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <a @can('type_appels_offres.view-details') href="{{ route('types-appels-offres.show', $typeAO->id_type_appel_offre) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">{{ $typeAO->code_type_appel_offre }}</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <span class="text-white font-medium">Appels d'offres</span>
 @endsection
 
 @section('content')
@@ -19,11 +21,13 @@
                         <i class="fas fa-bullhorn text-orange-500"></i>
                         <span>Appels d'Offres</span>
                     </h1>
-                    <button onclick="window.location.href='{{ route('appels-offres.create') }}'"
-                        class="md:hidden px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Nouveau</span>
-                    </button>
+                    @can('appels_offres.create')
+                        <button onclick="window.location.href='{{ route('appels-offres.create') }}'"
+                            class="md:hidden px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fas fa-plus text-sm"></i>
+                            <span class="text-sm">Créer nouveau</span>
+                        </button>
+                    @endcan
                 </div>
 
                 <!-- Filtres et actions -->
@@ -37,41 +41,6 @@
                             value="{{ request('search') }}"
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all" />
                     </div>
-
-                    <!-- Filtre type -->
-                    {{-- <select id="typeFilter"
-                        class="px-4 py-2.5  border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
-                        <option value="">Tous les types</option>
-                        @foreach($typesAO as $type)
-                            <option value="{{ $type->id_type_appel_offre }}" {{ request('type_appel_offre_id') == $type->id_type_appel_offre ? 'selected' : '' }}>
-                                {{ $type->code_type_appel_offre }} - {{ $type->libelle_type_appel_offre }}
-                            </option>
-                        @endforeach
-                    </select> --}}
-
-                    <!-- Filtre statut -->
-                    {{-- <select id="statutFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
-                        <option value="">Tous les statuts</option>
-                        <option value="1" {{ request('statut') == '1' ? 'selected' : '' }}>Actifs</option>
-                        <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactifs</option>
-                    </select> --}}
-
-                    <!-- Filtre état -->
-                    {{-- <select id="etatFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
-                        <option value="">Tous les états</option>
-                        <option value="en_cours" {{ request('etat') == 'en_cours' ? 'selected' : '' }}>En cours</option>
-                        <option value="cloture" {{ request('etat') == 'cloture' ? 'selected' : '' }}>Clôturés</option>
-                        <option value="publie" {{ request('etat') == 'publie' ? 'selected' : '' }}>Publiés</option>
-                    </select> --}}
-
-                    <!-- Bouton créer (desktop) -->
-                    {{-- <button onclick="window.location.href='{{ route('appels-offres.create') }}'"
-                        class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Créer</span>
-                    </button> --}}
                 </div>
             </div>
         </div>
@@ -133,8 +102,11 @@
                                 Nb Lots</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Actions</th>
+                            @canany(['appels_offres.read', 'lots.create', 'appels_offres.update', 'appels_offres.duplicate',
+                                'appels_offres.delete'])
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -164,13 +136,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-xs text-gray-700 space-y-1">
-                                        @if($ao->date_publication_critere_appel_offre)
-                                            <div><span class="font-medium">Pub:</span> {{ $ao->date_publication_critere_appel_offre->format('d/m/Y') }}</div>
+                                        @if ($ao->date_publication_critere_appel_offre)
+                                            <div><span class="font-medium">Pub:</span>
+                                                {{ $ao->date_publication_critere_appel_offre->format('d/m/Y') }}</div>
                                         @endif
-                                        @if($ao->date_limite_depot_critere_appel_offre)
-                                            <div><span class="font-medium">Limite:</span> {{ $ao->date_limite_depot_critere_appel_offre->format('d/m/Y') }}</div>
+                                        @if ($ao->date_limite_depot_critere_appel_offre)
+                                            <div><span class="font-medium">Limite:</span>
+                                                {{ $ao->date_limite_depot_critere_appel_offre->format('d/m/Y') }}</div>
                                         @endif
-                                        @if($ao->joursRestants() > 0)
+                                        @if ($ao->joursRestants() > 0)
                                             <div class="text-orange-600 font-semibold">
                                                 <i class="fas fa-clock mr-1"></i>{{ $ao->joursRestants() }} jour(s)
                                             </div>
@@ -178,106 +152,135 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         {{ $ao->lots->count() }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex flex-col items-center space-y-1">
-                                        @if($ao->statut_evaluation_critere_appel_offre)
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                        @if ($ao->statut_evaluation_critere_appel_offre)
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                                 <i class="fas fa-check-circle mr-1"></i> Actif
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
                                                 <i class="fas fa-times-circle mr-1"></i> Inactif
                                             </span>
                                         @endif
-                                        @if($ao->isCloture())
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+
+                                        @if ($ao->isCloture())
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                                 Clôturé
                                             </span>
                                         @elseif($ao->isEnCours())
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                                                 En cours
                                             </span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <!-- Voir détails -->
-                                        <button onclick="window.location.href='{{ route('appels-offres.show', $ao->id_appel_offre) }}'"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                            title="Voir détails">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </button>
+                                @canany(['appels_offres.read', 'lots.create', 'appels_offres.update',
+                                    'appels_offres.duplicate', 'appels_offres.delete'])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('appels_offres.read')
+                                                <!-- Voir détails -->
+                                                <button
+                                                    onclick="window.location.href='{{ route('appels-offres.show', $ao->id_appel_offre) }}'"
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                                    title="Voir détails">
+                                                    <i class="fas fa-eye text-sm"></i>
+                                                </button>
+                                            @endcan
 
+                                            @can('appels_offres.update')
+                                                <!-- Modifier -->
+                                                <button
+                                                    onclick="window.location.href='{{ route('appels-offres.edit', $ao->id_appel_offre) }}'"
+                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                    title="Modifier">
+                                                    <i class="fas fa-edit text-sm"></i>
+                                                </button>
 
+                                                <!-- Toggle Status -->
+                                                <button
+                                                    onclick="toggleStatus('{{ $ao->id_appel_offre }}', {{ $ao->statut_evaluation_critere_appel_offre ? 'true' : 'false' }})"
+                                                    class="p-2 {{ $ao->statut_evaluation_critere_appel_offre ? 'text-gray-600 hover:bg-gray-50' : 'text-green-600 hover:bg-green-50' }} rounded-lg transition-all duration-200"
+                                                    title="{{ $ao->statut_evaluation_critere_appel_offre ? 'Désactiver' : 'Activer' }}">
+                                                    <i class="fas fa-power-off text-sm"></i>
+                                                </button>
+                                            @endcan
 
-
-                                        <!-- Modifier -->
-                                        <button onclick="window.location.href='{{ route('appels-offres.edit', $ao->id_appel_offre) }}'"
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
-
-                                        <!-- Toggle Status -->
-                                        <button
-                                            onclick="toggleStatus('{{ $ao->id_appel_offre }}', {{ $ao->statut_evaluation_critere_appel_offre ? 'true' : 'false' }})"
-                                            class="p-2 {{ $ao->statut_evaluation_critere_appel_offre ? 'text-gray-600 hover:bg-gray-50' : 'text-green-600 hover:bg-green-50' }} rounded-lg transition-all duration-200"
-                                            title="{{ $ao->statut_evaluation_critere_appel_offre ? 'Désactiver' : 'Activer' }}">
-                                            <i class="fas fa-power-off text-sm"></i>
-                                        </button>
-
-                                        <!-- Menu Actions -->
-                                        <div class="relative">
-                                            <button onclick="toggleMenu('{{ $ao->id_appel_offre }}')"
-                                                class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                title="Plus d'actions">
-                                                <i class="fas fa-ellipsis-v text-sm"></i>
-                                            </button>
-                                            <div id="menu-{{ $ao->id_appel_offre }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                <div class="py-1">
-                                                    <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-boxes text-indigo-500 mr-2"></i>
-                                                            Ajouter lot
+                                            @canany(['lots.create', 'appels_offres.update', 'appels_offres.duplicate',
+                                                'appels_offres.delete'])
+                                                <!-- Menu Actions -->
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu('{{ $ao->id_appel_offre }}')"
+                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
                                                     </button>
-                                                    <a href="{{ route('caracteristiques-appels-offres.index', $ao->id_appel_offre) }}" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-thumbs-up text-indigo-500 mr-2"></i>
-                                                            Caractéristiques
-                                                    </a>
-                                                    @if(!$ao->date_publication_critere_appel_offre)
-                                                        <button onclick="publier('{{ $ao->id_appel_offre }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-paper-plane mr-2 text-blue-500"></i>
-                                                            Publier
-                                                        </button>
-                                                    @endif
-                                                    @if($ao->isEnCours())
-                                                        <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-lock mr-2 text-yellow-500"></i>
-                                                            Clôturer
-                                                        </button>
-                                                    @endif
-                                                    <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                        Dupliquer
-                                                    </button>
-                                                    <button
-                                                        onclick="confirmDelete('{{ $ao->id_appel_offre }}', '{{ $ao->numero_appel_offre }}', {{ $ao->lots_count }})"
-                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                        <i class="fas fa-trash mr-2"></i>
-                                                        Supprimer
-                                                    </button>
+                                                    <div id="menu-{{ $ao->id_appel_offre }}"
+                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                                        <div class="py-1">
+                                                            @can('lots.create')
+                                                                <button
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-boxes text-indigo-500 mr-2"></i>
+                                                                    Ajouter lot
+                                                                </button>
+                                                            @endcan
+
+                                                            @can('appels_offres.update')
+                                                                <a href="{{ route('caracteristiques-appels-offres.index', $ao->id_appel_offre) }}"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-thumbs-up text-indigo-500 mr-2"></i>
+                                                                    Caractéristiques
+                                                                </a>
+                                                                @if (!$ao->date_publication_critere_appel_offre)
+                                                                    <button onclick="publier('{{ $ao->id_appel_offre }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-paper-plane mr-2 text-blue-500"></i>
+                                                                        Publier
+                                                                    </button>
+                                                                @endif
+                                                                @if ($ao->isEnCours())
+                                                                    <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-lock mr-2 text-yellow-500"></i>
+                                                                        Clôturer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('appels_offres.duplicate')
+                                                                <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
+                                                                    Dupliquer
+                                                                </button>
+                                                            @endcan
+
+                                                            @can('appels_offres.delete')
+                                                                <button
+                                                                    onclick="confirmDelete('{{ $ao->id_appel_offre }}', '{{ $ao->numero_appel_offre }}', {{ $ao->lots_count }})"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                    <i class="fas fa-trash mr-2"></i>
+                                                                    Supprimer
+                                                                </button>
+                                                            @endcan
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endcanany
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -285,7 +288,7 @@
                                     <div class="flex flex-col items-center justify-center space-y-3">
                                         <i class="fas fa-inbox text-gray-300 text-5xl"></i>
                                         <p class="text-gray-500 font-medium">Aucun appel d'offres trouvé</p>
-                                        <button onclick="window.location.href='{{ route('appels-offres.create') }}'"
+                                        <button onclick="window.location.href=`{{ route('appels-offres.create') }}`"
                                             class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200">
                                             Créer le premier appel d'offres
                                         </button>
@@ -387,7 +390,7 @@
             // Publier
             window.publier = function(id) {
                 if (confirm('Voulez-vous publier cet appel d\'offres ?')) {
-                    fetch("{{route('appels-offres.publier', ':id')}}".replace(':id', id), {
+                    fetch("{{ route('appels-offres.publier', ':id') }}".replace(':id', id), {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -413,7 +416,7 @@
             // Clôturer
             window.cloturer = function(id) {
                 if (confirm('Voulez-vous clôturer cet appel d\'offres ? Cette action modifiera la date limite de dépôt.')) {
-                    fetch("{{route('appels-offres.cloturer', ':id')}}".replace(':id', id), {
+                    fetch("{{ route('appels-offres.cloturer', ':id') }}".replace(':id', id), {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',

@@ -1,20 +1,27 @@
 @extends('layouts.main')
 @section('title', 'Détails Critère - ' . $critere->numero_critere_evaluation)
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $critere->lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ \Illuminate\Support\Str::limit($critere->lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $critere->lot->appelOffre->id_appel_offre) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">{{ \Illuminate\Support\Str::limit($critere->lot->appelOffre->libelle_critere_appel_offre, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.index', [$critere->lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste de lots - {{ $critere->lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
+    <a @can('lots.read') href="{{ route('lots-appels-offres.index', [$critere->lot->appelOffre->id_appel_offre]) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors"
+        title="Liste de lots - {{ $critere->lot->appelOffre->libelle_critere_appel_offre }}">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="{{ $critere->lot->libelle }}">{{ \Illuminate\Support\Str::limit($critere->lot->libelle, 15) }}</a>
+    <a @can('lots.view-details') href="{{ route('lots-appels-offres.show', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors"
+        title="{{ $critere->lot->libelle }}">{{ \Illuminate\Support\Str::limit($critere->lot->libelle, 15) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" class="text-white/80 hover:text-white transition-colors" title="Liste des critères d'évaluation - {{ $critere->lot->libelle }}">Critères</a>
+    <a @can('criteres_evaluations.read') href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors"
+        title="Liste des critères d'évaluation - {{ $critere->lot->libelle }}">Critères</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">{{ \Illuminate\Support\Str::limit($critere->libelle_critere_evaluation, 25) }}</span>
+    <span
+        class="text-white font-medium">{{ \Illuminate\Support\Str::limit($critere->libelle_critere_evaluation, 25) }}</span>
 @endsection
-
-
 
 
 @section('content')
@@ -23,28 +30,34 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('criteres_evaluations.read')
+                        <a href="{{ route('criteres-evaluations.index', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot]) }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
+
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                             <i class="fas fa-clipboard-check text-blue-500"></i>
                             <span>Détails du Critère</span>
                         </h1>
-                        <p class="text-gray-600 text-sm mt-1">{{ $critere->numero_critere_evaluation }} - {{ $critere->libelle_critere_evaluation }}</p>
+                        <p class="text-gray-600 text-sm mt-1">{{ $critere->numero_critere_evaluation }} -
+                            {{ $critere->libelle_critere_evaluation }}</p>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-2">
-                    @if(!$critere->lot->isAttribue() && !$critere->lot->isRetire())
-                        <a href="{{ route('criteres-evaluations.edit', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot, $critere->id_critere_evaluation]) }}"
-                            class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
-                            <i class="fas fa-edit text-sm"></i>
-                            <span class="text-sm font-medium">Modifier</span>
-                        </a>
-                    @endif
-                </div>
+                @can('criteres_evaluations.update')
+                    <div class="flex items-center space-x-2">
+                        @if (!$critere->lot->isAttribue() && !$critere->lot->isRetire())
+                            <a href="{{ route('criteres-evaluations.edit', [$critere->lot->appelOffre->id_appel_offre, $critere->lot->id_lot, $critere->id_critere_evaluation]) }}"
+                                class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
+                                <i class="fas fa-edit text-sm"></i>
+                                <span class="text-sm font-medium">Modifier</span>
+                            </a>
+                        @endif
+                    </div>
+                @endcan
             </div>
         </div>
     </div>
@@ -80,7 +93,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm font-medium">Note du Critère</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-1">{{ number_format($critere->note_reference_critere_evaluation, 1) }}</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-1">
+                                {{ number_format($critere->note_reference_critere_evaluation, 1) }}</p>
                             <p class="text-xs text-gray-500 mt-1">sur 100</p>
                         </div>
                         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -103,7 +117,7 @@
                     <!-- Barre de progression -->
                     <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
                         <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-300"
-                             style="width: {{ $pourcentage }}%"></div>
+                            style="width: {{ $pourcentage }}%"></div>
                     </div>
                 </div>
 
@@ -112,7 +126,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm font-medium">Ordre d'Exécution</p>
-                            <p class="text-3xl font-bold text-gray-800 mt-1">{{ $critere->ordre_execution_critere_evaluation }}</p>
+                            <p class="text-3xl font-bold text-gray-800 mt-1">
+                                {{ $critere->ordre_execution_critere_evaluation }}</p>
                             <p class="text-xs text-gray-500 mt-1">sur {{ $nombreCriteres }}</p>
                         </div>
                         <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -122,20 +137,23 @@
                 </div>
 
                 <!-- Statut -->
-                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-500">
+                <div
+                    class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-500">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm font-medium">Statut</p>
                             <p class="text-xl font-bold text-gray-800 mt-1">
-                                @if($critere->statut_critere_evaluation == 1)
+                                @if ($critere->statut_critere_evaluation == 1)
                                     <span class="text-green-600">Actif</span>
                                 @else
                                     <span class="text-gray-600">Inactif</span>
                                 @endif
                             </p>
                         </div>
-                        <div class="w-12 h-12 bg-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-{{ $critere->statut_critere_evaluation == 1 ? 'check' : 'times' }}-circle text-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-600 text-xl"></i>
+                        <div
+                            class="w-12 h-12 bg-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-100 rounded-lg flex items-center justify-center">
+                            <i
+                                class="fas fa-{{ $critere->statut_critere_evaluation == 1 ? 'check' : 'times' }}-circle text-{{ $critere->statut_critere_evaluation == 1 ? 'green' : 'gray' }}-600 text-xl"></i>
                         </div>
                     </div>
                 </div>
@@ -154,18 +172,22 @@
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div class="flex items-center space-x-3 mb-2">
-                                <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-700">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-700">
                                     {{ $lot->numero }}
                                 </span>
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">
                                     {{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
                                 </span>
-                                @if($lot->isAttribue())
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700">
+                                @if ($lot->isAttribue())
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700">
                                         <i class="fas fa-check-circle mr-1"></i>Attribué
                                     </span>
                                 @elseif($lot->isRetire())
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700">
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700">
                                         <i class="fas fa-times-circle mr-1"></i>Retiré
                                     </span>
                                 @endif
@@ -184,12 +206,13 @@
                                 </span>
                             </div>
                         </div>
-                        <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
-                            target="_blank"
-                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                            title="Voir le lot">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
+                        @can('lots.view-details')
+                            <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
+                                target="_blank" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                title="Voir le lot">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -208,14 +231,16 @@
                         <!-- Numéro -->
                         <div class="border-b border-gray-200 pb-4">
                             <dt class="text-sm font-medium text-gray-500 mb-1">Numéro</dt>
-                            <dd class="text-base font-semibold text-gray-900">{{ $critere->numero_critere_evaluation }}</dd>
+                            <dd class="text-base font-semibold text-gray-900">{{ $critere->numero_critere_evaluation }}
+                            </dd>
                         </div>
 
                         <!-- Ordre d'exécution -->
                         <div class="border-b border-gray-200 pb-4">
                             <dt class="text-sm font-medium text-gray-500 mb-1">Ordre d'exécution</dt>
                             <dd class="text-base font-semibold text-gray-900">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700">
                                     {{ $critere->ordre_execution_critere_evaluation }}
                                 </span>
                             </dd>
@@ -224,14 +249,16 @@
                         <!-- Libellé -->
                         <div class="md:col-span-2 border-b border-gray-200 pb-4">
                             <dt class="text-sm font-medium text-gray-500 mb-1">Libellé</dt>
-                            <dd class="text-base font-semibold text-gray-900">{{ $critere->libelle_critere_evaluation }}</dd>
+                            <dd class="text-base font-semibold text-gray-900">{{ $critere->libelle_critere_evaluation }}
+                            </dd>
                         </div>
 
                         <!-- Description -->
-                        @if($critere->description_critere_evaluation)
+                        @if ($critere->description_critere_evaluation)
                             <div class="md:col-span-2 border-b border-gray-200 pb-4">
                                 <dt class="text-sm font-medium text-gray-500 mb-2">Description</dt>
-                                <dd class="text-sm text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg">{{ $critere->description_critere_evaluation }}</dd>
+                                <dd class="text-sm text-gray-700 whitespace-pre-line bg-gray-50 p-4 rounded-lg">
+                                    {{ $critere->description_critere_evaluation }}</dd>
                             </div>
                         @endif
 
@@ -252,7 +279,7 @@
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-1 bg-gray-200 rounded-full h-3 max-w-xs">
                                         <div class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full"
-                                             style="width: {{ $pourcentage }}%"></div>
+                                            style="width: {{ $pourcentage }}%"></div>
                                     </div>
                                     <span class="text-lg font-bold text-green-600">{{ number_format($pourcentage, 2) }}%</span>
                                 </div>
@@ -263,12 +290,14 @@
                         <div class="border-b border-gray-200 pb-4">
                             <dt class="text-sm font-medium text-gray-500 mb-1">Statut</dt>
                             <dd class="text-base font-semibold text-gray-900">
-                                @if($critere->statut_critere_evaluation == 1)
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                @if ($critere->statut_critere_evaluation == 1)
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                         <i class="fas fa-check-circle mr-2"></i>Actif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                                         <i class="fas fa-times-circle mr-2"></i>Inactif
                                     </span>
                                 @endif
@@ -296,20 +325,23 @@
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600">Créé le</p>
-                                <p class="text-sm font-semibold text-gray-900">{{ $critere->created_at->format('d/m/Y à H:i') }}</p>
+                                <p class="text-sm font-semibold text-gray-900">
+                                    {{ $critere->created_at->format('d/m/Y à H:i') }}</p>
                                 <p class="text-xs text-gray-600">par {{ $critere->creator->nom_complet ?? 'N/A' }}</p>
                             </div>
                         </div>
 
                         <!-- Dernière modification -->
-                        @if($critere->updated_at && $critere->updated_at != $critere->created_at)
+                        @if ($critere->updated_at && $critere->updated_at != $critere->created_at)
                             <div class="flex items-center space-x-4 p-4 bg-orange-50 rounded-lg">
-                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div
+                                    class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-edit text-orange-600"></i>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-600">Modifié le</p>
-                                    <p class="text-sm font-semibold text-gray-900">{{ $critere->updated_at->format('d/m/Y à H:i') }}</p>
+                                    <p class="text-sm font-semibold text-gray-900">
+                                        {{ $critere->updated_at->format('d/m/Y à H:i') }}</p>
                                     <p class="text-xs text-gray-600">par {{ $critere->updater->nom_complet ?? 'N/A' }}</p>
                                 </div>
                             </div>
@@ -318,46 +350,51 @@
                 </div>
             </div>
 
-            <!-- Actions -->
-            @if(!$lot->isAttribue() && !$lot->isRetire())
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b border-gray-200">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-cog text-red-500 mr-2"></i>
-                            Actions
-                        </h2>
-                    </div>
+            @canany(['criteres_evaluations.update', 'criteres_evaluations.duplicate', 'criteres_evaluations.delete'])
+                <!-- Actions -->
+                @if (!$lot->isAttribue() && !$lot->isRetire())
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-cog text-red-500 mr-2"></i>
+                                Actions
+                            </h2>
+                        </div>
 
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <!-- Modifier -->
-                            <a href="{{ route('criteres-evaluations.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}"
-                                class="flex items-center justify-center px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
-                                <i class="fas fa-edit mr-2"></i>
-                                Modifier
-                            </a>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                @can('criteres_evaluations.update')
+                                    <!-- Modifier -->
+                                    <a href="{{ route('criteres-evaluations.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}"
+                                        class="flex items-center justify-center px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        Modifier
+                                    </a>
+                                @endcan
 
-                            <!-- Dupliquer -->
-                            <form method="POST" action="{{ route('criteres-evaluations.dupliquer', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}" class="w-full">
-                                @csrf
-                                <button type="submit"
-                                    onclick="return confirm('Voulez-vous vraiment dupliquer ce critère ?')"
-                                    class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
-                                    <i class="fas fa-copy mr-2"></i>
-                                    Dupliquer
-                                </button>
-                            </form>
+                                @can('criteres_evaluations.create')
+                                    
+                                        <a href="{{ route('criteres-evaluations.create', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
 
-                            <!-- Supprimer -->
-                            <button onclick="confirmDelete()"
-                                class="flex items-center justify-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
-                                <i class="fas fa-trash mr-2"></i>
-                                Supprimer
-                            </button>
+                                            class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
+                                            <i class="fas fa-plus text-sm mr-2"></i>
+                                            Créer nouveau
+                                        </a>
+                                @endcan
+
+                                @can('criteres_evaluations.delete')
+                                    <!-- Supprimer -->
+                                    <button onclick="confirmDelete()"
+                                        class="flex items-center justify-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">
+                                        <i class="fas fa-trash mr-2"></i>
+                                        Supprimer
+                                    </button>
+                                @endcan
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            @endcanany
         </div>
     </main>
 
@@ -374,62 +411,69 @@
 
                 <div class="flex space-x-3">
                     <button onclick="closeDeleteModal()"
-                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all">
+                        class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all">
                         Annuler
                     </button>
-                    <form id="deleteForm" method="POST" action="{{ route('criteres-evaluations.destroy', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}" class="flex-1">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
+                    @can('criteres_evaluations.delete')
+                        <form id="deleteForm" method="POST"
+                            action="{{ route('criteres-evaluations.destroy', [$lot->appelOffre->id_appel_offre, $lot->id_lot, $critere->id_critere_evaluation]) }}"
+                            class="flex-1">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
                                 class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all">
-                            Supprimer
-                        </button>
-                    </form>
+                                Supprimer
+                            </button>
+                        </form>
+                    @endcan
                 </div>
             </div>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            function confirmDelete() {
-                document.getElementById('deleteModal').classList.remove('hidden');
-            }
-
-            function closeDeleteModal() {
-                document.getElementById('deleteModal').classList.add('hidden');
-            }
-
-            // Fermer le modal en cliquant en dehors
-            document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeDeleteModal();
+    @can('criteres_evaluations.view-details')
+        @push('scripts')
+            <script>
+                function confirmDelete() {
+                    document.getElementById('deleteModal').classList.remove('hidden');
                 }
-            });
 
-            // Fermer avec Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeDeleteModal();
+                function closeDeleteModal() {
+                    document.getElementById('deleteModal').classList.add('hidden');
                 }
-            });
-        </script>
 
-        <style>
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+                // Fermer le modal en cliquant en dehors
+                document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeDeleteModal();
+                    }
+                });
 
-            .animate-fadeIn {
-                animation: fadeIn 0.3s ease-out;
-            }
-        </style>
-    @endpush
+                // Fermer avec Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeDeleteModal();
+                    }
+                });
+            </script>
+
+            <style>
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+            </style>
+        @endpush
+    @endcan
 @endsection

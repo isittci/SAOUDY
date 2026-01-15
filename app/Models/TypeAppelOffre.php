@@ -156,9 +156,39 @@ class TypeAppelOffre extends Model
             /*->orderBy('version_type_appel_offre', 'desc')*/;
     }
 
-    // public function versions()
-    // {
-    //     return $this->hasMany(Lot::class, 'parent_id', 'id_lot')
-    //         ->orderBy('created_at', 'desc');
-    // }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($typeAppelOffre) {
+            // Générer le code automatiquement si non fourni
+            if (empty($typeAppelOffre->code_type_appel_offre)) {
+                $typeAppelOffre->code_type_appel_offre = self::genererCodeTypeAppelOffre();
+            }
+
+            // Initialiser la version à 1 pour une nouvelle création
+            if (empty($typeAppelOffre->version_type_appel_offre) && empty($typeAppelOffre->parent_id)) {
+                $typeAppelOffre->version_type_appel_offre = 1;
+            }
+        });
+    }
+
+    /**
+     * Génère un code unique pour le type d'appel d'offre
+     */
+    public static function genererCodeTypeAppelOffre(): string
+{
+    $annee = date('y'); // 2 chiffres (26 au lieu de 2026)
+    $prefixe = 'TAO';
+
+    $dernierNumero = self::withTrashed()
+        ->whereYear('created_at', date('Y'))
+        ->whereNull('parent_id')
+        ->count();
+
+    $sequence = str_pad($dernierNumero + 1, 3, '0', STR_PAD_LEFT);
+
+    // Format: TAO26-001 (9 caractères)
+    return "{$prefixe}{$annee}-{$sequence}";
+}
 }

@@ -3,115 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code de vérification</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Code de vérification - {{ config('app.name') }}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
     <style>
+        /* Reset */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        /* Base */
         body {
-            font-family: Arial, sans-serif;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f4f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            max-width: 600px;
+            color: #374151;
+        }
+
+        /* Container */
+        .email-wrapper {
+            width: 100%;
+            background-color: #f4f7fa;
+            padding: 40px 20px;
+        }
+
+        .email-container {
+            max-width: 520px;
             margin: 0 auto;
-            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
-        .container {
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .header {
+
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+            padding: 40px 30px;
             text-align: center;
-            margin-bottom: 30px;
         }
-        .header h1 {
-            color: #2c3e50;
+
+        .logo-circle {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            color: #ffffff;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .email-header p {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        /* Body */
+        .email-body {
+            padding: 40px 36px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0 0 16px;
+        }
+
+        .message-text {
+            font-size: 15px;
+            color: #4b5563;
+            margin: 0 0 32px;
+            line-height: 1.7;
+        }
+
+        /* Code Box */
+        .code-section {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 28px;
+            border: 1px solid #fed7aa;
+        }
+
+        .code-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9a3412;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 0 0 12px;
+        }
+
+        .verification-code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: 10px;
+            color: #ea580c;
+            margin: 0;
+            padding: 8px 0;
+            background: transparent;
+        }
+
+        .code-expiry {
+            font-size: 13px;
+            color: #b45309;
+            margin: 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .expiry-icon {
+            font-size: 14px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background-color: #f0fdf4;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .info-box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #166534;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box-text {
+            font-size: 14px;
+            color: #15803d;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background-color: #fefce8;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 28px;
+            border-left: 4px solid #eab308;
+        }
+
+        .warning-box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #a16207;
+            margin: 0 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-list {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 13px;
+            color: #854d0e;
+            line-height: 1.8;
+        }
+
+        .warning-list li {
+            margin-bottom: 4px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 28px 0;
+        }
+
+        /* Help Section */
+        .help-section {
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #6b7280;
             margin: 0;
         }
-        .code-container {
-            background-color: #fff;
-            border: 2px dashed #3498db;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-        }
-        .code {
-            font-size: 36px;
-            font-weight: bold;
-            letter-spacing: 8px;
-            color: #3498db;
-            font-family: 'Courier New', monospace;
-        }
-        .info {
-            background-color: #e8f4f8;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .warning {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            color: #856404;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            font-size: 12px;
-            color: #666;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: #3498db;
-            color: white;
+
+        .help-link {
+            color: #ea580c;
             text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .email-footer {
+            background-color: #f9fafb;
+            padding: 28px 36px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-brand {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin: 0 0 4px;
+        }
+
+        .footer-tagline {
+            font-size: 13px;
+            color: #9ca3af;
+            margin: 0 0 20px;
+        }
+
+        .footer-meta {
+            font-size: 11px;
+            color: #9ca3af;
+            margin: 0;
+            line-height: 1.8;
+        }
+
+        .footer-email {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Social Links */
+        .social-links {
+            margin: 16px 0;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            background-color: #f3f4f6;
+            border-radius: 50%;
+            margin: 0 4px;
+            line-height: 36px;
+            text-align: center;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .social-link:hover {
+            background-color: #ea580c;
+            color: #ffffff;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 20px 12px;
+            }
+            .email-container {
+                border-radius: 12px;
+            }
+            .email-header {
+                padding: 32px 24px;
+            }
+            .email-header h1 {
+                font-size: 20px;
+            }
+            .email-body {
+                padding: 28px 24px;
+            }
+            .verification-code {
+                font-size: 28px;
+                letter-spacing: 6px;
+            }
+            .code-section {
+                padding: 20px;
+            }
+            .email-footer {
+                padding: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>{{ config('app.name') }}</h1>
-            <p>Code de vérification</p>
-        </div>
+    <div class="email-wrapper">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td align="center">
+                    <div class="email-container">
+                        <!-- Header -->
+                        <div class="email-header">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <div class="logo-circle">
+                                            <span class="logo-icon">🔐</span>
+                                        </div>
+                                        <h1>{{ config('app.name') }}</h1>
+                                        <p>Vérification de votre identité</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
 
-        <p>Bonjour <strong>{{ $user->nom_complet ?? $partenaire->nom_complet }}</strong>,</p>
+                        <!-- Body -->
+                        <div class="email-body">
+                            <p class="greeting">Bonjour {{ $user->nom_complet ?? $partenaire->nom_complet }},</p>
 
-        <p>Vous avez demandé à vous connecter à votre compte. Pour finaliser votre connexion, veuillez utiliser le code de vérification ci-dessous :</p>
+                            <p class="message-text">
+                                Une tentative de connexion à votre compte a été détectée. Pour confirmer votre identité et finaliser la connexion, veuillez saisir le code de vérification ci-dessous :
+                            </p>
 
-        <div class="code-container">
-            <div class="code">{{ $code }}</div>
-        </div>
+                            <!-- Code Section -->
+                            <div class="code-section">
+                                <p class="code-label">Votre code de vérification</p>
+                                <p class="verification-code">{{ $code }}</p>
+                                <p class="code-expiry">
+                                    <span class="expiry-icon">⏱️</span>
+                                    Expire dans <strong>{{ $expiresIn }} minutes</strong>
+                                </p>
+                            </div>
 
-        <div class="info">
-            <strong>ℹ️ Information importante :</strong>
-            <p>Ce code est valable pendant <strong>{{ $expiresIn }} minutes</strong>.</p>
-        </div>
+                            <!-- Info Box -->
+                            <div class="info-box">
+                                <p class="info-box-title">
+                                    <span>✓</span> Comment utiliser ce code
+                                </p>
+                                <p class="info-box-text">
+                                    Saisissez ce code à 6 chiffres dans le champ de vérification sur la page de connexion pour accéder à votre compte.
+                                </p>
+                            </div>
 
-        <div class="warning">
-            <strong>⚠️ Sécurité :</strong>
-            <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>Ne partagez jamais ce code avec qui que ce soit</li>
-                <li>Notre équipe ne vous demandera jamais ce code par téléphone ou email</li>
-                <li>Si vous n'avez pas demandé ce code, ignorez cet email</li>
-            </ul>
-        </div>
+                            <!-- Warning Box -->
+                            <div class="warning-box">
+                                <p class="warning-box-title">
+                                    <span>⚠️</span> Conseils de sécurité
+                                </p>
+                                <ul class="warning-list">
+                                    <li>Ne partagez <strong>jamais</strong> ce code avec qui que ce soit</li>
+                                    <li>Notre équipe ne vous demandera jamais ce code</li>
+                                    <li>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email et changez votre mot de passe</li>
+                                </ul>
+                            </div>
 
-        <p>Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.</p>
+                            <div class="divider"></div>
 
-        <div class="footer">
-            <p>Cordialement,<br>L'équipe {{ config('app.name') }}</p>
-            <p style="margin-top: 20px;">
-                Cet email a été envoyé à {{ $user->email ?? $partenaire->email }}<br>
-                © {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.
-            </p>
-        </div>
+                            <!-- Help Section -->
+                            <div class="help-section">
+                                <p class="help-text">
+                                    Besoin d'aide ? <a href="mailto:{{ env('SUPPORT_MAIL') }}" class="help-link">Contactez notre support</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="email-footer">
+                            <p class="footer-brand">{{ config('app.name') }}</p>
+                            <p class="footer-tagline">Sécurité • Confiance • Excellence</p>
+
+                            <p class="footer-meta">
+                                Cet email a été envoyé à <span class="footer-email">{{ $user->email ?? $partenaire->email }}</span><br>
+                                © {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.
+                            </p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

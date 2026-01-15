@@ -3,7 +3,7 @@
 @section('title', 'Évaluation ' . $evaluation->numero_evaluation)
 
 @section('breadcrumb')
-    <a href="{{ route('evaluations.index') }}" class="text-white/80 hover:text-white transition-colors">Évaluations</a>
+    <a @can('evaluations_attributions.read') href="{{ route('evaluations.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Évaluations</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">{{ $evaluation->numero_evaluation }}</span>
 @endsection
@@ -14,10 +14,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('evaluations.pour-attribution', $evaluation->attribution_id) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can("evaluations_attributions.evaluate")
+                        <a href="{{ route('evaluations.pour-attribution', $evaluation->attribution_id) }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
                     <div>
                         <div class="flex items-center space-x-3 flex-wrap gap-2">
                             <h1 class="text-2xl font-bold text-gray-800">{{ $evaluation->numero_evaluation }}</h1>
@@ -32,59 +34,75 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex items-center space-x-2 flex-wrap gap-2">
-                    @if($evaluation->peutEtreModifiee())
-                        <a href="{{ route('evaluations.edit', $evaluation->id_evaluation) }}"
-                            class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
-                            <i class="fas fa-edit text-sm"></i>
-                            <span class="text-sm font-medium">Modifier</span>
-                        </a>
-                    @endif
+                @canany(['evaluations_attributions.evaluate', 'evaluations_attributions.validate', 'evaluations_attributions.reject'])
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2 flex-wrap gap-2">
+                        @can('evaluations_attributions.evaluate')
+                            @if($evaluation->peutEtreModifiee())
+                                <a href="{{ route('evaluations.edit', $evaluation->id_evaluation) }}"
+                                    class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
+                                    <i class="fas fa-edit text-sm"></i>
+                                    <span class="text-sm font-medium">Modifier</span>
+                                </a>
+                            @endif
+                        @endcan
 
-                    @if($evaluation->peutEtreTerminee())
-                        <form action="{{ route('evaluations.terminer', $evaluation->id_evaluation) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit"
-                                class="px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i class="fas fa-check text-sm"></i>
-                                <span class="text-sm font-medium">Terminer</span>
-                            </button>
-                        </form>
-                    @elseif($evaluation->isEnCours() && !empty($raisonsNonTerminable))
-                        <button type="button" onclick="openRaisonsModal()"
-                            class="px-4 py-2.5 bg-gray-300 text-gray-600 rounded-lg flex items-center space-x-2"
-                            title="Conditions non remplies">
-                            <i class="fas fa-check text-sm"></i>
-                            <span class="text-sm font-medium">Terminer</span>
-                            <i class="fas fa-exclamation-circle text-yellow-600 ml-1"></i>
-                        </button>
-                    @endif
+                        @can('evaluations_attributions.validate')
+                            @if($evaluation->peutEtreTerminee())
 
-                    @if($evaluation->peutEtreValidee())
-                        <button onclick="openValiderModal()"
-                            class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-check-double text-sm"></i>
-                            <span class="text-sm font-medium">Valider</span>
-                        </button>
-                        <button onclick="openRejeterModal()"
-                            class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-times text-sm"></i>
-                            <span class="text-sm font-medium">Rejeter</span>
-                        </button>
-                    @endif
+                                <form action="{{ route('evaluations.terminer', $evaluation->id_evaluation) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                        <i class="fas fa-check text-sm"></i>
+                                        <span class="text-sm font-medium">Terminer</span>
+                                    </button>
+                                </form>
+                            @elseif($evaluation->isEnCours() && !empty($raisonsNonTerminable))
+                                <button type="button" onclick="openRaisonsModal()"
+                                    class="px-4 py-2.5 bg-gray-300 text-gray-600 rounded-lg flex items-center space-x-2"
+                                    title="Conditions non remplies">
+                                    <i class="fas fa-check text-sm"></i>
+                                    <span class="text-sm font-medium">Terminer</span>
+                                    <i class="fas fa-exclamation-circle text-yellow-600 ml-1"></i>
+                                </button>
+                            @endif
+                        @endcan
 
-                    @if($evaluation->isRejetee())
-                        <form action="{{ route('evaluations.reprendre', $evaluation->id_evaluation) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit"
-                                class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i class="fas fa-redo text-sm"></i>
-                                <span class="text-sm font-medium">Reprendre</span>
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                        @canany(['evaluations_attributions.validate', 'evaluations_attributions.reject'])
+                            @if($evaluation->peutEtreValidee())
+                                @can('evaluations_attributions.validate')
+                                <button onclick="openValiderModal()"
+                                    class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                    <i class="fas fa-check-double text-sm"></i>
+                                    <span class="text-sm font-medium">Valider</span>
+                                </button>
+                                @endcan
+
+                                @can('evaluations_attributions.reject')
+                                <button onclick="openRejeterModal()"
+                                    class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                    <i class="fas fa-times text-sm"></i>
+                                    <span class="text-sm font-medium">Rejeter</span>
+                                </button>
+                                @endcan
+                            @endif
+                        @endcanany
+
+                        @can('evaluations_attributions.evaluate')
+                            @if($evaluation->isRejetee())
+                                <form action="{{ route('evaluations.reprendre', $evaluation->id_evaluation) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit"
+                                        class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                        <i class="fas fa-redo text-sm"></i>
+                                        <span class="text-sm font-medium">Reprendre</span>
+                                    </button>
+                                </form>
+                            @endif
+                        @endcan
+                    </div>
+                @endcanany
             </div>
         </div>
     </div>
@@ -224,7 +242,7 @@
                                 <div class="p-4 hover:bg-gray-50 transition-colors">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <a href="{{ route('evaluations.show', $autreEval->id_evaluation) }}"
+                                            <a @can('evaluations_attributions.view-details') href="{{ route('evaluations.show', $autreEval->id_evaluation) }}" @endcan
                                                 class="font-semibold text-indigo-600 hover:text-indigo-800">
                                                 {{ $autreEval->numero_evaluation }}
                                             </a>
@@ -381,7 +399,7 @@
                         <i class="fas fa-check-double text-emerald-500 mr-2"></i>Valider l'évaluation
                     </h3>
                 </div>
-                <form action="{{ route('evaluations.valider', $evaluation->id_evaluation) }}" method="POST">
+                <form @can('evaluations_attributions.validate') action="{{ route('evaluations.valider', $evaluation->id_evaluation) }}" @endcan method="POST">
                     @csrf
                     <div class="p-6 space-y-4">
                         <div class="bg-emerald-50 p-4 rounded-lg text-sm text-emerald-800">
@@ -396,7 +414,9 @@
                     </div>
                     <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                         <button type="button" onclick="closeValiderModal()" class="px-4 py-2 bg-white border text-gray-700 rounded-lg hover:bg-gray-50">Annuler</button>
+                        @can('evaluations_attributions.validate')
                         <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg">Valider</button>
+                        @endcan
                     </div>
                 </form>
             </div>
@@ -413,7 +433,7 @@
                         <i class="fas fa-times-circle text-red-500 mr-2"></i>Rejeter l'évaluation
                     </h3>
                 </div>
-                <form action="{{ route('evaluations.rejeter', $evaluation->id_evaluation) }}" method="POST">
+                <form @can('evaluations_attributions.reject') action="{{ route('evaluations.rejeter', $evaluation->id_evaluation) }}" @endcan method="POST">
                     @csrf
                     <div class="p-6 space-y-4">
                         <div>
@@ -424,7 +444,9 @@
                     </div>
                     <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                         <button type="button" onclick="closeRejeterModal()" class="px-4 py-2 bg-white border text-gray-700 rounded-lg hover:bg-gray-50">Annuler</button>
+                        @can('evaluations_attributions.reject')
                         <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">Rejeter</button>
+                        @endcan
                     </div>
                 </form>
             </div>

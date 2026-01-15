@@ -136,191 +136,6 @@ class PrestataireLotController extends Controller
     }
 
 
-
-
-    /**
-     * Enregistrer une nouvelle attribution.
-     * Gère deux modes : sélection proforma existante OU création nouvelle proforma
-     *
-     * Adapté au modèle Proforma existant (sans tva_pourcentage/remise_pourcentage)
-     */
-    // public function store(Request $request)
-    // {
-    //     // Règles de base
-    //     $rules = [
-    //         'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
-    //         'lot_id' => 'required|uuid|exists:lots,id_lot',
-    //         'proforma_mode' => 'required|in:select,create',
-    //         'date_attribution' => 'required|date|before_or_equal:today',
-    //         'taux_penalites' => 'nullable|numeric|min:0|max:100',
-    //         'montant_engage' => 'nullable|numeric|min:0',
-    //         'observations' => 'nullable|string|max:2000',
-    //         'conditions_particulieres' => 'nullable|string|max:5000',
-    //     ];
-
-    //     // Règles conditionnelles selon le mode proforma
-    //     if ($request->proforma_mode === 'select') {
-    //         $rules['proforma_id'] = 'required|uuid|exists:proformas,id_proforma';
-    //     } else {
-    //         // Mode création : champs nouvelle proforma
-    //         // Note: numero_proforma peut être auto-généré si vide
-    //         $rules['new_numero_proforma'] = 'nullable|string|max:20|unique:proformas,numero_proforma';
-    //         $rules['new_date_proforma'] = 'required|date|before_or_equal:today';
-    //         $rules['new_date_redemarrage'] = 'required|date';
-    //         $rules['new_montant_retenu'] = 'required|numeric|min:0';
-    //         // On stocke les montants directement (pas les pourcentages dans le modèle)
-    //         $rules['new_taxe_montant'] = 'nullable|numeric|min:0';
-    //         $rules['new_remise_montant'] = 'nullable|numeric|min:0';
-    //         $rules['new_penalites'] = 'nullable|numeric|min:0';
-    //         $rules['new_modalite'] = 'nullable|string|max:500';
-    //     }
-
-    //     $messages = array_merge($this->validationMessages(), [
-    //         'proforma_mode.required' => 'Veuillez choisir un mode de proforma.',
-    //         'proforma_mode.in' => 'Mode de proforma invalide.',
-    //         'new_numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
-    //         'new_numero_proforma.max' => 'Le numéro ne peut pas dépasser 20 caractères.',
-    //         'new_date_proforma.required' => 'La date de proforma est obligatoire.',
-    //         'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
-    //         'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
-    //         'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
-    //         'new_montant_retenu.min' => 'Le montant retenu doit être positif.',
-    //         'new_taxe_montant.min' => 'Le montant de la taxe doit être positif.',
-    //         'new_remise_montant.min' => 'Le montant de la remise doit être positif.',
-    //     ]);
-
-    //     $validator = Validator::make($request->all(), $rules, $messages);
-
-    //     if ($validator->fails()) {
-    //         if ($request->expectsJson()) {
-    //             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-    //         }
-    //         return back()->withErrors($validator)->withInput();
-    //     }
-
-    //     try {
-    //         DB::beginTransaction();
-
-    //         // Vérifications lot
-    //         $lot = Lot::findOrFail($request->lot_id);
-    //         if (PrestataireLot::lotEstAttribue($request->lot_id)) {
-    //             throw new \Exception('Ce lot est déjà attribué à un prestataire actif.');
-    //         }
-
-    //         // Vérification prestataire
-    //         $prestataire = Prestataire::findOrFail($request->prestataire_id);
-    //         if (!$prestataire->statut_prestataire) {
-    //             throw new \Exception('Le prestataire sélectionné n\'est pas actif.');
-    //         }
-
-    //         // Gestion de la proforma selon le mode
-    //         if ($request->proforma_mode === 'select') {
-    //             // Mode sélection : vérifier la proforma existante
-    //             $proforma = Proforma::findOrFail($request->proforma_id);
-    //             if (!$proforma->actif_proforma) {
-    //                 throw new \Exception('La proforma sélectionnée n\'est pas active.');
-    //             }
-    //             $proformaId = $proforma->id_proforma;
-    //         } else {
-    //             // Mode création : créer la nouvelle proforma
-    //             // Le numéro sera auto-généré si vide (voir boot() du modèle)
-    //             $proformaData = [
-    //                 'date_proforma' => $request->new_date_proforma,
-    //                 'date_redemarrage_proforma' => $request->new_date_redemarrage,
-    //                 'montant_retenu_proforma' => $request->new_montant_retenu,
-    //                 'taxe_montant' => $request->new_taxe_montant ?? 0,
-    //                 'remise_montant_proforma' => $request->new_remise_montant ?? 0,
-    //                 'penalites_proforma' => $request->new_penalites ?? 0,
-    //                 'modalite_proforma' => $request->new_modalite,
-    //                 'actif_proforma' => true,
-    //                 'version_proforma' => 1,
-    //                 'created_by' => Auth::id(),
-    //             ];
-
-    //             // Numéro personnalisé si fourni, sinon auto-généré
-    //             if (!empty($request->new_numero_proforma)) {
-    //                 $proformaData['numero_proforma'] = $request->new_numero_proforma;
-    //             }
-
-    //             $proforma = Proforma::create($proformaData);
-
-    //             Log::info('Nouvelle proforma créée', [
-    //                 'id' => $proforma->id_proforma,
-    //                 'numero' => $proforma->numero_proforma,
-    //                 'montant_ht' => $proforma->montant_retenu_proforma,
-    //                 'taxe' => $proforma->taxe_montant,
-    //                 'remise' => $proforma->remise_montant_proforma,
-    //                 'ttc' => $proforma->calculerMontantTTC(),
-    //                 'user' => Auth::id()
-    //             ]);
-
-    //             $proformaId = $proforma->id_proforma;
-    //         }
-
-    //         // Préparer les données pour l'attribution
-    //         $attributionData = [
-    //             'prestataire_id' => $request->prestataire_id,
-    //             'lot_id' => $request->lot_id,
-    //             'proforma_id' => $proformaId,
-    //             'date_attribution' => $request->date_attribution,
-    //             'date_debut_prevue' => $proforma->date_debut_validee,
-    //             'date_fin_prevue' => $proforma->date_fin_validee,
-    //             'taux_penalites' => $request->taux_penalites ?? 0,
-    //             'montant_engage' => $request->montant_engage ?? 0,
-    //             'observations' => $request->observations,
-    //             'conditions_particulieres' => $request->conditions_particulieres,
-    //         ];
-
-    //         // Créer l'attribution
-    //         $attribution = PrestataireLot::attribuer($attributionData);
-
-    //         DB::commit();
-
-    //         Log::info('Attribution créée', [
-    //             'id' => $attribution->id_attribution,
-    //             'lot' => $lot->numero,
-    //             'proforma_mode' => $request->proforma_mode,
-    //             'user' => Auth::id()
-    //         ]);
-
-    //         $message = "Le lot {$lot->numero} a été attribué avec succès à {$prestataire->raison_sociale_prestataire}.";
-
-    //         if ($request->proforma_mode === 'create') {
-    //             $message .= " Une nouvelle proforma ({$proforma->numero_proforma}) a été créée.";
-    //         }
-
-    //         if ($request->expectsJson()) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => $message,
-    //                 'data' => $attribution->load(['prestataire', 'lot', 'proforma']),
-    //             ]);
-    //         }
-
-    //         return redirect()
-    //             ->route('attributions.show', $attribution->id_attribution)
-    //             ->with('success', $message);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Erreur création attribution: ' . $e->getMessage(), [
-    //             'request' => $request->except(['_token']),
-    //             'trace' => $e->getTraceAsString()
-    //         ]);
-
-    //         if ($request->expectsJson()) {
-    //             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
-    //         }
-
-    //         return back()->withInput()->with('error', $e->getMessage());
-    //     }
-    // }
-
-
-
-
-
-
-
     /**
      * Nettoie un nombre formaté (avec espaces et virgules) pour le convertir en nombre décimal
      *
@@ -421,8 +236,8 @@ class PrestataireLotController extends Controller
             $rules['new_numero_proforma'] = 'nullable|string|max:20|unique:proformas,numero_proforma';
             $rules['new_date_proforma'] = 'required|date|before_or_equal:today';
             $rules['new_date_debut_validee'] = 'required|date';
-            $rules['new_date_redemarrage'] = 'required|date|after_or_equal:new_date_debut_validee';
-            $rules['new_date_fin_validee'] = 'required|date|after:new_date_redemarrage';
+            // $rules['new_date_redemarrage'] = 'required|date|after_or_equal:new_date_debut_validee';
+            $rules['new_date_fin_validee'] = 'required|date|after:new_date_debut_validee';
 
             // Montant retenu avec validation dynamique selon le type d'appel d'offre
             $rules['new_montant_retenu'] = [
@@ -472,9 +287,9 @@ class PrestataireLotController extends Controller
             'new_date_debut_validee.required' => 'La date de début validée est obligatoire.',
             'new_date_debut_validee.date' => 'La date de début validée doit être une date valide.',
 
-            'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
-            'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
-            'new_date_redemarrage.after_or_equal' => 'La date de redémarrage doit être postérieure ou égale à la date de début.',
+            // 'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
+            // 'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
+            // 'new_date_redemarrage.after_or_equal' => 'La date de redémarrage doit être postérieure ou égale à la date de début.',
 
             'new_date_fin_validee.required' => 'La date de fin validée est obligatoire.',
             'new_date_fin_validee.date' => 'La date de fin validée doit être une date valide.',
@@ -596,12 +411,10 @@ class PrestataireLotController extends Controller
             } else {
                 // Mode création : créer la nouvelle proforma
 
-        //         $data['new_date_debut_validee'] = $request->input('date_debut_prevue');
-        // $data['new_date_fin_validee'] = $request->input('date_fin_prevue');
                 $proformaData = [
                     'date_proforma' => $request->new_date_proforma,
                     'date_debut_validee_proforma' => $request->date_debut_prevue,
-                    'date_redemarrage_proforma' => $request->new_date_redemarrage,
+                    // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
                     'date_fin_validee_proforma' => $request->date_fin_prevue,
                     'montant_retenu_proforma' => $request->new_montant_retenu,
                     'taxe_montant' => $request->new_taxe_montant ?? 0,
@@ -976,103 +789,257 @@ class PrestataireLotController extends Controller
         }
     }
 
-    /**
-     * Formulaire de réattribution.
-     */
-    public function reattribuerForm(Request $request, string $id)
-    {
-        $attribution = PrestataireLot::with(['prestataire', 'lot.appelOffre', 'proforma'])->findOrFail($id);
+/**
+ * Formulaire de réattribution.
+ * MODIFIER cette méthode - supprimer le chargement des proformas
+ */
+public function reattribuerForm(Request $request, string $id)
+{
+    $attribution = PrestataireLot::with(['prestataire', 'lot.appelOffre', 'proforma'])->findOrFail($id);
 
-        $prestataires = Prestataire::where('statut_prestataire', true)
-            ->orderBy('raison_sociale_prestataire')
-            ->get();
+    $prestataires = Prestataire::where('statut_prestataire', true)
+        ->orderBy('raison_sociale_prestataire')
+        ->get();
 
-        $proformas = Proforma::where('actif_proforma', true)
-            ->orderBy('numero_proforma', 'desc')
-            ->get();
+    // Plus besoin de charger les proformas existantes
+    // $proformas = Proforma::where('actif_proforma', true)...
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'data' => compact('attribution', 'prestataires', 'proformas'),
-            ]);
-        }
-
-        return view('attributions.reattribuer', compact('attribution', 'prestataires', 'proformas'));
+    if ($request->expectsJson()) {
+        return response()->json([
+            'success' => true,
+            'data' => compact('attribution', 'prestataires'),
+        ]);
     }
+
+    return view('attributions.reattribuer', compact('attribution', 'prestataires'));
+}
 
     /**
      * Réattribuer un lot.
      */
-    public function reattribuer(Request $request, string $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
-            'proforma_id' => 'required|uuid|exists:proformas,id_proforma',
-            'date_attribution' => 'required|date|before_or_equal:today',
-            'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
-            'date_fin_prevue' => 'required|date|after:date_debut_prevue',
-            'taux_penalites' => 'nullable|numeric|min:0|max:100',
-            'montant_engage' => 'nullable|numeric|min:0',
-            'observations' => 'nullable|string|max:2000',
-            'motif_reattribution' => 'required|string|min:10|max:2000',
-        ], $this->validationMessages());
+    // public function reattribuer(Request $request, string $id)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
+    //         'proforma_id' => 'required|uuid|exists:proformas,id_proforma',
+    //         'date_attribution' => 'required|date|before_or_equal:today',
+    //         'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
+    //         'date_fin_prevue' => 'required|date|after:date_debut_prevue',
+    //         'taux_penalites' => 'nullable|numeric|min:0|max:100',
+    //         'montant_engage' => 'nullable|numeric|min:0',
+    //         'observations' => 'nullable|string|max:2000',
+    //         'motif_reattribution' => 'required|string|min:10|max:2000',
+    //     ], $this->validationMessages());
 
-        if ($validator->fails()) {
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-            }
-            return back()->withErrors($validator)->withInput();
+    //     if ($validator->fails()) {
+    //         if ($request->expectsJson()) {
+    //             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+    //         }
+    //         return back()->withErrors($validator)->withInput();
+    //     }
+
+    //     $ancienneAttribution = PrestataireLot::findOrFail($id);
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         // Retirer l'ancienne si encore active
+    //         if (
+    //             $ancienneAttribution->is_active &&
+    //             $ancienneAttribution->statut_attribution === PrestataireLot::STATUT_ATTRIBUE
+    //         ) {
+    //             $ancienneAttribution->retirer(
+    //                 $request->motif_reattribution,
+    //                 PrestataireLot::TYPE_RETRAIT_RESILIATION
+    //             );
+    //         }
+
+    //         $nouvelleAttribution = $ancienneAttribution->reattribuer($validator->validated());
+
+    //         DB::commit();
+
+    //         Log::info('Lot réattribué', [
+    //             'ancienne' => $id,
+    //             'nouvelle' => $nouvelleAttribution->id_attribution,
+    //             'user' => Auth::id()
+    //         ]);
+
+    //         $message = 'Le lot a été réattribué avec succès.';
+
+    //         if ($request->expectsJson()) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => $message,
+    //                 'data' => $nouvelleAttribution->load(['prestataire', 'lot', 'proforma']),
+    //             ]);
+    //         }
+
+    //         return redirect()->route('attributions.show', $nouvelleAttribution->id_attribution)->with('success', $message);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Erreur réattribution: ' . $e->getMessage());
+
+    //         if ($request->expectsJson()) {
+    //             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //         }
+
+    //         return back()->withInput()->with('error', $e->getMessage());
+    //     }
+    // }
+
+
+
+    /**
+ * Réattribuer un lot avec création d'une nouvelle proforma.
+ * REMPLACER la méthode reattribuer existante par celle-ci
+ */
+public function reattribuer(Request $request, string $id)
+{
+    // Règles de validation incluant les champs de la nouvelle proforma
+    $rules = [
+        'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
+        'date_attribution' => 'required|date|before_or_equal:today',
+        'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
+        'date_fin_prevue' => 'required|date|after:date_debut_prevue',
+        'montant_engage' => 'nullable|numeric|min:0',
+        'observations' => 'nullable|string|max:2000',
+        'motif_reattribution' => 'required|string|min:10|max:2000',
+
+        // Champs nouvelle proforma
+        'new_numero_proforma' => 'nullable|string|max:35|unique:proformas,numero_proforma',
+        'new_date_proforma' => 'required|date|before_or_equal:today',
+        // 'new_date_redemarrage' => 'nullable|date',
+        'new_montant_retenu' => 'required|numeric|min:0',
+        'new_taux_tva' => 'nullable|numeric|min:0|max:100',
+        'new_taxe_montant' => 'nullable|numeric|min:0',
+        'new_remise_montant' => 'nullable|numeric|min:0',
+        'new_penalites' => 'nullable|numeric|min:0',
+        'new_modalite' => 'nullable|string|max:500',
+    ];
+
+    $messages = array_merge($this->validationMessages(), [
+        'new_numero_proforma.unique' => 'Ce numéro de proforma existe déjà.',
+        'new_numero_proforma.max' => 'Le numéro ne peut pas dépasser 35 caractères.',
+        'new_date_proforma.required' => 'La date de proforma est obligatoire.',
+        'new_montant_retenu.required' => 'Le montant retenu HT est obligatoire.',
+        'new_montant_retenu.numeric' => 'Le montant retenu doit être un nombre.',
+        'new_montant_retenu.min' => 'Le montant retenu ne peut pas être négatif.',
+    ]);
+
+    $validator = Validator::make($request->all(), $rules, $messages);
+
+    if ($validator->fails()) {
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
-
-        $ancienneAttribution = PrestataireLot::findOrFail($id);
-
-        try {
-            DB::beginTransaction();
-
-            // Retirer l'ancienne si encore active
-            if (
-                $ancienneAttribution->is_active &&
-                $ancienneAttribution->statut_attribution === PrestataireLot::STATUT_ATTRIBUE
-            ) {
-                $ancienneAttribution->retirer(
-                    $request->motif_reattribution,
-                    PrestataireLot::TYPE_RETRAIT_RESILIATION
-                );
-            }
-
-            $nouvelleAttribution = $ancienneAttribution->reattribuer($validator->validated());
-
-            DB::commit();
-
-            Log::info('Lot réattribué', [
-                'ancienne' => $id,
-                'nouvelle' => $nouvelleAttribution->id_attribution,
-                'user' => Auth::id()
-            ]);
-
-            $message = 'Le lot a été réattribué avec succès.';
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => $message,
-                    'data' => $nouvelleAttribution->load(['prestataire', 'lot', 'proforma']),
-                ]);
-            }
-
-            return redirect()->route('attributions.show', $nouvelleAttribution->id_attribution)->with('success', $message);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Erreur réattribution: ' . $e->getMessage());
-
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-            }
-
-            return back()->withInput()->with('error', $e->getMessage());
-        }
+        return back()->withErrors($validator)->withInput();
     }
+
+    $ancienneAttribution = PrestataireLot::findOrFail($id);
+
+    try {
+        DB::beginTransaction();
+
+        // 1. Créer la nouvelle proforma
+        $numeroProforma = $request->new_numero_proforma;
+        if (empty($numeroProforma)) {
+            // Auto-génération du numéro
+            $annee = date('Y');
+            $dernierNum = Proforma::whereYear('created_at', $annee)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $sequence = 1;
+            if ($dernierNum && preg_match('/PROF-' . $annee . '-(\d+)/', $dernierNum->numero_proforma, $matches)) {
+                $sequence = intval($matches[1]) + 1;
+            }
+            $numeroProforma = 'PROF-' . $annee . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        }
+
+        // Calcul du montant TTC
+        $montantHT = floatval($request->new_montant_retenu) ?: 0;
+        $taxeMontant = floatval($request->new_taxe_montant) ?: 0;
+        $remiseMontant = floatval($request->new_remise_montant) ?: 0;
+        $montantTTC = $montantHT + $taxeMontant - $remiseMontant;
+
+        $proforma = Proforma::create([
+            'numero_proforma' => $numeroProforma,
+            'date_proforma' => $request->new_date_proforma,
+            'date_debut_validee_proforma' => $request->date_debut_prevue,
+            // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
+            'date_fin_validee_proforma' => $request->date_fin_prevue,
+            'montant_retenu_proforma' => $montantHT,
+            'taxe_montant' => $taxeMontant,
+            'remise_montant_proforma' => $remiseMontant,
+            'montant_ttc' => $montantTTC,
+            'penalite_proforma' => $request->new_penalites ?? 0,
+            'modalite_proforma' => $request->new_modalite,
+            'actif_proforma' => true,
+            'version_proforma' => 1,
+            'prestataire_id' => $request->prestataire_id,
+            'lot_id' => $ancienneAttribution->lot_id,
+            'created_by' => Auth::id(),
+        ]);
+
+
+
+        // 2. Retirer l'ancienne attribution si encore active
+        if (
+            $ancienneAttribution->is_active &&
+            $ancienneAttribution->statut_attribution === PrestataireLot::STATUT_ATTRIBUE
+        ) {
+            $ancienneAttribution->retirer(
+                $request->motif_reattribution,
+                PrestataireLot::TYPE_RETRAIT_RESILIATION
+            );
+        }
+
+        // 3. Préparer les données pour la nouvelle attribution
+        $dataReattribution = $validator->validated();
+        $dataReattribution['proforma_id'] = $proforma->id_proforma;
+
+        // Utiliser le montant TTC comme montant engagé si non spécifié
+        if (empty($dataReattribution['montant_engage'])) {
+            $dataReattribution['montant_engage'] = $montantTTC;
+        }
+
+        // 4. Créer la nouvelle attribution
+        $nouvelleAttribution = $ancienneAttribution->reattribuer($dataReattribution);
+
+        DB::commit();
+
+        Log::info('Lot réattribué avec nouvelle proforma', [
+            'ancienne_attribution' => $id,
+            'nouvelle_attribution' => $nouvelleAttribution->id_attribution,
+            'proforma' => $proforma->id_proforma,
+            'user' => Auth::id()
+        ]);
+
+        $message = 'Le lot a été réattribué avec succès. Nouvelle proforma créée : ' . $numeroProforma;
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => $nouvelleAttribution->load(['prestataire', 'lot', 'proforma']),
+            ]);
+        }
+
+        return redirect()->route('attributions.show', $nouvelleAttribution->id_attribution)->with('success', $message);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        dd($e->getMessage());
+        Log::error('Erreur réattribution: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+
+        return back()->withInput()->with('error', 'Erreur lors de la réattribution : ' . $e->getMessage());
+    }
+}
 
     /**
      * Terminer une attribution.

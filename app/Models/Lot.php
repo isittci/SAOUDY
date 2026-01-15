@@ -20,6 +20,7 @@ class Lot extends Model
         'appel_offre_id',
         'parent_id',
         'numero',
+        'budget_lot',
         'libelle',
         'description_critere',
         'specifications_techniques',
@@ -136,7 +137,7 @@ class Lot extends Model
 
     public function attributionActive()
     {
-       
+
         return $this->hasOne(PrestataireLot::class, 'lot_id', 'id_lot')
             ->whereIn('statut_attribution', [
                 PrestataireLot::STATUT_ATTRIBUE,

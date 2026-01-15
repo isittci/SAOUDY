@@ -39,7 +39,7 @@ class AuthController extends Controller
     {
 
         $validated = $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required|string'
         ]);
 
@@ -63,8 +63,21 @@ class AuthController extends Controller
         // }
 
 
-        // Rechercher l'utilisateur
-        $user = User::where('email', $validated['email'])->first();
+        // Rechercher l'utilisateur par email ou téléphone
+        $loginField = $validated['email'];
+        $user = null;
+
+        // Détecter si c'est un email ou un numéro de téléphone
+        if (filter_var($loginField, FILTER_VALIDATE_EMAIL)) {
+            // C'est un email
+            $user = User::where('email', $loginField)->first();
+        } else {
+            // C'est probablement un numéro de téléphone
+            // Rechercher dans telephone_principal ou telephone_secondaire
+            $user = User::where('telephone_principal', $loginField)
+                ->orWhere('telephone_secondaire', $loginField)
+                ->first();
+        }
 
         // Vérifier les identifiants
         if (!$user || !Hash::check($validated['password'], $user->password)) {
@@ -202,7 +215,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')->with('error', 'Code expiré ou invalide. Veuillez vous reconnecter.');
+            return redirect()->route('auth.index')->with('error', 'Code expiré ou invalide. Veuillez vous reconnecter.');
         }
 
         // Vérifier le code
@@ -228,7 +241,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')->with('error', 'Utilisateur introuvable.');
+            return redirect()->route('auth.index')->with('error', 'Utilisateur introuvable.');
         }
 
         DB::beginTransaction();
@@ -299,7 +312,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')->with('error', 'Session expirée. Veuillez vous reconnecter.');
+            return redirect()->route('auth.index')->with('error', 'Session expirée. Veuillez vous reconnecter.');
         }
 
         $user = User::find($cacheData['user_id']);
@@ -312,7 +325,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')
+            return redirect()->route('auth.index')
                 ->with('error', 'Utilisateur introuvable.');
         }
 
@@ -497,7 +510,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')->with('error', 'Lien invalide ou expiré.');
+            return redirect()->route('auth.index')->with('error', 'Lien invalide ou expiré.');
         }
 
         if ($request->expectsJson()) {
@@ -529,7 +542,7 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            return redirect()->route('users.login')
+            return redirect()->route('auth.index')
                 ->with('error', 'Lien invalide ou expiré.');
         }
 
@@ -549,7 +562,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            return redirect()->route('users.login')->with('success', 'Mot de passe réinitialisé. Vous pouvez vous connecter.');
+            return redirect()->route('auth.index')->with('success', 'Mot de passe réinitialisé. Vous pouvez vous connecter.');
 
         } catch (\Exception $e) {
             DB::rollBack();

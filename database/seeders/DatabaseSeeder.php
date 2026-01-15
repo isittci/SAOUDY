@@ -12,9 +12,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            PermissionSeeder::class,
-            UserSeeder::class, // À créer si nécessaire
-        ]);
+
+        $this->command->info('');
+        $this->command->info('🚀 Démarrage du seeding de la base de données...');
+        $this->command->info('');
+
+        // 1. Créer les permissions
+        $this->command->info('📋 Création des permissions...');
+        $this->call(PermissionsSeeder::class);
+        $this->command->info('');
+
+        // 2. Créer les rôles avec leurs permissions
+        $this->command->info('👥 Création des rôles...');
+        $this->call(RolesSeeder::class);
+        $this->command->info('');
+
+        // 3. Créer les utilisateurs par défaut
+        $this->command->info('👤 Création des utilisateurs...');
+        $this->call(UsersSeeder::class);
+        $this->command->info('');
+
+        $this->command->info('✅ Seeding terminé avec succès!');
+        $this->command->info('');
     }
 }

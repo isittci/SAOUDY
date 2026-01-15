@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('title', 'Nouveau Prestataire')
 @section('breadcrumb')
-    <a href="{{ route('prestataires.index') }}" class="text-white/80 hover:text-white transition-colors">Prestataires</a>
+    <a @can('prestataires.read') href="{{ route('prestataires.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Prestataires</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Nouveau</span>
 @endsection
@@ -11,10 +11,12 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('prestataires.read')
                 <a href="{{ route('prestataires.index') }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-plus-circle text-orange-500 mr-2"></i>
@@ -58,6 +60,7 @@
             </div>
         </div>
 
+        @can('prestataires.create')
         <form action="{{ route('prestataires.store') }}" method="POST" id="prestataireForm" class="space-y-6">
             @csrf
 
@@ -599,8 +602,10 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 
+    @can('prestataires.create')
     @push('scripts')
         <script>
             let currentStep = 1;
@@ -952,4 +957,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

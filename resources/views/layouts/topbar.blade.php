@@ -15,10 +15,10 @@
                 </div>
                 <div class="flex flex-col">
                     <h1 class="text-white font-bold text-base sm:text-lg lg:text-xl leading-tight tracking-wide">
-                        Gestion d'Appels d'Offres
+                        {{env('APP_NAME', 'SAODY')}}
                     </h1>
                     <span class="hidden sm:block text-orange-100 text-xs font-medium">
-                        Plateforme de gestion des marchés
+                        Système de gestion des Appels d'Offres du District de Yamoussoukro
                     </span>
                 </div>
             </div>
@@ -26,26 +26,7 @@
 
         <!-- Right Section -->
         <div class="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 ml-2 sm:ml-4">
-            {{-- <!-- Notifications -->
-            <div class="relative">
-                <button
-                    class="text-white hover:bg-orange-600/80 p-2.5 rounded-xl transition-all duration-200 relative group active:scale-95 shadow-md">
-                    <i class="far fa-bell text-lg lg:text-xl group-hover:animate-pulse"></i>
-                    <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 shadow-lg"></span>
-                    </span>
-                </button>
-                <!-- Notification Badge avec compteur -->
-                <span
-                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
-                    3
-                </span>
-            </div>
-
-            <!-- Divider -->
-            <div class="hidden sm:block h-8 w-px bg-white/30"></div> --}}
+           
 
             <!-- User Profile -->
             <div class="relative">
@@ -89,7 +70,7 @@
 
                     <!-- Menu Items -->
                     <div class="py-2">
-                        <a href="#"
+                        <a href="{{ route('profile.index') }}"
                             class="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-all duration-200 group">
                             <div
                                 class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">
@@ -98,14 +79,14 @@
                             <span class="font-medium">Mon profil</span>
                         </a>
 
-                        <a href="#"
+                        {{-- <a href="#"
                             class="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-all duration-200 group">
                             <div
                                 class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                                 <i class="fas fa-cog text-blue-600"></i>
                             </div>
                             <span class="font-medium">Paramètres</span>
-                        </a>
+                        </a> --}}
 
                         <a href="#"
                             class="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-all duration-200 group">

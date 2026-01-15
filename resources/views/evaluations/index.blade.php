@@ -45,7 +45,7 @@
                         <span class="text-xs text-green-600 uppercase">Terminées</span>
                         <i class="fas fa-check-circle text-green-400"></i>
                     </div>
-                    <p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['terminees'] }}</p>
+                    <p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['terminees'] < $stats['validees'] ? $stats['validees'] : $stats['terminees']  }}</p>
                 </div>
                 <div class="bg-white rounded-xl p-3 border border-emerald-200 shadow-sm">
                     <div class="flex items-center justify-between">
@@ -101,9 +101,11 @@
                         <button type="submit" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all">
                             <i class="fas fa-search mr-2"></i>Filtrer
                         </button>
-                        <a href="{{ route('evaluations.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
-                            <i class="fas fa-undo"></i>
-                        </a>
+                        @can('evaluations_attributions.read')
+                            <a href="{{ route('evaluations.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
+                                <i class="fas fa-undo"></i>
+                            </a>
+                        @endcan
                     </div>
                 </form>
             </div>
@@ -138,7 +140,9 @@
                                 <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Note</th>
                                 <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Rang</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                                @canany(['evaluations_attributions.evaluate', 'evaluations_attributions.view-details'])
+                                    <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                                @endcanany
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -192,22 +196,29 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $evaluation->date_evaluation ? $evaluation->date_evaluation->format('d/m/Y') : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            <a href="{{ route('evaluations.show', $evaluation->id_evaluation) }}"
-                                                class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                                title="Voir les détails">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            @if($evaluation->peutEtreModifiee())
-                                                <a href="{{ route('evaluations.edit', $evaluation->id_evaluation) }}"
-                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                                    title="Modifier">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
+                                    @canany(['evaluations_attributions.evaluate', 'evaluations_attributions.view-details'])
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <div class="flex items-center justify-center space-x-2">
+                                                @can('evaluations_attributions.view-details')
+                                                    <a href="{{ route('evaluations.show', $evaluation->id_evaluation) }}"
+                                                        class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                                        title="Voir les détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                @endcan
+
+                                                @can('evaluations_attributions.evaluate')
+                                                    @if($evaluation->peutEtreModifiee())
+                                                        <a href="{{ route('evaluations.edit', $evaluation->id_evaluation) }}"
+                                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                                            title="Modifier">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    @endcanany
                                 </tr>
                             @endforeach
                         </tbody>

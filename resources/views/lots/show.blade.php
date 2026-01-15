@@ -1,11 +1,11 @@
 @extends('layouts.main')
 @section('title', 'Détails Lot - ' . $lot->numero)
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $lot->appelOffre->numero_appel_offre }}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $lot->appelOffre->numero_appel_offre }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" class="text-white/80 hover:text-white transition-colors">Lots</a>
+    <a @can('lots.read') href="{{ route('lots-appels-offres.index', [$lot->appelOffre->id_appel_offre]) }}" @endcan class="text-white/80 hover:text-white transition-colors">Lots</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">{{ $lot->numero }}</span>
 @endsection
@@ -17,10 +17,12 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Titre et retour -->
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('lots.index') }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('lots.read')
+                        <a href="{{ route('lots.index') }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
                     <div>
                         <div class="flex items-center space-x-3 flex-wrap">
                             <h1 class="text-2xl font-bold text-gray-800">{{ $lot->numero }}</h1>
@@ -48,65 +50,86 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex items-center space-x-2 flex-wrap">
-                    @if (!$lot->attribution_lot && !$lot->isRetire())
-                        <button onclick="openAttributionModal()"
-                            class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-user-check text-sm"></i>
-                            <span class="text-sm font-medium">Attribuer</span>
-                        </button>
-                    @endif
+                @canany(['attributions_lots.assign', 'attributions_lots.withdraw', 'lots.update', 'lots.view-history', 'lots.read', 'lots.duplicate', 'lots.delete'])
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2 flex-wrap">
+                        @can('attributions_lots.assign')
+                        @if (!$lot->attribution_lot && !$lot->isRetire())
+                            <button onclick="openAttributionModal()"
+                                class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-user-check text-sm"></i>
+                                <span class="text-sm font-medium">Attribuer</span>
+                            </button>
+                        @endif
+                        @endcan
 
-                    @if ($lot->isAttribue() && !$lot->isRetire())
-                        <button onclick="openRetraitModal()"
-                            class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-ban text-sm"></i>
-                            <span class="text-sm font-medium">Retirer</span>
-                        </button>
-                    @endif
+                        @can('attributions_lots.withdraw')
+                        @if ($lot->isAttribue() && !$lot->isRetire())
+                            <button onclick="openRetraitModal()"
+                                class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-ban text-sm"></i>
+                                <span class="text-sm font-medium">Retirer</span>
+                            </button>
+                        @endif
+                        @endcan
 
-                    <button onclick="window.location.href='{{ route('lots.edit', $lot->id_lot) }}'"
-                        class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-edit text-sm"></i>
-                        <span class="text-sm font-medium">Modifier</span>
-                    </button>
-
-                    <!-- Menu dropdown -->
-                    <div class="relative">
-                        <button onclick="toggleMenu()" id="menuBtn"
-                            class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-ellipsis-v text-sm"></i>
+                        @can('lots.update')
+                        <button onclick="window.location.href='{{ route('lots.edit', $lot->id_lot) }}'"
+                            class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                            <i class="fas fa-edit text-sm"></i>
+                            <span class="text-sm font-medium">Modifier</span>
                         </button>
-                        <div id="actionMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-                            <div class="py-1">
-                                <button onclick="viewHistorique()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-history mr-2 text-blue-500"></i>
-                                    Historique
-                                </button>
-                                <button onclick="viewStatistiques()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-chart-bar mr-2 text-purple-500"></i>
-                                    Statistiques
-                                </button>
-                                <button onclick="duplicate()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-copy mr-2 text-indigo-500"></i>
-                                    Dupliquer
-                                </button>
-                                @if(!$lot->isAttribue())
-                                    <button onclick="confirmDelete()"
-                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                        <i class="fas fa-trash mr-2"></i>
-                                        Supprimer
+                        @endcan
+
+                        @canany(['lots.view-history', 'lots.read', 'lots.duplicate', 'lots.delete'])
+                        <!-- Menu dropdown -->
+                        <div class="relative">
+                            <button onclick="toggleMenu()" id="menuBtn"
+                                class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-ellipsis-v text-sm"></i>
+                            </button>
+                            <div id="actionMenu"
+                                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                                <div class="py-1">
+                                    @can('lots.view-history')
+                                    <button onclick="viewHistorique()"
+                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                        <i class="fas fa-history mr-2 text-blue-500"></i>
+                                        Historique
                                     </button>
-                                @endif
+                                    @endcan
+
+                                    @can('lots.read')
+                                    <button onclick="viewStatistiques()"
+                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                        <i class="fas fa-chart-bar mr-2 text-purple-500"></i>
+                                        Statistiques
+                                    </button>
+                                    @endcan
+
+                                    @can('lots.duplicate')
+                                    <button onclick="duplicate()"
+                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                        <i class="fas fa-copy mr-2 text-indigo-500"></i>
+                                        Dupliquer
+                                    </button>
+                                    @endcan
+
+                                    @can('lots.delete')
+                                    @if(!$lot->isAttribue())
+                                        <button onclick="confirmDelete()"
+                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                            <i class="fas fa-trash mr-2"></i>
+                                            Supprimer
+                                        </button>
+                                    @endif
+                                    @endcan
+                                </div>
                             </div>
                         </div>
+                        @endcanany
                     </div>
-                </div>
+                @endcanany
             </div>
         </div>
     </div>
@@ -160,11 +183,14 @@
                                         <i class="fas fa-tag mr-1"></i>{{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
                                     </p>
                                 </div>
+
+                                @can('appels_offres.view-details')
                                 <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}"
                                     class="ml-auto p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                     title="Voir l'appel d'offres">
                                     <i class="fas fa-external-link-alt text-sm"></i>
                                 </a>
+                                @endcan
                             </div>
                         </div>
 
@@ -200,17 +226,6 @@
                                 <p class="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-lg whitespace-pre-wrap">
                                     {{ $lot->specifications_techniques }}
                                 </p>
-                            </div>
-                        @endif
-
-                        <!-- Taux de pénalités -->
-                        @if($lot->taux_penalites)
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Taux de pénalités</label>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl font-bold text-gray-900">{{ number_format($lot->taux_penalites, 2) }}</span>
-                                    <span class="text-sm text-gray-500">% par jour de retard</span>
-                                </div>
                             </div>
                         @endif
                     </div>
@@ -508,12 +523,14 @@
                         @if($lot->parent_id)
                             <div class="pt-4 border-t border-gray-200">
                                 <p class="text-gray-600 font-medium mb-1">Version parente</p>
-                                {{-- <a href="{{ route('lots.show', $lot->parent_id) }}" --}}
+
+                                @can('lots.view-details')
                                 <a href="{{ route('lots-appels-offres.show', [$lot->appel_offre_id, $lot->parent_id]) }}"
                                    class="text-indigo-600 hover:text-indigo-800 text-xs flex items-center">
                                     <i class="fas fa-link mr-1"></i>
                                     Voir la version parente
                                 </a>
+                                @endcan
                             </div>
                         @endif
 
@@ -521,49 +538,57 @@
                     </div>
                 </div>
 
-                <!-- Actions rapides -->
-                <div class="bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-lg p-6 border border-indigo-100">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-bolt text-indigo-500 mr-2"></i>
-                        Actions rapides
-                    </h3>
+                @canany(['attributions_lots.assign', 'lots.view-history', 'lots.duplicate'])
+                    <!-- Actions rapides -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-lg p-6 border border-indigo-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-bolt text-indigo-500 mr-2"></i>
+                            Actions rapides
+                        </h3>
 
-                    <div class="space-y-2">
-                        @if(!$lot->attribution_lot && !$lot->isRetire())
-                            <button onclick="openAttributionModal()"
-                                class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-green-50 border border-green-200 rounded-lg transition-all duration-200 group">
-                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                                    <i class="fas fa-user-check text-green-600"></i>
+                        <div class="space-y-2">
+                            @can('attributions_lots.assign')
+                            @if(!$lot->attribution_lot && !$lot->isRetire())
+                                <button onclick="openAttributionModal()"
+                                    class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-green-50 border border-green-200 rounded-lg transition-all duration-200 group">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                                        <i class="fas fa-user-check text-green-600"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold text-gray-700">Attribuer le lot</span>
+                                </button>
+                            @endif
+                            @endcan
+
+                            @can('lots.view-history')
+                            <button onclick="viewHistorique()"
+                                class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                    <i class="fas fa-history text-blue-600"></i>
                                 </div>
-                                <span class="text-sm font-semibold text-gray-700">Attribuer le lot</span>
+                                <span class="text-sm font-semibold text-gray-700">Voir l'historique</span>
                             </button>
-                        @endif
+                            @endcan
 
-                        <button onclick="viewHistorique()"
-                            class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg transition-all duration-200 group">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <i class="fas fa-history text-blue-600"></i>
-                            </div>
-                            <span class="text-sm font-semibold text-gray-700">Voir l'historique</span>
-                        </button>
+                            @can('lots.duplicate')
+                            <button onclick="duplicate()"
+                                class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-purple-50 border border-purple-200 rounded-lg transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                                    <i class="fas fa-copy text-purple-600"></i>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">Dupliquer le lot</span>
+                            </button>
+                            @endcan
 
-                        <button onclick="duplicate()"
-                            class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-purple-50 border border-purple-200 rounded-lg transition-all duration-200 group">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                                <i class="fas fa-copy text-purple-600"></i>
-                            </div>
-                            <span class="text-sm font-semibold text-gray-700">Dupliquer le lot</span>
-                        </button>
-
-                        <button onclick="window.print()"
-                            class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-all duration-200 group">
-                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                                <i class="fas fa-print text-gray-600"></i>
-                            </div>
-                            <span class="text-sm font-semibold text-gray-700">Imprimer</span>
-                        </button>
+                            {{-- <button onclick="window.print()"
+                                class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-all duration-200 group">
+                                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-print text-gray-600"></i>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">Imprimer</span>
+                            </button> --}}
+                        </div>
                     </div>
-                </div>
+                @endcanany
             </div>
         </div>
     </main>
@@ -584,10 +609,12 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
+                        @can('lots.delete')
                         <button onclick="executeDelete()"
                             class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
                             Supprimer
                         </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -654,11 +681,13 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
+                        @can('attributions_lots.assign')
                         <button type="submit" id="submitAttributionBtn"
                             class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
                             <i class="fas fa-check mr-2"></i>
                             <span id="submitAttributionText">Attribuer</span>
                         </button>
+                        @endcan
                     </div>
                 </form>
             </div>
@@ -702,17 +731,20 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
+                        @can('attributions_lots.withdraw')
                         <button type="submit" id="submitRetraitBtn"
                             class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
                             <i class="fas fa-ban mr-2"></i>
                             <span id="submitRetraitText">Retirer</span>
                         </button>
+                        @endcan
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    @can('lots.view-details')
     @push('scripts')
         <script>
             const lotId = '{{ $lot->id_lot }}';
@@ -1000,4 +1032,5 @@
             }
         </style>
     @endpush
+    @endcan
 @endsection

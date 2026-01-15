@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('title', 'Nouvelle Proforma')
 @section('breadcrumb')
-    <a href="{{ route('proformas.index') }}" class="text-white/80 hover:text-white transition-colors">Proformas</a>
+    <a @can('proformas.read') href="{{ route('proformas.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Proformas</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Nouvelle</span>
 @endsection
@@ -11,10 +11,12 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('proformas.read')
                 <a href="{{ route('proformas.index') }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-file-invoice-dollar text-orange-500 mr-3"></i>
@@ -46,6 +48,7 @@
             </div>
         @endif
 
+        @can('proformas.create')
         <form action="{{ route('proformas.store') }}" method="POST" id="proformaForm">
             @csrf
 
@@ -204,21 +207,7 @@
                                     @enderror
                                 </div>
 
-                                <!-- Pénalités -->
-                                <div>
-                                    <label for="penalites_proforma" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Pénalités éventuelles
-                                    </label>
-                                    <div class="relative">
-                                        <input type="number" id="penalites_proforma" name="penalites_proforma"
-                                            value="{{ old('penalites_proforma', 0) }}" min="0" step="0.01"
-                                            class="w-full px-4 py-3 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent @error('penalites_proforma') border-red-500 @enderror">
-                                        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">FCFA</span>
-                                    </div>
-                                    @error('penalites_proforma')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -311,8 +300,10 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 
+    @can('proformas.create')
     @push('scripts')
         <script>
             // Sélection de modalité
@@ -420,4 +411,5 @@
             .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
         </style>
     @endpush
+    @endcan
 @endsection

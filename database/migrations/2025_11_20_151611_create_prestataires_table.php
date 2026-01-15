@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration 
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('telephone_principal_prestataire', 20)->comment('Numéro de téléphone principal du prestataire');
             $table->string('telephone_secondaire_prestataire', 20)->nullable()->comment('Numéro de téléphone secondaire du prestataire');
 
-
             // Contacts
             $table->text('adresse_prestataire')->comment('Adresse physique du prestataire');
             $table->string('ville_prestataire', 50);
@@ -31,7 +30,6 @@ return new class extends Migration
 
             // Représentant légal
             $table->json('representant_legal_prestataire')->comment('Informations sur le représentant légal au format JSON (tableau de represents): id, statut, nom, prenoms, contact, email, nationalité, pays, adresse, profession, date_naissance, lieu_naissance, numero_piece_identite, type_piece_identite, date_delivrance, lieu_delivrance, date_expiration.');
-
 
             // Statut
             $table->boolean('statut_prestataire')->default(false);

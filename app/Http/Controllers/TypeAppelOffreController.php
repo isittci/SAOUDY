@@ -29,7 +29,7 @@ class TypeAppelOffreController extends Controller
                 $query->where('actif_type_appel_offre', $request->actif);
             }
 
-            
+
 
             if ($request->filled('search')) {
                 $search = strtolower($request->search);
@@ -83,15 +83,15 @@ class TypeAppelOffreController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'libelle_type_appel_offre' => 'required|string|max:160',
-            'code_type_appel_offre' => 'required|string|max:10|unique:types_appels_offres,code_type_appel_offre',
+            // 'code_type_appel_offre' => 'required|string|max:10|unique:types_appels_offres,code_type_appel_offre',
             'valeur_minimuim_type_appel_offre' => 'required|numeric|min:0',
             'valeur_maximuim_type_appel_offre' => 'required|numeric|gt:valeur_minimuim_type_appel_offre',
             'description_critere_type_appel_offre' => 'nullable|string',
             'actif_type_appel_offre' => 'boolean',
         ], [
             'libelle_type_appel_offre.required' => 'Le libellé est obligatoire',
-            'code_type_appel_offre.required' => 'Le code est obligatoire',
-            'code_type_appel_offre.unique' => 'Ce code existe déjà',
+            // 'code_type_appel_offre.required' => 'Le code est obligatoire',
+            // 'code_type_appel_offre.unique' => 'Ce code existe déjà',
             'valeur_minimuim_type_appel_offre.required' => 'La valeur minimale est obligatoire',
             'valeur_maximuim_type_appel_offre.required' => 'La valeur maximale est obligatoire',
             'valeur_maximuim_type_appel_offre.gt' => 'La valeur maximale doit être supérieure à la valeur minimale',
@@ -113,7 +113,7 @@ class TypeAppelOffreController extends Controller
         try {
             $typeAO = TypeAppelOffre::create([
                 'libelle_type_appel_offre' => $request->libelle_type_appel_offre,
-                'code_type_appel_offre' => strtoupper($request->code_type_appel_offre),
+                // 'code_type_appel_offre' => strtoupper($request->code_type_appel_offre), 
                 'valeur_minimuim_type_appel_offre' => $request->valeur_minimuim_type_appel_offre,
                 'valeur_maximuim_type_appel_offre' => $request->valeur_maximuim_type_appel_offre,
                 'description_critere_type_appel_offre' => $request->description_critere_type_appel_offre,

@@ -13,20 +13,26 @@
             ->current()
             ->first();
     @endphp
-    
+
+    @canany(['evaluations_attributions.read', 'evaluations_attributions.evaluate'])
     @if($evaluationExistante)
+    @can('evaluations_attributions.read')
         <a href="{{ route('evaluations.show', $evaluationExistante->id_evaluation) }}"
             class="px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
             <i class="fas fa-clipboard-check text-sm"></i>
             <span class="text-sm font-medium">Voir l'évaluation</span>
         </a>
+        @endcan
     @else
+    @can('evaluations_attributions.evaluate')
         <a href="{{ route('evaluations.create', $attribution->id_attribution) }}"
             class="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
             <i class="fas fa-clipboard-list text-sm"></i>
             <span class="text-sm font-medium">Évaluer</span>
         </a>
+        @endcan
     @endif
+    @endcanany
 @endif
 
 {{-- ====================================================================== --}}
@@ -57,7 +63,7 @@
             {{-- Numéro --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Numéro</label>
-                <a href="{{ route('evaluations.show', $evaluation->id_evaluation) }}" 
+                <a @can('evaluations_attributions.view-details') href="{{ route('evaluations.show', $evaluation->id_evaluation) }}" @endcan
                     class="text-indigo-600 hover:text-indigo-800 font-medium">
                     {{ $evaluation->numero_evaluation }}
                 </a>
@@ -99,11 +105,13 @@
                 </div>
             @endif
 
+            @can('evaluations_attributions.view-details')
             {{-- Lien vers détails --}}
-            <a href="{{ route('evaluations.show', $evaluation->id_evaluation) }}" 
+            <a href="{{ route('evaluations.show', $evaluation->id_evaluation) }}"
                 class="block w-full text-center px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium rounded-lg transition-all">
                 <i class="fas fa-eye mr-2"></i>Voir les détails
             </a>
+            @endcan
         </div>
     </div>
 @else
@@ -119,10 +127,12 @@
             <div class="p-6 text-center">
                 <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-3"></i>
                 <p class="text-gray-600 mb-4">Aucune évaluation n'a été effectuée.</p>
-                <a href="{{ route('evaluations.create', $attribution->id_attribution) }}" 
+                @can('evaluations_attributions.evaluate')
+                <a href="{{ route('evaluations.create', $attribution->id_attribution) }}"
                     class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-medium rounded-lg transition-all shadow-md">
                     <i class="fas fa-plus mr-2"></i>Créer une évaluation
                 </a>
+                @endcan
             </div>
         </div>
     @endif

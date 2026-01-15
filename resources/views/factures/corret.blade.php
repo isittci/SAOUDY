@@ -18,11 +18,13 @@
                         <h1 class="text-2xl font-bold text-gray-800">Factures</h1>
                         <p class="text-gray-600 mt-1">Gestion des factures liées aux proformas</p>
                     </div>
+                    @can('factures.create')
                     <a href="{{ route('factures.create') }}"
                         class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 shadow-md">
                         <i class="fas fa-plus mr-2"></i>
                         Nouvelle Facture
                     </a>
+                    @endcan
                 </div>
 
                 <!-- Statistiques -->

@@ -1,16 +1,15 @@
 <!-- Sidebar avec design moderne et responsive -->
-<aside id="sidebar" class="w-64 bg-gradient-to-b from-green-700 to-green-800 text-white flex-shrink-0 overflow-y-auto fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 shadow-2xl">
+<aside id="sidebar"
+    class="w-64 bg-gradient-to-b from-green-700 to-green-800 text-white flex-shrink-0 overflow-y-auto fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 shadow-2xl">
 
-    <!-- Logo/Header avec gradient -->
-    {{-- <div class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
+    <div
+        class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
         <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transform hover:scale-110 transition-transform duration-300">
-                <svg class="w-5 h-5 lg:w-6 lg:h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
-                </svg>
+            <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transform hover:scale-110 transition-transform duration-300 overflow-hidden">
+                <img src="{{ asset('favicon.png') }}" alt="Logo" class="w-7 h-7 lg:w-8 lg:h-8 object-contain">
             </div>
             <div class="flex flex-col">
-                <span class="text-white font-bold text-sm lg:text-base">{{env('APP_NAME')}}</span>
+                <span class="text-white font-bold text-sm lg:text-base">{{ env('APP_NAME') }}</span>
                 <span class="text-gray-300 text-xs">Gestion des marchés</span>
             </div>
         </div>
@@ -19,23 +18,7 @@
             class="lg:hidden text-white hover:bg-gray-700 p-2 rounded-lg transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50">
             <i class="fas fa-times text-lg"></i>
         </button>
-    </div> --}}
-    <div class="p-4 lg:p-5 bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-between sticky top-0 z-10 shadow-lg">
-    <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 lg:w-10 lg:h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md transform hover:scale-110 transition-transform duration-300 overflow-hidden">
-            <img src="{{ asset('favicon.png') }}" alt="Logo" class="w-7 h-7 lg:w-8 lg:h-8 object-contain">
-        </div>
-        <div class="flex flex-col">
-            <span class="text-white font-bold text-sm lg:text-base">{{env('APP_NAME')}}</span>
-            <span class="text-gray-300 text-xs">Gestion des marchés</span>
-        </div>
     </div>
-    <!-- Close button for mobile -->
-    <button onclick="closeMobileMenu()" type="button"
-        class="lg:hidden text-white hover:bg-gray-700 p-2 rounded-lg transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50">
-        <i class="fas fa-times text-lg"></i>
-    </button>
-</div>
 
     <!-- Navigation Menu avec scroll personnalisé -->
     <nav class="py-4 px-2 space-y-1">
@@ -52,260 +35,228 @@
             <span class="font-medium text-sm">Tableau de bord</span>
         </a>
 
-        <!-- SECTION : APPELS D'OFFRES -->
-        <div class="mt-6 space-y-1">
-            <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
-                <i class="fas fa-bullhorn text-xs"></i>
-                <span class="font-semibold text-xs tracking-wider uppercase">Appels d'offres</span>
-            </div>
-
-            <!-- Types d'appels d'offres -->
-            <a href="{{ route('types-appels-offres.index') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 {{ request()->routeIs('types-appels-offres.*') ? 'bg-green-600 shadow-lg' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
-                <i class="fas fa-list-alt text-sm group-hover:scale-110 transition-transform"></i>
-                <span class="font-medium text-sm">Types d'appels d'offres</span>
-            </a>
-
-            <!-- Menu Appels d'offres -->
-            <div>
-                <button onclick="toggleSubmenu('aoMenu','aoIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-bullhorn text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Appels d'offres</span>
-                    </div>
-                    <i id="aoIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*']) ? 'rotate-180' : '' }}"></i>
-                </button>
-
-                <div id="aoMenu" class="{{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="{{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
-                    <a href="{{ route('appels-offres.create') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('appels-offres.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus-circle text-xs group-hover:rotate-90 transition-transform"></i>
-                        <span>Créer un appel</span>
-                    </a>
-                    <a href="{{ route('appels-offres.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('appels-offres.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste des appels</span>
-                    </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('lots-appels-offres.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-history text-xs"></i>
-                        <span>Historique</span>
-                    </a>
+        @canany(['types_appels_offres.read', 'appels_offres.read', 'appels_offres.create', 'lots.read', 'prestataires.read', 'prestataires.create', 'attributions_lots.read', 'evaluations_attributions.read', 'factures.read', 'paiements.read', 'proformas.read'])
+            <!-- SECTION : TYPES APPELS D'OFFRES -->
+            <div class="mt-6 space-y-1">
+                <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
+                    <i class="fas fa-bullhorn text-xs"></i>
+                    <span class="font-semibold text-xs tracking-wider uppercase">Appels d'offres</span>
                 </div>
-            </div>
 
-            <!-- Prestataires -->
-            <div>
-                <button onclick="toggleSubmenu('prestataireMenu','prestataireIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('prestataires.*') ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-user-tie text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Prestataires</span>
+                @can('types_appels_offres.read')
+                    <!-- Types d'appels d'offres -->
+                    <a href="{{ route('types-appels-offres.index') }}"
+                        class="flex items-center space-x-3 px-3 py-2.5 {{ request()->routeIs('types-appels-offres.*') ? 'bg-green-600 shadow-lg' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                        <i class="fas fa-list-alt text-sm group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium text-sm">Types d'appels d'offres</span>
+                    </a>
+                @endcan
+
+                @canany(['appels_offres.read', 'appels_offres.create', 'lots.read'])
+                    <!-- Menu Appels d'offres -->
+                    <div>
+                        <button onclick="toggleSubmenu('aoMenu','aoIcon')" type="button"
+                            class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*', 'lots.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-bullhorn text-sm group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium text-sm">Appels d'offres</span>
+                            </div>
+                            <i id="aoIcon"
+                                class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*', 'lots.*']) ? 'rotate-180' : '' }}"></i>
+                        </button>
+
+                        <div id="aoMenu"
+                            class="{{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*', 'lots.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
+                            style="{{ request()->routeIs(['appels-offres.*', 'lots-appels-offres.*', 'lots.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
+                            @can('appels_offres.create')
+                                    <a href="{{ route('appels-offres.create') }}"
+                                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('appels-offres.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                        <i class="fas fa-plus-circle text-xs group-hover:rotate-90 transition-transform"></i>
+                                        <span>Créer un appel</span>
+                                    </a>
+                            @endcan
+                            @can('appels_offres.read')
+                                    <a href="{{ route('appels-offres.index') }}"
+                                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('appels-offres.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                        <i class="fas fa-list text-xs"></i>
+                                        <span>Liste des appels</span>
+                                    </a>
+                            @endcan
+                            @can('lots.read')
+                                    <a href="{{ route('lots.index') }}"
+                                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('lots-appels-offres.*', 'lots.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                        <i class="fas fa-history text-xs"></i>
+                                        <span>Liste des lots</span>
+                                    </a>
+                            @endcan
+                        </div>
                     </div>
-                    <i id="prestataireIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs('prestataires.*') ? 'rotate-180' : '' }}"></i>
-                </button>
+                @endcanany
 
-                <div id="prestataireMenu" class="{{ request()->routeIs('prestataires.*') ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="{{ request()->routeIs('prestataires.*') ? 'max-height: 500px;' : 'max-height: 0;' }}">
-                    <a href="{{ route('prestataires.create') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('prestataires.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-user-plus text-xs group-hover:rotate-12 transition-transform"></i>
-                        <span>Ajouter</span>
-                    </a>
-                    <a href="{{ route('prestataires.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('prestataires.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-users text-xs"></i>
-                        <span>Liste</span>
-                    </a>
-                </div>
-            </div>
+                @canany(['prestataires.read', 'prestataires.create'])
+                    <!-- Prestataires -->
+                    <div>
+                        <button onclick="toggleSubmenu('prestataireMenu','prestataireIcon')" type="button"
+                            class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('prestataires.*') ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-user-tie text-sm group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium text-sm">Prestataires</span>
+                            </div>
+                            <i id="prestataireIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs('prestataires.*') ? 'rotate-180' : '' }}"></i>
+                        </button>
 
-
-            <a href="{{ route('proformas.index') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                <i class="fas fa-clipboard-check text-sm group-hover:scale-110 transition-transform"></i>
-                <span class="font-medium text-sm">Proformas</span>
-            </a>
-
-            <div>
-                <button onclick="toggleSubmenu('paiement','paieIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-file-signature text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Paiements</span>
+                        <div id="prestataireMenu"
+                            class="{{ request()->routeIs('prestataires.*') ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
+                            style="{{ request()->routeIs('prestataires.*') ? 'max-height: 500px;' : 'max-height: 0;' }}">
+                        @can('prestataires.create')
+                            <a href="{{ route('prestataires.create') }}"
+                                class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('prestataires.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                <i class="fas fa-user-plus text-xs group-hover:rotate-12 transition-transform"></i>
+                                <span>Créer prestataire</span>
+                            </a>
+                        @endcan
+                        @can('prestataires.read')
+                            <a href="{{ route('prestataires.index') }}"
+                                class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('prestataires.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                <i class="fas fa-users text-xs"></i>
+                                <span>Liste prestataires</span>
+                            </a>
+                        @endcan
+                        </div>
                     </div>
-                    <i id="paieIcon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
-                </button>
+                @endcanany
 
-                <div id="paiement" class="hidden ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="max-height: 0;">
-                    <a href="{{ route('factures.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span>Liste facture</span>
-                    </a>
-
-                    {{-- href="{{ route('paiements.create') }}" --}}
-                    <a  class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span>Nouveau paiement</span>
-                    </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste paiements</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Attribution -->
-            <div>
-                <button onclick="toggleSubmenu('attribMenu','attribIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('attributions.*') ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
+                @can('attributions_lots.read')
+                    <!-- Attribution -->
+                    <a href="{{ route('attributions.index') }}"
+                        class="flex items-center space-x-3 px-3 py-2.5 {{ request()->routeIs('attributions.*') ? 'bg-green-600 shadow-lg' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
                         <i class="fas fa-file-signature text-sm group-hover:scale-110 transition-transform"></i>
                         <span class="font-medium text-sm">Attribution de lots</span>
-                    </div>
-                    <i id="attribIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs('attributions.*') ? 'rotate-180' : '' }}""></i>
-                </button>
-
-                <div id="attribMenu" class="{{ request()->routeIs('attributions.*') ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="{{ request()->routeIs('attributions.*') ? 'max-height: 500px;' : 'max-height: 0;' }}">
-                    <a href="{{ route('attributions.create') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('attributions.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span>Nouvelle attribution</span>
                     </a>
-                    <a href="{{ route('attributions.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('attributions.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste</span>
-                    </a>
-                </div>
-            </div>
+                @endcan
 
-            {{-- <div>
-                <button onclick="toggleSubmenu('evaluaMenu','evaluaIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('evaluations.*') ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-file-signature text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Evaluations de lots</span>
-                    </div>
-                    <i id="evaluaIcon" class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs('evaluations.*') ? 'rotate-180' : '' }}""></i>
-                </button>
-
-                <div id="evaluaMenu" class="{{ request()->routeIs('evaluations.*') ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="{{ request()->routeIs('evaluations.*') ? 'max-height: 500px;' : 'max-height: 0;' }}">
-                    <a href="{{ route('evaluations.create') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.create') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span>Nouvelle attribution</span>
-                    </a>
+                @can('evaluations_attributions.read')
+                    <!-- Évaluations -->
                     <a href="{{ route('evaluations.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste</span>
+                        class="flex items-center space-x-3 px-3 py-2.5 {{ request()->routeIs('evaluations.*') ? 'bg-green-600 shadow-lg' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                        <i class="fas fa-star text-sm group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium text-sm">Évaluation des lots</span>
                     </a>
-                </div>
-            </div> --}}
+                @endcan
 
-            <!-- Évaluation des lots -->
-            {{-- <a href="{{ route('') }}"
-                class="flex items-center space-x-3 px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                <i class="fas fa-star text-sm group-hover:scale-110 transition-transform"></i>
-                <span class="font-medium text-sm">Évaluation des lots</span>
-            </a> --}}
-            <a href="{{ route('evaluations.index') }}" class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('evaluations.index') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
-                <i class="fas fa-star text-sm group-hover:scale-110 transition-transform"></i>
-                <span class="font-medium text-sm">Évaluation des lots</span>
-            </a>
-        </div>
+                @canany(['factures.read', 'paiements.read'])
+                    <!-- Paiements -->
+                    <div>
+                        <button onclick="toggleSubmenu('paiementMenu','paieIcon')" type="button"
+                            class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['factures.*', 'paiements.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-money-check-alt text-sm group-hover:scale-110 transition-transform"></i>
+                                <span class="font-medium text-sm">Paiements</span>
+                            </div>
+                            <i id="paieIcon"
+                                class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['factures.*', 'paiements.*']) ? 'rotate-180' : '' }}"></i>
+                        </button>
 
-        <!-- SECTION : ADMINISTRATION -->
-        <div class="mt-6 space-y-1">
-            <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
-                <i class="fas fa-cogs text-xs"></i>
-                <span class="font-semibold text-xs tracking-wider uppercase">Administration</span>
-            </div>
-
-            <!-- Rôles -->
-            <div>
-                <button onclick="toggleSubmenu('roleMenu','roleIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-user-tag text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Rôles</span>
+                        <div id="paiementMenu"
+                            class="{{ request()->routeIs(['factures.*', 'paiements.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
+                            style="{{ request()->routeIs(['factures.*', 'paiements.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
+                            @can('factures.read')
+                                <a href="{{ route('factures.index') }}"
+                                    class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('factures.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                    <i class="fas fa-file-invoice-dollar text-xs"></i>
+                                    <span>Liste factures</span>
+                                </a>
+                            @endcan
+                            @can('paiements.read')
+                                <a href="{{ route('paiements.all') }}"
+                                    class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('paiements.all') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                    <i class="fas fa-list text-xs"></i>
+                                    <span>Liste paiements</span>
+                                </a>
+                            @endcan
+                        </div>
                     </div>
-                    <i id="roleIcon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
-                </button>
+                @endcanany
 
-                <div id="roleMenu" class="hidden ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="max-height: 0;">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus-circle text-xs"></i>
-                        <span>Créer un rôle</span>
+                @can('proformas.read')
+                    <!-- Proformas -->
+                    <a href="{{ route('proformas.index') }}"
+                        class="flex items-center space-x-3 px-3 py-2.5 {{ request()->routeIs('proformas.*') ? 'bg-green-600 shadow-lg' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                        <i class="fas fa-clipboard-check text-sm group-hover:scale-110 transition-transform"></i>
+                        <span class="font-medium text-sm">Proformas</span>
                     </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste des rôles</span>
-                    </a>
-                </div>
+                @endcan
             </div>
+        @endcanany
 
-            <!-- Permissions -->
-            <div>
-                <button onclick="toggleSubmenu('permMenu','permIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-shield-alt text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Permissions</span>
+
+        @canany(['roles.read', 'users.read', 'role_permissions.read'])
+            <!-- SECTION : ADMINISTRATION -->
+            <div class="mt-6 space-y-1">
+                <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
+                    <i class="fas fa-cogs text-xs"></i>
+                    <span class="font-semibold text-xs tracking-wider uppercase">Administration</span>
+                </div>
+
+                <!-- Menu Administration unique -->
+                <div>
+                    <button onclick="toggleSubmenu('adminMenu','adminIcon')" type="button"
+                        class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-tools text-sm group-hover:scale-110 transition-transform"></i>
+                            <span class="font-medium text-sm">Paramètres</span>
+                        </div>
+                        <i id="adminIcon"
+                            class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'rotate-180' : '' }}"></i>
+                    </button>
+
+                    <div id="adminMenu"
+                        class="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
+                        style="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
+
+                        @can('roles.read')
+                        <!-- Rôles -->
+                        <a href="{{ route('admin.roles.index') }}"
+                            class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('admin.roles.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                            <i class="fas fa-user-tag text-xs"></i>
+                            <span>Rôles</span>
+                        </a>
+                        @endcan
+
+                        @can('role_permissions.read')
+                        <!-- Permissions -->
+                        <a href="{{ route('admin.permissions.index') }}"
+                            class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('admin.permissions.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                            <i class="fas fa-shield-alt text-xs"></i>
+                            <span>Permissions</span>
+                        </a>
+                        @endcan
+
+                        @can('users.read')
+                        <!-- Personnels -->
+                        <a href="{{ route('admin.users.index') }}"
+                            class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('admin.users.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                            <i class="fas fa-users text-xs"></i>
+                            <span>Personnels</span>
+                        </a>
+                        @endcan
                     </div>
-                    <i id="permIcon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
-                </button>
-
-                <div id="permMenu" class="hidden ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="max-height: 0;">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-plus-circle text-xs"></i>
-                        <span>Créer permission</span>
-                    </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste permissions</span>
-                    </a>
                 </div>
             </div>
+        @endcan
 
-            <!-- Personnels -->
-            <div>
-                <button onclick="toggleSubmenu('staffMenu','staffIcon')" type="button"
-                    class="w-full flex items-center justify-between px-3 py-2.5 hover:bg-green-600 rounded-lg transition-all duration-200 group">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-users text-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="font-medium text-sm">Personnels</span>
-                    </div>
-                    <i id="staffIcon" class="fas fa-chevron-down text-xs transition-transform duration-300"></i>
-                </button>
-
-                <div id="staffMenu" class="hidden ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden" style="max-height: 0;">
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-user-plus text-xs"></i>
-                        <span>Ajouter</span>
-                    </a>
-                    <a href="#"
-                        class="flex items-center space-x-3 px-3 py-2 hover:bg-green-600 rounded-lg text-sm transition-all duration-200 group">
-                        <i class="fas fa-list text-xs"></i>
-                        <span>Liste</span>
-                    </a>
-                </div>
-            </div>
-        </div>
 
         <!-- Footer Sidebar -->
         <div class="mt-8 px-3 pb-4">
             <div class="bg-green-900/50 rounded-lg p-3 backdrop-blur-sm">
                 <p class="text-xs text-gray-300 text-center">Version 1.0.0</p>
-                <p class="text-xs text-gray-400 text-center mt-1">© 2025 {{env('APP_NAME')}} AO</p>
+                <p class="text-xs text-gray-400 text-center mt-1">
+                    © {{ date('Y') }} conçu par
+                    <a href="https://{{ config('app.company_website') }}" target="_blank" title="{{ config('app.company_name') }}"
+                        class="hover:text-white transition-colors duration-200">
+                        {{ config('app.company_sigle') }}
+                    </a>
+                </p>
             </div>
         </div>
     </nav>
@@ -383,7 +334,10 @@
 
     // Initialiser les menus ouverts au chargement de la page
     document.addEventListener('DOMContentLoaded', function() {
-        const allMenus = ['aoMenu', 'prestataireMenu', 'attribMenu', 'roleMenu', 'permMenu', 'staffMenu'];
+        // CORRIGÉ: Ajout de 'paiementMenu' à la liste
+        const allMenus = ['aoMenu', 'prestataireMenu', 'attribMenu', 'paiementMenu', 'roleMenu', 'permMenu',
+            'staffMenu'
+        ];
 
         allMenus.forEach(menuId => {
             const menu = document.getElementById(menuId);

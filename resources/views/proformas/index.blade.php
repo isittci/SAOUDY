@@ -13,17 +13,12 @@
                         <i class="fas fa-file-invoice-dollar text-orange-500"></i>
                         <span>Proformas</span>
                     </h1>
-                    <button onclick="window.location.href='{{ route('proformas.create') }}'"
-                        class="md:hidden px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Nouvelle</span>
-                    </button>
                 </div>
 
                 <!-- Filtres et actions -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <!-- Recherche -->
-                    <div class="relative flex-1 sm:min-w-[280px]">
+                    <div class="relative flex-1 sm:min-w-[350px]">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
@@ -31,21 +26,6 @@
                             value="{{ request('search') }}"
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all" />
                     </div>
-
-                    <!-- Filtre statut -->
-                    <select id="statutFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
-                        <option value="">Tous les statuts</option>
-                        <option value="1" {{ request('statut') == '1' ? 'selected' : '' }}>Actives</option>
-                        <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactives</option>
-                    </select>
-
-                    <!-- Bouton créer (desktop) -->
-                    <button onclick="window.location.href='{{ route('proformas.create') }}'"
-                        class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Créer</span>
-                    </button>
                 </div>
             </div>
         </div>
@@ -123,7 +103,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Montant Total</p>
-                        <p class="text-lg font-bold text-purple-600">{{ number_format($stats['montant_total'] ?? 0, 0, ',', ' ') }}</p>
+                        <p class="text-lg font-bold text-purple-600">
+                            {{ number_format($stats['montant_total'] ?? 0, 0, ',', ' ') }}</p>
                         <p class="text-xs text-gray-400">FCFA</p>
                     </div>
                     <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -134,16 +115,19 @@
         </div>
 
         <!-- Tableau -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <!-- En-tête du tableau -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <!-- Tableau amélioré -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <!-- En-tête du tableau avec gradient orange -->
+            <div class="px-6 py-4 border-b border-orange-200 bg-gradient-to-r from-orange-500 to-orange-600">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">
+                    <h2 class="text-lg font-semibold text-white flex items-center">
+                        <i class="fas fa-list-alt mr-2"></i>
                         Liste des proformas (<span id="totalCount">{{ $proformas->total() }}</span>)
                     </h2>
                     <div class="flex items-center space-x-2">
                         <button onclick="refreshTable()"
-                            class="px-3 py-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200">
+                            class="px-3 py-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200"
+                            title="Actualiser">
                             <i class="fas fa-sync-alt text-sm"></i>
                         </button>
                     </div>
@@ -153,180 +137,330 @@
             <!-- Table responsive -->
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead
+                        class="bg-gradient-to-r from-orange-50 to-amber-50 border-b-2 border-orange-200 sticky top-0 z-10">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Numéro / Version</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Date</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Montant HT</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Remise</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Taxe</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Montant TTC</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Statut</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                <div
+                                    class="flex items-center space-x-1 cursor-pointer hover:text-orange-600 transition-colors">
+                                    <i class="fas fa-hashtag text-orange-500"></i>
+                                    <span>Numéro / Version</span>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-calendar text-orange-500"></i>
+                                    <span>Date</span>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-users text-orange-500"></i>
+                                    <span>Prestataire / Lot</span>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-right text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <i class="fas fa-money-bill text-orange-500"></i>
+                                    <span>HT</span>
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-4 text-right text-xs font-bold text-orange-800 uppercase tracking-wider  lg:table-cell">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <i class="fas fa-percent text-orange-500"></i>
+                                    <span>Remise</span>
+                                </div>
+                            </th>
+                            <th
+                                class="px-6 py-4 text-right text-xs font-bold text-orange-800 uppercase tracking-wider  lg:table-cell">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <i class="fas fa-receipt text-orange-500"></i>
+                                    <span>Taxe</span>
+                                </div>
+                            </th>
+                            <th class="px-6 py-4 text-right text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <i class="fas fa-coins text-orange-500"></i>
+                                    <span>TTC</span>
+                                </div>
+                            </th>
+                            @canany(['proformas.view-details', 'proformas.update', 'proformas.create-version',
+                                'proformas.update', 'proformas.view-history', 'proformas.delete'])
+                                <th class="px-6 py-4 text-center text-xs font-bold text-orange-800 uppercase tracking-wider">
+                                    <div class="flex items-center justify-center space-x-1">
+                                        <i class="fas fa-cogs text-orange-500"></i>
+                                        <span>Actions</span>
+                                    </div>
+                                </th>
+                            @endcanany
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
-                        @forelse($proformas as $proforma)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                    <tbody id="tableBody" class="divide-y divide-gray-100 bg-white">
+                        @forelse($proformas as $index => $proforma)
+                            <tr class="{{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50' }} hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-300 group cursor-pointer"
+                                data-proforma-id="{{ $proforma->id_proforma }}">
+
+                                {{-- Colonne Numéro/Version --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">
+                                        <div
+                                            class="w-11 h-11 flex-shrink-0 bg-gradient-to-br from-orange-400 via-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-orange-200/50 group-hover:shadow-orange-300 group-hover:scale-110 transition-all duration-300">
                                             <i class="fas fa-file-invoice text-sm"></i>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-semibold text-gray-900">
+                                            <a @can('proformas.view-details') href="{{ route('proformas.show', $proforma->id_proforma) }}" @endcan
+                                                class="text-sm font-bold text-gray-800 group-hover:text-orange-600 transition-colors hover:underline decoration-orange-300 decoration-2 underline-offset-2">
                                                 {{ $proforma->numero_proforma }}
-                                            </div>
-                                            <div class="flex items-center space-x-2 mt-1">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                            </a>
+                                            <div class="flex items-center flex-wrap gap-1.5 mt-1.5">
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 border border-orange-200/50 shadow-sm">
+                                                    <i class="fas fa-code-branch mr-1 text-orange-500 text-[10px]"></i>
                                                     v{{ $proforma->version_proforma }}
                                                 </span>
-                                                @if($proforma->parent_id)
-                                                    <span class="text-xs text-gray-400">
-                                                        <i class="fas fa-code-branch"></i> Modifiée
+                                                @if ($proforma->parent_id)
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-100 text-indigo-700 border border-indigo-200/50">
+                                                        <i class="fas fa-history mr-1 text-[10px]"></i> Révisée
+                                                    </span>
+                                                @endif
+                                                @if ($proforma->estUtilisee())
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-200/50">
+                                                        <i class="fas fa-link mr-1 text-[10px]"></i> Utilisée
                                                     </span>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                 </td>
+
+                                {{-- Colonne Date --}}
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{ $proforma->date_proforma ? $proforma->date_proforma->format('d/m/Y') : '-' }}
+                                    <div class="flex items-center">
+                                        <div
+                                            class="w-9 h-9 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mr-3 shadow-sm">
+                                            <i class="fas fa-calendar-day text-blue-600 text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-semibold text-gray-700 block">
+                                                {{ $proforma->date_proforma ? $proforma->date_proforma->format('d/m/Y') : '-' }}
+                                            </span>
+                                            @if ($proforma->date_proforma)
+                                                <span class="text-xs text-gray-400">
+                                                    {{ $proforma->date_proforma->diffForHumans() }}
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
-                                    {{-- <div class="text-xs text-gray-500">
-                                        {{ $proforma->created_at->diffForHumans() }}
-                                    </div> --}}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
-                                    <div class="text-sm font-semibold text-gray-900">
-                                        {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }}
-                                    </div>
-                                    <div class="text-xs text-gray-500">FCFA</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
-                                    @if($proforma->remise_montant_proforma > 0)
-                                        <div class="text-sm font-medium text-red-600">
-                                            -{{ number_format($proforma->remise_montant_proforma, 0, ',', ' ') }}
-                                        </div>
-                                        <div class="text-xs text-gray-500">
-                                            {{ $proforma->pourcentage_remise }}%
-                                        </div>
-                                    @else
-                                        <span class="text-sm text-gray-400">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
-                                    @if($proforma->taxe_montant > 0)
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ number_format($proforma->taxe_montant, 0, ',', ' ') }}
-                                        </div>
-                                        <div class="text-xs text-gray-500">
-                                            {{ $proforma->taux_taxe }}%
-                                        </div>
-                                    @else
-                                        <span class="text-sm text-gray-400">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right">
-                                    <div class="text-sm font-bold text-green-600">
-                                        {{ number_format($proforma->montant_ttc, 0, ',', ' ') }}
-                                    </div>
-                                    <div class="text-xs text-gray-500">FCFA</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    @if ($proforma->actif_proforma)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i> Active
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                                            <i class="fas fa-times-circle mr-1"></i> Inactive
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <!-- Voir détails -->
-                                        <button onclick="window.location.href='{{ route('proformas.show', $proforma->id_proforma) }}'"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                            title="Voir détails">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </button>
 
-                                        <!-- Modifier -->
-                                        <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
-                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                            title="Modifier">
-                                            <i class="fas fa-edit text-sm"></i>
-                                        </button>
-
-                                        <!-- Toggle Status -->
-                                        <button
-                                            onclick="toggleStatus('{{ $proforma->id_proforma }}', {{ $proforma->actif_proforma ? 'true' : 'false' }})"
-                                            class="p-2 {{ $proforma->actif_proforma ? 'text-gray-600 hover:bg-gray-50' : 'text-green-600 hover:bg-green-50' }} rounded-lg transition-all duration-200"
-                                            title="{{ $proforma->actif_proforma ? 'Désactiver' : 'Activer' }}">
-                                            <i class="fas fa-power-off text-sm"></i>
-                                        </button>
-
-                                        <!-- Menu Actions -->
-                                        <div class="relative">
-                                            <button onclick="toggleMenu('{{ $proforma->id_proforma }}')"
-                                                class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                title="Plus d'actions">
-                                                <i class="fas fa-ellipsis-v text-sm"></i>
-                                            </button>
-                                            <div id="menu-{{ $proforma->id_proforma }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                <div class="py-1">
-                                                    <button onclick="creerVersion('{{ $proforma->id_proforma }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-code-branch text-indigo-500 mr-2"></i>
-                                                        Nouvelle version
-                                                    </button>
-                                                    <button onclick="duplicate('{{ $proforma->id_proforma }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-copy text-purple-500 mr-2"></i>
-                                                        Dupliquer
-                                                    </button>
-                                                    <button onclick="voirHistorique('{{ $proforma->id_proforma }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-history text-blue-500 mr-2"></i>
-                                                        Historique
-                                                    </button>
-                                                    <hr class="my-1">
-                                                    <button
-                                                        onclick="confirmDelete('{{ $proforma->id_proforma }}', '{{ $proforma->numero_proforma }}', {{ $proforma->estUtilisee() ? 'true' : 'false' }})"
-                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                        <i class="fas fa-trash mr-2"></i>
-                                                        Supprimer
-                                                    </button>
-                                                </div>
+                                {{-- Colonne Prestataire/Lot --}}
+                                @php
+                                    $attribution = $proforma->prestatairePrincipal ?? $proforma->prestataireRetire;
+                                @endphp
+                                <td class="px-6 py-4">
+                                    <div class="space-y-2">
+                                        {{-- Prestataire --}}
+                                        <a @can('prestataires.view-details') href="{{ route('prestataires.show', $attribution->prestataire->id_prestataire) }}" @endcan
+                                            class="group/link flex items-center p-1.5 -ml-1.5 rounded-lg hover:bg-orange-50/80 transition-all duration-200"
+                                            title="{{ $attribution->prestataire->raison_sociale_prestataire }}">
+                                            <div
+                                                class="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg flex items-center justify-center mr-2 shadow-sm group-hover/link:shadow-md group-hover/link:scale-105 transition-all duration-200">
+                                                <i class="fas fa-building text-white text-xs"></i>
                                             </div>
-                                        </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span
+                                                    class="text-sm font-semibold text-gray-800 group-hover/link:text-orange-600 transition-colors truncate block">
+                                                    {{ Str::limit($attribution->prestataire->raison_sociale_prestataire, 22) }}
+                                                </span>
+                                            </div>
+                                            <i
+                                                class="fas fa-chevron-right text-orange-400 text-[10px] opacity-0 group-hover/link:opacity-100 transition-all ml-1"></i>
+                                        </a>
+
+                                        {{-- Lot --}}
+                                        <a @can('lots.view-details') href="{{ route('lots-appels-offres.show', [$attribution->lot->appel_offre_id, $attribution->lot->id_lot]) }}" @endcan
+                                            class="group/link flex items-center p-1.5 -ml-1.5 rounded-lg hover:bg-blue-50/80 transition-all duration-200"
+                                            title="{{ $attribution->lot->libelle }}">
+                                            <div
+                                                class="w-7 h-7 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-md flex items-center justify-center mr-2 shadow-sm group-hover/link:shadow-md group-hover/link:scale-105 transition-all duration-200">
+                                                <i class="fas fa-cube text-white text-[10px]"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <span
+                                                    class="text-xs font-medium text-gray-600 group-hover/link:text-blue-600 transition-colors truncate block">
+                                                    {{ Str::limit($attribution->lot->libelle, 28) }}
+                                                </span>
+                                            </div>
+                                            <i
+                                                class="fas fa-chevron-right text-blue-400 text-[10px] opacity-0 group-hover/link:opacity-100 transition-all ml-1"></i>
+                                        </a>
                                     </div>
                                 </td>
+
+                                {{-- Colonne Montant HT --}}
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div class="inline-flex flex-col items-end">
+                                        <span class="text-sm font-bold text-gray-800 tabular-nums">
+                                            {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }}
+                                        </span>
+                                        <span class="text-[10px] text-gray-400 font-medium tracking-wide">FCFA</span>
+                                    </div>
+                                </td>
+
+                                {{-- Colonne Remise (cachée sur mobile) --}}
+                                <td class="px-6 py-4 whitespace-nowrap text-right  lg:table-cell">
+                                    @if ($proforma->remise_montant_proforma > 0)
+                                        <div
+                                            class="inline-flex items-center space-x-2 bg-gradient-to-r from-red-50 to-rose-50 px-3 py-1.5 rounded-lg border border-red-100">
+                                            <div class="flex flex-col items-end">
+                                                <span class="text-sm font-bold text-red-600 tabular-nums">
+                                                    -{{ number_format($proforma->remise_montant_proforma, 0, ',', ' ') }}
+                                                </span>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-1.5 py-0.5 rounded bg-red-100 text-[10px] font-bold text-red-700">
+                                                {{ $proforma->pourcentage_remise }}%
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-400">
+                                            <i class="fas fa-minus text-[8px] mr-1"></i> —
+                                        </span>
+                                    @endif
+                                </td>
+
+                                {{-- Colonne Taxe (cachée sur mobile) --}}
+                                <td class="px-6 py-4 whitespace-nowrap text-right  lg:table-cell">
+                                    @if ($proforma->taxe_montant > 0)
+                                        <div
+                                            class="inline-flex items-center space-x-2 bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-1.5 rounded-lg border border-amber-100">
+                                            <div class="flex flex-col items-end">
+                                                <span class="text-sm font-bold text-amber-700 tabular-nums">
+                                                    {{ number_format($proforma->taxe_montant, 0, ',', ' ') }}
+                                                </span>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-100 text-[10px] font-bold text-amber-700">
+                                                {{ $proforma->taux_taxe }}%
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-600">
+                                            <i class="fas fa-check text-[8px] mr-1"></i> Exonéré
+                                        </span>
+                                    @endif
+                                </td>
+
+                                {{-- Colonne Montant TTC --}}
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div
+                                        class="inline-flex flex-col items-end bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border border-green-200 shadow-sm group-hover:shadow-md group-hover:border-green-300 transition-all duration-300">
+                                        <span class="text-base font-bold text-green-700 tabular-nums">
+                                            {{ number_format($proforma->montant_ttc, 0, ',', ' ') }}
+                                        </span>
+                                        <span class="text-[10px] text-green-600 font-semibold tracking-wide">FCFA
+                                            TTC</span>
+                                    </div>
+                                </td>
+
+                                @canany(['proformas.view-details', 'proformas.update', 'proformas.create-version',
+                                     'proformas.view-history', 'proformas.delete'])
+                                    {{-- Colonne Actions --}}
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center justify-center space-x-1">
+                                            @can('proformas.view-details')
+                                                {{-- Voir --}}
+                                                <button
+                                                    onclick="window.location.href='{{ route('proformas.show', $proforma->id_proforma) }}'"
+                                                    class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-500 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-110 active:scale-95"
+                                                    title="Voir détails">
+                                                    <i class="fas fa-eye text-sm"></i>
+                                                </button>
+                                            @endcan
+
+                                            @can('proformas.update')
+                                                {{-- Modifier --}}
+                                                <button
+                                                    onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
+                                                    class="p-2 text-orange-600 bg-orange-50 hover:bg-orange-500 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-110 active:scale-95"
+                                                    title="Modifier">
+                                                    <i class="fas fa-pen text-sm"></i>
+                                                </button>
+                                            @endcan
+
+                                            @canany(['proformas.create-version', 'proformas.view-history', 'proformas.delete'])
+                                                {{-- Menu Plus --}}
+                                                <div class="relative" x-data="{ open: false }">
+                                                    <button onclick="toggleMenu('{{ $proforma->id_proforma }}')"
+                                                        class="p-2 text-gray-500 bg-gray-50 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-110 active:scale-95"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
+                                                    </button>
+                                                    <div id="menu-{{ $proforma->id_proforma }}"
+                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform origin-top-right">
+                                                        <div class="py-1">
+                                                            @can('proformas.create-version')
+                                                                <button onclick="creerVersion('{{ $proforma->id_proforma }}')"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 flex items-center group/item transition-colors">
+                                                                    <span
+                                                                        class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-indigo-500 transition-colors">
+                                                                        <i
+                                                                            class="fas fa-code-branch text-indigo-600 group-hover/item:text-white text-xs transition-colors"></i>
+                                                                    </span>
+                                                                    <span class="font-medium">Nouvelle version</span>
+                                                                </button>
+                                                            @endcan
+
+
+
+                                                            @can('proformas.view-history')
+                                                                <button onclick="voirHistorique('{{ $proforma->id_proforma }}')"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 flex items-center group/item transition-colors">
+                                                                    <span
+                                                                        class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-blue-500 transition-colors">
+                                                                        <i
+                                                                            class="fas fa-history text-blue-600 group-hover/item:text-white text-xs transition-colors"></i>
+                                                                    </span>
+                                                                    <span class="font-medium">Historique</span>
+                                                                </button>
+                                                            @endcan
+
+                                                            @can('proformas.delete')
+                                                                <hr class="my-1 border-gray-100">
+                                                                <button
+                                                                    onclick="confirmDelete('{{ $proforma->id_proforma }}', '{{ $proforma->numero_proforma }}', {{ $proforma->estUtilisee() ? 'true' : 'false' }})"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center group/item transition-colors">
+                                                                    <span
+                                                                        class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3 group-hover/item:bg-red-500 transition-colors">
+                                                                        <i
+                                                                            class="fas fa-trash text-red-600 group-hover/item:text-white text-xs transition-colors"></i>
+                                                                    </span>
+                                                                    <span class="font-medium">Supprimer</span>
+                                                                </button>
+                                                            @endcan
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endcanany
+                                        </div>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-center">
+                                <td colspan="8" class="px-6 py-20 text-center">
                                     <div class="flex flex-col items-center">
-                                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                            <i class="fas fa-file-invoice-dollar text-gray-400 text-3xl"></i>
+                                        <div
+                                            class="w-20 h-20 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center mb-4 shadow-inner">
+                                            <i class="fas fa-file-invoice-dollar text-orange-400 text-3xl"></i>
                                         </div>
-                                        <h3 class="text-lg font-medium text-gray-700 mb-2">Aucune proforma trouvée</h3>
-                                        <p class="text-gray-500 text-sm mb-4">Commencez par créer votre première proforma</p>
-                                        <button onclick="window.location.href='{{ route('proformas.create') }}'"
-                                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
-                                            <i class="fas fa-plus mr-2"></i>Créer une proforma
-                                        </button>
+                                        <h3 class="text-lg font-semibold text-gray-700 mb-1">Aucune proforma trouvée</h3>
+
                                     </div>
                                 </td>
                             </tr>
@@ -335,10 +469,10 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
+            {{-- Footer avec pagination --}}
             @if ($proformas->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                    {{ $proformas->appends(request()->query())->links() }}
+                <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-slate-50 border-t border-gray-100">
+                    {{ $proformas->links() }}
                 </div>
             @endif
         </div>
@@ -360,10 +494,12 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                             Annuler
                         </button>
-                        <button onclick="executeDelete()" id="deleteBtn"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+                        @can('prestataires.delete')
+                            <button onclick="executeDelete()" id="deleteBtn"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -400,7 +536,8 @@
                             <div class="flex items-start">
                                 <i class="fas fa-info-circle text-yellow-500 mr-2 mt-0.5"></i>
                                 <p class="text-sm text-yellow-700">
-                                    La version actuelle sera désactivée et une nouvelle version sera créée avec les modifications.
+                                    La version actuelle sera désactivée et une nouvelle version sera créée avec les
+                                    modifications.
                                 </p>
                             </div>
                         </div>
@@ -411,47 +548,70 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
                             Annuler
                         </button>
-                        <button type="submit"
-                            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">
-                            Créer la version
-                        </button>
+                        @can('proformas.create')
+                            <button type="submit"
+                                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">
+                                Créer la version
+                            </button>
+                        @endcan
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            let deleteProformaId = null;
+    @can('proformas.read')
+        @push('scripts')
+            <script>
+                let deleteProformaId = null;
 
-            // Toggle menu
-            window.toggleMenu = function(id) {
-                const menu = document.getElementById(`menu-${id}`);
-                const allMenus = document.querySelectorAll('[id^="menu-"]');
+                // Toggle menu
+                window.toggleMenu = function(id) {
+                    const menu = document.getElementById(`menu-${id}`);
+                    const allMenus = document.querySelectorAll('[id^="menu-"]');
 
-                allMenus.forEach(m => {
-                    if (m.id !== `menu-${id}`) {
-                        m.classList.add('hidden');
+                    allMenus.forEach(m => {
+                        if (m.id !== `menu-${id}`) {
+                            m.classList.add('hidden');
+                        }
+                    });
+
+                    menu.classList.toggle('hidden');
+                }
+
+                // Fermer les menus en cliquant ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
+                        document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
                     }
                 });
 
-                menu.classList.toggle('hidden');
-            }
 
-            // Fermer les menus en cliquant ailleurs
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                    document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+
+                // Confirmer suppression
+                window.confirmDelete = function(id, numero, estUtilisee) {
+                    deleteProformaId = id;
+
+                    if (estUtilisee) {
+                        document.getElementById('deleteMessage').innerHTML =
+                            `<strong class="text-red-600">Impossible de supprimer la proforma "${numero}" car elle est utilisée dans des attributions.</strong>`;
+                        document.getElementById('deleteBtn').classList.add('hidden');
+                    } else {
+                        document.getElementById('deleteMessage').textContent =
+                            `Êtes-vous sûr de vouloir supprimer la proforma "${numero}" ?`;
+                        document.getElementById('deleteBtn').classList.remove('hidden');
+                    }
+
+                    document.getElementById('deleteModal').classList.remove('hidden');
                 }
-            });
 
-            // Toggle statut
-            window.toggleStatus = function(id, isActive) {
-                const action = isActive ? 'désactiver' : 'activer';
-                if (confirm(`Voulez-vous vraiment ${action} cette proforma ?`)) {
-                    fetch(`/proformas/${id}/toggle-status`, {
-                            method: 'POST',
+                // Exécuter suppression
+                window.executeDelete = function() {
+                    if (!deleteProformaId) return;
+
+                    fetch("{{ route('proformas.destroy', ':deleteProformaId') }}".replace(':deleteProformaId',
+                            deleteProformaId), {
+                            method: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
@@ -464,81 +624,63 @@
                                 location.reload();
                             } else {
                                 alert(data.message || 'Une erreur est survenue');
+                                closeDeleteModal();
                             }
                         })
                         .catch(error => {
                             console.error('Erreur:', error);
                             alert('Une erreur est survenue');
+                            closeDeleteModal();
                         });
                 }
-            }
 
-            // Confirmer suppression
-            window.confirmDelete = function(id, numero, estUtilisee) {
-                deleteProformaId = id;
-
-                if (estUtilisee) {
-                    document.getElementById('deleteMessage').innerHTML =
-                        `<strong class="text-red-600">Impossible de supprimer la proforma "${numero}" car elle est utilisée dans des attributions.</strong>`;
-                    document.getElementById('deleteBtn').classList.add('hidden');
-                } else {
-                    document.getElementById('deleteMessage').textContent =
-                        `Êtes-vous sûr de vouloir supprimer la proforma "${numero}" ?`;
-                    document.getElementById('deleteBtn').classList.remove('hidden');
+                // Fermer modal suppression
+                window.closeDeleteModal = function() {
+                    document.getElementById('deleteModal').classList.add('hidden');
+                    deleteProformaId = null;
                 }
 
-                document.getElementById('deleteModal').classList.remove('hidden');
-            }
 
-            // Exécuter suppression
-            window.executeDelete = function() {
-                if (!deleteProformaId) return;
 
-                fetch(`/proformas/${deleteProformaId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
-                            closeDeleteModal();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue');
-                        closeDeleteModal();
-                    });
-            }
+                // Créer version
+                window.creerVersion = function(id) {
+                    document.getElementById('version_proforma_id').value = id;
+                    document.getElementById('motif_modification').value = '';
+                    document.getElementById('versionModal').classList.remove('hidden');
+                }
 
-            // Fermer modal suppression
-            window.closeDeleteModal = function() {
-                document.getElementById('deleteModal').classList.add('hidden');
-                deleteProformaId = null;
-            }
+                // Fermer modal version
+                window.closeVersionModal = function() {
+                    document.getElementById('versionModal').classList.add('hidden');
+                }
 
-            // Dupliquer
-            window.duplicate = function(id) {
-                if (confirm('Voulez-vous dupliquer cette proforma ?')) {
-                    fetch(`/proformas/${id}/duplicate`, {
+                // Soumettre nouvelle version
+                document.getElementById('versionForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const id = document.getElementById('version_proforma_id').value;
+                    const motif = document.getElementById('motif_modification').value;
+
+                    if (!motif.trim()) {
+                        alert('Le motif de modification est obligatoire');
+                        return;
+                    }
+
+                    fetch("{{ route('proformas.creer-version', ':id') }}".replace(':id', id), {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
-                            }
+                            },
+                            body: JSON.stringify({
+                                motif_modification_proforma: motif
+                            })
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.location.href = `/proformas/${data.data.id_proforma}/edit`;
+                                window.location.href = `/proformas/${data.data.id_proforma}`;
                             } else {
                                 alert(data.message || 'Une erreur est survenue');
                             }
@@ -547,116 +689,64 @@
                             console.error('Erreur:', error);
                             alert('Une erreur est survenue');
                         });
-                }
-            }
+                });
 
-            // Créer version
-            window.creerVersion = function(id) {
-                document.getElementById('version_proforma_id').value = id;
-                document.getElementById('motif_modification').value = '';
-                document.getElementById('versionModal').classList.remove('hidden');
-            }
-
-            // Fermer modal version
-            window.closeVersionModal = function() {
-                document.getElementById('versionModal').classList.add('hidden');
-            }
-
-            // Soumettre nouvelle version
-            document.getElementById('versionForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const id = document.getElementById('version_proforma_id').value;
-                const motif = document.getElementById('motif_modification').value;
-
-                if (!motif.trim()) {
-                    alert('Le motif de modification est obligatoire');
-                    return;
+                // Voir historique
+                window.voirHistorique = function(id) {
+                    window.location.href = "{{ route('proformas.historique', ':id') }}".replace(':id', id);
                 }
 
-                fetch(`/proformas/${id}/creer-version`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            motif_modification_proforma: motif
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = `/proformas/${data.data.id_proforma}`;
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue');
-                    });
-            });
-
-            // Voir historique
-            window.voirHistorique = function(id) {
-                window.location.href = `/proformas/${id}/historique`;
-            }
-
-            // Rafraîchir le tableau
-            window.refreshTable = function() {
-                location.reload();
-            }
-
-            // Recherche en temps réel
-            let searchTimeout;
-            document.getElementById('searchInput').addEventListener('input', function(e) {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    applyFilters();
-                }, 500);
-            });
-
-            // Filtres
-            document.getElementById('statutFilter').addEventListener('change', applyFilters);
-
-            function applyFilters() {
-                const search = document.getElementById('searchInput').value;
-                const statut = document.getElementById('statutFilter').value;
-
-                const params = new URLSearchParams();
-                if (search) params.append('search', search);
-                if (statut) params.append('statut', statut);
-
-                window.location.href = `?${params.toString()}`;
-            }
-
-            // Fermer modals avec Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeDeleteModal();
-                    closeVersionModal();
-                    document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+                // Rafraîchir le tableau
+                window.refreshTable = function() {
+                    location.reload();
                 }
-            });
-        </script>
 
-        <style>
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+                // Recherche en temps réel
+                let searchTimeout;
+                document.getElementById('searchInput').addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        applyFilters();
+                    }, 500);
+                });
 
-            .animate-fadeIn {
-                animation: fadeIn 0.3s ease-out;
-            }
-        </style>
-    @endpush
+
+                function applyFilters() {
+                    const search = document.getElementById('searchInput').value;
+
+                    const params = new URLSearchParams();
+                    if (search) params.append('search', search);
+
+                    window.location.href = `?${params.toString()}`;
+                }
+
+                // Fermer modals avec Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeDeleteModal();
+                        closeVersionModal();
+                        document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+                    }
+                });
+            </script>
+
+            <style>
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+            </style>
+        @endpush
+    @endcan
 @endsection

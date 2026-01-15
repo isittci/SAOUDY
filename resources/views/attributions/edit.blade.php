@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Modifier Attribution')
 @section('breadcrumb')
-    <a href="{{ route('attributions.index') }}" class="text-white/80 hover:text-white transition-colors">Attributions</a>
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Attributions</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('attributions.show', $attribution->id_attribution) }}" class="text-white/80 hover:text-white transition-colors">{{ $attribution->numero_attribution }}</a>
+    <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attribution->id_attribution) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $attribution->numero_attribution }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Modifier</span>
 @endsection
@@ -12,9 +12,11 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('attributions_lots.view-details')
                 <a href="{{ route('attributions.show', $attribution->id_attribution) }}" class="p-2 hover:bg-gray-100 rounded-lg">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">Modifier l'attribution</h1>
                     <p class="text-gray-600 mt-1">{{ $attribution->numero_attribution }}</p>
@@ -40,6 +42,7 @@
             </p>
         </div>
 
+        @can('attributions_lots.assign')
         <form action="{{ route('attributions.update', $attribution->id_attribution) }}" method="POST">
             @csrf
             @method('PUT')
@@ -68,22 +71,6 @@
                         </div>
                     </div>
 
-                    {{-- <!-- Pénalités -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b">
-                            <h2 class="text-lg font-bold text-gray-800"><i class="fas fa-percent text-red-500 mr-2"></i>Pénalités</h2>
-                        </div>
-                        <div class="p-6">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Taux de pénalités (%)</label>
-                                <input type="number" name="taux_penalites"
-                                    value="{{ old('taux_penalites', $attribution->taux_penalites) }}"
-                                    min="0" max="100" step="0.01"
-                                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-400">
-                                <p class="mt-1 text-xs text-gray-500">Pénalité par jour de retard</p>
-                            </div>
-                        </div>
-                    </div> --}}
 
                     <!-- Observations -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -156,5 +143,6 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 @endsection

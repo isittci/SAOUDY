@@ -777,58 +777,58 @@ class ProformaController extends Controller
     /**
      * Duplicate a proforma.
      */
-    public function duplicate(Request $request, string $id)
-    {
-        try {
-            $proforma = Proforma::findOrFail($id);
+    // public function duplicate(Request $request, string $id)
+    // {
+    //     try {
+    //         $proforma = Proforma::findOrFail($id);
 
-            DB::beginTransaction();
+    //         DB::beginTransaction();
 
-            $nouvelleProforma = $proforma->replicate();
-            $nouvelleProforma->id_proforma = (string) Str::uuid();
-            $nouvelleProforma->numero_proforma = Proforma::genererNumeroProforma();
-            $nouvelleProforma->version_proforma = 1;
-            $nouvelleProforma->parent_id = null;
-            $nouvelleProforma->actif_proforma = true;
-            $nouvelleProforma->date_proforma = now();
-            $nouvelleProforma->motif_modification_proforma = null;
-            $nouvelleProforma->created_by = Auth::id();
-            $nouvelleProforma->updated_by = null;
-            $nouvelleProforma->save();
+    //         $nouvelleProforma = $proforma->replicate();
+    //         $nouvelleProforma->id_proforma = (string) Str::uuid();
+    //         $nouvelleProforma->numero_proforma = Proforma::genererNumeroProforma();
+    //         $nouvelleProforma->version_proforma = 1;
+    //         $nouvelleProforma->parent_id = null;
+    //         $nouvelleProforma->actif_proforma = true;
+    //         $nouvelleProforma->date_proforma = now();
+    //         $nouvelleProforma->motif_modification_proforma = null;
+    //         $nouvelleProforma->created_by = Auth::id();
+    //         $nouvelleProforma->updated_by = null;
+    //         $nouvelleProforma->save();
 
-            DB::commit();
+    //         DB::commit();
 
-            Log::info('Proforma dupliquée avec succès', [
-                'id_original' => $id,
-                'id_nouvelle' => $nouvelleProforma->id_proforma
-            ]);
+    //         Log::info('Proforma dupliquée avec succès', [
+    //             'id_original' => $id,
+    //             'id_nouvelle' => $nouvelleProforma->id_proforma
+    //         ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $nouvelleProforma,
-                    'message' => 'Proforma dupliquée avec succès'
-                ], 201);
-            }
+    //         if ($request->wantsJson() || $request->is('api/*')) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'data' => $nouvelleProforma,
+    //                 'message' => 'Proforma dupliquée avec succès'
+    //             ], 201);
+    //         }
 
-            return redirect()->route('proformas.edit', $nouvelleProforma->id_proforma)
-                ->with('success', 'Proforma dupliquée avec succès. Vous pouvez maintenant la modifier.');
+    //         return redirect()->route('proformas.edit', $nouvelleProforma->id_proforma)
+    //             ->with('success', 'Proforma dupliquée avec succès. Vous pouvez maintenant la modifier.');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Erreur lors de la duplication de la proforma: ' . $e->getMessage());
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Erreur lors de la duplication de la proforma: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Une erreur est survenue.',
-                    'error' => config('app.debug') ? $e->getMessage() : 'Erreur interne'
-                ], 500);
-            }
+    //         if ($request->wantsJson() || $request->is('api/*')) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Une erreur est survenue.',
+    //                 'error' => config('app.debug') ? $e->getMessage() : 'Erreur interne'
+    //             ], 500);
+    //         }
 
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de la duplication.');
-        }
-    }
+    //         return redirect()->back()->with('error', 'Une erreur est survenue lors de la duplication.');
+    //     }
+    // }
 
     /**
      * Get historique of versions.

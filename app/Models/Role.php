@@ -2,45 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
+use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, Auditable;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
+     * Niveaux hiérarchiques des rôles.
      */
-    protected $table = 'roles';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The data type of the primary key ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
+    const LEVEL_SUPER_ADMIN = 100;
+    const LEVEL_ADMIN = 80;
+    const LEVEL_MANAGER = 60;
+    const LEVEL_SUPERVISOR = 40;
+    const LEVEL_USER = 20;
+    const LEVEL_GUEST = 10;
 
     /**
      * The attributes that are mass assignable.
@@ -61,35 +43,32 @@ class Role extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'level' => 'integer',
         'is_system_role' => 'boolean',
+        'level' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [];
-
-    /**
-     * Get the users for the role.
+     * Relation avec les utilisateurs.
      */
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'role_id', 'id');
+        return $this->hasMany(User::class);
     }
 
     /**
-     * Get the permissions for the role.
+     * Relation plusieurs-à-plusieurs avec les permissions.
      */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class, 'role_permissions', 'role_id', 'permission_id')
-            ->using(RolePermission::class)
+        return $this->belongsToMany(
+            Permission::class,
+            'role_permissions',
+            'role_id',
+            'permission_id'
+        )
             ->withPivot([
                 'attribue_par',
                 'attribue_le',
@@ -99,50 +78,177 @@ class Role extends Model
                 'notes',
                 'created_by',
                 'updated_by',
-                'deleted_by'
+                'deleted_by',
+                'created_at',
+                'updated_at',
+                'deleted_at',
             ])
             ->withTimestamps();
     }
 
     /**
-     * Get only active permissions for the role.
+     * Récupère les permissions actives.
      */
-    public function activePermissions(): BelongsToMany
+    public function activePermissions()
     {
         return $this->permissions()
-            ->wherePivot('actif', true)
+            ->where('permissions.is_active', true)
+            ->where('role_permissions.actif', true)
             ->where(function ($query) {
-                $query->whereNull('role_permissions.expire_le')->orWhere('role_permissions.expire_le', '>', now());
-            })
-            ->where('permissions.is_active', true);
+                $query->whereNull('role_permissions.expire_le')
+                    ->orWhere('role_permissions.expire_le', '>', now());
+            });
     }
 
     /**
-     * Scope a query to only include system roles.
+     * Synchronise les permissions du rôle.
+     *
+     * @param array $permissions IDs des permissions
+     * @param string|null $attribue_par ID de l'utilisateur
+     * @return void
      */
-    public function scopeSystemRoles($query)
+    public function syncPermissions(array $permissions, ?string $attribue_par = null): void
     {
-        return $query->where('is_system_role', true);
+        $syncData = [];
+
+        foreach ($permissions as $permissionId) {
+            $syncData[$permissionId] = [
+                'attribue_par' => $attribue_par ?? auth()->id(),
+                'attribue_le' => now(),
+                'actif' => true,
+                'created_by' => auth()->id(),
+                'created_at' => now(),
+            ];
+        }
+
+        $this->permissions()->sync($syncData);
     }
 
     /**
-     * Scope a query to only include custom roles.
+     * Ajoute une permission au rôle.
+     *
+     * @param string $permissionId
+     * @param array $options
+     * @return void
      */
-    public function scopeCustomRoles($query)
+    public function givePermission(string $permissionId, array $options = []): void
+    {
+        $this->permissions()->attach($permissionId, array_merge([
+            'attribue_par' => auth()->id(),
+            'attribue_le' => now(),
+            'actif' => true,
+            'created_by' => auth()->id(),
+            'created_at' => now(),
+        ], $options));
+    }
+
+    /**
+     * Retire une permission du rôle.
+     *
+     * @param string $permissionId
+     * @return void
+     */
+    public function revokePermission(string $permissionId): void
+    {
+        $this->permissions()->detach($permissionId);
+    }
+
+    /**
+     * Vérifie si le rôle possède une permission.
+     *
+     * @param string $slug
+     * @return bool
+     */
+    public function hasPermission(string $slug): bool
+    {
+        return $this->activePermissions()
+            ->where('permissions.slug', $slug)
+            ->exists();
+    }
+
+    /**
+     * Obtient le label du niveau.
+     *
+     * @return string
+     */
+    public function getLevelLabelAttribute(): string
+    {
+        return match ($this->level) {
+            self::LEVEL_SUPER_ADMIN => 'Super Administrateur',
+            self::LEVEL_ADMIN => 'Administrateur',
+            self::LEVEL_MANAGER => 'Manager',
+            self::LEVEL_SUPERVISOR => 'Superviseur',
+            self::LEVEL_USER => 'Utilisateur',
+            self::LEVEL_GUEST => 'Invité',
+            default => 'Personnalisé',
+        };
+    }
+
+    /**
+     * Obtient la couleur associée au niveau.
+     *
+     * @return string
+     */
+    public function getLevelColorAttribute(): string
+    {
+        return match ($this->level) {
+            self::LEVEL_SUPER_ADMIN => 'red',
+            self::LEVEL_ADMIN => 'orange',
+            self::LEVEL_MANAGER => 'blue',
+            self::LEVEL_SUPERVISOR => 'green',
+            self::LEVEL_USER => 'gray',
+            self::LEVEL_GUEST => 'slate',
+            default => 'indigo',
+        };
+    }
+
+    /**
+     * Vérifie si le rôle peut être modifié.
+     *
+     * @return bool
+     */
+    public function canBeEdited(): bool
+    {
+        // Les rôles système ne peuvent pas être modifiés
+        return !$this->is_system_role;
+    }
+
+    /**
+     * Vérifie si le rôle peut être supprimé.
+     *
+     * @return bool
+     */
+    public function canBeDeleted(): bool
+    {
+        // Les rôles système ne peuvent pas être supprimés
+        if ($this->is_system_role) {
+            return false;
+        }
+
+        // Les rôles avec des utilisateurs ne peuvent pas être supprimés
+        return $this->users()->count() === 0;
+    }
+
+    /**
+     * Compte le nombre d'utilisateurs actifs.
+     *
+     * @return int
+     */
+    public function getActiveUsersCountAttribute(): int
+    {
+        return $this->users()->where('statut', User::STATUT_ACTIF)->count();
+    }
+
+    /**
+     * Scope pour filtrer les rôles non système.
+     */
+    public function scopeNonSystem($query)
     {
         return $query->where('is_system_role', false);
     }
 
     /**
-     * Scope a query to filter by level.
-     */
-    public function scopeByLevel($query, int $level)
-    {
-        return $query->where('level', $level);
-    }
-
-    /**
-     * Scope a query to filter by minimum level.
+     * Scope pour filtrer par niveau minimum.
      */
     public function scopeMinLevel($query, int $level)
     {
@@ -150,115 +256,10 @@ class Role extends Model
     }
 
     /**
-     * Check if the role is a system role.
+     * Scope pour filtrer par niveau maximum.
      */
-    public function isSystemRole(): bool
+    public function scopeMaxLevel($query, int $level)
     {
-        return $this->is_system_role;
-    }
-
-    /**
-     * Check if role has a specific permission.
-     */
-    public function hasPermission(string $permissionSlug): bool
-    {
-        return $this->activePermissions()
-            ->where('permissions.slug', $permissionSlug)
-            ->exists();
-    }
-
-    /**
-     * Check if role has any of the given permissions.
-     */
-    public function hasAnyPermission(array $permissionSlugs): bool
-    {
-        return $this->activePermissions()
-            ->whereIn('permissions.slug', $permissionSlugs)
-            ->exists();
-    }
-
-    /**
-     * Check if role has all of the given permissions.
-     */
-    public function hasAllPermissions(array $permissionSlugs): bool
-    {
-        $count = $this->activePermissions()
-            ->whereIn('permissions.slug', $permissionSlugs)
-            ->count();
-
-        return $count === count($permissionSlugs);
-    }
-
-    /**
-     * Assign a permission to the role.
-     */
-    public function givePermissionTo($permission, array $pivotData = []): void
-    {
-        $permissionId = $permission instanceof Permission ? $permission->id : $permission;
-
-        $defaultPivotData = [
-            'attribue_par' => auth()->id(),
-            'attribue_le' => now(),
-            'actif' => true,
-        ];
-
-        $this->permissions()->attach($permissionId, array_merge($defaultPivotData, $pivotData));
-    }
-
-    /**
-     * Revoke a permission from the role.
-     */
-    public function revokePermissionTo($permission): void
-    {
-        $permissionId = $permission instanceof Permission ? $permission->id : $permission;
-        $this->permissions()->detach($permissionId);
-    }
-
-    /**
-     * Sync permissions for the role.
-     */
-    public function syncPermissions(array $permissions): void
-    {
-        $permissionsData = [];
-
-        foreach ($permissions as $permissionId) {
-            $permissionsData[$permissionId] = [
-                'attribue_par' => auth()->id(),
-                'attribue_le' => now(),
-                'actif' => true,
-            ];
-        }
-
-        $this->permissions()->sync($permissionsData);
-    }
-
-    /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Générer automatiquement le slug si non fourni
-        static::creating(function ($role) {
-            if (empty($role->slug)) {
-                $role->slug = Str::slug($role->name);
-            }
-        });
-
-        // Empêcher la suppression des rôles système
-        static::deleting(function ($role) {
-            if ($role->is_system_role) {
-                throw new \Exception('Les rôles système ne peuvent pas être supprimés.');
-            }
-        });
+        return $query->where('level', '<=', $level);
     }
 }

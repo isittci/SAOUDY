@@ -168,6 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
     ])->toArray(),
 
     /*
@@ -180,6 +181,10 @@ return [
     | the aliases are "lazy" loaded so they don't hinder performance.
     |
     */
+
+    'company_sigle' => env('COMPANY_SIGLE', 'ISITT CI'),
+    'company_name' => env('COMPANY_NAME', 'Intégration de Solutions Informatiques, Téchnologiques et Télécommunications'),
+    'company_website' => env('COMPANY_WEBSITE', 'www.isittci.com'),
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,

@@ -3,44 +3,23 @@
 namespace App\Models;
 
 use App\Traits\HasPermissions;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids, SoftDeletes, HasPermissions;
+    use HasFactory, Notifiable, HasUuids, SoftDeletes, Auditable, HasPermissions;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
+     * Statuts des utilisateurs.
      */
-    protected $table = 'users';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The data type of the primary key ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
+    const STATUT_ACTIF = 1;
+    const STATUT_INACTIF = 0;
 
     /**
      * The attributes that are mass assignable.
@@ -54,11 +33,8 @@ class User extends Authenticatable
         'telephone_principal',
         'telephone_secondaire',
         'role_id',
-        'email_verified_at',
         'statut',
-        'created_by',
-        'updated_by',
-        'deleted_by',
+        'email_verified_at',
     ];
 
     /**
@@ -86,78 +62,151 @@ class User extends Authenticatable
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['is_active'];
-
-    /**
-     * Get the role that owns the user.
+     * Relation avec le rôle.
      */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+        return $this->belongsTo(Role::class);
     }
 
     /**
-     * Get the user who created this user.
+     * Obtient les initiales de l'utilisateur.
+     *
+     * @return string
      */
-    public function creator(): BelongsTo
+    public function getInitialsAttribute(): string
     {
-        return $this->belongsTo(User::class, 'created_by', 'id');
+        $parts = explode(' ', $this->nom_complet);
+        
+        if (count($parts) >= 2) {
+            return strtoupper(substr($parts[0], 0, 1) . substr($parts[1], 0, 1));
+        }
+        
+        return strtoupper(substr($this->nom_complet, 0, 2));
     }
 
     /**
-     * Get the user who last updated this user.
+     * Obtient le statut formaté.
+     *
+     * @return string
      */
-    public function updater(): BelongsTo
+    public function getStatutLabelAttribute(): string
     {
-        return $this->belongsTo(User::class, 'updated_by', 'id');
+        return $this->statut === self::STATUT_ACTIF ? 'Actif' : 'Inactif';
     }
 
     /**
-     * Get the user who deleted this user.
+     * Vérifie si l'utilisateur est actif.
+     *
+     * @return bool
      */
-    public function deleter(): BelongsTo
+    public function isActive(): bool
     {
-        return $this->belongsTo(User::class, 'deleted_by', 'id');
+        return $this->statut === self::STATUT_ACTIF;
     }
 
     /**
-     * Scope a query to only include active users.
+     * Vérifie si l'utilisateur est inactif.
+     *
+     * @return bool
      */
-    public function scopeActive($query)
+    public function isInactive(): bool
     {
-        return $query->where('statut', 1);
+        return $this->statut === self::STATUT_INACTIF;
     }
 
     /**
-     * Scope a query to only include inactive users.
+     * Vérifie si l'utilisateur a vérifié son email.
+     *
+     * @return bool
      */
-    public function scopeInactive($query)
+    public function hasVerifiedEmail(): bool
     {
-        return $query->where('statut', 0);
+        return !is_null($this->email_verified_at);
     }
 
     /**
-     * Scope a query to only include verified users.
+     * Active l'utilisateur.
+     *
+     * @return bool
      */
-    public function scopeVerified($query)
+    public function activate(): bool
     {
-        return $query->whereNotNull('email_verified_at');
+        return $this->update(['statut' => self::STATUT_ACTIF]);
     }
 
     /**
-     * Scope a query to only include unverified users.
+     * Désactive l'utilisateur.
+     *
+     * @return bool
      */
-    public function scopeUnverified($query)
+    public function deactivate(): bool
     {
-        return $query->whereNull('email_verified_at');
+        return $this->update(['statut' => self::STATUT_INACTIF]);
     }
 
     /**
-     * Scope a query to filter by role.
+     * Bascule le statut de l'utilisateur.
+     *
+     * @return bool
+     */
+    public function toggleStatus(): bool
+    {
+        $newStatus = $this->statut === self::STATUT_ACTIF 
+            ? self::STATUT_INACTIF 
+            : self::STATUT_ACTIF;
+            
+        return $this->update(['statut' => $newStatus]);
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut être supprimé.
+     *
+     * @return bool
+     */
+    public function canBeDeleted(): bool
+    {
+        // Un utilisateur ne peut pas se supprimer lui-même
+        if ($this->id === auth()->id()) {
+            return false;
+        }
+
+        // Les Super Admin ne peuvent être supprimés que par d'autres Super Admin
+        if ($this->isSuperAdmin() && !auth()->user()->isSuperAdmin()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut être restauré.
+     *
+     * @return bool
+     */
+    public function canBeRestored(): bool
+    {
+        return $this->trashed();
+    }
+
+    /**
+     * Scope pour filtrer les utilisateurs actifs.
+     */
+    public function scopeActif($query)
+    {
+        return $query->where('statut', self::STATUT_ACTIF);
+    }
+
+    /**
+     * Scope pour filtrer les utilisateurs inactifs.
+     */
+    public function scopeInactif($query)
+    {
+        return $query->where('statut', self::STATUT_INACTIF);
+    }
+
+    /**
+     * Scope pour filtrer par rôle.
      */
     public function scopeByRole($query, $roleId)
     {
@@ -165,158 +214,83 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope a query to search users by name or email.
+     * Scope pour rechercher des utilisateurs.
      */
     public function scopeSearch($query, string $search)
     {
         return $query->where(function ($q) use ($search) {
             $q->where('nom_complet', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%")
-              ->orWhere('telephone_principal', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('telephone_principal', 'like', "%{$search}%")
+                ->orWhere('telephone_secondaire', 'like', "%{$search}%");
         });
     }
 
     /**
-     * Check if the user is active.
+     * Scope pour filtrer les utilisateurs que l'utilisateur connecté peut voir.
      */
-    public function isActive(): bool
+    public function scopeViewable($query)
     {
-        return $this->statut == 1;
-    }
+        $user = auth()->user();
 
-    /**
-     * Check if the user is verified.
-     */
-    public function isVerified(): bool
-    {
-        return !is_null($this->email_verified_at);
-    }
-
-    /**
-     * Check if user has a specific role.
-     */
-    public function hasRole(string $roleSlug): bool
-    {
-        return $this->role && $this->role->slug === $roleSlug;
-    }
-
-    /**
-     * Check if user has a role with minimum level.
-     */
-    public function hasMinimumLevel(int $level): bool
-    {
-        return $this->role && $this->role->level >= $level;
-    }
-
-    /**
-     * Check if user has a specific permission.
-     */
-    public function hasPermission(string $permissionSlug): bool
-    {
-        return $this->role && $this->role->hasPermission($permissionSlug);
-    }
-
-    /**
-     * Check if user has any of the given permissions.
-     */
-    public function hasAnyPermission(array $permissionSlugs): bool
-    {
-        return $this->role && $this->role->hasAnyPermission($permissionSlugs);
-    }
-
-    /**
-     * Check if user has all of the given permissions.
-     */
-    public function hasAllPermissions(array $permissionSlugs): bool
-    {
-        return $this->role && $this->role->hasAllPermissions($permissionSlugs);
-    }
-
-    /**
-     * Get all permissions for the user through their role.
-     */
-    public function getAllPermissions()
-    {
-        return $this->role ? $this->role->activePermissions : collect();
-    }
-
-    /**
-     * Check if user can perform action on resource.
-     */
-    public function can($ability, $arguments = []): bool
-    {
-        // Vérifier d'abord avec la méthode parent de Laravel
-        $laravelCan = parent::can($ability, $arguments);
-
-        if ($laravelCan) {
-            return true;
+        // Super Admin peut tout voir
+        if ($user->isSuperAdmin()) {
+            return $query;
         }
 
-        // Ensuite vérifier avec notre système de permissions
-        return $this->hasPermission($ability);
-    }
-
-    /**
-     * Activate the user account.
-     */
-    public function activate(): bool
-    {
-        $this->statut = 1;
-        return $this->save();
-    }
-
-    /**
-     * Deactivate the user account.
-     */
-    public function deactivate(): bool
-    {
-        $this->statut = 0;
-        return $this->save();
-    }
-
-    /**
-     * Get the is_active attribute.
-     */
-    public function getIsActiveAttribute(): bool
-    {
-        return $this->isActive();
-    }
-
-    /**
-     * Get the full name attribute (alias).
-     */
-    public function getFullNameAttribute(): string
-    {
-        return $this->nom_complet;
-    }
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Enregistrer automatiquement l'utilisateur qui crée
-        static::creating(function ($model) {
-            if (auth()->check() && !$model->created_by) {
-                $model->created_by = auth()->id();
-            }
+        // Les autres peuvent voir les utilisateurs de niveau inférieur ou égal
+        return $query->whereHas('role', function ($q) use ($user) {
+            $q->where('level', '<=', $user->role->level);
         });
+    }
 
-        // Enregistrer automatiquement l'utilisateur qui met à jour
-        static::updating(function ($model) {
-            if (auth()->check() && !$model->updated_by) {
-                $model->updated_by = auth()->id();
-            }
-        });
+    /**
+     * Scope pour filtrer les utilisateurs que l'utilisateur connecté peut gérer.
+     */
+    public function scopeManageable($query)
+    {
+        $user = auth()->user();
 
-        // Enregistrer automatiquement l'utilisateur qui supprime
-        static::deleting(function ($model) {
-            if (auth()->check() && !$model->deleted_by) {
-                $model->deleted_by = auth()->id();
-                $model->saveQuietly();
-            }
+        // Super Admin peut tout gérer
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        // Les autres peuvent gérer les utilisateurs de niveau strictement inférieur
+        return $query->whereHas('role', function ($q) use ($user) {
+            $q->where('level', '<', $user->role->level);
         });
+    }
+
+    /**
+     * Scope pour exclure l'utilisateur connecté.
+     */
+    public function scopeExceptCurrent($query)
+    {
+        return $query->where('id', '!=', auth()->id());
+    }
+
+    /**
+     * Scope pour ordonner par nom.
+     */
+    public function scopeOrderedByName($query)
+    {
+        return $query->orderBy('nom_complet');
+    }
+
+    /**
+     * Scope pour les utilisateurs vérifiés.
+     */
+    public function scopeVerified($query)
+    {
+        return $query->whereNotNull('email_verified_at');
+    }
+
+    /**
+     * Scope pour les utilisateurs non vérifiés.
+     */
+    public function scopeUnverified($query)
+    {
+        return $query->whereNull('email_verified_at');
     }
 }

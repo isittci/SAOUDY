@@ -1,11 +1,11 @@
 @extends('layouts.main')
 @section('title', 'Détails Caractéristique - V' . $caracteristique->version_caracteristique_appel_offre)
 @section('breadcrumb')
-    <a href="{{ route('appels-offres.index') }}" class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">{{ $appelOffre->numero_appel_offre }}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $appelOffre->numero_appel_offre }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('caracteristiques-appels-offres.index', $appelOffre->id_appel_offre) }}" class="text-white/80 hover:text-white transition-colors">Caractéristiques</a>
+    <a @can('caracteristiques_appels_offres.read') href="{{ route('caracteristiques-appels-offres.index', $appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors">Caractéristiques</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">V{{$caracteristique->version_caracteristique_appel_offre}}</span>
 @endsection
@@ -16,10 +16,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('caracteristiques-appels-offres.index', $appelOffre->id_appel_offre) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('caracteristiques_appels_offres.read')
+                        <a href="{{ route('caracteristiques-appels-offres.index', $appelOffre->id_appel_offre) }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                             <i class="fas fa-cogs text-purple-500"></i>
@@ -29,18 +31,24 @@
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-2">
-                    <a href="{{ route('caracteristiques-appels-offres.historique', [$appelOffre->id_appel_offre, $caracteristique->id_caracteristique_appel_offre]) }}"
-                        class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 flex items-center space-x-2">
-                        <i class="fas fa-history text-sm"></i>
-                        <span class="text-sm font-medium hidden sm:inline">Historique</span>
-                    </a>
-                    <a href="{{ route('caracteristiques-appels-offres.edit', [$appelOffre->id_appel_offre, $caracteristique->id_caracteristique_appel_offre]) }}"
-                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2">
-                        <i class="fas fa-edit text-sm"></i>
-                        <span class="text-sm font-medium hidden sm:inline">Modifier</span>
-                    </a>
-                </div>
+                @canany(['caracteristiques_appels_offres.view-history', 'caracteristiques_appels_offres.update'])
+                    <div class="flex items-center space-x-2">
+                        @can('caracteristiques_appels_offres.view-history')
+                            <a href="{{ route('caracteristiques-appels-offres.historique', [$appelOffre->id_appel_offre, $caracteristique->id_caracteristique_appel_offre]) }}"
+                                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 flex items-center space-x-2">
+                                <i class="fas fa-history text-sm"></i>
+                                <span class="text-sm font-medium hidden sm:inline">Historique</span>
+                            </a>
+                        @endcan
+                        @can('caracteristiques_appels_offres.update')
+                            <a href="{{ route('caracteristiques-appels-offres.edit', [$appelOffre->id_appel_offre, $caracteristique->id_caracteristique_appel_offre]) }}"
+                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2">
+                                <i class="fas fa-edit text-sm"></i>
+                                <span class="text-sm font-medium hidden sm:inline">Modifier</span>
+                            </a>
+                        @endcan
+                    </div>
+                @endcanany
             </div>
         </div>
     </div>
@@ -107,12 +115,14 @@
                                     Montant global: <strong>{{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }} FCFA</strong>
                                 </p>
                             </div>
+                            @can('appels_offres.view-details')
                             <a href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}"
                                 target="_blank"
                                 class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                 title="Voir l'appel d'offres">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -221,79 +231,7 @@
                 </div>
             </div>
 
-            <!-- Garanties et Pénalités -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b border-gray-200">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-shield-alt text-red-500 mr-2"></i>
-                        Garanties et Pénalités
-                    </h2>
-                </div>
-
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Pénalités -->
-                        <div class="bg-gradient-to-br from-red-50 to-white p-4 rounded-lg border border-red-200">
-                            <div class="flex items-start space-x-3">
-                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-xs text-gray-600 mb-2">Pénalités de retard/jour</p>
-                                    @if($caracteristique->penalites_retard_journalier_caracteristique_appel_offre)
-                                        <p class="text-xl font-bold text-red-600">
-                                            {{ number_format($caracteristique->penalites_retard_journalier_caracteristique_appel_offre, 0, ',', ' ') }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 mt-1">FCFA par jour de retard</p>
-                                    @else
-                                        <p class="text-sm text-gray-400">Non défini</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Montant de garantie -->
-                        <div class="bg-gradient-to-br from-green-50 to-white p-4 rounded-lg border border-green-200">
-                            <div class="flex items-start space-x-3">
-                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-shield-alt text-green-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-xs text-gray-600 mb-2">Montant de garantie</p>
-                                    @if($caracteristique->montant_garantie_caracteristique_appel_offre)
-                                        <p class="text-xl font-bold text-green-600">
-                                            {{ number_format($caracteristique->montant_garantie_caracteristique_appel_offre, 0, ',', ' ') }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 mt-1">FCFA</p>
-                                    @else
-                                        <p class="text-sm text-gray-400">Non défini</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Délai de garantie -->
-                        <div class="bg-gradient-to-br from-blue-50 to-white p-4 rounded-lg border border-blue-200">
-                            <div class="flex items-start space-x-3">
-                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-clock text-blue-600 text-lg"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-xs text-gray-600 mb-2">Délai de garantie</p>
-                                    @if($caracteristique->delai_garantie_jours_caracteristique_appel_offre)
-                                        <p class="text-xl font-bold text-blue-600">
-                                            {{ number_format($caracteristique->delai_garantie_jours_caracteristique_appel_offre, 0, ',', ' ') }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 mt-1">jours après réception</p>
-                                    @else
-                                        <p class="text-sm text-gray-400">Non défini</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
 
             <!-- Modalités et Documents -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -437,7 +375,7 @@
         <script>
             // Afficher historique
             function showHistorique() {
-                fetch(`/appels-offres/{{ $appelOffre->id_appel_offre }}/caracteristiques/{{ $caracteristique->id_caracteristique_appel_offre }}/historique`, {
+                fetch("{{ route('caracteristiques-appels-offres.historique', [$appelOffre->id_appel_offre, $caracteristique->id_caracteristique_appel_offre]) }}", {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

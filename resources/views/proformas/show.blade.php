@@ -1,7 +1,8 @@
 @extends('layouts.main')
 @section('title', 'Proforma - ' . $proforma->numero_proforma)
 @section('breadcrumb')
-    <a href="{{ route('proformas.index') }}" class="text-white/80 hover:text-white transition-colors">Proformas</a>
+    <a @can('proformas.read') href="{{ route('proformas.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Proformas</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">{{ $proforma->numero_proforma }}</span>
 @endsection
@@ -13,10 +14,12 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <!-- Titre et retour -->
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('proformas.index') }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                    @can('proformas.read')
+                        <a href="{{ route('proformas.index') }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
+                    @endcan
                     <div>
                         <div class="flex items-center space-x-3 flex-wrap">
                             <h1 class="text-2xl font-bold text-gray-800">{{ $proforma->numero_proforma }}</h1>
@@ -50,53 +53,64 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex items-center space-x-2 flex-wrap">
-                    <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
-                        class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-edit text-sm"></i>
-                        <span class="text-sm font-medium">Modifier</span>
-                    </button>
+                @canany(['proformas.update', 'proformas.create-version', 'prestataires.delete'])
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2 flex-wrap">
+                        @can('proformas.update')
+                            <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
+                                class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-edit text-sm"></i>
+                                <span class="text-sm font-medium">Modifier</span>
+                            </button>
+                        @endcan
 
-                    <button onclick="toggleStatus({{ $proforma->actif_proforma ? 'true' : 'false' }})"
-                        class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-power-off text-sm"></i>
-                        <span class="text-sm font-medium">{{ $proforma->actif_proforma ? 'Désactiver' : 'Activer' }}</span>
-                    </button>
+                        @can('proformas.update')
+                            <button onclick="toggleStatus({{ $proforma->actif_proforma ? 'true' : 'false' }})"
+                                class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-power-off text-sm"></i>
+                                <span class="text-sm font-medium">{{ $proforma->actif_proforma ? 'Désactiver' : 'Activer' }}</span>
+                            </button>
+                        @endcan
 
-                    <!-- Menu dropdown -->
-                    <div class="relative">
-                        <button onclick="toggleMenu()" id="menuBtn"
-                            class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                            <i class="fas fa-ellipsis-v text-sm"></i>
-                        </button>
-                        <div id="actionMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-                            <div class="py-1">
-                                <button onclick="creerVersion()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-code-branch mr-2 text-indigo-500"></i>
-                                    Nouvelle version
-                                </button>
-                                <button onclick="duplicate()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                    Dupliquer
-                                </button>
-                                <button onclick="printProforma()"
-                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                    <i class="fas fa-print mr-2 text-gray-500"></i>
-                                    Imprimer
-                                </button>
-                                <button onclick="confirmDelete()"
-                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                    <i class="fas fa-trash mr-2"></i>
-                                    Supprimer
-                                </button>
+                        <!-- Menu dropdown -->
+                        <div class="relative">
+                            <button onclick="toggleMenu()" id="menuBtn"
+                                class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i class="fas fa-ellipsis-v text-sm"></i>
+                            </button>
+                            <div id="actionMenu"
+                                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                                <div class="py-1">
+                                    @can('proformas.create-version')
+                                        <button onclick="creerVersion()"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                            <i class="fas fa-code-branch mr-2 text-indigo-500"></i>
+                                            Nouvelle version
+                                        </button>
+                                    @endcan
+
+                                    @can('proformas.update')
+                                        <button onclick="duplicate()"
+                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                            <i class="fas fa-copy mr-2 text-purple-500"></i>
+                                            Dupliquer
+                                        </button>
+                                    @endcan
+
+
+
+                                    @can('prestataires.delete')
+                                        <button onclick="confirmDelete()"
+                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                            <i class="fas fa-trash mr-2"></i>
+                                            Supprimer
+                                        </button>
+                                    @endcan
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endcanany
             </div>
         </div>
     </div>
@@ -207,20 +221,6 @@
                             </div>
                         </div>
 
-                        @if ($proforma->penalites_proforma > 0)
-                            <!-- Pénalités -->
-                            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                                        <span class="text-sm font-semibold text-red-700">Pénalités applicables</span>
-                                    </div>
-                                    <span class="text-lg font-bold text-red-600">
-                                        {{ number_format($proforma->penalites_proforma, 0, ',', ' ') }} FCFA
-                                    </span>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
@@ -321,7 +321,8 @@
                                         </div>
 
                                         <div class="text-right">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $attribution->getStatutBadgeClassAttribute() }}">
                                                 {{ $attribution->getStatutLabelAttribute() }}
                                             </span>
 
@@ -453,53 +454,52 @@
                     </div>
                 </div>
 
-                <!-- Actions rapides -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-bolt text-blue-500 mr-2"></i>
-                            Actions rapides
-                        </h2>
+                @canany(['proformas.create-version', 'proformas.update'])
+                    <!-- Actions rapides -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-bolt text-blue-500 mr-2"></i>
+                                Actions rapides
+                            </h2>
+                        </div>
+
+                        <div class="p-4 space-y-2">
+                            @can('proformas.create-version')
+                                <button onclick="creerVersion()"
+                                    class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors group">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-code-branch text-indigo-500 mr-3"></i>
+                                        Créer une version
+                                    </span>
+                                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-indigo-500"></i>
+                                </button>
+                            @endcan
+
+                            @can('proformas.update')
+                                <button onclick="duplicate()"
+                                    class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-colors group">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-copy text-purple-500 mr-3"></i>
+                                        Dupliquer
+                                    </span>
+                                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-purple-500"></i>
+                                </button>
+                            @endcan
+
+                            @can('proformas.update')
+                                <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
+                                    class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-orange-50 rounded-lg transition-colors group">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-edit text-orange-500 mr-3"></i>
+                                        Modifier
+                                    </span>
+                                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-orange-500"></i>
+                                </button>
+                            @endcan
+                        </div>
                     </div>
-
-                    <div class="p-4 space-y-2">
-                        <button onclick="creerVersion()"
-                            class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-indigo-50 rounded-lg transition-colors group">
-                            <span class="flex items-center">
-                                <i class="fas fa-code-branch text-indigo-500 mr-3"></i>
-                                Créer une version
-                            </span>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-indigo-500"></i>
-                        </button>
-
-                        <button onclick="duplicate()"
-                            class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-colors group">
-                            <span class="flex items-center">
-                                <i class="fas fa-copy text-purple-500 mr-3"></i>
-                                Dupliquer
-                            </span>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-purple-500"></i>
-                        </button>
-
-                        <button onclick="printProforma()"
-                            class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors group">
-                            <span class="flex items-center">
-                                <i class="fas fa-print text-gray-500 mr-3"></i>
-                                Imprimer
-                            </span>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600"></i>
-                        </button>
-
-                        <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
-                            class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-orange-50 rounded-lg transition-colors group">
-                            <span class="flex items-center">
-                                <i class="fas fa-edit text-orange-500 mr-3"></i>
-                                Modifier
-                            </span>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-orange-500"></i>
-                        </button>
-                    </div>
-                </div>
+                @endcanany
             </div>
         </div>
     </main>
@@ -532,10 +532,12 @@
                                 class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
                                 Annuler
                             </button>
-                            <button onclick="executeDelete()"
-                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                                Supprimer
-                            </button>
+                            @can('proformas.delete')
+                                <button onclick="executeDelete()"
+                                    class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                    Supprimer
+                                </button>
+                            @endcan
                         </div>
                     @endif
                 </div>
@@ -582,36 +584,74 @@
                             class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
                             Annuler
                         </button>
-                        <button type="submit"
-                            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">
-                            Créer la version
-                        </button>
+                        @can('proformas.create-version')
+                            <button type="submit"
+                                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">
+                                Créer la version
+                            </button>
+                        @endcan
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            // Toggle menu
-            window.toggleMenu = function() {
-                document.getElementById('actionMenu').classList.toggle('hidden');
-            }
-
-            // Fermer menu en cliquant ailleurs
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#menuBtn') && !e.target.closest('#actionMenu')) {
-                    document.getElementById('actionMenu').classList.add('hidden');
+    @can('proformas.view-details')
+        @push('scripts')
+            <script>
+                // Toggle menu
+                window.toggleMenu = function() {
+                    document.getElementById('actionMenu').classList.toggle('hidden');
                 }
-            });
 
-            // Toggle statut
-            window.toggleStatus = function(isActive) {
-                const action = isActive ? 'désactiver' : 'activer';
-                if (confirm(`Voulez-vous vraiment ${action} cette proforma ?`)) {
-                    fetch(`/proformas/{{ $proforma->id_proforma }}/toggle-status`, {
-                            method: 'POST',
+                // Fermer menu en cliquant ailleurs
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#menuBtn') && !e.target.closest('#actionMenu')) {
+                        document.getElementById('actionMenu').classList.add('hidden');
+                    }
+                });
+
+                // Toggle statut
+                window.toggleStatus = function(isActive) {
+                    const action = isActive ? 'désactiver' : 'activer';
+                    if (confirm(`Voulez-vous vraiment ${action} cette proforma ?`)) {
+                        fetch(`/proformas/{{ $proforma->id_proforma }}/toggle-status`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload();
+                                } else {
+                                    alert(data.message || 'Une erreur est survenue');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur:', error);
+                                alert('Une erreur est survenue');
+                            });
+                    }
+                }
+
+                // Confirmer suppression
+                window.confirmDelete = function() {
+                    document.getElementById('deleteModal').classList.remove('hidden');
+                }
+
+                // Fermer modal suppression
+                window.closeDeleteModal = function() {
+                    document.getElementById('deleteModal').classList.add('hidden');
+                }
+
+                // Exécuter suppression
+                window.executeDelete = function() {
+                    fetch(`/proformas/{{ $proforma->id_proforma }}`, {
+                            method: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
@@ -621,69 +661,82 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                location.reload();
+                                window.location.href = '{{ route('proformas.index') }}';
                             } else {
                                 alert(data.message || 'Une erreur est survenue');
+                                closeDeleteModal();
                             }
                         })
                         .catch(error => {
                             console.error('Erreur:', error);
                             alert('Une erreur est survenue');
-                        });
-                }
-            }
-
-            // Confirmer suppression
-            window.confirmDelete = function() {
-                document.getElementById('deleteModal').classList.remove('hidden');
-            }
-
-            // Fermer modal suppression
-            window.closeDeleteModal = function() {
-                document.getElementById('deleteModal').classList.add('hidden');
-            }
-
-            // Exécuter suppression
-            window.executeDelete = function() {
-                fetch(`/proformas/{{ $proforma->id_proforma }}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = '{{ route('proformas.index') }}';
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
                             closeDeleteModal();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue');
-                        closeDeleteModal();
-                    });
-            }
+                        });
+                }
 
-            // Dupliquer
-            window.duplicate = function() {
-                if (confirm('Voulez-vous dupliquer cette proforma ?')) {
-                    fetch(`/proformas/{{ $proforma->id_proforma }}/duplicate`, {
+                // Dupliquer
+                window.duplicate = function() {
+                    if (confirm('Voulez-vous dupliquer cette proforma ?')) {
+                        fetch(`/proformas/{{ $proforma->id_proforma }}/duplicate`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.href = `/proformas/${data.data.id_proforma}/edit`;
+                                } else {
+                                    alert(data.message || 'Une erreur est survenue');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erreur:', error);
+                                alert('Une erreur est survenue');
+                            });
+                    }
+                }
+
+                // Créer version
+                window.creerVersion = function() {
+                    document.getElementById('motif_modification').value = '';
+                    document.getElementById('versionModal').classList.remove('hidden');
+                }
+
+                // Fermer modal version
+                window.closeVersionModal = function() {
+                    document.getElementById('versionModal').classList.add('hidden');
+                }
+
+                // Soumettre nouvelle version
+                document.getElementById('versionForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const motif = document.getElementById('motif_modification').value;
+
+                    if (!motif.trim()) {
+                        alert('Le motif de modification est obligatoire');
+                        return;
+                    }
+
+                    fetch(`/proformas/{{ $proforma->id_proforma }}/creer-version`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
-                            }
+                            },
+                            body: JSON.stringify({
+                                motif_modification_proforma: motif
+                            })
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.location.href = `/proformas/${data.data.id_proforma}/edit`;
+                                window.location.href = `/proformas/${data.data.id_proforma}`;
                             } else {
                                 alert(data.message || 'Une erreur est survenue');
                             }
@@ -692,93 +745,43 @@
                             console.error('Erreur:', error);
                             alert('Une erreur est survenue');
                         });
-                }
-            }
+                });
 
-            // Créer version
-            window.creerVersion = function() {
-                document.getElementById('motif_modification').value = '';
-                document.getElementById('versionModal').classList.remove('hidden');
-            }
 
-            // Fermer modal version
-            window.closeVersionModal = function() {
-                document.getElementById('versionModal').classList.add('hidden');
-            }
 
-            // Soumettre nouvelle version
-            document.getElementById('versionForm').addEventListener('submit', function(e) {
-                e.preventDefault();
+                // Fermer modals avec Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeDeleteModal();
+                        closeVersionModal();
+                        document.getElementById('actionMenu').classList.add('hidden');
+                    }
+                });
+            </script>
 
-                const motif = document.getElementById('motif_modification').value;
+            <style>
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
 
-                if (!motif.trim()) {
-                    alert('Le motif de modification est obligatoire');
-                    return;
-                }
-
-                fetch(`/proformas/{{ $proforma->id_proforma }}/creer-version`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            motif_modification_proforma: motif
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = `/proformas/${data.data.id_proforma}`;
-                        } else {
-                            alert(data.message || 'Une erreur est survenue');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue');
-                    });
-            });
-
-            // Imprimer
-            window.printProforma = function() {
-                window.print();
-            }
-
-            // Fermer modals avec Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeDeleteModal();
-                    closeVersionModal();
-                    document.getElementById('actionMenu').classList.add('hidden');
-                }
-            });
-        </script>
-
-        <style>
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
                 }
 
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
                 }
-            }
 
-            .animate-fadeIn {
-                animation: fadeIn 0.3s ease-out;
-            }
-
-            @media print {
-                .no-print {
-                    display: none !important;
+                @media print {
+                    .no-print {
+                        display: none !important;
+                    }
                 }
-            }
-        </style>
-    @endpush
+            </style>
+        @endpush
+    @endcan
 @endsection

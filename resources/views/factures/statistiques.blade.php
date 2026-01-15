@@ -3,7 +3,7 @@
 @section('title', 'Statistiques des Factures')
 
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Statistiques</span>
 @endsection
@@ -14,10 +14,12 @@
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center space-x-4">
+                    @can('factures.read')
                     <a href="{{ route('factures.index') }}"
                         class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
+                    @endcan
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Statistiques des Factures</h1>
                         <p class="text-gray-600 mt-1">Tableau de bord et analyses des factures</p>
@@ -476,6 +478,7 @@
         </div>
     </main>
 @endsection
+
 
 @push('scripts')
 <script>

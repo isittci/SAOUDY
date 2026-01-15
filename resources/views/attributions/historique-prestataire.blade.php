@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('title', 'Historique Prestataire')
 @section('breadcrumb')
-    <a href="{{ route('attributions.index') }}" class="text-white/80 hover:text-white transition-colors">Attributions</a>
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Attributions</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Historique Prestataire</span>
 @endsection
@@ -10,9 +10,11 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                 @can('attributions_lots.read')
                 <a href="{{ route('attributions.index') }}" class="p-2 hover:bg-gray-100 rounded-lg">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                 @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">Historique des attributions</h1>
                     <p class="text-gray-600 mt-1">{{ $prestataire->raison_sociale_prestataire }}</p>
@@ -67,7 +69,7 @@
 
                     <div class="divide-y divide-gray-100">
                         @forelse($historique as $attr)
-                            <a href="{{ route('attributions.show', $attr->id_attribution) }}"
+                            <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attr->id_attribution) }}" @endcan
                                class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
                                 <div class="flex-1">
                                     <div class="flex items-center space-x-3">
@@ -167,11 +169,7 @@
                             <span class="text-green-100">Montant payé</span>
                             <span class="font-bold">{{ number_format($statistiques['montant_total_paye'], 0, ',', ' ') }} FCFA</span>
                         </div>
-                        <hr class="border-green-400">
-                        <div class="flex justify-between">
-                            <span class="text-green-100">Pénalités</span>
-                            <span class="font-bold text-yellow-200">{{ number_format($statistiques['penalites_totales'], 0, ',', ' ') }} FCFA</span>
-                        </div>
+                        
                     </div>
                 </div>
             </div>

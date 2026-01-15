@@ -3,9 +3,9 @@
 @section('title', 'Modifier Facture ' . $facture->numero_facture)
 
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('factures.show', $facture->id_facture) }}" class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
+    <a @can('factures.view-details') href="{{ route('factures.show', $facture->id_facture) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Modifier</span>
 @endsection
@@ -95,10 +95,12 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('factures.view-details')
                 <a href="{{ route('factures.show', $facture->id_facture) }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <div class="flex items-center space-x-3">
                         <h1 class="text-2xl font-bold text-gray-800">Modifier la Facture</h1>
@@ -117,6 +119,7 @@
 
         @include('partials.alerts')
 
+        @can('factures.update')
         <form action="{{ route('factures.update', $facture->id_facture) }}" method="POST" id="factureForm">
             @csrf
             @method('PUT')
@@ -367,9 +370,11 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 @endsection
 
+@can('factures.update')
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -474,3 +479,4 @@
         });
     </script>
 @endpush
+@endcan

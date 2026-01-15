@@ -16,74 +16,39 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth'])->prefix('appels-offres/{appel_offre}/lots/{lot}')->group(function () {
 
     // Routes CRUD standards
-    Route::get('criteres', [CritereEvaluationController::class, 'index'])
-        ->name('criteres-evaluations.index');
+    Route::get('criteres', [CritereEvaluationController::class, 'index'])->name('criteres-evaluations.index')->middleware('can:criteres_evaluations.read');
 
-    Route::get('criteres/create', [CritereEvaluationController::class, 'create'])
-        ->name('criteres-evaluations.create');
+    Route::get('criteres/create', [CritereEvaluationController::class, 'create'])->name('criteres-evaluations.create')->middleware('can:criteres_evaluations.create');
 
-    Route::post('criteres', [CritereEvaluationController::class, 'store'])
-        ->name('criteres-evaluations.store');
+    Route::post('criteres', [CritereEvaluationController::class, 'store'])->name('criteres-evaluations.store')->middleware('can:criteres_evaluations.create');
 
-    Route::get('criteres/{critere}', [CritereEvaluationController::class, 'show'])
-        ->name('criteres-evaluations.show');
+    Route::get('criteres/{critere}', [CritereEvaluationController::class, 'show'])->name('criteres-evaluations.show')->middleware('can:criteres_evaluations.view-details');
 
-    Route::get('criteres/{critere}/edit', [CritereEvaluationController::class, 'edit'])
-        ->name('criteres-evaluations.edit');
+    Route::get('criteres/{critere}/edit', [CritereEvaluationController::class, 'edit'])->name('criteres-evaluations.edit')->middleware('can:criteres_evaluations.update');
 
-    Route::put('criteres/{critere}', [CritereEvaluationController::class, 'update'])
-        ->name('criteres-evaluations.update');
+    Route::put('criteres/{critere}', [CritereEvaluationController::class, 'update'])->name('criteres-evaluations.update')->middleware('can:criteres_evaluations.update');
 
-    Route::delete('criteres/{critere}', [CritereEvaluationController::class, 'destroy'])
-        ->name('criteres-evaluations.destroy');
+    Route::delete('criteres/{critere}', [CritereEvaluationController::class, 'destroy'])->name('criteres-evaluations.destroy')->middleware('can:criteres_evaluations.delete');
 
     // Routes d'actions supplémentaires
-    Route::post('criteres/{critere}/activer', [CritereEvaluationController::class, 'activer'])
-        ->name('criteres-evaluations.activer');
+    Route::post('criteres/{critere}/activer', [CritereEvaluationController::class, 'activer'])->name('criteres-evaluations.activer')->middleware('can:criteres_evaluations.update');
 
-    Route::post('criteres/{critere}/desactiver', [CritereEvaluationController::class, 'desactiver'])
-        ->name('criteres-evaluations.desactiver');
+    Route::post('criteres/{critere}/desactiver', [CritereEvaluationController::class, 'desactiver'])->name('criteres-evaluations.desactiver')->middleware('can:criteres_evaluations.update');
 
-    Route::post('criteres/{critere}/reordonner', [CritereEvaluationController::class, 'reordonner'])
-        ->name('criteres-evaluations.reordonner');
+    Route::post('criteres/{critere}/reordonner', [CritereEvaluationController::class, 'reordonner'])->name('criteres-evaluations.reordonner')->middleware('can:criteres_evaluations.update');
 
-    Route::post('criteres/{critere}/dupliquer', [CritereEvaluationController::class, 'dupliquer'])
-        ->name('criteres-evaluations.dupliquer');
+    Route::post('criteres/{critere}/dupliquer', [CritereEvaluationController::class, 'dupliquer'])->name('criteres-evaluations.dupliquer')->middleware('can:criteres_evaluations.update');
 
     // Route de statistiques
-    Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])
-        ->name('criteres-evaluations.statistiques');
+    Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])->name('criteres-evaluations.statistiques')->middleware('can:criteres_evaluations.view-details');
 
 
         // Mise à jour en masse des ordres (pour drag-and-drop optimisé)
-    Route::post('criteres-reordonner-batch', [CritereEvaluationController::class, 'reordonnerBatch'])
-        ->name('criteres-evaluations.reordonner-batch');
+    Route::post('criteres-reordonner-batch', [CritereEvaluationController::class, 'reordonnerBatch'])->name('criteres-evaluations.reordonner-batch')->middleware('can:criteres_evaluations.update');
 
     // Permutation de deux critères (pour boutons monter/descendre)
-    Route::post('criteres-permuter', [CritereEvaluationController::class, 'permuter'])
-        ->name('criteres-evaluations.permuter');
+    Route::post('criteres-permuter', [CritereEvaluationController::class, 'permuter'])->name('criteres-evaluations.permuter')->middleware('can:criteres_evaluations.update');
 
     // Route de statistiques
-    Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])
-        ->name('criteres-evaluations.statistiques');
+    // Route::get('criteres-statistiques', [CritereEvaluationController::class, 'statistiques'])->name('criteres-evaluations.statistiques')->middleware('can:criteres_evaluations.');
 });
-
-/*
-|--------------------------------------------------------------------------
-| Exemples d'URLs générées
-|--------------------------------------------------------------------------
-|
-| GET    /appels-offres/{uuid}/lots/{uuid}/criteres
-| GET    /appels-offres/{uuid}/lots/{uuid}/criteres/create
-| POST   /appels-offres/{uuid}/lots/{uuid}/criteres
-| GET    /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}
-| GET    /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}/edit
-| PUT    /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}
-| DELETE /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}
-| POST   /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}/activer
-| POST   /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}/desactiver
-| POST   /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}/reordonner
-| POST   /appels-offres/{uuid}/lots/{uuid}/criteres/{uuid}/dupliquer
-| GET    /appels-offres/{uuid}/lots/{uuid}/criteres-statistiques
-|
-*/

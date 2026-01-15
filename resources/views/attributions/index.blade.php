@@ -13,11 +13,7 @@
                         <i class="fas fa-handshake text-orange-500"></i>
                         <span>Attributions de Lots</span>
                     </h1>
-                    <button onclick="window.location.href='{{ route('attributions.create') }}'"
-                        class="md:hidden px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Nouveau</span>
-                    </button>
+
                 </div>
 
                 <!-- Filtres et actions -->
@@ -45,12 +41,12 @@
                     </select>
 
                     <!-- Filtre état actif -->
-                    <select id="etatFilter"
+                    {{-- <select id="etatFilter"
                         class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all cursor-pointer">
                         <option value="">Actifs & Historique</option>
                         <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Actives uniquement</option>
                         <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Historique</option>
-                    </select>
+                    </select> --}}
 
                     <!-- Filtre prestataire -->
                     <select id="prestataireFilter"
@@ -63,19 +59,14 @@
                         @endforeach
                     </select>
 
+                    @can('appels_offres.read')
                     <!-- Bouton Dashboard -->
                     <button onclick="window.location.href='{{ route('attributions.dashboard') }}'"
                         class="hidden md:flex px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 items-center space-x-2 shadow-sm">
                         <i class="fas fa-chart-pie text-sm"></i>
                         <span class="text-sm font-medium">Dashboard</span>
                     </button>
-
-                    <!-- Bouton créer (desktop) -->
-                    <button onclick="window.location.href='{{ route('attributions.create') }}'"
-                        class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                        <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm">Attribuer</span>
-                    </button>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -226,7 +217,7 @@
                                         @if(!$attribution->is_active)
                                             <i class="fas fa-history text-gray-400 text-xs" title="Historique"></i>
                                         @endif
-                                        <a href="{{ route('attributions.show', $attribution->id_attribution) }}"
+                                        <a @can('attributions_lots.view-details') href="{{ route('attributions.show', $attribution->id_attribution) }}" @endcan
                                             class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold bg-orange-100 text-orange-700 hover:bg-orange-200 transition-colors">
                                             {{ $attribution->numero_attribution }}
                                         </a>
@@ -303,80 +294,102 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <!-- Voir détails -->
-                                        <button onclick="window.location.href='{{ route('attributions.show', $attribution->id_attribution) }}'"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                            title="Voir détails">
-                                            <i class="fas fa-eye text-sm"></i>
-                                        </button>
-
-                                        @if($attribution->is_active)
-                                            <!-- Actions selon le statut -->
-                                            @if($attribution->peutEtreSuspendue())
-                                                <button onclick="openSuspendreModal('{{ $attribution->id_attribution }}')"
-                                                    class="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200"
-                                                    title="Suspendre">
-                                                    <i class="fas fa-pause text-sm"></i>
+                                @canany(['attributions_lots.view-details', 'attributions_lots.suspend', 'attributions_lots.resume', 'attributions_lots.withdraw', 'attributions_lots.reassign', 'attributions_lots.view-history', 'prestataires.read', 'attributions_lots.assign'])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('attributions_lots.view-details')
+                                                <!-- Voir détails -->
+                                                <button onclick="window.location.href='{{ route('attributions.show', $attribution->id_attribution) }}'"
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                                    title="Voir détails">
+                                                    <i class="fas fa-eye text-sm"></i>
                                                 </button>
-                                            @endif
+                                            @endcan
 
-                                            @if($attribution->peutEtreReprise())
-                                                <button onclick="reprendre('{{ $attribution->id_attribution }}')"
-                                                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
-                                                    title="Reprendre">
-                                                    <i class="fas fa-play text-sm"></i>
-                                                </button>
-                                            @endif
-
-                                            @if($attribution->peutEtreRetiree())
-                                                <button onclick="openRetirerModal('{{ $attribution->id_attribution }}')"
-                                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                                    title="Retirer">
-                                                    <i class="fas fa-ban text-sm"></i>
-                                                </button>
-                                            @endif
-                                        @else
-                                            <!-- Réattribuer depuis l'historique -->
-                                            <button onclick="window.location.href='{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}'"
-                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                title="Réattribuer ce lot">
-                                                <i class="fas fa-redo text-sm"></i>
-                                            </button>
-                                        @endif
-
-                                        <!-- Menu Actions -->
-                                        <div class="relative">
-                                            <button onclick="toggleMenu('{{ $attribution->id_attribution }}')"
-                                                class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                title="Plus d'actions">
-                                                <i class="fas fa-ellipsis-v text-sm"></i>
-                                            </button>
-                                            <div id="menu-{{ $attribution->id_attribution }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                <div class="py-1">
-                                                    <a href="{{ route('attributions.historique.lot', $attribution->lot_id) }}"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-history text-purple-500 mr-2"></i>
-                                                        Historique du lot
-                                                    </a>
-                                                    <a href="{{ route('attributions.historique.prestataire', $attribution->prestataire_id) }}"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-user-clock text-blue-500 mr-2"></i>
-                                                        Historique prestataire
-                                                    </a>
-                                                    @if($attribution->is_active && $attribution->peutEtreTerminee())
-                                                        <button onclick="terminer('{{ $attribution->id_attribution }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-check-double text-green-500 mr-2"></i>
-                                                            Terminer
+                                            @if($attribution->is_active)
+                                                <!-- Actions selon le statut -->
+                                                @can('attributions_lots.suspend')
+                                                    @if($attribution->peutEtreSuspendue())
+                                                        <button onclick="openSuspendreModal('{{ $attribution->id_attribution }}')"
+                                                            class="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200"
+                                                            title="Suspendre">
+                                                            <i class="fas fa-pause text-sm"></i>
                                                         </button>
                                                     @endif
+                                                @endcan
+
+                                                @can('attributions_lots.resume')
+                                                    @if($attribution->peutEtreReprise())
+                                                        <button onclick="reprendre('{{ $attribution->id_attribution }}')"
+                                                            class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                                                            title="Reprendre">
+                                                            <i class="fas fa-play text-sm"></i>
+                                                        </button>
+                                                    @endif
+                                                @endcan
+
+                                                @can('attributions_lots.withdraw')
+                                                    @if($attribution->peutEtreRetiree())
+                                                        <button onclick="openRetirerModal('{{ $attribution->id_attribution }}')"
+                                                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                            title="Retirer">
+                                                            <i class="fas fa-ban text-sm"></i>
+                                                        </button>
+                                                    @endif
+                                                @endcan
+                                            @else
+                                                @can('attributions_lots.reassign')
+                                                    <!-- Réattribuer depuis l'historique -->
+                                                    <button onclick="window.location.href='{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}'"
+                                                        class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                        title="Réattribuer ce lot">
+                                                        <i class="fas fa-redo text-sm"></i>
+                                                    </button>
+                                                @endcan
+                                            @endif
+
+                                            @canany(['attributions_lots.view-history', 'prestataires.read', 'attributions_lots.assign'])
+                                                <!-- Menu Actions -->
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu('{{ $attribution->id_attribution }}')"
+                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
+                                                    </button>
+                                                    <div id="menu-{{ $attribution->id_attribution }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                                        <div class="py-1">
+                                                            @can('attributions_lots.view-history')
+                                                                <a href="{{ route('attributions.historique.lot', $attribution->lot_id) }}"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-history text-purple-500 mr-2"></i>
+                                                                    Historique du lot
+                                                                </a>
+                                                            @endcan
+
+                                                            @can('prestataires.read')
+                                                                <a href="{{ route('attributions.historique.prestataire', $attribution->prestataire_id) }}"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-user-clock text-blue-500 mr-2"></i>
+                                                                    Historique prestataire
+                                                                </a>
+                                                            @endcan
+
+                                                            @can('attributions_lots.assign')
+                                                                @if($attribution->is_active && $attribution->peutEtreTerminee())
+                                                                    <button onclick="terminer('{{ $attribution->id_attribution }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-check-double text-green-500 mr-2"></i>
+                                                                        Terminer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endcanany
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -384,10 +397,6 @@
                                     <div class="flex flex-col items-center justify-center space-y-3">
                                         <i class="fas fa-inbox text-gray-300 text-5xl"></i>
                                         <p class="text-gray-500 font-medium">Aucune attribution trouvée</p>
-                                        <button onclick="window.location.href='{{ route('attributions.create') }}'"
-                                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200">
-                                            Créer une attribution
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -483,66 +492,23 @@
                             class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all">
                             Annuler
                         </button>
+                        @can('attributions_lots.withdraw')
                         <button type="submit"
                             class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-md">
                             Retirer
                         </button>
+                        @endcan
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal Avancement -->
-    {{-- <div id="avancementModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeAvancementModal()"></div>
-            <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
-                <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-tasks text-orange-500 mr-2"></i>
-                        Mettre à jour l'avancement
-                    </h3>
-                </div>
-                <form id="avancementForm" method="POST">
-                    @csrf
-                    <div class="p-6 space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Pourcentage d'avancement *</label>
-                            <div class="flex items-center space-x-4">
-                                <input type="range" name="pourcentage_avancement" id="avancementRange" min="0" max="100" value="0"
-                                    class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                    oninput="document.getElementById('avancementValue').value = this.value">
-                                <input type="number" id="avancementValue" name="pourcentage_avancement_display" min="0" max="100" value="0"
-                                    class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center font-semibold"
-                                    oninput="document.getElementById('avancementRange').value = this.value">
-                                <span class="text-gray-500 font-medium">%</span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Observations</label>
-                            <textarea name="observations" rows="3"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                placeholder="Notes sur l'avancement..."></textarea>
-                        </div>
-                    </div>
-                    <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-                        <button type="button" onclick="closeAvancementModal()"
-                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all shadow-md">
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
+
 
 @endsection
 
+@can('attributions_lots.read')
 @push('scripts')
     <script>
         // Toggle menu dropdown
@@ -664,19 +630,19 @@
 
         // Filtres
         document.getElementById('statutFilter').addEventListener('change', applyFilters);
-        document.getElementById('etatFilter').addEventListener('change', applyFilters);
+        // document.getElementById('etatFilter').addEventListener('change', applyFilters);
         document.getElementById('prestataireFilter').addEventListener('change', applyFilters);
 
         function applyFilters() {
             const search = document.getElementById('searchInput').value;
             const statut = document.getElementById('statutFilter').value;
-            const etat = document.getElementById('etatFilter').value;
+            // const etat = document.getElementById('etatFilter').value;
             const prestataire = document.getElementById('prestataireFilter').value;
 
             const params = new URLSearchParams();
             if (search) params.append('search', search);
             if (statut !== '') params.append('statut', statut);
-            if (etat !== '') params.append('is_active', etat);
+            // if (etat !== '') params.append('is_active', etat);
             if (prestataire) params.append('prestataire_id', prestataire);
 
             window.location.href = `?${params.toString()}`;
@@ -740,3 +706,4 @@
         }
     </style>
 @endpush
+@endcan

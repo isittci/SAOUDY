@@ -1,33 +1,27 @@
 <?php
 
-// ============================================================================
-// MIDDLEWARE HELPERS
-// ============================================================================
-
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Middleware to check if user has a specific permission.
- */
 class CheckPermission
 {
-    public function handle(Request $request, Closure $next, string $permission)
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next, string $permission): Response
     {
         if (!auth()->check()) {
-            abort(401, 'Non authentifié');
+            return redirect()->route('login')
+                ->with('error', 'Vous devez être connecté pour accéder à cette ressource.');
         }
 
-        /**
-         * @var User $user
-         */
-        $user = auth()->user();
-
-
-        if (!$user->hasPermissionTo($permission)) {
-            abort(403, 'Action non autorisée. Permission requise: ' . $permission);
+        if (!auth()->user()->hasPermission($permission)) {
+            abort(403, 'Vous n\'avez pas la permission d\'accéder à cette ressource.');
         }
 
         return $next($request);

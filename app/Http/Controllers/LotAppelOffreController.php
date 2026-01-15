@@ -144,6 +144,7 @@ class LotAppelOffreController extends Controller
             'description_critere' => 'nullable|string',
             'specifications_techniques' => 'nullable|string',
             'date_debut_prevue' => 'nullable|date',
+            'budget_lot' => 'nullable|numeric',
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
             'taux_penalites' => 'nullable|numeric|min:0|max:100',
             'statut_lot' => 'required|in:0,1',
@@ -223,6 +224,7 @@ class LotAppelOffreController extends Controller
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
                 'date_fin_prevue' => $request->date_fin_prevue,
+                'budget_lot' => $request->budget_lot,
                 'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
                 'created_by' => auth()->id(),
@@ -510,7 +512,7 @@ class LotAppelOffreController extends Controller
             'proforma_id.exists' => 'La proforma sélectionnée est invalide.',
             'new_date_proforma.required' => 'La date de la proforma est obligatoire.',
             'new_date_debut_validee.required' => 'La date de début validée est obligatoire.',
-            'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
+            // 'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
             'new_date_fin_validee.required' => 'La date de fin validée est obligatoire.',
             'new_date_fin_validee.after' => 'La date de fin doit être après la date de début.',
             'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
@@ -529,7 +531,7 @@ class LotAppelOffreController extends Controller
             // Mode création : tous les champs de la proforma sont obligatoires
             $rules['new_date_proforma'] = 'required|date';
             $rules['new_date_debut_validee'] = 'required|date';
-            $rules['new_date_redemarrage'] = 'required|date';
+            // $rules['new_date_redemarrage'] = 'required|date';
             $rules['new_date_fin_validee'] = 'required|date|after_or_equal:new_date_debut_validee';
             $rules['new_montant_retenu'] = 'required|numeric|min:0';
             $rules['new_taux_tva'] = 'required|numeric|between:0,100';
@@ -604,7 +606,7 @@ class LotAppelOffreController extends Controller
                 $proforma = Proforma::create([
                     'date_proforma' => $request->new_date_proforma,
                     'date_debut_validee_proforma' => $request->new_date_debut_validee,
-                    'date_redemarrage_proforma' => $request->new_date_redemarrage,
+                    // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
                     'date_fin_validee_proforma' => $request->new_date_fin_validee,
                     'montant_retenu_proforma' => $montantRetenu,
                     'taxe_montant' => $montantTVA,

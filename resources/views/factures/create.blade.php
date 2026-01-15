@@ -42,7 +42,7 @@
 @endpush
 
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Nouvelle Facture</span>
 @endsection
@@ -52,10 +52,12 @@
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
         <div class="px-3 sm:px-4 lg:px-6 py-4">
             <div class="flex items-center space-x-4">
+                @can('factures.read')
                 <a href="{{ route('factures.index') }}"
                     class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
                     <i class="fas fa-arrow-left text-gray-600"></i>
                 </a>
+                @endcan
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">Nouvelle Facture</h1>
                     <p class="text-gray-600 mt-1">Créer une nouvelle facture à partir d'une proforma validée</p>
@@ -69,6 +71,7 @@
 
         @include('partials.alerts')
 
+        @can('factures.create')
         <form action="{{ route('factures.store') }}" method="POST" id="factureForm">
             @csrf
 
@@ -195,10 +198,7 @@
                                         <span class="detail-label">Date Attribution</span>
                                         <span id="infoLotDateAttrib" class="detail-value">-</span>
                                     </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Taux Pénalités</span>
-                                        <span id="infoLotPenalite" class="detail-value text-red-600">-</span>
-                                    </div>
+                                    
                                 </div>
                             </div>
 
@@ -447,9 +447,11 @@
                 </div>
             </div>
         </form>
+        @endcan
     </main>
 @endsection
 
+@can('appels_offres.create')
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
@@ -654,7 +656,7 @@
         document.getElementById('infoLotNumero').textContent = lot.numero || '-';
         document.getElementById('infoLotLibelle').textContent = truncateText(lot.libelle, 50);
         document.getElementById('infoLotDateAttrib').textContent = formatDate(lot.date_attribution);
-        document.getElementById('infoLotPenalite').textContent = (lot.taux_penalites || '0') + ' %';
+        // document.getElementById('infoLotPenalite').textContent = (lot.taux_penalites || '0') + ' %';
 
         document.getElementById('infoLot').classList.remove('hidden');
     }
@@ -771,3 +773,4 @@
     }
 </script>
 @endpush
+@endcan

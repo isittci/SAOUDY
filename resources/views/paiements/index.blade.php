@@ -1,9 +1,10 @@
 @extends('layouts.main')
 @section('title', 'Paiements - ' . $facture->numero_facture)
 @section('breadcrumb')
-    <a href="{{ route('factures.index') }}" class="text-white/80 hover:text-white transition-colors">Factures</a>
+    <a @can('factures.read') href="{{ route('factures.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Factures</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a href="{{ route('factures.show', $facture->id_facture) }}" class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
+    <a @can('factures.view-details') href="{{ route('factures.show', $facture->id_facture) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">{{ $facture->numero_facture }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Paiements</span>
 @endsection
@@ -19,24 +20,25 @@
                     <div class="flex-1">
                         <p class="text-sm font-medium text-blue-800">
                             Paiements de la facture :
-                            <a href="{{ route('factures.show', $facture->id_facture) }}"
-                               class="font-bold hover:underline">
+                            <a @can('factures.view-details') href="{{ route('factures.show', $facture->id_facture) }}" @endcan class="font-bold hover:underline">
                                 {{ $facture->numero_facture }}
                             </a>
                         </p>
                         <p class="text-xs text-blue-600 mt-1">
                             Prestataire : {{ $facture->proforma->getPrestataire()->raison_sociale_prestataire }}
                             | Montant facture : {{ number_format($facture->montant_ht_facture ?? 0, 0, ',', ' ') }} FCFA
-                            @if(method_exists($facture, 'getResteAPayer'))
+                            @if (method_exists($facture, 'getResteAPayer'))
                                 | Reste à payer : {{ number_format($facture->getResteAPayer(), 0, ',', ' ') }} FCFA
                             @endif
                         </p>
                     </div>
+                    @can('factures.view-details')
                     <a href="{{ route('factures.show', $facture->id_facture) }}"
                         class="ml-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all text-sm font-medium">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Retour à la facture
                     </a>
+                    @endcan
                 </div>
             </div>
 
@@ -47,11 +49,13 @@
                         <i class="fas fa-money-bill-wave text-green-500"></i>
                         <span>Paiements</span>
                     </h1>
+                    @can('paiements.create')
                     <a href="{{ route('paiements.create', ['factureId' => $factureId]) }}"
                         class="md:hidden px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
                         <i class="fas fa-plus text-sm"></i>
                         <span class="text-sm">Nouveau</span>
                     </a>
+                    @endcan
                 </div>
 
                 <!-- Filtres et actions -->
@@ -61,8 +65,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" id="searchInput" placeholder="Rechercher..."
-                            value="{{ request('search') }}"
+                        <input type="text" id="searchInput" placeholder="Rechercher..." value="{{ request('search') }}"
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent hover:border-green-300 transition-all" />
                     </div>
 
@@ -79,17 +82,18 @@
                     </select>
 
                     <!-- Boutons actions -->
-                    <button onclick="showStatistiques()"
+                    {{-- <button onclick="showStatistiques()"
                         class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
                         <i class="fas fa-chart-bar text-sm"></i>
                         <span class="text-sm font-medium">Stats</span>
-                    </button>
-
+                    </button> --}}
+                    @can('paiements.create')
                     <a href="{{ route('paiements.create', ['factureId' => $factureId]) }}"
                         class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md">
                         <i class="fas fa-plus text-sm"></i>
-                        <span class="text-sm font-medium">Créer</span>
+                        <span class="text-sm font-medium">Faire un paiement</span>
                     </a>
+                    @endcan
                 </div>
             </div>
 
@@ -129,7 +133,8 @@
                 </div>
             </div>
 
-            <button onclick="toggleAdvancedFilters()" class="mt-3 text-sm text-green-600 hover:text-green-700 flex items-center">
+            <button onclick="toggleAdvancedFilters()"
+                class="mt-3 text-sm text-green-600 hover:text-green-700 flex items-center">
                 <i class="fas fa-filter mr-1"></i>
                 <span id="filterToggleText">Afficher les filtres avancés</span>
             </button>
@@ -200,7 +205,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 font-medium">Montant Payé</p>
-                        <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($stats['montant_paye'] ?? 0, 0, ',', ' ') }} F</p>
+                        <p class="text-xl font-bold text-gray-800 mt-1">
+                            {{ number_format($stats['montant_paye'] ?? 0, 0, ',', ' ') }} F</p>
                     </div>
                     <div class="bg-purple-100 p-3 rounded-lg">
                         <i class="fas fa-coins text-purple-600 text-xl"></i>
@@ -218,11 +224,13 @@
                         Liste des paiements (<span id="totalCount">{{ $paiements->total() }}</span>)
                     </h2>
                     <div class="flex items-center space-x-2">
+                        @can('paiements.view-history')
                         <a href="{{ route('paiements.trashed', ['factureId' => $factureId]) }}"
                             class="px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
                             title="Corbeille">
                             <i class="fas fa-trash text-sm"></i>
                         </a>
+                        @endcan
                         <button onclick="refreshTable()"
                             class="px-3 py-2 text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all duration-200">
                             <i class="fas fa-sync-alt text-sm"></i>
@@ -238,14 +246,20 @@
                         <span id="selectedCount">0</span> paiement(s) sélectionné(s)
                     </span>
                     <div class="flex items-center space-x-2">
+                        @can('paiements.validate')
                         <button onclick="validerMasse()"
                             class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
                             <i class="fas fa-check mr-1"></i> Valider
                         </button>
+                        @endcan
+
+                        @can('paiements.confirm')
                         <button onclick="confirmerMasse()"
                             class="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">
                             <i class="fas fa-check-double mr-1"></i> Confirmer
                         </button>
+                        @endcan
+
                         <button onclick="deselectAll()"
                             class="px-3 py-1.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm">
                             Annuler
@@ -281,11 +295,12 @@
                         @forelse($paiements as $paiement)
                             <tr class="hover:bg-gray-50 transition-colors duration-150">
                                 <td class="px-4 py-4 text-center">
-                                    <input type="checkbox" class="payment-checkbox w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                    <input type="checkbox"
+                                        class="payment-checkbox w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                                         value="{{ $paiement->id_paiement }}" onchange="updateBulkActions()">
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('paiements.show', ['factureId' => $factureId, 'paiement' => $paiement->id_paiement]) }}"
+                                    <a @can('paiements.view-details') href="{{ route('paiements.show', ['factureId' => $factureId, 'paiement' => $paiement->id_paiement]) }}" @endcan
                                         class="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline">
                                         {{ $paiement->reference_paiement }}
                                     </a>
@@ -298,16 +313,25 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm text-gray-900">{{ $paiement->banque->nom_banque ?? 'N/A' }}</div>
-                                    <div class="text-xs text-gray-500">{{ $paiement->banque->numero_compte_masque ?? '' }}</div>
+                                    <div class="text-xs text-gray-500">{{ $paiement->banque->numero_compte_masque ?? '' }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @php
-                                        $couleurs = [0 => 'yellow', 1 => 'blue', 2 => 'indigo', 3 => 'green', 4 => 'red', 5 => 'gray'];
+                                        $couleurs = [
+                                            0 => 'yellow',
+                                            1 => 'blue',
+                                            2 => 'indigo',
+                                            3 => 'green',
+                                            4 => 'red',
+                                            5 => 'gray',
+                                        ];
                                         $couleur = $couleurs[$paiement->statut_paiement] ?? 'gray';
                                     @endphp
                                     {{-- fas fa-check-double mr-1 --}}
                                     {{-- {{ dd($paiement->statut_icone) }} --}}
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-{{ $couleur }}-100 text-{{ $couleur }}-800">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-{{ $couleur }}-100 text-{{ $couleur }}-800">
                                         <i class="fas {{ $paiement->statut_icone }} mr-1"></i>
                                         {{ $paiement->statut_libelle }}
                                     </span>
@@ -315,57 +339,91 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                                     {{ $paiement->created_at->format('d/m/Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <a href="{{ route('paiements.show', ['factureId' => $factureId, 'paiement' => $paiement->id_paiement]) }}"
-                                            class="text-blue-600 hover:text-blue-800 transition-colors" title="Voir">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                @canany(['paiements.view-details', 'paiements.validate', 'paiements.process', 'paiements.confirm', 'paiements.reject', 'paiements.pending', 'paiements.delete'])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('paiements.view-details')
+                                                <a href="{{ route('paiements.show', ['factureId' => $factureId, 'paiement' => $paiement->id_paiement]) }}"
+                                                    class="text-blue-600 hover:text-blue-800 transition-colors" title="Voir">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endcan
 
-                                        <!-- Menu dropdown -->
-                                        <div class="relative">
-                                            <button onclick="toggleMenu('{{ $paiement->id_paiement }}')"
-                                                class="text-gray-600 hover:text-gray-800 transition-colors">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <div id="menu-{{ $paiement->id_paiement }}"
-                                                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-                                                <div class="py-1">
-                                                    @if($paiement->peutEtreValide())
-                                                        <button onclick="valider('{{ $paiement->id_paiement }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-check text-blue-500 mr-2"></i> Valider
+                                            @canany(['paiements.validate', 'paiements.process', 'paiements.confirm', 'paiements.reject', 'paiements.pending', 'paiements.delete'])
+                                                <!-- Menu dropdown -->
+                                                @if ($paiement->peutEtreValide() || in_array($paiement->statut_paiement, [1, 2]) || $paiement->peutEtreRejete() || $paiement->statut_paiement != 3)
+                                                    <div class="relative">
+                                                        <button onclick="toggleMenu('{{ $paiement->id_paiement }}')"
+                                                            class="text-gray-600 hover:text-gray-800 transition-colors">
+                                                            <i class="fas fa-ellipsis-v"></i>
                                                         </button>
-                                                    @endif
-                                                    @if($paiement->statut_paiement == 1)
-                                                        <button onclick="mettreEnTraitement('{{ $paiement->id_paiement }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-spinner text-indigo-500 mr-2"></i> Traitement
-                                                        </button>
-                                                    @endif
-                                                    @if(in_array($paiement->statut_paiement, [1, 2]))
-                                                        <button onclick="confirmer('{{ $paiement->id_paiement }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-check-double text-green-500 mr-2"></i> Confirmer
-                                                        </button>
-                                                    @endif
-                                                    @if($paiement->peutEtreRejete())
-                                                        <button onclick="showRejectModal('{{ $paiement->id_paiement }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                            <i class="fas fa-times-circle text-red-500 mr-2"></i> Rejeter
-                                                        </button>
-                                                    @endif
-                                                    @if($paiement->statut_paiement != 3)
-                                                        <button onclick="confirmDelete('{{ $paiement->id_paiement }}')"
-                                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                            <i class="fas fa-trash mr-2"></i> Supprimer
-                                                        </button>
-                                                    @endif
-                                                </div>
-                                            </div>
+                                                        <div id="menu-{{ $paiement->id_paiement }}"
+                                                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                                                            <div class="py-1">
+                                                                @can('paiements.validate')
+                                                                @if ($paiement->peutEtreValide())
+                                                                    <button onclick="valider('{{ $paiement->id_paiement }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-check text-blue-500 mr-2"></i> Valider
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+
+                                                                @can('paiements.process')
+                                                                @if ($paiement->statut_paiement == 1)
+                                                                    <button
+                                                                        onclick="mettreEnTraitement('{{ $paiement->id_paiement }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-spinner text-indigo-500 mr-2"></i> Traitement
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+
+                                                                @can('paiements.confirm')
+                                                                @if (in_array($paiement->statut_paiement, [1, 2]))
+                                                                    <button onclick="confirmer('{{ $paiement->id_paiement }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-check-double text-green-500 mr-2"></i>
+                                                                        Confirmer
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+
+                                                                @can('paiements.reject')
+                                                                @if ($paiement->peutEtreRejete())
+                                                                    <button onclick="showRejectModal('{{ $paiement->id_paiement }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-times-circle text-red-500 mr-2"></i> Rejeter
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+
+                                                                @can('paiements.pending')
+                                                                @if($paiement->statut_paiement == 4)
+                                                                    <button onclick="remettreEnAttente('{{$paiement->id_paiement}}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-undo mr-2 text-yellow-500"></i>
+                                                                        Remettre en attente
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+
+                                                                @can('paiements.delete')
+                                                                @if ($paiement->statut_paiement != 3)
+                                                                    <button onclick="confirmDelete('{{ $paiement->id_paiement }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                        <i class="fas fa-trash mr-2"></i> Supprimer
+                                                                    </button>
+                                                                @endif
+                                                                @endcan
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endcanany
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                @endcanany
                             </tr>
                         @empty
                             <tr>
@@ -373,10 +431,12 @@
                                     <div class="flex flex-col items-center justify-center text-gray-500">
                                         <i class="fas fa-inbox text-5xl mb-4 text-gray-300"></i>
                                         <p class="text-lg font-medium">Aucun paiement trouvé</p>
+                                        @can('paiements.create')
                                         <a href="{{ route('paiements.create', ['factureId' => $factureId]) }}"
                                             class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
                                             <i class="fas fa-plus mr-2"></i>Créer le premier paiement
                                         </a>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -411,10 +471,12 @@
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
                     Annuler
                 </button>
+                @can('paiements.reject')
                 <button onclick="executeReject()"
                     class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
                     Confirmer le rejet
                 </button>
+                @endcan
             </div>
         </div>
     </div>
@@ -433,14 +495,16 @@
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
                     Annuler
                 </button>
+                @can('paiements.delete')
                 <button onclick="executeDelete()"
                     class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
                     Supprimer
                 </button>
+                @endcan
             </div>
         </div>
     </div>
-
+    @can('paiements.read')
     @push('scripts')
         <script>
             const factureId = '{{ $factureId }}';
@@ -471,11 +535,11 @@
                 if (montantMin) params.append('montant_min', montantMin);
                 if (montantMax) params.append('montant_max', montantMax);
 
-                window.location.href = `/${factureId}/paiements?${params.toString()}`;
+                window.location.href = "{{ route('paiements.index', ':factureId') }}".replace(':factureId', factureId)+ `?${params.toString()}`;
             }
 
             function resetFilters() {
-                window.location.href = `/${factureId}/paiements`;
+                window.location.href = "{{ route('paiements.index', ':factureId') }}".replace(':factureId', factureId);
             }
 
             function toggleMenu(id) {
@@ -524,61 +588,61 @@
 
             function valider(id) {
                 if (confirm('Voulez-vous valider ce paiement ?')) {
-                    fetch(`/${factureId}/paiements/${id}/valider`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message);
-                        }
-                    });
+                    fetch("{{ route('paiements.valider', [':factureId', ':paiement']) }}".replace(':factureId', factureId).replace(':paiement', id), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
                 }
             }
 
             function mettreEnTraitement(id) {
                 if (confirm('Mettre ce paiement en traitement bancaire ?')) {
-                    fetch(`/${factureId}/paiements/${id}/traitement`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message);
-                        }
-                    });
+                    fetch("{{ route('paiements.traitement', [':factureId', ':paiement']) }}".replace(':factureId', factureId).replace(':paiement', id), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
                 }
             }
 
             function confirmer(id) {
                 if (confirm('Confirmer que ce paiement a été effectué ?')) {
-                    fetch(`/${factureId}/paiements/${id}/confirmer`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert(data.message);
-                        }
-                    });
+                    fetch("{{ route('paiements.confirmer', [':factureId', ':paiement']) }}".replace(':factureId', factureId).replace(':paiement', id), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
                 }
             }
 
@@ -600,23 +664,25 @@
                     return;
                 }
 
-                fetch(`/${factureId}/paiements/${currentPaiementId}/rejeter`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ motif_rejet: motif })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                });
+                fetch("{{ route('paiements.rejeter', [':factureId', ':currentPaiementId']) }}".replace(':factureId', factureId).replace(':currentPaiementId', currentPaiementId), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            motif_rejet: motif
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    });
             }
 
             function confirmDelete(id) {
@@ -632,35 +698,12 @@
             }
 
             function executeDelete() {
-                fetch(`/${factureId}/paiements/${currentPaiementId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert(data.message);
-                        closeDeleteModal();
-                    }
-                });
-            }
-
-            function validerMasse() {
-                if (selectedPayments.size === 0) return;
-                if (confirm(`Valider ${selectedPayments.size} paiement(s) ?`)) {
-                    fetch("{{ route('paiements.valider-masse', ':factureId') }}".replace(':factureId', factureId), {
-                        method: 'POST',
+                fetch("{{ route('paiements.destroy', [':factureId', ':currentPaiementId']) }}".replace(':factureId', factureId).replace(':currentPaiementId', currentPaiementId), {
+                        method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
                             'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ paiement_ids: Array.from(selectedPayments) })
+                        }
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -668,8 +711,33 @@
                             location.reload();
                         } else {
                             alert(data.message);
+                            closeDeleteModal();
                         }
                     });
+            }
+
+            function validerMasse() {
+                if (selectedPayments.size === 0) return;
+                if (confirm(`Valider ${selectedPayments.size} paiement(s) ?`)) {
+                    fetch("{{ route('paiements.valider-masse', ':factureId') }}".replace(':factureId', factureId), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                paiement_ids: Array.from(selectedPayments)
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
                 }
             }
 
@@ -677,13 +745,35 @@
                 if (selectedPayments.size === 0) return;
                 if (confirm(`Confirmer ${selectedPayments.size} paiement(s) ?`)) {
                     fetch("{{ route('paiements.confirmer-masse', ':factureId') }}".replace(':factureId', factureId), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                paiement_ids: Array.from(selectedPayments)
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                }
+            }
+
+            function remettreEnAttente(id) {
+                if (confirm('Remettre ce paiement en attente ?')) {
+                    fetch("{{ route('paiements.remettre-attente', [':factureId', ':id']) }}".replace(':factureId', factureId).replace(':id', id), {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
                             'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ paiement_ids: Array.from(selectedPayments) })
+                        }
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -697,24 +787,26 @@
             }
 
             function showStatistiques() {
-                fetch(`/${factureId}/paiements/statistiques`, {
-                    headers: { 'Accept': 'application/json' }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const stats = data.data;
-                        alert(`Statistiques des paiements:
-Total: ${stats.total}
-En attente: ${stats.en_attente}
-Validés: ${stats.valides}
-Payés: ${stats.payes}
-Rejetés: ${stats.rejetes}
+                fetch("{{ route('paiements.statistiques', ':factureId') }}".replace(':factureId', factureId), {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const stats = data.data;
+                            alert(`Statistiques des paiements:
+                            Total: ${stats.total}
+                            En attente: ${stats.en_attente}
+                            Validés: ${stats.valides}
+                            Payés: ${stats.payes}
+                            Rejetés: ${stats.rejetes}
 
-Montant total: ${stats.montant_total.toLocaleString('fr-FR')} FCFA
-Montant payé: ${stats.montant_paye.toLocaleString('fr-FR')} FCFA`);
-                    }
-                });
+                            Montant total: ${stats.montant_total.toLocaleString('fr-FR')} FCFA
+                            Montant payé: ${stats.montant_paye.toLocaleString('fr-FR')} FCFA`);
+                        }
+                    });
             }
 
             function refreshTable() {
@@ -748,12 +840,21 @@ Montant payé: ${stats.montant_paye.toLocaleString('fr-FR')} FCFA`);
 
         <style>
             @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
+
             .animate-fadeIn {
                 animation: fadeIn 0.3s ease-out;
             }
         </style>
     @endpush
+    @endcan
 @endsection

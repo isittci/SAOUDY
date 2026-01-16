@@ -101,6 +101,25 @@
                         Liste des lots (<span id="totalCount">{{ $lots->total() }}</span>)
                     </h2>
                     <div class="flex items-center space-x-2">
+
+                        <div class="flex items-center space-x-3">
+                            {{-- Excel --}}
+                            <a href="{{ route('exports.lots-en-cours.excel') }}"
+                            title="Télécharger la liste des lots en cours au format Excel"
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                <i class="fa fa-file-excel mr-2"></i>
+                                <span>Exporter Excel</span>
+                            </a>
+
+                            {{-- PDF --}}
+                            <a href="{{ route('exports.lots-en-cours.pdf') }}"
+                            title="Télécharger la liste des lots en cours au format PDF"
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                <i class="fa fa-file-pdf mr-2"></i>
+                                <span>Exporter PDF</span>
+                            </a>
+                        </div>
+
                         <button onclick="refreshTable()"
                             class="px-3 py-2 text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all duration-200">
                             <i class="fas fa-sync-alt text-sm"></i>
@@ -350,10 +369,10 @@
                             Annuler
                         </button>
                         @can('lots.delete')
-                        <button onclick="executeDelete()"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+                            <button onclick="executeDelete()"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
                         @endcan
                     </div>
                 </div>

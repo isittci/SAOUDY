@@ -42,6 +42,8 @@
                         <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactifs</option>
                     </select>
 
+
+
                     @can('prestataires.create')
                     <!-- Bouton créer (desktop) -->
                     <button onclick="window.location.href='{{ route('prestataires.create') }}'"
@@ -271,11 +273,20 @@
                                             <div id="menu-{{ $prestataire->id_prestataire }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                                                 <div class="py-1">
 
-                                                    {{-- <button onclick="viewDocuments('{{ $prestataire->id_prestataire }}')"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-file-alt text-blue-500 mr-2"></i>
-                                                        Documents
-                                                    </button> --}}
+                                                   <a href="{{ route('exports.prestataires.fiche.excel', $prestataire->id_prestataire) }}"
+                                                    title="Télécharger la fiche Excel"
+                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fa fa-file-excel"></i> Exporter Excel
+                                                    </a>
+
+                                                    {{-- Fiche PDF --}}
+                                                    <a href="{{ route('exports.prestataires.fiche.pdf', $prestataire->id_prestataire) }}"
+                                                    title="Télécharger la fiche PDF"
+                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fa fa-file-pdf"></i> Exporter PDF
+                                                    </a>
+
+
 
                                                     @can('banques_prestataires.read')
                                                     <button onclick="viewBanques('{{ $prestataire->id_prestataire }}')"

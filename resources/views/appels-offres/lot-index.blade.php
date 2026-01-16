@@ -78,6 +78,10 @@
                             <span class="text-sm">Créer</span>
                         </button>
                     @endcan
+
+
+
+
                 </div>
             </div>
         </div>
@@ -117,11 +121,21 @@
                         Liste des lots (<span id="totalCount">{{ $lots->total() }}</span>)
                     </h2>
                     <div class="flex items-center space-x-2">
+                        <a href="{{ route('exports.lots-en-cours.pdf') }}" title="Télécharger en pdf les lots en cours" class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fa fa-file-excel"></i> Exporter PDF
+                        </a>
+                        <a href="{{ route('exports.lots-en-cours.excel') }}" title="Télécharger en excel les lots en cours"
+                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fa fa-file-excel"></i>
+                            <span class="text-sm">Exporter Excel</span>
+                        </a>
                         <button onclick="refreshTable()"
                             class="px-3 py-2 text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all duration-200">
                             <i class="fas fa-sync-alt text-sm"></i>
                         </button>
                     </div>
+
+
                 </div>
             </div>
 

@@ -72,6 +72,45 @@ class Lot extends Model
             ->latest('created_at');
     }
 
+    public function isCloture()
+{
+    // Un lot est clôturé si :
+    // 1. Il a une attribution active
+    // 2. L'évaluation est terminée (si prévue)
+    // 3. Le paiement est terminé (si prévu)
+
+    $attributionActive = $this->attributionActive;
+
+    // Si pas d'attribution active, le lot n'est pas clôturé
+    if (!$attributionActive) {
+        return false;
+    }
+
+    // Vérification de l'évaluation
+    $sommesReferencesCriteresEvaluations = $this->criteresEvaluation->sum('note_reference_critere_evaluation');
+    $sommesNotesEvaluations = $this->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+
+    // Si une évaluation est prévue mais non terminée
+    if ($sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations < $sommesReferencesCriteresEvaluations) {
+        return false;
+    }
+
+    // Vérification du paiement
+    $facture = $attributionActive->proforma?->facture;
+
+    // Si pas de facture, considérer le lot comme clôturé (pas de paiement prévu)
+    if (!$facture) {
+        return true;
+    }
+
+    $allPaiements = $facture->paiements ?? collect();
+    $montantPaye = $allPaiements->sum('montant_net_paye_paiement');
+    $montantFacture = $facture->montant_facture ?? 0;
+
+    // Le lot est clôturé si le paiement est terminé
+    return $montantFacture > 0 && $montantPaye >= $montantFacture;
+}
+
     public function criteresEvaluation()
     {
         return $this->hasMany(CritereEvaluation::class, 'lot_id', 'id_lot');

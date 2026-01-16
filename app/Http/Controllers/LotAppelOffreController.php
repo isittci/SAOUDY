@@ -144,17 +144,17 @@ class LotAppelOffreController extends Controller
             'description_critere' => 'nullable|string',
             'specifications_techniques' => 'nullable|string',
             'date_debut_prevue' => 'nullable|date',
-            'budget_lot' => 'nullable|numeric',
+            'budget_lot' => 'required|numeric',
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
-            'taux_penalites' => 'nullable|numeric|min:0|max:100',
+
             'statut_lot' => 'required|in:0,1',
         ], [
             'appel_offre_id.required' => 'L\'appel d\'offres est obligatoire',
             'appel_offre_id.exists' => 'Appel d\'offres invalide',
             'numero.required' => 'Le numéro est obligatoire',
+            'budget_lot.required' => 'Le budget du lot est obligatoire',
             'libelle.required' => 'Le libellé est obligatoire',
             'date_fin_prevue.after' => 'La date de fin doit être après la date de début',
-            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%',
             'statut_lot.required' => 'Le statut est obligatoire',
         ]);
 
@@ -225,7 +225,6 @@ class LotAppelOffreController extends Controller
                 'date_debut_prevue' => $request->date_debut_prevue,
                 'date_fin_prevue' => $request->date_fin_prevue,
                 'budget_lot' => $request->budget_lot,
-                'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
                 'created_by' => auth()->id(),
             ]);
@@ -242,7 +241,8 @@ class LotAppelOffreController extends Controller
                 ], 201);
             }
 
-            return redirect()->route('lots-appels-offres.show', [$appelOffreId, $lot->id_lot])
+
+            return redirect()->route('lots-appels-offres.show', [$lot->appel_offre_id, $lot->id_lot])
                 ->with('success', 'Lot créé avec succès');
         } catch (Exception $e) {
             DB::rollBack();
@@ -265,15 +265,25 @@ class LotAppelOffreController extends Controller
      */
     public function show(Request $request, $appelOffreId, $id)
     {
+
         try {
             $lot = Lot::actif()->with([
                 'appelOffre.typeAppelOffre',
                 'creator',
                 'updater',
                 'attributionActive.prestataire',
-                'attributionActive.proforma',
-                'criteresEvaluation'
-            ])->findOrFail($id);
+                'attributionActive.proforma.facture.paiements',
+                'criteresEvaluation.evaluations'
+            ])->find($id);
+
+            $allPaiements = $lot->attributionActive?->proforma?->facture?->paiements ?? null;
+            $proforma = $lot->attributionActive?->proforma?->facture ?? null;
+
+            $sommesReferencesCriteresEvaluations = $lot->criteresEvaluation->sum('note_reference_critere_evaluation');
+            $sommesNotesEvaluations = $lot->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+
+            $toutSolder = $allPaiements ? $allPaiements->sum('montant_net_paye_paiement') == $proforma->montant_facture : false;
+            $evaluationTerminee = $sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations > 0 ? $sommesReferencesCriteresEvaluations == $sommesNotesEvaluations : false;
 
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -287,9 +297,6 @@ class LotAppelOffreController extends Controller
             $prestataires = Prestataire::actif()->orderBy('raison_sociale_prestataire')->get();
             $proformas = Proforma::actif()->orderBy('numero_proforma', 'desc')->get();
 
-            // $proformas = $lot->appelOffre->lots()->with('attributionActive.proforma')
-            //     ->get();
-
             // Méthode 2 : Plus concise avec pluck et sum
             $sommeMontantsRetenus = $lot->appelOffre->lots()
                 ->with('attributionActive.proforma')
@@ -302,7 +309,7 @@ class LotAppelOffreController extends Controller
 
                 // dd($sommeMontantsRetenus, $montantRestant);
 
-            return view('appels-offres.lot-show', compact('lot', 'prestataires', 'proformas', 'montantRestant'));
+            return view('appels-offres.lot-show', compact('lot', 'prestataires', 'proformas', 'montantRestant', 'toutSolder', 'evaluationTerminee'));
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du lot: ' . $e->getMessage());
 
@@ -323,6 +330,7 @@ class LotAppelOffreController extends Controller
      */
     public function edit(Request $request, $appelOffreId, $id)
     {
+
         try {
             $lot = Lot::with(['appelOffre.typeAppelOffre'])->findOrFail($id);
 
@@ -365,13 +373,12 @@ class LotAppelOffreController extends Controller
             'description_critere' => 'nullable|string',
             'specifications_techniques' => 'nullable|string',
             'date_debut_prevue' => 'nullable|date',
+            'budget_lot'=> 'required|numeric|min:5',
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
-            'taux_penalites' => 'nullable|numeric|min:0|max:100',
             'statut_lot' => 'required|in:0,1',
         ], [
             'libelle.required' => 'Le libellé est obligatoire',
             'date_fin_prevue.after' => 'La date de fin doit être après la date de début',
-            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%',
         ]);
 
         if ($validator->fails()) {
@@ -401,8 +408,8 @@ class LotAppelOffreController extends Controller
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
                 'date_fin_prevue' => $request->date_fin_prevue,
-                'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
+                'budget_lot' => $request->budget_lot,
                 'updated_by' => auth()->id(),
             ]);
 

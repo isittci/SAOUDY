@@ -266,12 +266,13 @@
                                                             @endcan
 
                                                             @can('appels_offres.update')
+
                                                                 @if ($ao->isEnCours())
                                                                     <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
                                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                                         <i class="fas fa-lock mr-2 text-yellow-500"></i>
                                                                         Clôturer
-                                                                    </button>
+                                                                    </button> 
                                                                 @endif
                                                             @endcan
 

@@ -41,6 +41,10 @@ class CritereEvaluation extends Model
         return $this->belongsTo(Lot::class, 'lot_id', 'id_lot');
     }
 
+    public function evaluations(){
+        return $this->hasMany(Evaluation::class, 'critere_evaluation_id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

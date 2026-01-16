@@ -303,10 +303,10 @@
                             <div class="group">
                                 <label for="budget_lot" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-hand-holding-usd text-orange-500 mr-2 text-xs"></i>
-                                    Budget du lot
+                                    Budget du lot <span class="text-red-500 px-1"> *</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="number" id="budget_lot" min="0" step="5"
+                                    <input type="number" id="budget_lot" min="0" step="5" required
                                         value="{{ old('budget_lot', $lot->budget_lot) }}" name="budget_lot"
                                         class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
                                         placeholder="Ex: 5 500 000 000">

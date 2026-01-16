@@ -136,6 +136,24 @@
                         @endif
                         @endcan
 
+                        <div class="flex items-center space-x-3">
+    {{-- Excel --}}
+    <a href="{{ route('exports.factures.fiche.excel', $facture->id_facture) }}"
+       title="Télécharger la fiche facture détaillée au format Excel"
+       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+        <i class="fa fa-file-excel mr-2"></i>
+        <span>Fiche Excel</span>
+    </a>
+
+    {{-- PDF --}}
+    <a href="{{ route('exports.factures.fiche.pdf', $facture->id_facture) }}"
+       title="Télécharger la fiche facture détaillée au format PDF"
+       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+        <i class="fa fa-file-pdf mr-2"></i>
+        <span>Fiche PDF</span>
+    </a>
+</div>
+
                         @can('factures.duplicate')
                         <form action="{{ route('factures.dupliquer', $facture->id_facture) }}" method="POST" class="inline">
                             @csrf
@@ -661,7 +679,7 @@
                                         </div>
                                         <span class="text-sm font-bold text-gray-600">Numéro</span>
                                     </div>
-                                    <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border border-amber-200">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border border-amber-200">
                                         Lot N°{{ $lot->numero }}
                                     </span>
                                 </div>
@@ -835,7 +853,7 @@
                                 <span class="text-sm font-bold text-gray-600">TVA ({{ $facture->proforma?->taux_taxe ?? 0 }}%)</span>
                                 <span class="font-bold text-gray-900">{{ number_format($facture->proforma->taxe_montant, 0, ',', ' ') }} FCFA</span>
                             </div>
-                            
+
                             <div class="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
                                 <span class="text-sm font-bold text-gray-700">Montant TTC</span>
                                 @php

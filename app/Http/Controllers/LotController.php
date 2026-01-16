@@ -142,16 +142,13 @@ class LotController extends Controller
             'specifications_techniques' => 'nullable|string',
             'date_debut_prevue' => 'nullable|date',
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
-            'taux_penalites' => 'nullable|numeric|min:0|max:100',
             'statut_lot' => 'required|in:0,1',
         ], [
             'appel_offre_id.required' => 'L\'appel d\'offres est obligatoire',
             'appel_offre_id.exists' => 'Appel d\'offres invalide',
             'numero.required' => 'Le numéro est obligatoire',
-            // 'numero.unique' => 'Ce numéro de lot existe déjà pour cet appel d\'offres',
             'libelle.required' => 'Le libellé est obligatoire',
             'date_fin_prevue.after' => 'La date de fin doit être après la date de début',
-            'taux_penalites.max' => 'Le taux de pénalités ne peut pas dépasser 100%',
             'statut_lot.required' => 'Le statut est obligatoire',
         ]);
 
@@ -221,7 +218,6 @@ class LotController extends Controller
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
                 'date_fin_prevue' => $request->date_fin_prevue,
-                'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
                 'attribution_lot' => 0,
                 'version_lot' => $version,
@@ -344,7 +340,6 @@ class LotController extends Controller
             'specifications_techniques' => 'nullable|string',
             'date_debut_prevue' => 'nullable|date',
             'date_fin_prevue' => 'nullable|date|after:date_debut_prevue',
-            'taux_penalites' => 'nullable|numeric|min:0|max:100',
             'statut_lot' => 'required|in:0,1',
             'motif_modification' => 'required|string',
         ], [
@@ -378,7 +373,6 @@ class LotController extends Controller
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
                 'date_fin_prevue' => $request->date_fin_prevue,
-                'taux_penalites' => $request->taux_penalites,
                 'statut_lot' => $request->statut_lot,
                 'created_by' => auth()->id(),
             ], $request->motif_modification);

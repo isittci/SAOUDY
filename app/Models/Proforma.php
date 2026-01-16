@@ -73,6 +73,8 @@ class Proforma extends Model
             ->orderBy('version_proforma', 'desc');
     }
 
+
+
     /**
      * Dernière version
      */
@@ -391,6 +393,8 @@ class Proforma extends Model
     {
         return $this->hasOne(Facture::class, 'proforma_id', 'id_proforma');
     }
+
+   
 
     /**
      * Vérifier si la proforma a une facture.

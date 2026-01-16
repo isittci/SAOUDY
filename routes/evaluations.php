@@ -26,10 +26,10 @@ Route::prefix('evaluations')->name('evaluations.')->middleware(['auth'])->group(
     Route::get('/attribution/{attribution}', [EvaluationController::class, 'pourAttribution'])->name('pour-attribution')->middleware('can:evaluations_attributions.read');
 
     // Formulaire de création pour une attribution
-    Route::get('/attribution/{attribution}/create', [EvaluationController::class, 'create'])->name('create')->middleware('can:evaluations_attributions.create');
+    Route::get('/attribution/{attribution}/create', [EvaluationController::class, 'create'])->name('create')->middleware('can:evaluations_attributions.evaluate');
 
     // Enregistrer une nouvelle évaluation pour une attribution
-    Route::post('/attribution/{attribution}', [EvaluationController::class, 'store'])->name('store')->middleware('can:evaluations_attributions.create');
+    Route::post('/attribution/{attribution}', [EvaluationController::class, 'store'])->name('store')->middleware('can:evaluations_attributions.evaluate');
 
     // ==================== ROUTES CRUD ÉVALUATION ====================
 

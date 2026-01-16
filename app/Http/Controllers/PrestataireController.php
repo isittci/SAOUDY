@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Lot;
+use App\Models\Pays;
 use App\Models\Proforma;
 use App\Models\Prestataire;
 use Illuminate\Support\Str;
@@ -110,10 +111,16 @@ class PrestataireController extends Controller
                 ->orderByRaw('LOWER(numero) ASC')
                 ->get();
 
+            $pays = Pays::actif()
+                ->orderByRaw("CASE WHEN code_iso_2 = 'CI' THEN 0 ELSE 1 END")
+                ->orderBy('nom')
+                ->get();
+
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => [
+                        'pays' => $pays,
                         'proformas' => $proformas,
                         'lots_non_assignes' => $lotsNonAssignes,
                     ],
@@ -121,7 +128,9 @@ class PrestataireController extends Controller
                 ]);
             }
 
-            return view('prestataires.create', compact('proformas', 'lotsNonAssignes'));
+            // dd($pays);
+
+            return view('prestataires.create', compact('proformas', 'lotsNonAssignes', 'pays'));
 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du formulaire de création: ' . $e->getMessage());
@@ -179,16 +188,16 @@ class PrestataireController extends Controller
                 'contact' => 'required|string|max:20',
                 'email' => 'required|email|max:255',
                 'nationalite' => 'required|string|max:50',
-                'pays' => 'required|string|max:50',
+                'pays' => 'nullable|string|max:50',
                 'adresse' => 'required|string|max:255',
                 'profession' => 'required|string|max:100',
-                'date_naissance' => 'required|date|before:today',
-                'lieu_naissance' => 'required|string|max:100',
-                'numero_piece_identite' => 'required|string|max:50',
-                'type_piece_identite' => 'required|string|max:50',
-                'date_delivrance' => 'required|date|before_or_equal:today',
-                'lieu_delivrance' => 'required|string|max:100',
-                'date_expiration' => 'required|date|after:date_delivrance|after:today',
+                'date_naissance' => 'nullable|date|before:today',
+                'lieu_naissance' => 'nullable|string|max:100',
+                'numero_piece_identite' => 'nullable|string|max:50',
+                'type_piece_identite' => 'nullable|string|max:50',
+                'date_delivrance' => 'nullable|date|before_or_equal:today',
+                'lieu_delivrance' => 'nullable|string|max:100',
+                'date_expiration' => 'nullable|date|after:date_delivrance|after:today',
             ], $this->getRepresentantValidationMessages());
 
             if ($representantValidator->fails()) {
@@ -327,6 +336,11 @@ class PrestataireController extends Controller
                 ->orderByRaw('LOWER(numero) ASC')
                 ->get();
 
+            $pays = Pays::actif()
+                ->orderByRaw("CASE WHEN code_iso_2 = 'CI' THEN 0 ELSE 1 END")
+                ->orderBy('nom')
+                ->get();
+
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
@@ -334,12 +348,13 @@ class PrestataireController extends Controller
                         'prestataire' => $prestataire,
                         'proformas' => $proformas,
                         'lots_non_assignes' => $lotsNonAssignes,
+                        'pays' => $pays
                     ],
                     'message' => 'Formulaire d\'édition récupéré avec succès'
                 ]);
             }
 
-            return view('prestataires.edit', compact('prestataire', 'proformas', 'lotsNonAssignes'));
+            return view('prestataires.edit', compact('prestataire', 'proformas', 'lotsNonAssignes', 'pays'));
 
         } catch (ModelNotFoundException $e) {
             if ($request->wantsJson() || $request->is('api/*')) {
@@ -409,16 +424,17 @@ class PrestataireController extends Controller
             // Gestion du représentant légal si fourni
             if ($request->filled('representant_legal_prestataire')) {
                 $representant = json_decode($validatedData['representant_legal_prestataire'], true);
+                // dd($representant);
 
                 if ($representant && !empty($representant['email'])) {
                     // Validation du représentant légal
                     $representantValidator = Validator::make($representant, [
                         'nom' => 'required|string|max:100',
-                        'prenoms' => 'nullable|string|max:150',
+                        // 'prenoms' => 'nullable|string|max:150',
                         'contact' => 'required|string|max:20',
                         'email' => 'required|email|max:255',
                         'nationalite' => 'required|string|max:50',
-                        'pays' => 'required|string|max:50',
+                        'pays' => 'nullable|string|max:50',
                         'adresse' => 'required|string|max:255',
                         'profession' => 'required|string|max:100',
                         'date_naissance' => 'required|date',
@@ -696,7 +712,7 @@ class PrestataireController extends Controller
     }
 
 
-  
+
 
     /**
      * Get validation messages for prestataire.
@@ -734,32 +750,13 @@ class PrestataireController extends Controller
             'email.required' => 'L\'email du représentant légal est obligatoire.',
             'email.email' => 'L\'email du représentant légal n\'est pas valide.',
             'nationalite.required' => 'La nationalité du représentant légal est obligatoire.',
-            'pays.required' => 'Le pays du représentant légal est obligatoire.',
             'adresse.required' => 'L\'adresse du représentant légal est obligatoire.',
             'profession.required' => 'La profession du représentant légal est obligatoire.',
-            'date_naissance.required' => 'La date de naissance du représentant légal est obligatoire.',
             'date_naissance.before' => 'La date de naissance doit être antérieure à aujourd\'hui.',
-            'lieu_naissance.required' => 'Le lieu de naissance du représentant légal est obligatoire.',
-            'numero_piece_identite.required' => 'Le numéro de pièce d\'identité est obligatoire.',
-            'type_piece_identite.required' => 'Le type de pièce d\'identité est obligatoire.',
-            'date_delivrance.required' => 'La date de délivrance est obligatoire.',
-            'date_delivrance.before_or_equal' => 'La date de délivrance ne peut pas être dans le futur.',
-            'lieu_delivrance.required' => 'Le lieu de délivrance est obligatoire.',
-            'date_expiration.required' => 'La date d\'expiration est obligatoire.',
+
             'date_expiration.after' => 'La date d\'expiration doit être postérieure à la date de délivrance et à aujourd\'hui.',
         ];
     }
-
-
-    // fetchLotsByPrestataire
-    // public function fetchLotsByPrestataire($id){
-    //     try{
-    //         //Vérifier si le prestataire existe
-    //         $prestataire = Prestataire::
-    //     }catch(\Exception){
-
-    //     }
-    // }
 
 
     public function detailByLot(Request $request, $prestataireId, $lotId){

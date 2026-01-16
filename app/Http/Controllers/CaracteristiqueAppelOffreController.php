@@ -99,7 +99,6 @@ class CaracteristiqueAppelOffreController extends Controller
                 'after:date_demarrage_prevue_caracteristique_appel_offre'
             ],
             'lieu_execution_caracteristique_appel_offre' => 'nullable|string|max:255',
-            'penalites_retard_journalier_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'montant_garantie_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'delai_garantie_jours_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'conditions_paiement_caracteristique_appel_offre' => 'nullable|string',
@@ -110,7 +109,6 @@ class CaracteristiqueAppelOffreController extends Controller
             'date_demarrage_prevue_caracteristique_appel_offre.date' => 'La date de démarrage doit être une date valide',
             'date_livraison_previsionnelle_caracteristique_appel_offre.date' => 'La date de livraison doit être une date valide',
             'date_livraison_previsionnelle_caracteristique_appel_offre.after' => 'La date de livraison doit être postérieure à la date de démarrage',
-            'penalites_retard_journalier_caracteristique_appel_offre.numeric' => 'Le montant des pénalités doit être numérique',
             'montant_garantie_caracteristique_appel_offre.numeric' => 'Le montant de garantie doit être numérique',
         ]);
 
@@ -137,7 +135,6 @@ class CaracteristiqueAppelOffreController extends Controller
                 'date_demarrage_prevue_caracteristique_appel_offre' => $request->date_demarrage_prevue_caracteristique_appel_offre,
                 'date_livraison_previsionnelle_caracteristique_appel_offre' => $request->date_livraison_previsionnelle_caracteristique_appel_offre,
                 'lieu_execution_caracteristique_appel_offre' => $request->lieu_execution_caracteristique_appel_offre,
-                'penalites_retard_journalier_caracteristique_appel_offre' => $request->penalites_retard_journalier_caracteristique_appel_offre,
                 'montant_garantie_caracteristique_appel_offre' => $request->montant_garantie_caracteristique_appel_offre,
                 'delai_garantie_jours_caracteristique_appel_offre' => $request->delai_garantie_jours_caracteristique_appel_offre,
                 'conditions_paiement_caracteristique_appel_offre' => $request->conditions_paiement_caracteristique_appel_offre,
@@ -262,7 +259,6 @@ class CaracteristiqueAppelOffreController extends Controller
                 'after:date_demarrage_prevue_caracteristique_appel_offre'
             ],
             'lieu_execution_caracteristique_appel_offre' => 'nullable|string|max:255',
-            'penalites_retard_journalier_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'montant_garantie_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'delai_garantie_jours_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'conditions_paiement_caracteristique_appel_offre' => 'nullable|string',
@@ -299,7 +295,6 @@ class CaracteristiqueAppelOffreController extends Controller
                 'date_demarrage_prevue_caracteristique_appel_offre' => $request->date_demarrage_prevue_caracteristique_appel_offre,
                 'date_livraison_previsionnelle_caracteristique_appel_offre' => $request->date_livraison_previsionnelle_caracteristique_appel_offre,
                 'lieu_execution_caracteristique_appel_offre' => $request->lieu_execution_caracteristique_appel_offre,
-                'penalites_retard_journalier_caracteristique_appel_offre' => $request->penalites_retard_journalier_caracteristique_appel_offre,
                 'montant_garantie_caracteristique_appel_offre' => $request->montant_garantie_caracteristique_appel_offre,
                 'delai_garantie_jours_caracteristique_appel_offre' => $request->delai_garantie_jours_caracteristique_appel_offre,
                 'conditions_paiement_caracteristique_appel_offre' => $request->conditions_paiement_caracteristique_appel_offre,
@@ -471,7 +466,6 @@ class CaracteristiqueAppelOffreController extends Controller
                     'date_demarrage_prevue_caracteristique_appel_offre',
                     'date_livraison_previsionnelle_caracteristique_appel_offre',
                     'lieu_execution_caracteristique_appel_offre',
-                    'penalites_retard_journalier_caracteristique_appel_offre',
                     'montant_garantie_caracteristique_appel_offre',
                     'delai_garantie_jours_caracteristique_appel_offre',
                     'conditions_paiement_caracteristique_appel_offre',

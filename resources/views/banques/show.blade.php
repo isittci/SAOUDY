@@ -412,8 +412,7 @@
                 window.toggleStatus = function(isActive) {
                     const action = isActive ? 'désactiver' : 'activer';
                     if (confirm(`Voulez-vous vraiment ${action} cette banque ?`)) {
-                        fetch("{{ route('banques.toggle-statut') }}"
-                                `/${prestataireId}/banques/${banqueId}/toggle-statut`, {
+                        fetch("{{ route('banques.toggle-statut', [':prestataireId', ':banqueId']) }}".replace(':prestataireId', prestataireId).replace(':banqueId', banqueId), {
                                     method: 'PATCH',
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}',

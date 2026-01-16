@@ -1015,7 +1015,7 @@
                                         <!-- Actions -->
                                         <td class="px-4 py-3 whitespace-nowrap text-center">
                                             <a href="{{ route('lots-appels-offres.show', [$lot['appel_offre_id'], $lot['id_lot']]) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
+                                                class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
                                                 <i class="fas fa-eye mr-1"></i>
                                                 Voir détails
                                             </a>

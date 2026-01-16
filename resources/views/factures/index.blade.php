@@ -24,6 +24,7 @@
                         <i id="statsChevron" class="fas fa-chevron-down ml-2 text-xs transition-transform duration-200"></i>
                     </button>
 
+
                     @can('factures.create')
                         <a href="{{ route('factures.create') }}"
                             class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 shadow-md">
@@ -247,9 +248,9 @@
                                     : 0;
 
                             // Récupérer l'attribution via la proforma
-$attribution = $facture->proforma
-    ?->prestataireLotsAttributions()
-    ->where('is_active', true)
+                            $attribution = $facture->proforma
+                                ?->prestataireLotsAttributions()
+                                ->where('is_active', true)
                                 ->first();
                             $lot = $attribution?->lot;
                             $prestataire = $attribution?->prestataire;
@@ -559,6 +560,8 @@ $attribution = $facture->proforma
                                                 @endif
                                                 @endcan
 
+
+
                                                 @can('factures.validate')
                                                 @if ($facture->peutEtreValidee())
                                                     <form action="{{ route('factures.valider', $facture->id_facture) }}"
@@ -582,6 +585,20 @@ $attribution = $facture->proforma
                                                     </a>
                                                 @endif
                                                 @endcan
+
+                                                {{-- Fiche Excel --}}
+                                                <a href="{{ route('exports.factures.fiche.excel', $facture->id_facture) }}"
+                                                title="Télécharger la fiche Excel"
+                                                class="p-2 text-emerald-600 hover:bg-emerald-50 rounded transition-colors">
+                                                    <i class="fa fa-file-excel"></i>
+                                                </a>
+
+                                                {{-- Fiche PDF --}}
+                                                <a href="{{ route('exports.factures.fiche.pdf', $facture->id_facture) }}"
+                                                title="Télécharger la fiche PDF"
+                                                class="p-2 text-red-600 hover:bg-red-50 rounded transition-colors">
+                                                    <i class="fa fa-file-pdf"></i>
+                                                </a>
 
                                                 @can('factures.delete')
                                                 <button

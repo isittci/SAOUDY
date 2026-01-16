@@ -15,6 +15,35 @@
         title="{{ $lot->libelle }}">{{ \Illuminate\Support\Str::limit($lot->libelle, 35) }}</span>
 @endsection
 
+
+@php
+    $allPaiements = $lot->attributionActive?->proforma?->facture?->paiements ?? null;
+    $facture = $lot->attributionActive?->proforma?->facture ?? null;
+    $proforma = $lot->attributionActive?->proforma ?? null;
+
+    // Calcul du montant payé et reste
+    $montantPaye = $allPaiements ? $allPaiements->sum('montant_net_paye_paiement') : 0;
+    $montantFacture = $facture?->montant_facture ?? 0;
+    $resteAPayer = max(0, $montantFacture - $montantPaye);
+    $tauxPaiement = $montantFacture > 0 ? ($montantPaye / $montantFacture) * 100 : 0;
+
+    // États
+    $paiementTermine = $montantFacture > 0 && $montantPaye >= $montantFacture;
+    $paiementEnCours = $montantPaye > 0 && $montantPaye < $montantFacture;
+    $paiementNonCommence = $montantFacture > 0 && $montantPaye == 0;
+    $pasPaiementPrevu = !$facture;
+
+    // Évaluation
+    $sommesReferencesCriteresEvaluations = $lot->criteresEvaluation->sum('note_reference_critere_evaluation');
+    $sommesNotesEvaluations = $lot->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+
+    $evaluationTerminee =
+        $sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations >= $sommesReferencesCriteresEvaluations;
+    $evaluationEnCours = $sommesNotesEvaluations > 0 && $sommesNotesEvaluations < $sommesReferencesCriteresEvaluations;
+    $evaluationNonCommencee = $sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations == 0;
+    $pasEvaluationPrevue = $sommesReferencesCriteresEvaluations == 0;
+@endphp
+
 @section('content')
     <!-- Header avec actions -->
     <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
@@ -48,7 +77,7 @@
                                     {{-- Statut: Attribué (actif, pas de suspension ni retrait) --}}
                                     @if (!$lot->attributionActive->date_suspension && !$lot->attributionActive->date_retrait)
                                         <span
-                                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm">
                                             <i class="fas fa-check-circle mr-1.5 text-emerald-500"></i>
                                             Attribué
                                         </span>
@@ -56,7 +85,7 @@
                                         {{-- Statut: Retiré (pas de suspension mais date de retrait présente) --}}
                                     @elseif (!$lot->attributionActive->date_suspension && $lot->attributionActive->date_retrait)
                                         <span
-                                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 shadow-sm">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200 shadow-sm">
                                             <i class="fas fa-times-circle mr-1.5 text-red-500"></i>
                                             Retiré
                                         </span>
@@ -64,7 +93,7 @@
                                         {{-- Statut: Suspendu --}}
                                     @elseif ($lot->attributionActive->date_suspension)
                                         <span
-                                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 shadow-sm">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200 shadow-sm">
                                             <i class="fas fa-pause-circle mr-1.5 text-amber-500"></i>
                                             Suspendu
                                         </span>
@@ -74,7 +103,7 @@
                                 </div>
                             @else
                                 <span
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                                     <i class="fas fa-user-slash mr-1.5 text-gray-400"></i>
                                     Non attribué
                                 </span>
@@ -220,7 +249,10 @@
             <!-- Colonne principale -->
             <div class="lg:col-span-2 space-y-6">
 
-                <!-- Informations principales -->
+
+
+
+                {{-- <!-- Informations principales -->
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
                         <h2 class="text-lg font-bold text-gray-800 flex items-center">
@@ -234,8 +266,7 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-600 mb-2">Appel d'offres</label>
                             <div class="flex items-center space-x-3">
-                                <span
-                                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
+                                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
                                     {{ $lot->appelOffre->numero_appel_offre }}
                                 </span>
                                 <div>
@@ -291,7 +322,244 @@
                             </div>
                         @endif
                     </div>
+                </div> --}}
+
+                <!-- Informations principales -->
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 flex items-center">
+            <i class="fas fa-info-circle text-indigo-500 mr-2"></i>
+            Informations générales
+        </h2>
+    </div>
+
+    <div class="p-6 space-y-5">
+        <!-- Appel d'offres -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-600 mb-2">Appel d'offres</label>
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
+                    {{ $lot->appelOffre->numero_appel_offre }}
+                </span>
+                <div>
+                    <p class="text-sm font-medium text-gray-900">
+                        {{ $lot->appelOffre->libelle_critere_appel_offre }}</p>
+                    <p class="text-xs text-gray-500">
+                        <i class="fas fa-tag mr-1"></i>{{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
+                    </p>
                 </div>
+                <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}"
+                    class="ml-auto p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                    title="Voir l'appel d'offres">
+                    <i class="fas fa-external-link-alt text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Numéro et Libellé -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-2">Numéro</label>
+                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-700">
+                    {{ $lot->numero }}
+                </span>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-2">Libellé</label>
+                <p class="text-gray-900 font-medium">{{ $lot->libelle }}</p>
+            </div>
+        </div>
+
+        <!-- Description -->
+        @if ($lot->description_critere)
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-2">Description</label>
+                <p class="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                    {{ $lot->description_critere }}
+                </p>
+            </div>
+        @endif
+
+        <!-- Spécifications techniques -->
+        @if ($lot->specifications_techniques)
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-2">Spécifications techniques</label>
+                <p class="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-lg whitespace-pre-wrap">
+                    {{ $lot->specifications_techniques }}
+                </p>
+            </div>
+        @endif
+{{-- {{ dd($lot) }} --}}
+        <!-- Montant du lot -->
+        @if ($lot->budget_lot)
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-2">Montant du lot</label>
+                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-green-100 text-green-700">
+                    <i class="fas fa-coins mr-2"></i>
+                    {{ number_format($lot->budget_lot, 0, ',', ' ') }} FCFA
+                </span>
+            </div>
+        @endif
+
+        <!-- État de l'évaluation -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-600 mb-2">État de l'évaluation</label>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                @if ($pasEvaluationPrevue)
+                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-gray-200 text-gray-600">
+                        <i class="fas fa-minus-circle mr-2"></i>
+                        Aucune évaluation prévue
+                    </span>
+                @elseif ($evaluationTerminee)
+                    <div class="flex items-center space-x-3">
+                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-green-100 text-green-700">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Évaluation terminée
+                        </span>
+                        <span class="text-sm text-gray-700 font-medium">
+                            {{ number_format($sommesNotesEvaluations, 2) }} / {{ number_format($sommesReferencesCriteresEvaluations, 2) }}
+                        </span>
+                    </div>
+                @elseif ($evaluationEnCours)
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-yellow-100 text-yellow-700">
+                                <i class="fas fa-spinner mr-2"></i>
+                                Évaluation en cours
+                            </span>
+                            <span class="text-sm font-bold text-gray-700">
+                                {{ number_format(($sommesNotesEvaluations / $sommesReferencesCriteresEvaluations) * 100, 1) }}%
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-yellow-500 h-2.5 rounded-full transition-all"
+                                 style="width: {{ ($sommesNotesEvaluations / $sommesReferencesCriteresEvaluations) * 100 }}%">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600">
+                            {{ number_format($sommesNotesEvaluations, 2) }} / {{ number_format($sommesReferencesCriteresEvaluations, 2) }} points
+                        </p>
+                    </div>
+                @elseif ($evaluationNonCommencee)
+                    <div class="flex items-center space-x-3">
+                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-red-100 text-red-700">
+                            <i class="fas fa-clock mr-2"></i>
+                            Évaluation non commencée
+                        </span>
+                        <span class="text-sm text-gray-700 font-medium">
+                            0 / {{ number_format($sommesReferencesCriteresEvaluations, 2) }}
+                        </span>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- État du paiement -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-600 mb-2">État du paiement</label>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                @if ($pasPaiementPrevu)
+                    <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-gray-200 text-gray-600">
+                        <i class="fas fa-minus-circle mr-2"></i>
+                        Aucune facture associée
+                    </span>
+                @elseif ($paiementTermine)
+                    <div class="space-y-3">
+                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-green-100 text-green-700">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Paiement terminé
+                        </span>
+                        <div class="grid grid-cols-3 gap-4 pt-2 border-t border-gray-200">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
+                                <p class="text-sm font-medium text-gray-900">
+                                    {{ number_format($montantFacture, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant payé</p>
+                                <p class="text-sm font-medium text-green-700">
+                                    {{ number_format($montantPaye, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
+                                <p class="text-sm font-medium text-gray-900">
+                                    {{ number_format($resteAPayer, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @elseif ($paiementEnCours)
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-blue-100 text-blue-700">
+                                <i class="fas fa-hourglass-half mr-2"></i>
+                                Paiement en cours
+                            </span>
+                            <span class="text-sm font-bold text-gray-700">
+                                {{ number_format($tauxPaiement, 1) }}%
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full transition-all"
+                                 style="width: {{ $tauxPaiement }}%">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 pt-2 border-t border-gray-200">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
+                                <p class="text-sm font-medium text-gray-900">
+                                    {{ number_format($montantFacture, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant payé</p>
+                                <p class="text-sm font-medium text-green-700">
+                                    {{ number_format($montantPaye, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
+                                <p class="text-sm font-medium text-orange-700">
+                                    {{ number_format($resteAPayer, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @elseif ($paiementNonCommence)
+                    <div class="space-y-3">
+                        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            Paiement non commencé
+                        </span>
+                        <div class="grid grid-cols-3 gap-4 pt-2 border-t border-gray-200">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
+                                <p class="text-sm font-medium text-gray-900">
+                                    {{ number_format($montantFacture, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Montant payé</p>
+                                <p class="text-sm font-medium text-gray-600">
+                                    0 FCFA
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
+                                <p class="text-sm font-medium text-orange-700">
+                                    {{ number_format($resteAPayer, 0, ',', ' ') }} FCFA
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 
                 <!-- Dates et délais -->
                 @if ($lot->date_debut_prevue || $lot->date_fin_prevue || $lot->date_attribution)
@@ -762,27 +1030,7 @@
                                                         <div id="error_new_date_proforma"
                                                             class="hidden mt-1 text-red-500 text-xs"></div>
                                                     </div>
-
-
-
-                                                    {{-- <div>
-                                                        <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                            <i class="fas fa-redo text-orange-500 mr-2 text-xs"></i>
-                                                            Date redémarrage <span class="text-red-500 ml-1">*</span>
-                                                        </label>
-                                                        <input type="date" required
-                                                            name="new_date_redemarrage"
-                                                            id="new_date_redemarrage"
-                                                            min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
-                                                            max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
-                                                            value="{{ old('new_date_redemarrage') }}"
-                                                            class="proforma-required w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200">
-                                                        <div id="error_new_date_redemarrage" class="hidden mt-1 text-red-500 text-xs"></div>
-                                                    </div> --}}
                                                 </div>
-
-
-
 
                                                 <!-- Montants -->
                                                 <div
@@ -813,7 +1061,7 @@
                                                             <!-- Message d'aide pour les limites -->
                                                             <p class="mt-1 text-xs text-gray-500">
                                                                 <i class="fas fa-info-circle mr-1"></i>
-                                                                {{-- Min: {{ number_format($lot->appelOffre->typeAppelOffre->valeur_minimuim_type_appel_offre, 0, ',', ' ') }} FCFA --}}
+
                                                                 Min: 5 FCFA
                                                                 - Max: {{ number_format($montantRestant, 0, ',', ' ') }}
                                                                 FCFA
@@ -825,45 +1073,7 @@
                                                             </div>
                                                         </div>
 
-                                                        {{-- <!-- TVA -->
-                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div>
-                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                                    Taux TVA <span class="text-red-500 ml-1">*</span>
-                                                                </label>
-                                                                <div class="relative">
-                                                                    <input type="text"
-                                                                        required
-                                                                        inputmode="decimal"
-                                                                        name="new_taux_tva"
-                                                                        id="new_taux_tva"
-                                                                        data-min="0"
-                                                                        data-max="100"
-                                                                        value="{{ old('new_taux_tva', '18') }}"
-                                                                        class="proforma-required w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200"
-                                                                        autocomplete="off">
-                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <label class="flex items-center text-sm font-semibold text-gray-700 mb-2">
-                                                                    Montant TVA
-                                                                    <span class="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Auto</span>
-                                                                </label>
-                                                                <div class="relative">
-                                                                    <input type="text"
-                                                                        inputmode="decimal"
-                                                                        name="new_taxe_montant"
-                                                                        id="new_taxe_montant"
-                                                                        value="{{ old('new_taxe_montant') }}"
-                                                                        readonly
-                                                                        tabindex="-1"
-                                                                        class="w-full px-4 py-2.5 pr-16 border-2 border-gray-100 rounded-xl bg-gray-50 text-gray-700 font-medium cursor-not-allowed"
-                                                                        placeholder="0,00">
-                                                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">FCFA</span>
-                                                                </div>
-                                                            </div>
-                                                        </div> --}}
+
 
                                                         <!-- TVA -->
                                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -957,7 +1167,7 @@
                                                             </div>
                                                         </div>
 
-                                                        
+
 
                                                         <!-- Total TTC -->
                                                         <div class="pt-4 border-t-2 border-emerald-200">
@@ -1173,11 +1383,11 @@
                                 Annuler
                             </button>
                             @can('attributions_lots.withdraw')
-                            <button type="submit" id="submitRetraitBtn"
-                                class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                                <i class="fas fa-ban mr-2"></i>
-                                <span id="submitRetraitText">Retirer</span>
-                            </button>
+                                <button type="submit" id="submitRetraitBtn"
+                                    class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
+                                    <i class="fas fa-ban mr-2"></i>
+                                    <span id="submitRetraitText">Retirer</span>
+                                </button>
                             @endcan
                         </div>
                     </form>
@@ -1669,10 +1879,7 @@
                 let isValid = true;
                 let errorMessage = '';
 
-                // if (!isNaN(min) && value < min) {
-                //     isValid = false;
-                //     errorMessage = `La valeur doit être supérieure ou égale à ${formatWithSpaces(min, 0)} FCFA`;
-                // } else
+
                 if (!isNaN(max) && value > max) {
                     isValid = false;
                     errorMessage = `La valeur doit être inférieure ou égale à ${formatWithSpaces(max, 0)} FCFA`;

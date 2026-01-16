@@ -138,25 +138,32 @@ class AppelOffre extends Model
 
 
 
+public function isCloture()
+{
+    // Un appel d'offres est clôturé si tous ses lots sont clôturés
 
-
-
-
-
-
-    public function isCloture()
-    {
-
-        $dateLivraisonPrevisionnelleCaracteristiqueAppelOffre = $this->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre;
-        //  dd($dateLivraisonPrevisionnelleCaracteristiqueAppelOffre);
-        if($dateLivraisonPrevisionnelleCaracteristiqueAppelOffre){
-            return $this->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre < now();
-        }
-
+    // Si l'appel d'offres n'a pas de lots, il n'est pas clôturé
+    if ($this->lots->isEmpty()) {
         return false;
-
-        // return $this->date_limite_depot_critere_appel_offre < now();
     }
+
+    // Vérifier si tous les lots sont clôturés
+    return $this->lots->every(function ($lot) {
+        return $lot->isCloture();
+    });
+}
+
+
+
+
+
+    // public function isCloture()
+    // {
+
+
+
+    //     return false;
+    // }
 
     public function joursRestants(): int
     {

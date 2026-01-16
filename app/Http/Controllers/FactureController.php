@@ -221,6 +221,50 @@ class FactureController extends Controller
                 ->orderBy('numero_appel_offre', 'desc')
                 ->get();
 
+                // $appelsOffres = AppelOffre::with([
+                //     'typeAppelOffre',
+                //     'lots.attributionActive.prestataire',
+                //     'lots.attributionActive.proforma',
+                //     'lots.criteresEvaluation.evaluations'
+                // ])
+                // ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
+                // ->get()
+                // ->filter(function ($appelOffre) {
+                //     return !$appelOffre->isCloture(); // Filtrer les non clôturés
+                // })
+                // ->sortByDesc('numero_appel_offre')
+                // ->values(); // Réindexer la collection
+
+//                 $appelsOffres = AppelOffre::with([
+//     'typeAppelOffre',
+//     'lots' => function ($query) {
+//         $query->whereDoesntHave('attributionActive.proforma')
+//               ->orWhereDoesntHave('attributionActive');
+//     },
+//     'lots.attributionActive.prestataire'
+// ])
+// ->whereHas('lots', function ($query) {
+//     $query->whereDoesntHave('attributionActive.proforma')
+//           ->orWhereDoesntHave('attributionActive');
+// })
+// ->orderBy('numero_appel_offre', 'desc')
+// ->get();
+
+$appelsOffres = AppelOffre::with([
+    'typeAppelOffre',
+    'lots.attributionActive.prestataire',
+    'lots.attributionActive.proforma' => function ($query) {
+        $query->whereDoesntHave('facture');
+    }
+])
+->whereHas('lots.attributionActive.proforma', function ($query) {
+    $query->whereDoesntHave('facture');
+})
+->orderBy('numero_appel_offre', 'desc')
+->get();
+
+// dd($appelsOffres);
+
 
                 // Si lot_id est passé en paramètre, pré-sélectionner le lot et sa proforma
                 $lotSelectionne = null;

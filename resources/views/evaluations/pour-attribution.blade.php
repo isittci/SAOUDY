@@ -30,7 +30,7 @@
                     </div>
                 </div>
 
-                {{-- {{ dd($criteresDisponibles) }} --}}
+                {{-- {{ dd($statistiquesCriteres) }} --}}
                 @php
                     $noteReference = 0;
                     foreach ($criteresDisponibles as $note) {
@@ -41,7 +41,7 @@
                 @can('evaluations_attributions.evaluate')
                     <!-- Actions -->
                     <div class="flex items-center space-x-2">
-                        @if ($noteReference < 100)
+                        @if (collect($statistiquesCriteres)->sum('note_reference') < 100)
                             <a href="{{ route('evaluations.create', $attribution->id_attribution) }}"
                                 class="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md">
                                 <i class="fas fa-plus text-sm"></i>
@@ -72,20 +72,17 @@
                         </h2>
                     </div>
                     <div class="p-6">
+
                         @php
-                            $totalNoteReference = 0;
-                            $totalEvalue = 0;
-                            $criteresComplets = 0;
-                            foreach ($statistiquesCriteres as $stat) {
-                                $totalNoteReference += $stat['note_reference'];
-                                $totalEvalue += $stat['total_evalue'];
-                                if ($stat['est_complet']) {
-                                    $criteresComplets++;
-                                }
-                            }
-                            $pourcentageGlobal =
-                                $totalNoteReference > 0 ? ($totalEvalue / $totalNoteReference) * 100 : 0;
+                            $stats = collect($statistiquesCriteres);
+
+                            $totalNoteReference = $stats->sum(fn ($s) => (float) $s['note_reference']);
+                            $totalEvalue        = $stats->sum('total_evalue');
+                            $criteresComplets   = $stats->where('est_complet', true)->count();
+
+                            $pourcentageGlobal = $totalNoteReference > 0 ? ($totalEvalue / $totalNoteReference) * 100 : 0;
                         @endphp
+
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div class="bg-indigo-50 rounded-xl p-4 text-center">
@@ -120,6 +117,7 @@
                     </div>
                 </div>
 
+                {{-- {{ dd(collect($statistiquesCriteres)->sum('total_evalue')) }} --}}
                 <!-- Liste des critères avec leurs évaluations -->
                 @foreach ($statistiquesCriteres as $critereId => $stat)
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

@@ -217,22 +217,7 @@
                                 @enderror
                             </div>
 
-                            <!-- Contact principal -->
-                            {{-- <div>
-                                <label for="contact_principal_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Contact principal <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="contact_principal_prestataire" id="contact_principal_prestataire"
-                                    value="{{ old('contact_principal_prestataire', $prestataire->contact_prestataire) }}" required maxlength="20"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('contact_principal_prestataire') border-red-500 @enderror"
-                                    placeholder="Nom du contact principal">
-                                @error('contact_principal_prestataire')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div> --}}
-                        </div>
-
-                        <!-- Contact secondaire -->
+                            <!-- Contact secondaire -->
                         <div>
                             <label for="contact_secondaire_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Téléphone secondaire
@@ -241,6 +226,9 @@
                                 value="{{ old('contact_secondaire_prestataire', $prestataire->telephone_secondaire_prestataire) }}" maxlength="20"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
                         </div>
+                        </div>
+
+
 
                         <!-- Adresse -->
                         <div>
@@ -273,32 +261,33 @@
                                 @enderror
                             </div>
 
-                            <!-- Pays -->
-                            <div>
-                                <label for="pays" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Pays <span class="text-red-500">*</span>
-                                </label>
-                                <select name="pays" id="pays" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('pays') border-red-500 @enderror">
-                                    <option value="">Sélectionner un pays</option>
-                                    @php $paysActuel = old('pays', $prestataire->pays_prestataire ?? $prestataire->pays); @endphp
-                                    <option value="Côte d'Ivoire" {{ $paysActuel == "Côte d'Ivoire" ? 'selected' : '' }}>Côte d'Ivoire</option>
-                                    <option value="Sénégal" {{ $paysActuel == "Sénégal" ? 'selected' : '' }}>Sénégal</option>
-                                    <option value="Mali" {{ $paysActuel == "Mali" ? 'selected' : '' }}>Mali</option>
-                                    <option value="Burkina Faso" {{ $paysActuel == "Burkina Faso" ? 'selected' : '' }}>Burkina Faso</option>
-                                    <option value="Guinée" {{ $paysActuel == "Guinée" ? 'selected' : '' }}>Guinée</option>
-                                    <option value="Togo" {{ $paysActuel == "Togo" ? 'selected' : '' }}>Togo</option>
-                                    <option value="Bénin" {{ $paysActuel == "Bénin" ? 'selected' : '' }}>Bénin</option>
-                                    <option value="Niger" {{ $paysActuel == "Niger" ? 'selected' : '' }}>Niger</option>
-                                    <option value="Cameroun" {{ $paysActuel == "Cameroun" ? 'selected' : '' }}>Cameroun</option>
-                                    <option value="Gabon" {{ $paysActuel == "Gabon" ? 'selected' : '' }}>Gabon</option>
-                                    <option value="France" {{ $paysActuel == "France" ? 'selected' : '' }}>France</option>
-                                    <option value="Autre" {{ $paysActuel == "Autre" ? 'selected' : '' }}>Autre</option>
-                                </select>
-                                @error('pays')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+
+
+
+
+                                 <!-- Pays -->
+                                <div>
+                                    <label for="pays_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Pays
+                                    </label>
+                                    <select name="pays_prestataire" id="pays_prestataire"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('pays_prestataire') border-red-500 @enderror">
+                                        <option value="">Sélectionner un pays</option>
+                                        @forelse ($pays as $p)
+                                            <option value="{{ $p->id }}" data-indicatif="{{ $p->indicatif }}"
+                                                data-code="{{ $p->code_iso_2 }}"
+                                                {{ old('pays_prestataire', $prestataire->pays_prestataire ?? '') == $p->id ? 'selected' : '' }}>
+                                                {{ $p->nom }} ({{ $p->indicatif }})
+                                            </option>
+                                        @empty
+                                            <option value="" disabled>Aucun pays disponible</option>
+                                        @endforelse
+                                    </select>
+                                    @error('pays_prestataire')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                         </div>
                     </div>
                 </div>
@@ -391,15 +380,30 @@
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
                             </div>
 
-                            <!-- Pays -->
-                            <div>
-                                <label for="rep_pays" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Pays de résidence <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="rep_pays"
-                                    value="{{ $representantActif['pays'] ?? '' }}" maxlength="50"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                            </div>
+{{-- {{ dd($representantActif['pays']) }} --}}
+
+                             <!-- Pays -->
+                                <div>
+                                    <label for="pays" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Pays de résidence <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="pays" id="pays"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('pays') border-red-500 @enderror">
+                                        <option value="">Sélectionner un pays</option>
+                                        @forelse ($pays as $p)
+                                            <option value="{{ $p->id }}" data-indicatif="{{ $p->indicatif }}"
+                                                data-code="{{ $p->code_iso_2 }}"
+                                                {{ old('pays', $representantActif['pays']) == $p->id ? 'selected' : '' }}>
+                                                {{ $p->nom }} ({{ $p->indicatif }})
+                                            </option>
+                                        @empty
+                                            <option value="" disabled>Aucun pays disponible</option>
+                                        @endforelse
+                                    </select>
+                                    @error('pays')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
                         </div>
 
                         <!-- Adresse -->
@@ -426,7 +430,7 @@
                             <!-- Date de naissance -->
                             <div>
                                 <label for="rep_date_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de naissance <span class="text-red-500">*</span>
+                                    Date de naissance
                                 </label>
                                 <input type="date" id="rep_date_naissance"
                                     value="{{ $representantActif['date_naissance'] ?? '' }}"
@@ -436,7 +440,7 @@
                             <!-- Lieu de naissance -->
                             <div>
                                 <label for="rep_lieu_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Lieu de naissance <span class="text-red-500">*</span>
+                                    Lieu de naissance
                                 </label>
                                 <input type="text" id="rep_lieu_naissance"
                                     value="{{ $representantActif['lieu_naissance'] ?? '' }}" maxlength="100"
@@ -455,7 +459,7 @@
                                 <!-- Type pièce -->
                                 <div>
                                     <label for="rep_type_piece" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Type <span class="text-red-500">*</span>
+                                        Type
                                     </label>
                                     <select id="rep_type_piece"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
@@ -470,7 +474,7 @@
                                 <!-- Numéro pièce -->
                                 <div>
                                     <label for="rep_numero_piece" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro <span class="text-red-500">*</span>
+                                        Numéro
                                     </label>
                                     <input type="text" id="rep_numero_piece"
                                         value="{{ $representantActif['numero_piece_identite'] ?? '' }}" maxlength="50"
@@ -482,7 +486,7 @@
                                 <!-- Date délivrance -->
                                 <div>
                                     <label for="rep_date_delivrance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Date de délivrance <span class="text-red-500">*</span>
+                                        Date de délivrance
                                     </label>
                                     <input type="date" id="rep_date_delivrance"
                                         value="{{ $representantActif['date_delivrance'] ?? '' }}"
@@ -492,7 +496,7 @@
                                 <!-- Lieu délivrance -->
                                 <div>
                                     <label for="rep_lieu_delivrance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Lieu de délivrance <span class="text-red-500">*</span>
+                                        Lieu de délivrance
                                     </label>
                                     <input type="text" id="rep_lieu_delivrance"
                                         value="{{ $representantActif['lieu_delivrance'] ?? '' }}" maxlength="100"
@@ -502,7 +506,7 @@
                                 <!-- Date expiration -->
                                 <div>
                                     <label for="rep_date_expiration" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Date d'expiration <span class="text-red-500">*</span>
+                                        Date d'expiration
                                     </label>
                                     <input type="date" id="rep_date_expiration"
                                         value="{{ $representantActif['date_expiration'] ?? '' }}"
@@ -563,7 +567,7 @@
                     email: document.getElementById('rep_email')?.value || '',
                     contact: document.getElementById('rep_contact')?.value || '',
                     nationalite: document.getElementById('rep_nationalite')?.value || '',
-                    pays: document.getElementById('rep_pays')?.value || '',
+                    pays: document.getElementById('pays')?.value || '',
                     adresse: document.getElementById('rep_adresse')?.value || '',
                     profession: document.getElementById('rep_profession')?.value || '',
                     date_naissance: document.getElementById('rep_date_naissance')?.value || '',

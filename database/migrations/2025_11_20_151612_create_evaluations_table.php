@@ -13,7 +13,7 @@ return new class extends Migration
      * - Evaluation ←→ evaluations_lots_prestataires (pivot)
      * - La pivot contient: critere_evaluation_id, evaluation_id, prestataire_id
      * - CritereEvaluation appartient à un Lot (lot_id)
-     * - Donc: Lot et Prestataire sont accessibles via la table pivot
+     * - Donc: Lot et Prestataire sont accessibles via la table pivot 
      *
      * A chaque mise à jour, on crée une nouvelle version
      * Le numero_evaluation reste identique entre les versions

@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\Permission;
-use App\Http\Requests\Role\StoreRoleRequest;
-use App\Http\Requests\Role\UpdateRoleRequest;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 
 class RoleController extends Controller
 {
@@ -17,7 +17,7 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-       
+
         $query = Role::withCount(['users', 'permissions'])
             ->search($request->search);
 

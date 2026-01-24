@@ -126,13 +126,13 @@
                                 Libellé</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Budget retenu</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Dates Clés</th>
+
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Nb Lots</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
-                            @canany(['appels_offres.read', 'caracteristiques_appels_offres.read', 'appels_offres.update', 'appels_offres.delete'])
+                            @canany(['appels_offres.read', 'caracteristiques_appels_offres.read', 'appels_offres.update',
+                                'appels_offres.delete'])
                                 <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Actions</th>
                             @endcanany
@@ -163,23 +163,7 @@
                                         {{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }} FCFA
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-xs text-gray-700 space-y-1">
-                                        @if ($ao->date_publication_critere_appel_offre)
-                                            <div><span class="font-medium">Pub:</span>
-                                                {{ $ao->date_publication_critere_appel_offre->format('d/m/Y') }}</div>
-                                        @endif
-                                        @if ($ao->date_limite_depot_critere_appel_offre)
-                                            <div><span class="font-medium">Limite:</span>
-                                                {{ $ao->date_limite_depot_critere_appel_offre->format('d/m/Y') }}</div>
-                                        @endif
-                                        @if ($ao->joursRestants() > 0)
-                                            <div class="text-orange-600 font-semibold">
-                                                <i class="fas fa-clock mr-1"></i>{{ $ao->joursRestants() }} jour(s)
-                                            </div>
-                                        @endif
-                                    </div>
-                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -199,15 +183,25 @@
                                                 <i class="fas fa-times-circle mr-1"></i> Inactif
                                             </span>
                                         @endif
-                                        @if ($ao->isCloture())
+                                        @if ($ao->isEtatEnAttente())
                                             <span
                                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                                Clôturé
+                                                En attente
                                             </span>
-                                        @elseif($ao->isEnCours())
+                                        @elseif($ao->isEtatEnCours())
                                             <span
                                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                                                 En cours
+                                            </span>
+                                        @elseif($ao->isEtatTermine() && $ao->peutEtreCloture())
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                                Terminé
+                                            </span>
+                                        @elseif($ao->isEtatCloture())
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                                Cloturé
                                             </span>
                                         @endif
                                     </div>
@@ -227,7 +221,7 @@
                                             @endcan
 
                                             @can('appels_offres.update')
-                                                @if (!$ao->isCloture() && $ao->statut_evaluation_critere_appel_offre)
+                                                @if (!$ao->peutEtreCloturer() && $ao->statut_evaluation_critere_appel_offre)
                                                     <!-- Modifier -->
                                                     <button
                                                         onclick="window.location.href='{{ route('appels-offres.edit', $ao->id_appel_offre) }}'"
@@ -246,7 +240,7 @@
                                                 </button>
                                             @endcan
 
-                                            @canany(['caracteristiques_appels_offres.read', 'appels_offres.update', 'appels_offres.delete'])
+                                            {{-- @canany(['caracteristiques_appels_offres.read', 'appels_offres.update', 'appels_offres.delete'])
                                                 <!-- Menu Actions -->
                                                 <div class="relative">
                                                     <button onclick="toggleMenu('{{ $ao->id_appel_offre }}')"
@@ -267,12 +261,56 @@
 
                                                             @can('appels_offres.update')
 
-                                                                @if ($ao->isEnCours())
+                                                                @if ($ao->etat_appel_offre == 2)
                                                                     <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
                                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                                         <i class="fas fa-lock mr-2 text-yellow-500"></i>
                                                                         Clôturer
-                                                                    </button> 
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('appels_offres.delete')
+                                                                <button
+                                                                    onclick="confirmDelete('{{ $ao->id_appel_offre }}', '{{ $ao->numero_appel_offre }}', {{ $ao->lots_count }})"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                    <i class="fas fa-trash mr-2"></i>
+                                                                    Supprimer
+                                                                </button>
+                                                            @endcan
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endcanany --}}
+                                            @canany(['caracteristiques_appels_offres.read', 'appels_offres.update',
+                                                'appels_offres.delete'])
+                                                <!-- Menu Actions -->
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu(event, '{{ $ao->id_appel_offre }}')"
+                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
+                                                    </button>
+                                                    <div id="menu-{{ $ao->id_appel_offre }}"
+                                                        class="hidden fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
+                                                        <div class="py-1">
+
+                                                            @can('caracteristiques_appels_offres.read')
+                                                                <a href="{{ route('caracteristiques-appels-offres.index', $ao->id_appel_offre) }}"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-thumbs-up text-indigo-500 mr-2"></i>
+                                                                    Caractéristiques
+                                                                </a>
+                                                            @endcan
+
+                                                            @can('appels_offres.update')
+                                                                @if ($ao->etat_appel_offre == 2)
+                                                                    <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-lock mr-2 text-yellow-500"></i>
+                                                                        Clôturer
+                                                                    </button>
                                                                 @endif
                                                             @endcan
 
@@ -300,7 +338,8 @@
                                         <i class="fas fa-inbox text-gray-300 text-5xl"></i>
                                         <p class="text-gray-500 font-medium">Aucun appel d'offres trouvé</p>
                                         @can('appels_offres.create')
-                                            <button onclick="window.location.href='{{ route('appels-offres.create') }}'" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200">
+                                            <button onclick="window.location.href='{{ route('appels-offres.create') }}'"
+                                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200">
                                                 Créer le premier appel d'offres
                                             </button>
                                         @endcan
@@ -354,25 +393,73 @@
             let deleteAOId = null;
 
             // Toggle menu
-            window.toggleMenu = function(id) {
-                const menu = document.getElementById(`menu-${id}`);
-                const allMenus = document.querySelectorAll('[id^="menu-"]');
+            // window.toggleMenu = function(id) {
+            //     const menu = document.getElementById(`menu-${id}`);
+            //     const allMenus = document.querySelectorAll('[id^="menu-"]');
 
-                allMenus.forEach(m => {
-                    if (m.id !== `menu-${id}`) {
+            //     allMenus.forEach(m => {
+            //         if (m.id !== `menu-${id}`) {
+            //             m.classList.add('hidden');
+            //         }
+            //     });
+
+            //     menu.classList.toggle('hidden');
+            // }
+
+            // Fermer les menus en cliquant ailleurs
+            // document.addEventListener('click', function(e) {
+            //     if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
+            //         document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+            //     }
+            // });
+
+            function toggleMenu(event, id) {
+                event.stopPropagation();
+
+                const button = event.currentTarget;
+                const menu = document.getElementById('menu-' + id);
+
+                // Fermer tous les autres menus
+                document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                    if (m.id !== 'menu-' + id) {
                         m.classList.add('hidden');
                     }
                 });
 
                 menu.classList.toggle('hidden');
+
+                if (!menu.classList.contains('hidden')) {
+                    const rect = button.getBoundingClientRect();
+
+                    let top = rect.bottom + 8;
+                    let left = rect.right - menu.offsetWidth;
+
+                    if (top + menu.offsetHeight > window.innerHeight) {
+                        top = rect.top - menu.offsetHeight - 8;
+                    }
+
+                    if (left < 0) {
+                        left = rect.left;
+                    }
+
+                    menu.style.top = top + 'px';
+                    menu.style.left = left + 'px';
+                }
             }
 
-            // Fermer les menus en cliquant ailleurs
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                    document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
+                    document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+                        menu.classList.add('hidden');
+                    });
                 }
             });
+
+            document.addEventListener('scroll', function() {
+                document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+            }, true);
 
             // Toggle statut
             window.toggleStatus = function(id, isActive) {
@@ -454,30 +541,30 @@
             }
 
             // Dupliquer
-            window.duplicate = function(id) {
-                if (confirm('Voulez-vous dupliquer cet appel d\'offres ?')) {
-                    fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', id), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
-                            } else {
-                                alert(data.message || 'Une erreur est survenue');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                            alert('Une erreur est survenue');
-                        });
-                }
-            }
+            // window.duplicate = function(id) {
+            //     if (confirm('Voulez-vous dupliquer cet appel d\'offres ?')) {
+            //         fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', id), {
+            //                 method: 'POST',
+            //                 headers: {
+            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            //                     'Content-Type': 'application/json',
+            //                     'Accept': 'application/json'
+            //                 }
+            //             })
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 if (data.success) {
+            //                     window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
+            //                 } else {
+            //                     alert(data.message || 'Une erreur est survenue');
+            //                 }
+            //             })
+            //             .catch(error => {
+            //                 console.error('Erreur:', error);
+            //                 alert('Une erreur est survenue');
+            //             });
+            //     }
+            // }
 
             // Confirmer suppression
             window.confirmDelete = function(id, numero, nbLots) {

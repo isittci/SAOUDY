@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('taxe_montant',15,2)->default(0)->comment("TVA par defaut 18% du montent retenu");
             $table->decimal('remise_montant_proforma',15,2)->default( 0)->comment('La rémise (reduction)');
             $table->string('modalite_proforma')->nullable()->comment('Modalités de paiement spécifiées dans la proforma.');
-            $table->decimal('penalites_proforma',15,2)->default(0)->comment('Pénalités associées à la proforma.');
+            
             // motif_modification
             $table->text('motif_modification_proforma')->nullable()->comment("Pourquoi cette modification (ex: Demande du maître d'ouvrage, Erreur initiale, Force majeure).");
             $table->boolean('actif_proforma')->default(true)->comment('Permet de désactiver temporairement une proforma sans la supprimer.');

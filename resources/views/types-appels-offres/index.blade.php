@@ -281,16 +281,16 @@
                             <div id="error_libelle" class="hidden text-red-500 text-sm mt-1"></div>
                         </div>
 
-                        {{-- <!-- Code -->
+                        <!-- Code -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Code <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="code_type_appel_offre" id="code" required maxlength="10"
+                            <input type="text"  id="code" required readonly
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent uppercase"
                                 placeholder="Ex: AOO">
                             <div id="error_code" class="hidden text-red-500 text-sm mt-1"></div>
-                        </div> --}}
+                        </div>
 
                         <!-- Valeurs -->
                         <div class="grid grid-cols-2 gap-4">

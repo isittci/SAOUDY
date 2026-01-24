@@ -369,7 +369,7 @@
                                 </td>
 
                                 @canany(['proformas.view-details', 'proformas.update', 'proformas.create-version',
-                                     'proformas.view-history', 'proformas.delete'])
+                                    'proformas.view-history', 'proformas.delete'])
                                     {{-- Colonne Actions --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center justify-center space-x-1">
@@ -395,14 +395,14 @@
 
                                             @canany(['proformas.create-version', 'proformas.view-history', 'proformas.delete'])
                                                 {{-- Menu Plus --}}
-                                                <div class="relative" x-data="{ open: false }">
-                                                    <button onclick="toggleMenu('{{ $proforma->id_proforma }}')"
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu(event, '{{ $proforma->id_proforma }}')"
                                                         class="p-2 text-gray-500 bg-gray-50 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-110 active:scale-95"
                                                         title="Plus d'actions">
                                                         <i class="fas fa-ellipsis-v text-sm"></i>
                                                     </button>
                                                     <div id="menu-{{ $proforma->id_proforma }}"
-                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden transform origin-top-right">
+                                                        class="hidden fixed w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-[9999] overflow-hidden">
                                                         <div class="py-1">
                                                             @can('proformas.create-version')
                                                                 <button onclick="creerVersion('{{ $proforma->id_proforma }}')"
@@ -415,8 +415,6 @@
                                                                     <span class="font-medium">Nouvelle version</span>
                                                                 </button>
                                                             @endcan
-
-
 
                                                             @can('proformas.view-history')
                                                                 <button onclick="voirHistorique('{{ $proforma->id_proforma }}')"
@@ -566,25 +564,43 @@
                 let deleteProformaId = null;
 
                 // Toggle menu
-                window.toggleMenu = function(id) {
-                    const menu = document.getElementById(`menu-${id}`);
-                    const allMenus = document.querySelectorAll('[id^="menu-"]');
+                // public/js/dropdown-menu.js
+                function toggleMenu(event, id) {
+                    event.stopPropagation();
 
-                    allMenus.forEach(m => {
-                        if (m.id !== `menu-${id}`) {
-                            m.classList.add('hidden');
-                        }
+                    const button = event.currentTarget;
+                    const menu = document.getElementById('menu-' + id);
+
+                    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                        if (m.id !== 'menu-' + id) m.classList.add('hidden');
                     });
 
                     menu.classList.toggle('hidden');
+
+                    if (!menu.classList.contains('hidden')) {
+                        const rect = button.getBoundingClientRect();
+                        let top = rect.bottom + 8;
+                        let left = rect.right - menu.offsetWidth;
+
+                        if (top + menu.offsetHeight > window.innerHeight) {
+                            top = rect.top - menu.offsetHeight - 8;
+                        }
+                        if (left < 0) left = rect.left;
+
+                        menu.style.top = top + 'px';
+                        menu.style.left = left + 'px';
+                    }
                 }
 
-                // Fermer les menus en cliquant ailleurs
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                        document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
+                        document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
                     }
                 });
+
+                document.addEventListener('scroll', function() {
+                    document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
+                }, true);
 
 
 

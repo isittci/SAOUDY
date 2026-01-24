@@ -59,14 +59,14 @@
                         @endforeach
                     </select>
 
-                    @can('appels_offres.read')
+                    {{-- @can('appels_offres.read')
                     <!-- Bouton Dashboard -->
                     <button onclick="window.location.href='{{ route('attributions.dashboard') }}'"
                         class="hidden md:flex px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 items-center space-x-2 shadow-sm">
                         <i class="fas fa-chart-pie text-sm"></i>
                         <span class="text-sm font-medium">Dashboard</span>
                     </button>
-                    @endcan
+                    @endcan --}}
                 </div>
             </div>
         </div>
@@ -187,7 +187,7 @@
             </div>
 
             <!-- Table responsive -->
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto overflow-y-visible">
                 <table class="w-full">
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
@@ -282,7 +282,7 @@
                                         <span class="text-xs font-semibold text-gray-700">{{ number_format($attribution->pourcentage_avancement, 0) }}%</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="text-xs text-gray-700 space-y-1">
                                         @if($attribution->date_debut_prevue)
                                             <div><span class="font-medium">Début:</span> {{ $attribution->date_debut_prevue->format('d/m/Y') }}</div>
@@ -290,6 +290,82 @@
                                         @if($attribution->date_fin_prevue)
                                             <div class="{{ $attribution->estEnRetard() ? 'text-red-600 font-semibold' : '' }}">
                                                 <span class="font-medium">Fin:</span> {{ $attribution->date_fin_prevue->format('d/m/Y') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td> --}}
+
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="text-xs space-y-1.5">
+                                        {{-- Date de début --}}
+                                        @if($attribution->date_debut_prevue)
+                                            <div class="text-gray-700">
+                                                <span class="font-medium">Début:</span> {{ $attribution->date_debut_prevue->format('d/m/Y') }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Date de fin --}}
+                                        @if($attribution->date_fin_prevue)
+                                            <div class="{{ $attribution->estEnRetard() && $attribution->is_active ? 'text-red-600 font-semibold' : 'text-gray-700' }}">
+                                                <span class="font-medium">Fin:</span> {{ $attribution->date_fin_prevue->format('d/m/Y') }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Indicateur de statut temporel --}}
+                                        @php
+                                            $dateFin = $attribution->proforma->date_fin_validee_proforma ?? $attribution->date_fin_prevue;
+                                            $dateEffective = $attribution->date_effective_fin;
+                                            $aujourdhui = now();
+
+                                            if ($dateEffective) {
+                                                // Travaux terminés
+                                                $difference = $dateFin ? $dateFin->diffInDays($dateEffective, false) : null;
+                                                $estEnRetard = $difference > 0;
+                                                $jours = abs($difference);
+                                                $estTermine = true;
+                                            } elseif ($dateFin && $attribution->is_active) {
+                                                // Travaux en cours
+                                                $difference = $dateFin->diffInDays($aujourdhui, false);
+                                                $estEnRetard = $difference > 0;
+                                                $jours = abs($difference);
+                                                $estTermine = false;
+                                            } else {
+                                                $difference = null;
+                                                $estEnRetard = false;
+                                                $jours = 0;
+                                                $estTermine = false;
+                                            }
+                                        @endphp
+
+                                        @if($difference !== null)
+                                            <div class="mt-1.5">
+                                                @if($estTermine)
+                                                    {{-- Travaux terminés --}}
+                                                    @if($estEnRetard)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                            +{{ $jours }}j retard
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                            <i class="fas fa-check-circle mr-1"></i>
+                                                            {{ $jours > 0 ? '-'.$jours.'j' : 'À temps' }}
+                                                        </span>
+                                                    @endif
+                                                @else
+                                                    {{-- Travaux en cours --}}
+                                                    @if($estEnRetard)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                            <i class="fas fa-hourglass-end mr-1"></i>
+                                                            +{{ $jours }}j retard
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                                            <i class="fas fa-clock mr-1"></i>
+                                                            {{ $jours }}j restant{{ $jours > 1 ? 's' : '' }}
+                                                        </span>
+                                                    @endif
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
@@ -339,16 +415,18 @@
                                                 @endcan
                                             @else
                                                 @can('attributions_lots.reassign')
-                                                    <!-- Réattribuer depuis l'historique -->
-                                                    <button onclick="window.location.href='{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}'"
-                                                        class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                        title="Réattribuer ce lot">
-                                                        <i class="fas fa-redo text-sm"></i>
-                                                    </button>
+                                                    @if($attribution->childAttributions->count() == 0)
+                                                        <!-- Réattribuer depuis l'historique -->
+                                                        <button onclick="window.location.href='{{ route('attributions.reattribuer.form', $attribution->id_attribution) }}'"
+                                                            class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                            title="Réattribuer ce lot">
+                                                            <i class="fas fa-redo text-sm"></i>
+                                                        </button>
+                                                    @endif
                                                 @endcan
                                             @endif
 
-                                            @canany(['attributions_lots.view-history', 'prestataires.read', 'attributions_lots.assign'])
+                                            {{-- @canany(['attributions_lots.view-history', 'prestataires.read', 'attributions_lots.assign'])
                                                 <!-- Menu Actions -->
                                                 <div class="relative">
                                                     <button onclick="toggleMenu('{{ $attribution->id_attribution }}')"
@@ -356,7 +434,7 @@
                                                         title="Plus d'actions">
                                                         <i class="fas fa-ellipsis-v text-sm"></i>
                                                     </button>
-                                                    <div id="menu-{{ $attribution->id_attribution }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                                    <div id="menu-{{ $attribution->id_attribution }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                                         <div class="py-1">
                                                             @can('attributions_lots.view-history')
                                                                 <a href="{{ route('attributions.historique.lot', $attribution->lot_id) }}"
@@ -386,7 +464,47 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endcanany
+                                            @endcanany --}}
+                                            @canany(['attributions_lots.view-history', 'prestataires.read', 'attributions_lots.assign'])
+    <!-- Menu Actions -->
+    <div class="relative">
+        <button onclick="toggleMenu(event, '{{ $attribution->id_attribution }}')"
+            class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+            title="Plus d'actions">
+            <i class="fas fa-ellipsis-v text-sm"></i>
+        </button>
+        <div id="menu-{{ $attribution->id_attribution }}"
+            class="hidden fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
+            <div class="py-1">
+                @can('attributions_lots.view-history')
+                    <a href="{{ route('attributions.historique.lot', $attribution->lot_id) }}"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                        <i class="fas fa-history text-purple-500 mr-2"></i>
+                        Historique du lot
+                    </a>
+                @endcan
+
+                @can('prestataires.read')
+                    <a href="{{ route('attributions.historique.prestataire', $attribution->prestataire_id) }}"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                        <i class="fas fa-user-clock text-blue-500 mr-2"></i>
+                        Historique prestataire
+                    </a>
+                @endcan
+
+                @can('attributions_lots.assign')
+                    @if($attribution->is_active && $attribution->peutEtreTerminee())
+                        <button onclick="terminer('{{ $attribution->id_attribution }}')"
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <i class="fas fa-check-double text-green-500 mr-2"></i>
+                            Terminer
+                        </button>
+                    @endif
+                @endcan
+            </div>
+        </div>
+    </div>
+@endcanany
                                         </div>
                                     </td>
                                 @endcanany
@@ -512,20 +630,75 @@
 @push('scripts')
     <script>
         // Toggle menu dropdown
-        function toggleMenu(id) {
-            const menu = document.getElementById('menu-' + id);
-            document.querySelectorAll('[id^="menu-"]').forEach(m => {
-                if (m.id !== 'menu-' + id) m.classList.add('hidden');
-            });
-            menu.classList.toggle('hidden');
+        // function toggleMenu(id) {
+        //     const menu = document.getElementById('menu-' + id);
+        //     document.querySelectorAll('[id^="menu-"]').forEach(m => {
+        //         if (m.id !== 'menu-' + id) m.classList.add('hidden');
+        //     });
+        //     menu.classList.toggle('hidden');
+        // }
+
+        function toggleMenu(event, id) {
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const menu = document.getElementById('menu-' + id);
+
+    // Fermer tous les autres menus
+    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+        if (m.id !== 'menu-' + id) {
+            m.classList.add('hidden');
+        }
+    });
+
+    // Toggle le menu actuel
+    menu.classList.toggle('hidden');
+
+    // Positionner le menu
+    if (!menu.classList.contains('hidden')) {
+        const rect = button.getBoundingClientRect();
+
+        // Position par défaut : en dessous à droite
+        let top = rect.bottom + 8;
+        let left = rect.right - menu.offsetWidth;
+
+        // Si le menu déborde en bas, l'afficher au-dessus
+        if (top + menu.offsetHeight > window.innerHeight) {
+            top = rect.top - menu.offsetHeight - 8;
         }
 
-        // Fermer menus au clic ailleurs
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('[id^="menu-"]') && !e.target.closest('button')) {
-                document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
-            }
+        // Si le menu déborde à gauche
+        if (left < 0) {
+            left = rect.left;
+        }
+
+        menu.style.top = top + 'px';
+        menu.style.left = left + 'px';
+    }
+}
+
+// Fermer les menus en cliquant ailleurs
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
+        document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+            menu.classList.add('hidden');
         });
+    }
+});
+
+// Fermer les menus lors du scroll
+document.addEventListener('scroll', function() {
+    document.querySelectorAll('[id^="menu-"]').forEach(menu => {
+        menu.classList.add('hidden');
+    });
+}, true);
+
+        // Fermer menus au clic ailleurs
+        // document.addEventListener('click', function(e) {
+        //     if (!e.target.closest('[id^="menu-"]') && !e.target.closest('button')) {
+        //         document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+        //     }
+        // });
 
         // Modal Suspendre
         function openSuspendreModal(id) {

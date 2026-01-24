@@ -62,9 +62,6 @@ class PermissionsController extends Controller
         $categories = Permission::distinct()->pluck('category')->filter()->sort()->values();
         $CATEGORIES = Permission::CATEGORIES;
 
-
-        // dd($actions);
-
         return view('admin.permissions.index', compact(
             'permissions',
             'modules',

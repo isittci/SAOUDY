@@ -11,10 +11,81 @@ use App\Models\CaracteristiqueAppelOffre;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * @OA\Tag(
+ *     name="Caractéristiques des Appels d'Offres",
+ *     description="Gestion des caractéristiques techniques et contractuelles des appels d'offres (dates, garanties, modalités, versioning)"
+ * )
+ */
 class CaracteristiqueAppelOffreController extends Controller
 {
+
     /**
      * Affiche la liste des caractéristiques d'un appel d'offres
+     *
+     * @OA\Get(
+     *     path="/appels-offres/{appel_offre}/caracteristiques",
+     *     operationId="getCaracteristiquesAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Liste des caractéristiques",
+     *     description="Récupère la liste paginée des caractéristiques d'un appel d'offres. Seules les versions actives sont retournées par défaut. Requiert la permission `caracteristiques_appels_offres.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         description="Recherche dans lieu d'exécution et conditions de paiement",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         required=false,
+     *         description="Champ de tri",
+     *         @OA\Schema(type="string", default="created_at")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_order",
+     *         in="query",
+     *         required=false,
+     *         description="Ordre de tri",
+     *         @OA\Schema(type="string", enum={"asc", "desc"}, default="desc")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Nombre d'éléments par page",
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste récupérée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/CaracteristiqueAppelOffre")),
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             ),
+     *             @OA\Property(property="appel_offre", ref="#/components/schemas/AppelOffreSummary"),
+     *             @OA\Property(property="message", type="string", example="Liste des caractéristiques récupérée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Appel d'offres introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function index(Request $request, $appelOffreId)
     {
@@ -46,7 +117,7 @@ class CaracteristiqueAppelOffreController extends Controller
             $caracteristiques = $query->paginate($perPage);
 
             // Retour selon le type de requête
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $caracteristiques,
@@ -59,7 +130,7 @@ class CaracteristiqueAppelOffreController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des caractéristiques: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des données',
@@ -78,27 +149,145 @@ class CaracteristiqueAppelOffreController extends Controller
     {
         try {
             $appelOffre = AppelOffre::findOrFail($appelOffreId);
+
             return view('caracteristiques-appels-offres.create', compact('appelOffre'));
         } catch (Exception $e) {
             return back()->with('error', 'Appel d\'offres introuvable');
         }
     }
 
+
+
     /**
      * Enregistre une nouvelle caractéristique
-     * NOTE: duree_estimee_jours_caracteristique_appel_offre sera calculée automatiquement par le modèle
+     *
+     * @OA\Post(
+     *     path="/appels-offres/{appel_offre}/caracteristiques",
+     *     operationId="createCaracteristiqueAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Créer une caractéristique",
+     *     description="Crée une nouvelle caractéristique pour un appel d'offres. La durée estimée est calculée automatiquement à partir des dates. Requiert la permission `caracteristiques_appels_offres.create`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"date_demarrage_prevue_caracteristique_appel_offre", "date_livraison_previsionnelle_caracteristique_appel_offre", "lieu_execution_caracteristique_appel_offre"},
+     *             @OA\Property(
+     *                 property="date_demarrage_prevue_caracteristique_appel_offre",
+     *                 type="string",
+     *                 description="Date de démarrage prévue (format: dd/mm/yyyy)",
+     *                 example="01/03/2024"
+     *             ),
+     *             @OA\Property(
+     *                 property="date_livraison_previsionnelle_caracteristique_appel_offre",
+     *                 type="string",
+     *                 description="Date de livraison prévisionnelle (format: dd/mm/yyyy, doit être après la date de démarrage)",
+     *                 example="30/09/2024"
+     *             ),
+     *             @OA\Property(
+     *                 property="lieu_execution_caracteristique_appel_offre",
+     *                 type="string",
+     *                 maxLength=255,
+     *                 description="Lieu d'exécution des travaux",
+     *                 example="Yamoussoukro, Quartier Habitat"
+     *             ),
+     *             @OA\Property(
+     *                 property="montant_garantie_caracteristique_appel_offre",
+     *                 type="number",
+     *                 nullable=true,
+     *                 description="Montant de la caution de bonne exécution (5-10% du marché)",
+     *                 example=15000000
+     *             ),
+     *             @OA\Property(
+     *                 property="delai_garantie_jours_caracteristique_appel_offre",
+     *                 type="number",
+     *                 nullable=true,
+     *                 description="Durée de garantie après réception (en jours)",
+     *                 example=365
+     *             ),
+     *             @OA\Property(
+     *                 property="conditions_paiement_caracteristique_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Modalités de paiement",
+     *                 example="30% avance, 40% mi-parcours, 30% à la livraison"
+     *             ),
+     *             @OA\Property(
+     *                 property="modalites_execution_caracteristique_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Exigences particulières d'exécution"
+     *             ),
+     *             @OA\Property(
+     *                 property="documents_requis_caracteristique_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Liste des documents à fournir",
+     *                 example="Attestation fiscale, Assurance décennale, Caution bancaire"
+     *             ),
+     *             @OA\Property(
+     *                 property="autres_informations_caracteristique_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Informations complémentaires"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Caractéristique créée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/CaracteristiqueAppelOffreDetailed"),
+     *             @OA\Property(property="message", type="string", example="Caractéristique créée avec succès. Durée calculée : 214 jours")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Erreur de validation ou appel d'offres inexistant"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function store(Request $request, $appelOffreId)
     {
+        /**
+         * @var AppelOffre $appelOffre
+         */
+        $appelOffre = AppelOffre::find($appelOffreId);
+
+
+
+        if(!$appelOffre){
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "L'appel d'offre n'existe pas.",
+                    'errors' => null
+                ], 422);
+            }
+
+            return back()->withErrors(["message" => "L'appel d'offre n'existe pas."])->withInput();
+        };
+
+
+
         // Validation - SUPPRIMÉ duree_estimee_jours car calculée automatiquement
         $validator = Validator::make($request->all(), [
-            'date_demarrage_prevue_caracteristique_appel_offre' => 'nullable|date',
-            'date_livraison_previsionnelle_caracteristique_appel_offre' => [
-                'nullable',
-                'date',
-                'after:date_demarrage_prevue_caracteristique_appel_offre'
-            ],
-            'lieu_execution_caracteristique_appel_offre' => 'nullable|string|max:255',
+            'date_demarrage_prevue_caracteristique_appel_offre' => [
+                    'required',
+                    'date_format:d/m/Y',
+                ],
+                'date_livraison_previsionnelle_caracteristique_appel_offre' => [
+                    'required',
+                    'date_format:d/m/Y',
+                    'after:date_demarrage_prevue_caracteristique_appel_offre',
+                ],
+            'lieu_execution_caracteristique_appel_offre' => 'required|string|max:255',
             'montant_garantie_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'delai_garantie_jours_caracteristique_appel_offre' => 'nullable|numeric|min:0',
             'conditions_paiement_caracteristique_appel_offre' => 'nullable|string',
@@ -113,7 +302,7 @@ class CaracteristiqueAppelOffreController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -128,12 +317,16 @@ class CaracteristiqueAppelOffreController extends Controller
         try {
             $appelOffre = AppelOffre::findOrFail($appelOffreId);
 
-            // Créer la caractéristique - SANS duree_estimee_jours (calculée automatiquement)
+            // ✅ AJOUTER CES LIGNES - Convertir les dates du format français vers ISO
+            $dateDemarrage = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_demarrage_prevue_caracteristique_appel_offre)->format('Y-m-d');
+            $dateLivraison = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_livraison_previsionnelle_caracteristique_appel_offre)->format('Y-m-d');
+
+            // Créer la caractéristique
             $caracteristique = CaracteristiqueAppelOffre::create([
                 'appel_offre_id' => $appelOffreId,
                 'version_caracteristique_appel_offre' => 1,
-                'date_demarrage_prevue_caracteristique_appel_offre' => $request->date_demarrage_prevue_caracteristique_appel_offre,
-                'date_livraison_previsionnelle_caracteristique_appel_offre' => $request->date_livraison_previsionnelle_caracteristique_appel_offre,
+                'date_demarrage_prevue_caracteristique_appel_offre' => $dateDemarrage,  // ✅ Utiliser la date convertie
+                'date_livraison_previsionnelle_caracteristique_appel_offre' => $dateLivraison,  // ✅ Utiliser la date convertie
                 'lieu_execution_caracteristique_appel_offre' => $request->lieu_execution_caracteristique_appel_offre,
                 'montant_garantie_caracteristique_appel_offre' => $request->montant_garantie_caracteristique_appel_offre,
                 'delai_garantie_jours_caracteristique_appel_offre' => $request->delai_garantie_jours_caracteristique_appel_offre,
@@ -153,7 +346,7 @@ class CaracteristiqueAppelOffreController extends Controller
                 'duree_calculee' => $caracteristique->duree_estimee_jours_caracteristique_appel_offre
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $caracteristique->load(['appelOffre', 'creator']),
@@ -170,7 +363,7 @@ class CaracteristiqueAppelOffreController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création de la caractéristique: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la création',
@@ -182,8 +375,45 @@ class CaracteristiqueAppelOffreController extends Controller
         }
     }
 
+
+
+
+
     /**
      * Affiche les détails d'une caractéristique
+     *
+     * @OA\Get(
+     *     path="/appels-offres/{appel_offre}/caracteristiques/{caracteristique}",
+     *     operationId="showCaracteristiqueAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Détails d'une caractéristique",
+     *     description="Récupère les détails d'une caractéristique avec son historique de versions. Requiert la permission `caracteristiques_appels_offres.view-details`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="caracteristique",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la caractéristique",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Détails récupérés avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/CaracteristiqueAppelOffreDetailed"),
+     *             @OA\Property(property="message", type="string", example="Détails de la caractéristique récupérés avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Caractéristique introuvable")
+     * )
      */
     public function show(Request $request, $appelOffreId, $id)
     {
@@ -203,7 +433,7 @@ class CaracteristiqueAppelOffreController extends Controller
                 ])
                 ->firstOrFail();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $caracteristique,
@@ -215,7 +445,7 @@ class CaracteristiqueAppelOffreController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération de la caractéristique: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Caractéristique introuvable',
@@ -244,9 +474,68 @@ class CaracteristiqueAppelOffreController extends Controller
         }
     }
 
+
+
+
     /**
      * Met à jour une caractéristique (crée une nouvelle version)
-     * NOTE: duree_estimee_jours_caracteristique_appel_offre sera calculée automatiquement
+     *
+     * @OA\Put(
+     *     path="/appels-offres/{appel_offre}/caracteristiques/{caracteristique}",
+     *     operationId="updateCaracteristiqueAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Mettre à jour une caractéristique",
+     *     description="Met à jour une caractéristique en créant une nouvelle version. L'ancienne version est conservée dans l'historique. Requiert la permission `caracteristiques_appels_offres.update`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="caracteristique",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la caractéristique",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"motif_modification_caracteristique_appel_offre"},
+     *             @OA\Property(property="date_demarrage_prevue_caracteristique_appel_offre", type="string", format="date", nullable=true),
+     *             @OA\Property(property="date_livraison_previsionnelle_caracteristique_appel_offre", type="string", format="date", nullable=true),
+     *             @OA\Property(property="lieu_execution_caracteristique_appel_offre", type="string", nullable=true),
+     *             @OA\Property(property="montant_garantie_caracteristique_appel_offre", type="number", nullable=true),
+     *             @OA\Property(property="delai_garantie_jours_caracteristique_appel_offre", type="number", nullable=true),
+     *             @OA\Property(property="conditions_paiement_caracteristique_appel_offre", type="string", nullable=true),
+     *             @OA\Property(property="modalites_execution_caracteristique_appel_offre", type="string", nullable=true),
+     *             @OA\Property(property="documents_requis_caracteristique_appel_offre", type="string", nullable=true),
+     *             @OA\Property(property="autres_informations_caracteristique_appel_offre", type="string", nullable=true),
+     *             @OA\Property(
+     *                 property="motif_modification_caracteristique_appel_offre",
+     *                 type="string",
+     *                 minLength=10,
+     *                 description="Motif de la modification (obligatoire, min 10 caractères)",
+     *                 example="Modification des délais suite à validation du maître d'ouvrage"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Nouvelle version créée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/CaracteristiqueAppelOffreDetailed"),
+     *             @OA\Property(property="message", type="string", example="Nouvelle version créée avec succès. Durée calculée : 214 jours")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Caractéristique introuvable"),
+     *     @OA\Response(response=422, description="Erreur de validation"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function update(Request $request, $appelOffreId, $id)
     {
@@ -273,7 +562,7 @@ class CaracteristiqueAppelOffreController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -313,7 +602,7 @@ class CaracteristiqueAppelOffreController extends Controller
                 'duree_calculee' => $nouvelleVersion->duree_estimee_jours_caracteristique_appel_offre
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouvelleVersion->load(['appelOffre', 'creator', 'parent']),
@@ -330,7 +619,7 @@ class CaracteristiqueAppelOffreController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour',
@@ -342,8 +631,43 @@ class CaracteristiqueAppelOffreController extends Controller
         }
     }
 
-    /**
+
+
+        /**
      * Supprime une caractéristique (soft delete)
+     *
+     * @OA\Delete(
+     *     path="/appels-offres/{appel_offre}/caracteristiques/{caracteristique}",
+     *     operationId="deleteCaracteristiqueAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Supprimer une caractéristique",
+     *     description="Supprime (soft delete) une caractéristique. Requiert la permission `caracteristiques_appels_offres.delete`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="caracteristique",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la caractéristique",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Caractéristique supprimée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Caractéristique supprimée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Caractéristique introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function destroy(Request $request, $appelOffreId, $id)
     {
@@ -361,7 +685,7 @@ class CaracteristiqueAppelOffreController extends Controller
 
             Log::info("Caractéristique supprimée", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Caractéristique supprimée avec succès'
@@ -374,7 +698,7 @@ class CaracteristiqueAppelOffreController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la suppression',
@@ -387,8 +711,49 @@ class CaracteristiqueAppelOffreController extends Controller
     }
 
 
+
+
     /**
      * Obtient l'historique des versions
+     *
+     * @OA\Get(
+     *     path="/appels-offres/{appel_offre}/caracteristiques/{caracteristique}/historique",
+     *     operationId="historiqueCaracteristiqueAppelOffre",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Historique des versions",
+     *     description="Récupère l'historique complet des versions d'une caractéristique. Requiert la permission `caracteristiques_appels_offres.view-history`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="caracteristique",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la caractéristique",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Historique récupéré avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/CaracteristiqueAppelOffre")
+     *             ),
+     *             @OA\Property(property="caracteristique", ref="#/components/schemas/CaracteristiqueAppelOffre"),
+     *             @OA\Property(property="message", type="string", example="Historique récupéré avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Caractéristique non trouvée"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function historique(Request $request, $appelOffreId, $caracteristiqueId)
     {
@@ -410,7 +775,7 @@ class CaracteristiqueAppelOffreController extends Controller
                 $caracteristique = $caracteristiqueDemandee;
             }
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $historique,
@@ -423,7 +788,7 @@ class CaracteristiqueAppelOffreController extends Controller
         } catch (ModelNotFoundException $e) {
             Log::error('Caractéristique non trouvée: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Caractéristique non trouvée'
@@ -434,7 +799,7 @@ class CaracteristiqueAppelOffreController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération de l\'historique',
@@ -446,9 +811,51 @@ class CaracteristiqueAppelOffreController extends Controller
         }
     }
 
-    /**
+
+
+        /**
      * Restaure une version précédente
-     * NOTE: La durée sera recalculée automatiquement
+     *
+     * @OA\Post(
+     *     path="/appels-offres/{appel_offre}/caracteristiques/{caracteristique}/versions/{version}/restaurer",
+     *     operationId="restaurerVersionCaracteristique",
+     *     tags={"Caractéristiques des Appels d'Offres"},
+     *     summary="Restaurer une version",
+     *     description="Restaure une version précédente en créant une nouvelle version basée sur celle-ci. La durée est recalculée automatiquement. Requiert la permission `caracteristiques_appels_offres.view-history`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de l'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="caracteristique",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la caractéristique actuelle",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="version",
+     *         in="path",
+     *         required=true,
+     *         description="UUID de la version à restaurer",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Version restaurée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/CaracteristiqueAppelOffre"),
+     *             @OA\Property(property="message", type="string", example="Version restaurée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Caractéristique ou version introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function restaurerVersion(Request $request, $appelOffreId, $id, $versionId)
     {
@@ -484,7 +891,7 @@ class CaracteristiqueAppelOffreController extends Controller
                 'version_restauree' => $versionARestaurer->version_caracteristique_appel_offre
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouvelleVersion,
@@ -501,7 +908,7 @@ class CaracteristiqueAppelOffreController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la restauration: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la restauration',

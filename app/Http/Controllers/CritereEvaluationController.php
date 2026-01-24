@@ -63,7 +63,7 @@ class CritereEvaluationController extends Controller
                 ->sum('note_reference_critere_evaluation');
 
             // Retour selon le type de requête
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $criteres,
@@ -78,7 +78,7 @@ class CritereEvaluationController extends Controller
         } catch (ModelNotFoundException $e) {
             Log::error('Lot introuvable ou incohérent: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Lot introuvable ou ne correspond pas à cet appel d\'offres'
@@ -89,7 +89,7 @@ class CritereEvaluationController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des critères: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des données',
@@ -179,7 +179,7 @@ class CritereEvaluationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -250,7 +250,7 @@ class CritereEvaluationController extends Controller
                 'numero' => $numero
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $critere->load(['lot', 'creator']),
@@ -268,7 +268,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Lot introuvable: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Lot introuvable ou ne correspond pas à cet appel d\'offres'
@@ -280,7 +280,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création du critère: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la création',
@@ -321,7 +321,7 @@ class CritereEvaluationController extends Controller
             // Compter le nombre de critères
             $nombreCriteres = CritereEvaluation::where('lot_id', $lotId)->count();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $critere,
@@ -339,7 +339,7 @@ class CritereEvaluationController extends Controller
         } catch (ModelNotFoundException $e) {
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Critère introuvable ou ne correspond pas à ce lot'
@@ -350,7 +350,7 @@ class CritereEvaluationController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du critère: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des données',
@@ -421,7 +421,7 @@ class CritereEvaluationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -490,7 +490,7 @@ class CritereEvaluationController extends Controller
                 'lot_id' => $lotId
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $critere->load(['lot', 'updater']),
@@ -508,7 +508,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Critère introuvable ou ne correspond pas à ce lot'
@@ -520,7 +520,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour',
@@ -567,7 +567,7 @@ class CritereEvaluationController extends Controller
                 'lot_id' => $lotId
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Critère supprimé avec succès'
@@ -583,7 +583,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Critère ou lot introuvable: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Critère introuvable ou ne correspond pas à ce lot'
@@ -595,7 +595,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la suppression',
@@ -631,7 +631,7 @@ class CritereEvaluationController extends Controller
 
             Log::info("Critère d'évaluation activé", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $critere,
@@ -644,7 +644,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de l\'activation: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de l\'activation',
@@ -680,7 +680,7 @@ class CritereEvaluationController extends Controller
 
             Log::info("Critère d'évaluation désactivé", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $critere,
@@ -693,7 +693,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la désactivation: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la désactivation',
@@ -844,7 +844,7 @@ class CritereEvaluationController extends Controller
                 'nouveau' => $nouveauCritere->id_critere_evaluation
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouveauCritere->load('lot'),
@@ -862,7 +862,7 @@ class CritereEvaluationController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la duplication: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la duplication',

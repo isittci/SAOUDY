@@ -113,14 +113,14 @@
                         </div>
 
                         <div class="p-6 space-y-6">
-                            <!-- Raison sociale -->
+                            <!-- RNom du prestataire -->
                             <div>
                                 <label for="raison_sociale_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Raison sociale <span class="text-red-500">*</span>
+                                    Nom du prestataire <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="raison_sociale_prestataire" id="raison_sociale_prestataire"
                                     value="{{ old('raison_sociale_prestataire') }}" required maxlength="255"
-                                    data-label="Raison sociale"
+                                    data-label="Nom du prestataire"
                                     class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('raison_sociale_prestataire') border-red-500 @enderror"
                                     placeholder="Ex: Société Générale de Construction SARL">
                                 @error('raison_sociale_prestataire')
@@ -423,7 +423,7 @@
                                     @enderror
                                 </div>
 
-                                
+
                                 <!-- Pays -->
                                 <div>
                                     <label for="pays" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -645,14 +645,7 @@
                         'nationalite',
                         'pays',
                         'adresse',
-                        'profession',
-                        'date_naissance',
-                        'lieu_naissance',
-                        'type_piece_identite',
-                        'numero_piece_identite',
-                        'date_delivrance',
-                        'lieu_delivrance',
-                        'date_expiration'
+                        'profession'
                     ]
                 };
 

@@ -52,6 +52,11 @@ class Prestataire extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function pays()
+    {
+        return $this->belongsTo(Pays::class, 'pays_prestataire');
+    }
+
     /**
      * Dernière personne à avoir modifié
      */
@@ -84,7 +89,6 @@ class Prestataire extends Model
                 'motif_retrait',
                 'date_retrait',
                 'jours_retard',
-                'penalites_appliquees',
                 'pourcentage_avancement',
                 'observations',
                 'created_by',
@@ -92,7 +96,7 @@ class Prestataire extends Model
                 'deleted_by'
             ])
             ->withTimestamps()
-            ->using(PrestataireLot::class);
+            ->using(AttributionLotPrestataire::class);
     }
 
     /**
@@ -101,7 +105,7 @@ class Prestataire extends Model
     public function lotsAttribues()
     {
         return $this->lots()
-            ->wherePivot('statut_attribution', PrestataireLot::STATUT_ATTRIBUE)
+            ->wherePivot('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE)
             ->wherePivotNull('deleted_at');
     }
 
@@ -112,8 +116,8 @@ class Prestataire extends Model
     {
         return $this->lots()
             ->whereIn('prestataires_lots.statut_attribution', [
-                PrestataireLot::STATUT_ATTRIBUE,
-                PrestataireLot::STATUT_SUSPENDU
+                AttributionLotPrestataire::STATUT_ATTRIBUE,
+                AttributionLotPrestataire::STATUT_SUSPENDU
             ])
             ->wherePivotNull('deleted_at');
     }
@@ -123,7 +127,7 @@ class Prestataire extends Model
      */
     public function attributions()
     {
-        return $this->hasMany(PrestataireLot::class, 'prestataire_id', 'id_prestataire');
+        return $this->hasMany(AttributionLotPrestataire::class, 'prestataire_id', 'id_prestataire');
     }
 
     /**
@@ -131,10 +135,10 @@ class Prestataire extends Model
      */
     public function attributionsActives()
     {
-        return $this->hasMany(PrestataireLot::class, 'prestataire_id', 'id_prestataire')
+        return $this->hasMany(AttributionLotPrestataire::class, 'prestataire_id', 'id_prestataire')
             ->whereIn('statut_attribution', [
-                PrestataireLot::STATUT_ATTRIBUE,
-                PrestataireLot::STATUT_SUSPENDU
+                AttributionLotPrestataire::STATUT_ATTRIBUE,
+                AttributionLotPrestataire::STATUT_SUSPENDU
             ]);
     }
 
@@ -143,7 +147,7 @@ class Prestataire extends Model
      */
     public function historiqueAttributions()
     {
-        return $this->hasMany(PrestataireLot::class, 'prestataire_id', 'id_prestataire')
+        return $this->hasMany(AttributionLotPrestataire::class, 'prestataire_id', 'id_prestataire')
             ->withTrashed()
             ->orderBy('created_at', 'desc');
     }
@@ -211,7 +215,7 @@ class Prestataire extends Model
     }
 
     /**
-     * Scope pour rechercher par raison sociale
+     * Scope pour rechercher par nom du prestataire
      */
     public function scopeRechercherRaisonSociale($query, $terme)
     {
@@ -324,21 +328,14 @@ class Prestataire extends Model
         }
 
         $reussis = $this->attributions()
-            ->where('statut_attribution', PrestataireLot::STATUT_TERMINE)
+            ->where('statut_attribution', AttributionLotPrestataire::STATUT_TERMINE)
             ->whereNull('motif_retrait')
             ->count();
 
         return round(($reussis / $total) * 100, 2);
     }
 
-    /**
-     * Calculer les pénalités totales
-     */
-    public function calculerPenalitesTotales()
-    {
-        return $this->attributions()
-            ->sum('penalites_appliquees') ?? 0;
-    }
+
 
     /**
      * Calculer le retard moyen
@@ -374,19 +371,18 @@ class Prestataire extends Model
             'nombre_attributions_totales' => $this->getNombreTotalAttributions(),
             'nombre_lots_en_cours' => $this->attributionsActives()->count(),
             'nombre_lots_termines' => $this->attributions()
-                ->where('statut_attribution', PrestataireLot::STATUT_TERMINE)
+                ->where('statut_attribution', AttributionLotPrestataire::STATUT_TERMINE)
                 ->count(),
             'nombre_lots_retires' => $this->attributions()
-                ->where('statut_attribution', PrestataireLot::STATUT_RETIRE)
+                ->where('statut_attribution', AttributionLotPrestataire::STATUT_RETIRE)
                 ->count(),
             'taux_reussite' => $this->calculerTauxReussite(),
-            'penalites_totales' => $this->calculerPenalitesTotales(),
             'retard_moyen_jours' => $this->calculerRetardMoyen(),
         ];
     }
 
     /**
-     * Obtenir le nom complet (raison sociale)
+     * Obtenir le nom complet (Nom du prestataire)
      */
     public function getNomComplet()
     {
@@ -462,6 +458,184 @@ class Prestataire extends Model
     {
         return $this->statut_prestataire ? 'Actif' : 'Inactif';
     }
+
+
+
+
+
+
+
+
+
+    /**
+ * Obtenir toutes les proformas associées à ce prestataire (via attributions)
+ *
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+public function proformasAssociees()
+{
+    return Proforma::whereHas('attribution', function ($query) {
+        $query->where('prestataire_id', $this->id_prestataire);
+    })->get();
+}
+
+/**
+ * Relation pour obtenir les proformas directement via les attributions
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+ */
+public function proformas()
+{
+    return $this->hasManyThrough(
+        Proforma::class,
+        AttributionLotPrestataire::class,
+        'prestataire_id',   // Clé étrangère sur prestataires_lots
+        'id_proforma',      // Clé primaire sur proformas
+        'id_prestataire',   // Clé locale sur prestataires
+        'proforma_id'       // Clé étrangère sur prestataires_lots vers proformas
+    );
+}
+
+/**
+ * Vérifier si une proforma spécifique est déjà utilisée par ce prestataire
+ *
+ * @param string $proformaId
+ * @return bool
+ */
+public function aUtiliseProforma(string $proformaId): bool
+{
+    return $this->attributions()
+        ->where('proforma_id', $proformaId)
+        ->exists();
+}
+
+/**
+ * Obtenir l'attribution pour un lot et une proforma donnés
+ *
+ * @param string $lotId
+ * @param string $proformaId
+ * @return AttributionLotPrestataire|null
+ */
+public function getAttributionParLotEtProforma(string $lotId, string $proformaId): ?AttributionLotPrestataire
+{
+    return $this->attributions()
+        ->where('lot_id', $lotId)
+        ->where('proforma_id', $proformaId)
+        ->first();
+}
+
+/**
+ * Vérifier si le triplet existe pour ce prestataire
+ *
+ * @param string $lotId
+ * @param string $proformaId
+ * @return bool
+ */
+public function tripletExistePourCePrestataire(string $lotId, string $proformaId): bool
+{
+    return AttributionLotPrestataire::tripletExiste($this->id_prestataire, $lotId, $proformaId);
+}
+
+/**
+ * Obtenir les proformas disponibles (non utilisées globalement)
+ *
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+public function proformasDisponibles()
+{
+    return Proforma::disponiblePourAttribution()->get();
+}
+
+/**
+ * Vérifier si une proforma peut être utilisée pour attribuer un lot à ce prestataire
+ *
+ * @param Proforma $proforma
+ * @param string|null $lotId
+ * @return array ['valide' => bool, 'raison' => string|null]
+ */
+public function validerProformaPourAttribution(Proforma $proforma, ?string $lotId = null): array
+{
+    // Vérifier si la proforma est déjà utilisée (globalement)
+    if ($proforma->estAttribuee()) {
+        return [
+            'valide' => false,
+            'raison' => "Cette proforma est déjà utilisée dans une autre attribution."
+        ];
+    }
+
+    // Vérifier si la proforma est active
+    if (!$proforma->actif_proforma) {
+        return [
+            'valide' => false,
+            'raison' => "Cette proforma est inactive."
+        ];
+    }
+
+    // Vérifier le triplet si un lot est spécifié
+    if ($lotId && $this->tripletExistePourCePrestataire($lotId, $proforma->id_proforma)) {
+        return [
+            'valide' => false,
+            'raison' => "Une attribution avec ce lot et cette proforma existe déjà pour ce prestataire."
+        ];
+    }
+
+    return [
+        'valide' => true,
+        'raison' => null
+    ];
+}
+
+/**
+ * Obtenir les proformas actives pour les attributions en cours
+ *
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+public function proformasAttributionsActives()
+{
+    return Proforma::whereHas('attributionActive', function ($query) {
+        $query->where('prestataire_id', $this->id_prestataire);
+    })->get();
+}
+
+/**
+ * Obtenir le résumé des proformas du prestataire
+ *
+ * @return array
+ */
+public function getResumeProformas(): array
+{
+    $proformas = $this->proformasAssociees();
+
+    return [
+        'total' => $proformas->count(),
+        'montant_total_ht' => $proformas->sum('montant_retenu_proforma'),
+        'montant_total_ttc' => $proformas->sum(function ($p) {
+            return $p->calculerMontantTTC();
+        }),
+        'actives' => $proformas->where('actif_proforma', true)->count(),
+        'inactives' => $proformas->where('actif_proforma', false)->count(),
+    ];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * ================================================================

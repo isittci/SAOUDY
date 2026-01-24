@@ -23,7 +23,7 @@
     <!-- Navigation Menu avec scroll personnalisé -->
     <nav class="py-4 px-2 space-y-1">
         <!-- Menu Header -->
-        <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
+        <div class="px-3 mb-3 flex items-center space-x-2 bg-black rounded-lg px-3 py-2.5">
             <i class="fas fa-grip-horizontal text-xs"></i>
             <span class="font-semibold text-xs tracking-wider uppercase">Navigation</span>
         </div>
@@ -38,7 +38,7 @@
         @canany(['types_appels_offres.read', 'appels_offres.read', 'appels_offres.create', 'lots.read', 'prestataires.read', 'prestataires.create', 'attributions_lots.read', 'evaluations_attributions.read', 'factures.read', 'paiements.read', 'proformas.read'])
             <!-- SECTION : TYPES APPELS D'OFFRES -->
             <div class="mt-6 space-y-1">
-                <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
+                <div class="px-3 mb-3 flex items-center space-x-2 bg-black rounded-lg px-3 py-2.5">
                     <i class="fas fa-bullhorn text-xs"></i>
                     <span class="font-semibold text-xs tracking-wider uppercase">Appels d'offres</span>
                 </div>
@@ -193,7 +193,7 @@
         @canany(['roles.read', 'users.read', 'role_permissions.read'])
             <!-- SECTION : ADMINISTRATION -->
             <div class="mt-6 space-y-1">
-                <div class="px-3 mb-3 flex items-center space-x-2 text-gray-300">
+                <div class="px-3 mb-3 flex items-center space-x-2 bg-black rounded-lg px-3 py-2.5">
                     <i class="fas fa-cogs text-xs"></i>
                     <span class="font-semibold text-xs tracking-wider uppercase">Administration</span>
                 </div>

@@ -121,24 +121,7 @@
             </div>
         </div>
 
-        <!-- Remember Me & Forgot Password -->
-        <div class="flex items-center justify-between">
-            <label class="flex items-center cursor-pointer group">
-                <input
-                    type="checkbox"
-                    name="remember"
-                    class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 focus:ring-2 cursor-pointer transition-all duration-200">
-                <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-900 transition-colors duration-200">
-                    Se souvenir de moi
-                </span>
-            </label>
-
-            <a href="{{ route('auth.password.request') }}"
-               class="text-sm text-green-600 hover:text-green-700 hover:underline transition-colors duration-200 font-medium">
-                <i class="fas fa-key mr-1 text-xs"></i>
-                Mot de passe oublié ?
-            </a>
-        </div>
+        
 
         <!-- Submit Button -->
         <div class="pt-2">

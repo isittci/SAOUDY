@@ -25,7 +25,6 @@ class CaracteristiqueAppelOffre extends Model
         // duree_estimee_jours_caracteristique_appel_offre est CALCULÉE automatiquement - ne pas inclure ici
         'date_livraison_previsionnelle_caracteristique_appel_offre',
         'lieu_execution_caracteristique_appel_offre',
-        'penalites_retard_journalier_caracteristique_appel_offre',
         'montant_garantie_caracteristique_appel_offre',
         'delai_garantie_jours_caracteristique_appel_offre',
         'conditions_paiement_caracteristique_appel_offre',
@@ -44,7 +43,6 @@ class CaracteristiqueAppelOffre extends Model
         'date_demarrage_prevue_caracteristique_appel_offre' => 'date',
         'duree_estimee_jours_caracteristique_appel_offre' => 'integer', // CORRIGÉ : integer au lieu de date
         'date_livraison_previsionnelle_caracteristique_appel_offre' => 'date',
-        'penalites_retard_journalier_caracteristique_appel_offre' => 'decimal:2',
         'montant_garantie_caracteristique_appel_offre' => 'decimal:2',
         'delai_garantie_jours_caracteristique_appel_offre' => 'decimal:2',
         'is_active_caracteristique_appel_offre' => 'boolean',
@@ -154,7 +152,7 @@ class CaracteristiqueAppelOffre extends Model
     public function getDureeEstimeeFormatteeAttribute()
     {
         if ($this->duree_estimee_jours_caracteristique_appel_offre !== null) {
-            return number_format($this->duree_estimee_jours_caracteristique_appel_offre, 0, ',', ' ') . ' jours';
+            return number_format($this->duree_estimee_jours_caracteristique_appel_offre, 2, ',', ' ') . ' jours';
         }
         return 'N/A';
     }

@@ -60,7 +60,7 @@ class ProfileController extends Controller
                 'updated_by' => $user->id,
             ]);
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Profil mis à jour avec succès.',
@@ -73,7 +73,7 @@ class ProfileController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la mise à jour du profil: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la mise à jour du profil.',
@@ -107,7 +107,7 @@ class ProfileController extends Controller
 
             // Vérifier le mot de passe actuel
             if (!Hash::check($validated['current_password'], $user->password)) {
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Le mot de passe actuel est incorrect.',
@@ -123,7 +123,7 @@ class ProfileController extends Controller
                 'updated_by' => $user->id,
             ]);
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Mot de passe mis à jour avec succès.',
@@ -135,7 +135,7 @@ class ProfileController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la mise à jour du mot de passe: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la mise à jour du mot de passe.',

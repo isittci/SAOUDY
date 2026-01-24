@@ -38,7 +38,6 @@ class UpdateCaracteristiqueAppelOffreRequest extends FormRequest
                 },
             ],
             'lieu_execution_caracteristique_appel_offre' => 'nullable|string|max:255',
-            'penalites_retard_journalier_caracteristique_appel_offre' => 'nullable|numeric|min:0|max:999999999999.99',
             'montant_garantie_caracteristique_appel_offre' => 'nullable|numeric|min:0|max:999999999999.99',
             'delai_garantie_jours_caracteristique_appel_offre' => 'nullable|integer|min:0|max:3650',
             'conditions_paiement_caracteristique_appel_offre' => 'nullable|string|max:5000',
@@ -59,7 +58,6 @@ class UpdateCaracteristiqueAppelOffreRequest extends FormRequest
             'duree_estimee_jours_caracteristique_appel_offre' => 'durée estimée (jours)',
             'date_livraison_previsionnelle_caracteristique_appel_offre' => 'date de livraison prévisionnelle',
             'lieu_execution_caracteristique_appel_offre' => 'lieu d\'exécution',
-            'penalites_retard_journalier_caracteristique_appel_offre' => 'pénalités de retard journalier',
             'montant_garantie_caracteristique_appel_offre' => 'montant de garantie',
             'delai_garantie_jours_caracteristique_appel_offre' => 'délai de garantie (jours)',
             'conditions_paiement_caracteristique_appel_offre' => 'conditions de paiement',
@@ -78,7 +76,6 @@ class UpdateCaracteristiqueAppelOffreRequest extends FormRequest
         return [
             'duree_estimee_jours_caracteristique_appel_offre.min' => 'La durée doit être d\'au moins 1 jour.',
             'duree_estimee_jours_caracteristique_appel_offre.max' => 'La durée ne peut pas dépasser 10 ans.',
-            'penalites_retard_journalier_caracteristique_appel_offre.numeric' => 'Le montant des pénalités doit être un nombre.',
             'montant_garantie_caracteristique_appel_offre.numeric' => 'Le montant de garantie doit être un nombre.',
             'delai_garantie_jours_caracteristique_appel_offre.max' => 'Le délai de garantie ne peut pas dépasser 10 ans.',
             'motif_modification_caracteristique_appel_offre.required' => 'Le motif de modification est obligatoire.',

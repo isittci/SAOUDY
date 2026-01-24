@@ -20,28 +20,42 @@
                         <i class="fas fa-arrow-left text-gray-600"></i>
                     </a>
                     <div>
-                        <div class="flex items-center space-x-3 flex-wrap">
+                        <div class="flex items-center space-x-3 flex-wrap gap-2">
                             <h1 class="text-2xl font-bold text-gray-800">{{ $appelOffre->numero_appel_offre }}</h1>
+
+                            {{-- Badge Actif/Inactif --}}
                             @if ($appelOffre->statut_evaluation_critere_appel_offre)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i> Actif
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    <i class="fas fa-check-circle mr-1.5"></i> Actif
                                 </span>
                             @else
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                                    <i class="fas fa-times-circle mr-1"></i> Inactif
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                    <i class="fas fa-ban mr-1.5"></i> Inactif
                                 </span>
                             @endif
-                            @if ($appelOffre->isCloture())
+
+                            {{-- Badge État de l'appel d'offres --}}
+                            @if ($appelOffre->peutEtreCloturer() && $appelOffre->etat_appel_offre === 3)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                    <i class="fas fa-lock mr-1"></i> Clôturé
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                    <i class="fas fa-lock mr-1.5"></i> Clôturé
                                 </span>
-                            @elseif($appelOffre->isEnCours())
+                            @elseif ($appelOffre->peutEtreCloturer() && $appelOffre->etat_appel_offre === 2)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                    <i class="fas fa-clock mr-1"></i> En cours
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                                    <i class="fas fa-flag-checkered mr-1.5"></i> Terminé
+                                </span>
+                            @elseif($appelOffre->etat_appel_offre === 1)
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                                    <i class="fas fa-spinner mr-1.5"></i> En cours
+                                </span>
+                            @elseif($appelOffre->etat_appel_offre === 0)
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                    <i class="fas fa-hourglass-start mr-1.5"></i> En attente
                                 </span>
                             @endif
                         </div>
@@ -49,74 +63,88 @@
                     </div>
                 </div>
 
+
+
                 @canany(['appels_offres.update', 'caracteristiques_appels_offres.read', 'appels_offres.update',
                     'appels_offres.delete'])
                     <!-- Actions -->
-                    <div class="flex items-center space-x-2 flex-wrap">
+                    <div class="flex items-center space-x-2 flex-wrap gap-2">
                         @can('appels_offres.update')
                             @if (!$appelOffre->date_publication_critere_appel_offre)
                                 <button onclick="publier()"
-                                    class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                    class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
                                     <i class="fas fa-paper-plane text-sm"></i>
                                     <span class="text-sm font-medium">Publier</span>
                                 </button>
                             @endif
                         @endcan
 
-
                         @can('caracteristiques_appels_offres.read')
                             <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}"
-                                class="px-4 py-2.5 bg-white border border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i class="fas fa-list-check text-sm"></i>
+                                class="px-4 py-2.5 bg-white border border-indigo-300 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md">
+                                <i class="fas fa-clipboard-list text-sm"></i>
                                 <span class="text-sm font-medium">Caractéristiques</span>
                             </a>
                         @endcan
 
                         @can('appels_offres.update')
-                            @if ($appelOffre->isEnCours())
-                                <button onclick="cloturer()"
-                                    class="px-4 py-2.5 bg-white border border-yellow-300 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                    <i class="fas fa-lock text-sm"></i>
-                                    <span class="text-sm font-medium">Clôturer</span>
-                                </button>
-                            @endif
+                            <div class="flex flex-wrap gap-2">
+                                @if ($appelOffre->peutEtreCloturer() && ($appelOffre->etat_appel_offre < 2 || $appelOffre->etat_appel_offre === 2))
+                                    @if ($appelOffre->etat_appel_offre < 2)
+                                        <button onclick="terminer('{{ $appelOffre->id_appel_offre }}')"
+                                            class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            Marquer comme terminé
+                                        </button>
+                                    @endif
 
-                            @if (!$appelOffre->isCloture() && $appelOffre->statut_evaluation_critere_appel_offre)
+                                    @if ($appelOffre->etat_appel_offre === 2)
+                                        <button onclick="cloturer('{{ $appelOffre->id_appel_offre }}')"
+                                            class="px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
+                                            <i class="fas fa-lock mr-2"></i>
+                                            <span class="text-sm font-medium">Clôturer</span>
+                                        </button>
+                                    @endif
+                                @else
+                                    <button onclick="rouvrir('{{ $appelOffre->id_appel_offre }}')"
+                                        class="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-unlock-alt mr-2"></i>
+                                        <span class="text-sm font-medium">Réouvrir</span>
+                                    </button>
+                                @endif
+                            </div>
+
+                            @if (!$appelOffre->peutEtreCloturer() && $appelOffre->statut_evaluation_critere_appel_offre)
                                 <button
                                     onclick="window.location.href='{{ route('appels-offres.edit', $appelOffre->id_appel_offre) }}'"
-                                    class="px-4 py-2.5 bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                    <i class="fas fa-edit text-sm"></i>
+                                    class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md">
+                                    <i class="fas fa-pencil-alt text-sm"></i>
                                     <span class="text-sm font-medium">Modifier</span>
                                 </button>
                             @endif
 
-                            <button
+                            {{-- <button
                                 onclick="toggleStatus({{ $appelOffre->statut_evaluation_critere_appel_offre ? 'true' : 'false' }})"
-                                class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i class="fas fa-power-off text-sm"></i>
-                                <span
-                                    class="text-sm font-medium">{{ $appelOffre->statut_evaluation_critere_appel_offre ? 'Désactiver' : 'Activer' }}</span>
-                            </button>
+                                class="px-4 py-2.5 {{ $appelOffre->statut_evaluation_critere_appel_offre
+                                    ? 'bg-white border border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400'
+                                    : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md hover:shadow-lg' }} rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                <i
+                                    class="fas {{ $appelOffre->statut_evaluation_critere_appel_offre ? 'fa-toggle-off' : 'fa-toggle-on' }} text-sm"></i>
+                                <span class="text-sm font-medium">
+                                    {{ $appelOffre->statut_evaluation_critere_appel_offre ? 'Désactiver' : 'Activer' }}
+                                </span>
+                            </button> --}}
                         @endcan
 
                         @can('appels_offres.delete')
-                            <!-- Menu dropdown -->
-                            <div class="relative">
-                                <button onclick="toggleMenu()" id="menuBtn"
-                                    class="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                    <i class="fas fa-ellipsis-v text-sm"></i>
+                            @if ($appelOffre->etat_appel_offre < 1)
+                                <button onclick="confirmDelete()"
+                                    class="px-4 py-2.5 bg-white border border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md"
+                                    title="Supprimer">
+                                    <i class="fas fa-trash-alt text-sm"></i>
+                                    <span class="text-sm font-medium">Supprimer</span>
                                 </button>
-                                <div id="actionMenu"
-                                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
-                                    <div class="py-1">
-                                        <button onclick="confirmDelete()"
-                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                            <i class="fas fa-trash mr-2"></i>
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            @endif
                         @endcan
                     </div>
                 @endcanany
@@ -240,47 +268,16 @@
                                         {{ $appelOffre->date_publication_critere_appel_offre->format('d/m/Y') }}
                                     </p>
                                     <p class="text-xs text-gray-500 mt-1">
-                                        {{ $appelOffre->date_publication_critere_appel_offre->diffForHumans() }}
+                                        {{ $appelOffre->date_publication_critere_appel_offre->locale('fr')->diffForHumans() }}
                                     </p>
                                 @else
                                     <p class="text-sm text-gray-500">Non publié</p>
                                 @endif
                             </div>
 
-                            <!-- Date limite -->
-                            <div class="bg-gradient-to-br from-orange-50 to-white p-5 rounded-xl border border-orange-100">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-semibold text-gray-600">Limite de dépôt</span>
-                                    <i class="fas fa-clock text-orange-500"></i>
-                                </div>
-                                <p class="text-lg font-bold text-gray-900">
-                                    {{ $appelOffre->date_limite_depot_critere_appel_offre->format('d/m/Y') }}
-                                </p>
-                                @if ($appelOffre->joursRestants() > 0)
-                                    <p class="text-xs text-orange-600 font-semibold mt-1">
-                                        {{ $appelOffre->joursRestants() }} jour(s) restant(s)
-                                    </p>
-                                @else
-                                    <p class="text-xs text-red-600 font-semibold mt-1">
-                                        Clôturé
-                                    </p>
-                                @endif
-                            </div>
 
-                            <!-- Date d'ouverture -->
-                            <div class="bg-gradient-to-br from-green-50 to-white p-5 rounded-xl border border-green-100">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-semibold text-gray-600">Ouverture plis</span>
-                                    <i class="fas fa-folder-open text-green-500"></i>
-                                </div>
-                                @if ($appelOffre->date_ouverture_plis_critere_appel_offre)
-                                    <p class="text-lg font-bold text-gray-900">
-                                        {{ $appelOffre->date_ouverture_plis_critere_appel_offre->format('d/m/Y') }}
-                                    </p>
-                                @else
-                                    <p class="text-sm text-gray-500">Non définie</p>
-                                @endif
-                            </div>
+
+
 
                         </div>
                     </div>
@@ -445,10 +442,11 @@
                                             </a>
                                         @endcan
 
+
+
                                         @can('lots.create')
-                                            {{-- Bouton pour ajouter un lot (uniquement si non clôturé) --}}
-                                            @if ($appelOffre->caracteristiqueActive)
-                                                @if (!$appelOffre->isCloture())
+                                            @if ($appelOffre->caracteristiqueActive && $appelOffre->etat_appel_offre < 2)
+                                                @if (!$appelOffre->attributionActive)
                                                     <button onclick="openCreateLotModal()"
                                                         class="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm font-medium shadow-md hover:shadow-lg">
                                                         <i class="fas fa-plus-circle mr-2"></i>
@@ -464,87 +462,6 @@
 
                             <div class="p-6">
                                 @if ($appelOffre->lots->count() > 0)
-                                    {{-- <div class="space-y-3">
-                                        @foreach ($appelOffre->lots as $lot)
-                                            <div
-                                                class="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all duration-200 border border-gray-200">
-                                                <div class="flex-1">
-                                                    @php
-                                                        $allPaiements = $lot->attributionActive?->proforma?->facture?->paiements ?? null;
-                                                        $proforma = $lot->attributionActive?->proforma?->facture ?? null;
-
-                                                        $sommesReferencesCriteresEvaluations = $lot->criteresEvaluation->sum('note_reference_critere_evaluation');
-                                                        $sommesNotesEvaluations = $lot->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
-
-                                                        $paiementTermine = $allPaiements ? $allPaiements->sum('montant_net_paye_paiement') == $proforma->montant_facture : false;
-                                                        $evaluationTerminee = $sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations > 0 ? $sommesReferencesCriteresEvaluations == $sommesNotesEvaluations : false;
-
-                                                        // dd($sommesReferencesCriteresEvaluations, $sommesNotesEvaluations, $toutSolder, $evaluationTerminee);
-                                                    @endphp
-                                                    <div class="flex items-center space-x-3 flex-wrap gap-2">
-                                                        <span
-                                                            class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-orange-100 text-orange-700">
-                                                            {{ $lot->numero }}
-                                                        </span>
-                                                        <p class="font-medium text-gray-900">{{ $lot->libelle }}</p>
-                                                        @if ($lot->attribution_lot)
-                                                            <span
-                                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                                                <i class="fas fa-check mr-1"></i> Attribué
-                                                            </span>
-                                                        @else
-                                                            <span
-                                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                                                                <i class="fas fa-clock mr-1"></i> Non attribué
-                                                            </span>
-                                                        @endif
-                                                        @if ($lot->statut_lot)
-                                                            <span
-                                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                                                <i class="fas fa-power-off mr-1"></i> Actif
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                    @if ($lot->description_critere)
-                                                        <p class="text-xs text-gray-500 mt-2 line-clamp-2">
-                                                            {{ $lot->description_critere }}</p>
-                                                    @endif
-                                                    @if ($lot->date_debut_prevue && $lot->date_fin_prevue)
-                                                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                                            <span><i
-                                                                    class="fas fa-calendar mr-1"></i>{{ $lot->date_debut_prevue->format('d/m/Y') }}</span>
-                                                            <span><i class="fas fa-arrow-right mx-1"></i></span>
-                                                            <span>{{ $lot->date_fin_prevue->format('d/m/Y') }}</span>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @canany(['lots.view-details', 'lots.update'])
-                                                    <div class="flex items-center space-x-2 ml-4">
-                                                        @can('lots.view-details')
-                                                            <button
-                                                                onclick="window.location.href='{{ route('lots-appels-offres.show', [$lot->appel_offre_id, $lot->id_lot]) }}'"
-                                                                class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                                                                title="Voir détails">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                        @endcan
-
-                                                        @can('lots.update')
-                                                            @if (!$lot->attributionActive)
-                                                                <button
-                                                                    onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appel_offre_id, $lot->id_lot]) }}'"
-                                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
-                                                                    title="Modifier">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                            @endif
-                                                        @endcan
-                                                    </div>
-                                                @endcanany
-                                            </div>
-                                        @endforeach
-                                    </div> --}}
-
                                     <div class="space-y-3">
                                         @foreach ($appelOffre->lots as $lot)
                                             <div
@@ -758,11 +675,14 @@
                                     <div class="text-center py-8">
                                         <i class="fas fa-inbox text-gray-300 text-4xl mb-3"></i>
                                         <p class="text-gray-500 font-medium mb-3">Aucun lot pour cet appel d'offres</p>
+
                                         @can('lots.create')
-                                            <button onclick="openCreateLotModal()"
-                                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
-                                                <i class="fas fa-plus mr-1"></i> Créer le premier lot
-                                            </button>
+                                            @if ($appelOffre->caracteristiqueActive && $appelOffre->etat_appel_offre < 2)
+                                                <button onclick="openCreateLotModal()"
+                                                    class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all text-sm shadow-md">
+                                                    <i class="fas fa-plus mr-1"></i> Créer le premier lot
+                                                </button>
+                                            @endif
                                         @endcan
                                     </div>
                                 @endif
@@ -811,19 +731,7 @@
                             </div>
                         </div>
 
-                        <!-- Jours restants -->
-                        @if ($appelOffre->joursRestants() > 0)
-                            <div
-                                class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-transparent rounded-lg border-l-4 border-orange-500">
-                                <div>
-                                    <p class="text-sm text-gray-600 font-medium">Jours restants</p>
-                                    <p class="text-2xl font-bold text-gray-900">{{ $appelOffre->joursRestants() }}</p>
-                                </div>
-                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-clock text-orange-600"></i>
-                                </div>
-                            </div>
-                        @endif
+
                     </div>
                 </div>
 
@@ -856,7 +764,8 @@
                 </div>
 
                 @can('lots.create')
-                    @if ($appelOffre->caracteristiqueActive)
+
+                    @if ($appelOffre->caracteristiqueActive && $appelOffre->etat_appel_offre < 2)
                         <!-- Actions rapides -->
                         <div
                             class="bg-gradient-to-br from-orange-50 to-white rounded-2xl shadow-lg p-6 border border-orange-100">
@@ -875,6 +784,7 @@
                                     <span class="text-sm font-semibold text-gray-700">Créer un lot</span>
                                 </button>
                             </div>
+
                         </div>
                     @endif
                 @endcan
@@ -929,7 +839,9 @@
 
                     @can('lots.create')
                         <!-- Corps du formulaire -->
-                        <form id="lotForm" method="POST" action="{{ route('lots.store') }}">
+                        {{-- <form id="lotForm" method="POST" action="{{ route('lots.store') }}"> --}}
+                        <form id="lotForm" method="POST"
+                            action="{{ route('lots-appels-offres.store', $appelOffre->id_appel_offre) }}">
                             @csrf
                             <input type="hidden" name="appel_offre_id" value="{{ $appelOffre->id_appel_offre }}">
 
@@ -1032,11 +944,11 @@
                                                 <i class="fas fa-calendar-plus text-green-500 mr-2 text-xs"></i>
                                                 Date de début prévue <span class="text-red-500 px-1"> *</span>
                                             </label>
-                                            {{-- {{ dd($appelOffre?->caracteristiqueActive) }} --}}
+
                                             <input type="date" required name="date_debut_prevue"
                                                 min="{{ \Carbon\Carbon::parse($appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
                                                 max="{{ \Carbon\Carbon::parse($appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
-                                                id="lot_date_debut"  onchange="updateProgress()"
+                                                id="lot_date_debut" onchange="updateProgress()"
                                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800">
                                             <div id="error_lot_date_debut"
                                                 class="hidden mt-2 text-red-500 text-sm flex items-center">
@@ -1080,7 +992,7 @@
                                         }
                                     </script>
 
-                                    <!-- Montant du lot -->
+
                                     <div class="group">
                                         <label for="budget_lot"
                                             class="flex items-center text-sm font-semibold text-gray-700 mb-2">
@@ -1088,15 +1000,89 @@
                                             Budget du lot <span class="text-red-500 px-1"> *</span>
                                         </label>
                                         <div class="relative">
-                                            <input type="number" id="budget_lot" min="0" step="5" required
-                                                name="budget_lot" oninput="updateProgress()"
+                                            <input type="text" id="budget_lot_display"
                                                 class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
-                                                placeholder="Ex: 5 500 000 000">
+                                                placeholder="Ex: 5 500 000 000,50">
+                                            <input type="hidden" id="budget_lot" name="budget_lot" required>
                                             <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
                                                 FCFA</div>
                                         </div>
-
                                     </div>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const displayInput = document.getElementById('budget_lot_display');
+                                            const hiddenInput = document.getElementById('budget_lot');
+
+                                            // Fonction pour formater avec espaces comme séparateur de milliers
+                                            function formatNumber(value) {
+                                                // Supprimer tout sauf les chiffres et la virgule
+                                                let cleaned = value.replace(/[^\d,]/g, '');
+
+                                                // S'assurer qu'il n'y a qu'une seule virgule
+                                                const parts = cleaned.split(',');
+                                                if (parts.length > 2) {
+                                                    cleaned = parts[0] + ',' + parts.slice(1).join('');
+                                                }
+
+                                                if (cleaned === '') return '';
+
+                                                // Séparer partie entière et décimale
+                                                const [integerPart, decimalPart] = cleaned.split(',');
+
+                                                // Formater la partie entière avec des espaces
+                                                const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+                                                // Recombiner avec la partie décimale si elle existe
+                                                return decimalPart !== undefined ? `${formattedInteger},${decimalPart}` : formattedInteger;
+                                            }
+
+                                            // Événement sur la saisie
+                                            displayInput.addEventListener('input', function(e) {
+                                                // Sauvegarder la position du curseur
+                                                let cursorPosition = e.target.selectionStart;
+                                                const oldValue = e.target.value;
+                                                const oldLength = oldValue.length;
+
+                                                // Formater la valeur
+                                                const formatted = formatNumber(e.target.value);
+                                                e.target.value = formatted;
+
+                                                // Mettre à jour le champ caché avec la valeur numérique (remplacer virgule par point pour la base de données)
+                                                hiddenInput.value = formatted.replace(/\s/g, '').replace(',', '.');
+
+                                                // Ajuster la position du curseur après formatage
+                                                const newLength = formatted.length;
+                                                const diff = newLength - oldLength;
+
+                                                // Si on a ajouté des espaces avant le curseur, ajuster
+                                                if (diff > 0) {
+                                                    const beforeCursor = oldValue.substring(0, cursorPosition);
+                                                    const beforeCursorFormatted = formatNumber(beforeCursor);
+                                                    cursorPosition = beforeCursorFormatted.length;
+                                                }
+
+                                                e.target.setSelectionRange(cursorPosition, cursorPosition);
+
+                                                // Appeler updateProgress si la fonction existe
+                                                if (typeof updateProgress === 'function') {
+                                                    updateProgress();
+                                                }
+                                            });
+
+                                            // Validation au submit du formulaire
+                                            const form = displayInput.closest('form');
+                                            if (form) {
+                                                form.addEventListener('submit', function(e) {
+                                                    if (!hiddenInput.value || hiddenInput.value === '0') {
+                                                        e.preventDefault();
+                                                        displayInput.focus();
+                                                        alert('Veuillez saisir un budget pour le lot');
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    </script>
 
                                     <!-- Statut actif -->
                                     <div class="group">
@@ -1169,6 +1155,34 @@
                             @endcan
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- Modale de confirmation d'état --}}
+    <div id="etatModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div id="etatModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center">
+                        <!-- Icône dynamique -->
+                    </div>
+                    <div>
+                        <h3 id="etatModalTitle" class="text-lg font-bold text-gray-900"></h3>
+                    </div>
+                </div>
+                <p id="etatModalMessage" class="text-gray-600 mb-6"></p>
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeEtatModal()"
+                        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                        Annuler
+                    </button>
+                    <button id="etatModalConfirmBtn" onclick="executeEtatAction()"
+                        class="px-4 py-2 text-white rounded-lg transition-colors">
+                        Confirmer
+                    </button>
                 </div>
             </div>
         </div>
@@ -1258,7 +1272,7 @@
 
 
                 let progress = 0;
-                if(numero.length > 2) progress += 20;
+                if (numero.length > 2) progress += 20;
                 if (libelle.length > 0) progress += 20;
                 if (description.length > 0) progress += 20;
                 if (budget) progress += 20;
@@ -1282,7 +1296,7 @@
                 document.getElementById('numero_count').textContent = this.value.length;
             });
 
-            
+
 
             // Compteur de caractères pour le libellé
             document.getElementById('lot_libelle').addEventListener('input', function() {
@@ -1336,7 +1350,10 @@
                             submitBtn.classList.add('from-green-500', 'to-green-600');
 
                             setTimeout(() => {
-                                window.location = "{{ route('lots-appels-offres.show', [':appelOffre', ':id']) }}".replace(':appelOffre', data.data.appel_offre_id).replace(':id', data.data.id_lot)
+                                window.location =
+                                    "{{ route('lots-appels-offres.show', [':appelOffre', ':id']) }}"
+                                    .replace(':appelOffre', data.data.appel_offre_id).replace(':id', data
+                                        .data.id_lot)
                                 // location.reload();
                             }, 500);
                         } else {
@@ -1442,12 +1459,47 @@
                 }
             }
 
+            /**
+             * Marquer l'appel d'offres comme "Terminé"
+             */
+            function terminer(id) {
+                if (!confirm(
+                        'Êtes-vous sûr de vouloir marquer cet appel d\'offres comme terminé ?\n\nCette action passera l\'état en mode manuel et l\'état ne sera plus mis à jour automatiquement.'
+                    )) {
+                    return;
+                }
+
+                fetch("{{ route('appels-offres.terminer', ':id') }}".replace(':id', id), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Afficher le message de succès
+                            showNotification('success', data.message || 'Appel d\'offres marqué comme terminé');
+                            // Recharger la page pour mettre à jour l'affichage
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('error', data.message || 'Une erreur est survenue');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('error', 'Une erreur est survenue lors de la communication avec le serveur');
+                    });
+            }
+
             // Clôturer
-            function cloturer() {
+            function cloturer(appelOffreId) {
                 if (confirm(
                         'Voulez-vous clôturer cet appel d\'offres ? Cette action modifiera la date limite de dépôt à maintenant.'
                     )) {
-                    fetch("{{ route('appels-offres.cloturer', ':id') }}".replace(':id', aoId), {
+                    fetch("{{ route('appels-offres.cloturer', ':id') }}".replace(':id', appelOffreId), {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1458,45 +1510,132 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                location.reload();
+                                showNotification('success', data.message || 'Appel d\'offres clôturé avec succès');
+                                setTimeout(() => location.reload(), 1000);
                             } else {
-                                alert(data.message || 'Une erreur est survenue');
+                                showNotification('error', data.message || 'Une erreur est survenue');
                             }
                         })
                         .catch(error => {
                             console.error('Erreur:', error);
-                            alert('Une erreur est survenue');
+                            showNotification('error', 'Une erreur est survenue lors de la communication avec le serveur');
                         });
                 }
             }
 
-            // Dupliquer
-            function duplicate() {
-                if (confirm(
-                        'Voulez-vous dupliquer cet appel d\'offres ? Un nouvel appel d\'offres sera créé avec les mêmes informations.'
+
+            /**
+             * Réouvrir l'appel d'offres
+             */
+            function rouvrir(appelOffreId) {
+                if (!confirm(
+                        'Êtes-vous sûr de vouloir réouvrir cet appel d\'offres ?\n\nL\'état sera recalculé automatiquement en fonction des lots et attributions.'
                     )) {
-                    fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', aoId), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
-                            } else {
-                                alert(data.message || 'Une erreur est survenue');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                            alert('Une erreur est survenue');
-                        });
+                    return;
                 }
+
+                fetch("{{ route('appels-offres.rouvrir', ':id') }}".replace(':id', appelOffreId), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('success', data.message || 'Appel d\'offres réouvert avec succès');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('error', data.message || 'Une erreur est survenue');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('error', 'Une erreur est survenue lors de la communication avec le serveur');
+                    });
             }
+
+
+            /**
+             * Afficher une notification toast
+             */
+            function showNotification(type, message) {
+                // Supprimer les notifications existantes
+                const existingNotifications = document.querySelectorAll('.toast-notification');
+                existingNotifications.forEach(n => n.remove());
+
+                // Créer la notification
+                const notification = document.createElement('div');
+                notification.className =
+                    `toast-notification fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+
+                if (type === 'success') {
+                    notification.classList.add('bg-green-600', 'text-white');
+                    notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-check-circle text-xl"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+                } else {
+                    notification.classList.add('bg-red-600', 'text-white');
+                    notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-exclamation-circle text-xl"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+                }
+
+                document.body.appendChild(notification);
+
+                // Animation d'entrée
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full');
+                    notification.classList.add('translate-x-0');
+                }, 100);
+
+                // Suppression automatique après 5 secondes
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-0');
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => notification.remove(), 300);
+                }, 5000);
+            }
+
+            // // Dupliquer
+            // function duplicate() {
+            //     if (confirm(
+            //             'Voulez-vous dupliquer cet appel d\'offres ? Un nouvel appel d\'offres sera créé avec les mêmes informations.'
+            //         )) {
+            //         fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', aoId), {
+            //                 method: 'POST',
+            //                 headers: {
+            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            //                     'Content-Type': 'application/json',
+            //                     'Accept': 'application/json'
+            //                 }
+            //             })
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 if (data.success) {
+            //                     window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
+            //                 } else {
+            //                     alert(data.message || 'Une erreur est survenue');
+            //                 }
+            //             })
+            //             .catch(error => {
+            //                 console.error('Erreur:', error);
+            //                 alert('Une erreur est survenue');
+            //             });
+            //     }
+            // }
+
+
+
+
 
             // Voir statistiques
             function viewStatistiques() {
@@ -1581,6 +1720,88 @@
                     closeLotModal();
                     closeDeleteModal();
                     document.getElementById('actionMenu').classList.add('hidden');
+                }
+            });
+        </script>
+
+
+        <script>
+            let currentEtatAction = null;
+            let currentEtatId = null;
+
+            function showEtatModal(action, id) {
+                currentEtatAction = action;
+                currentEtatId = id;
+
+                const modal = document.getElementById('etatModal');
+                const icon = document.getElementById('etatModalIcon');
+                const title = document.getElementById('etatModalTitle');
+                const message = document.getElementById('etatModalMessage');
+                const confirmBtn = document.getElementById('etatModalConfirmBtn');
+
+                switch (action) {
+                    case 'terminer':
+                        icon.className = 'w-12 h-12 rounded-full flex items-center justify-center bg-green-100';
+                        icon.innerHTML = '<i class="fas fa-check-circle text-green-600 text-2xl"></i>';
+                        title.textContent = 'Marquer comme terminé';
+                        message.textContent =
+                            'Cette action passera l\'état en mode manuel. L\'état ne sera plus mis à jour automatiquement jusqu\'à réouverture.';
+                        confirmBtn.className =
+                            'px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors';
+                        break;
+
+                    case 'cloturer':
+                        icon.className = 'w-12 h-12 rounded-full flex items-center justify-center bg-purple-100';
+                        icon.innerHTML = '<i class="fas fa-lock text-purple-600 text-2xl"></i>';
+                        title.textContent = 'Clôturer l\'appel d\'offres';
+                        message.textContent =
+                            'Cette action est définitive. L\'appel d\'offres ne pourra plus être modifié automatiquement.';
+                        confirmBtn.className =
+                            'px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors';
+                        break;
+
+                    case 'rouvrir':
+                        icon.className = 'w-12 h-12 rounded-full flex items-center justify-center bg-amber-100';
+                        icon.innerHTML = '<i class="fas fa-unlock text-amber-600 text-2xl"></i>';
+                        title.textContent = 'Réouvrir l\'appel d\'offres';
+                        message.textContent =
+                            'L\'état sera recalculé automatiquement en fonction des lots et attributions actuels.';
+                        confirmBtn.className =
+                            'px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors';
+                        break;
+                }
+
+                modal.classList.remove('hidden');
+            }
+
+            function closeEtatModal() {
+                document.getElementById('etatModal').classList.add('hidden');
+                currentEtatAction = null;
+                currentEtatId = null;
+            }
+
+            function executeEtatAction() {
+                if (!currentEtatAction || !currentEtatId) return;
+
+                closeEtatModal();
+
+                switch (currentEtatAction) {
+                    case 'terminer':
+                        terminer(currentEtatId);
+                        break;
+                    case 'cloturer':
+                        cloturer(currentEtatId);
+                        break;
+                    case 'rouvrir':
+                        rouvrir(currentEtatId);
+                        break;
+                }
+            }
+
+            // Fermer modal avec Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeEtatModal();
                 }
             });
         </script>

@@ -17,14 +17,16 @@ return new class extends Migration
             $table->foreignUuid('type_appel_offre_id')->comment('Identifiant unique du type.')->references('id_type_appel_offre')->on('types_appels_offres')->onDelete('restrict');
             $table->string('numero_appel_offre',20)->comment("Numéro officiel (ex: AOT-2025-045). Référence dans tous les documents.");
             $table->string("libelle_critere_appel_offre",   160)->comment("Nom du lot (ex: Gros œuvre, Électricité, Plomberie).");
-            $table->text("objet_critere_appel_offre")->comment("Description officielle de ce qui est demandé.");
+            $table->text("objet_critere_appel_offre")->nullable()->comment("Description officielle de ce qui est demandé.");
             $table->decimal('montant_global_appel_offre', 15, 2)->comment('Montant total estimé pour cet appel d\'offres.');
             $table->text("description_critere_critere_appel_offre")->comment("Détail des travaux de ce critere");
             $table->timestamp('date_publication_critere_appel_offre')->nullable()->comment('Date à laquelle l\'appel d\'offres a été publié.');
-            $table->timestamp('date_limite_depot_critere_appel_offre')->nullable()->comment('Date limite pour le dépôt des offres.');
-            $table->timestamp('date_ouverture_plis_critere_appel_offre')->nullable()->comment('Date prévue pour l\'ouverture des plis.');
             // statut_eva
             $table->enum('statut_evaluation_critere_appel_offre', [1, 0])->default(0)->comment('Statut actuel de l\'évaluation des offres. Pour savoir si actif ou non');
+
+            $table->smallInteger('etat_appel_offre')
+                ->default(0)
+                ->comment('0=En attente, 1=En cours, 2=Terminé, 3=Clôturé');
             //conditions_participation
             $table->text("conditions_participation_critere_appel_offre")->nullable()->comment("Conditions requises pour participer à cet appel d'offres.");
             //criteres_selection

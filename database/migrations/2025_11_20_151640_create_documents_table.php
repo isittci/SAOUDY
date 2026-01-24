@@ -18,15 +18,15 @@ return new class extends Migration
             $table->foreignUuid('lot_id')->nullable()->references('id_lot')->on('lots')->onDelete('set null');
 
             // Informations document
-            $table->string('type_document', 20)->nullable();
-            $table->string('titre_document', 100)->nullable();
-            $table->string('fichier_nom_document', 100)->nullable();
+            $table->string('type_document', 255)->nullable();
+            $table->string('titre_document', 255)->nullable();
+            $table->string('fichier_nom_document', 255)->nullable();
 
             // Path du fichier
             $table->text('fichier_path_document')->nullable();
 
             // Infos fichier
-            $table->string('fichier_type_document', 50)->nullable();
+            $table->string('fichier_type_document', 255)->nullable();
             $table->decimal('fichier_taille_document', 10, 2)->nullable(); // précision non fournie → standardisée
 
             // Description

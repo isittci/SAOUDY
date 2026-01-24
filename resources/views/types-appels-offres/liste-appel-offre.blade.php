@@ -140,15 +140,6 @@
                                             <div><span class="font-medium">Pub:</span>
                                                 {{ $ao->date_publication_critere_appel_offre->format('d/m/Y') }}</div>
                                         @endif
-                                        @if ($ao->date_limite_depot_critere_appel_offre)
-                                            <div><span class="font-medium">Limite:</span>
-                                                {{ $ao->date_limite_depot_critere_appel_offre->format('d/m/Y') }}</div>
-                                        @endif
-                                        @if ($ao->joursRestants() > 0)
-                                            <div class="text-orange-600 font-semibold">
-                                                <i class="fas fa-clock mr-1"></i>{{ $ao->joursRestants() }} jour(s)
-                                            </div>
-                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -171,12 +162,12 @@
                                             </span>
                                         @endif
 
-                                        @if ($ao->isCloture())
+                                        @if ($ao->peutEtreCloturer())
                                             <span
                                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                                 Clôturé
                                             </span>
-                                        @elseif($ao->isEnCours())
+                                        @elseif($ao->etat_appel_offre == 1)
                                             <span
                                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                                                 En cours
@@ -249,7 +240,7 @@
                                                                         Publier
                                                                     </button>
                                                                 @endif
-                                                                @if ($ao->isEnCours())
+                                                                @if ($ao->etat_appel_offre == 3)
                                                                     <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
                                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                                         <i class="fas fa-lock mr-2 text-yellow-500"></i>
@@ -258,13 +249,13 @@
                                                                 @endif
                                                             @endcan
 
-                                                            @can('appels_offres.duplicate')
+                                                            {{-- @can('appels_offres.duplicate')
                                                                 <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
                                                                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                                     <i class="fas fa-copy mr-2 text-purple-500"></i>
                                                                     Dupliquer
                                                                 </button>
-                                                            @endcan
+                                                            @endcan --}}
 
                                                             @can('appels_offres.delete')
                                                                 <button
@@ -439,31 +430,31 @@
                 }
             }
 
-            // Dupliquer
-            window.duplicate = function(id) {
-                if (confirm('Voulez-vous dupliquer cet appel d\'offres ?')) {
-                    fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', id), {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
-                            } else {
-                                alert(data.message || 'Une erreur est survenue');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                            alert('Une erreur est survenue');
-                        });
-                }
-            }
+            // // Dupliquer
+            // window.duplicate = function(id) {
+            //     if (confirm('Voulez-vous dupliquer cet appel d\'offres ?')) {
+            //         fetch("{{ route('appels-offres.duplicate', ':id') }}".replace(':id', id), {
+            //                 method: 'POST',
+            //                 headers: {
+            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            //                     'Content-Type': 'application/json',
+            //                     'Accept': 'application/json'
+            //                 }
+            //             })
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 if (data.success) {
+            //                     window.location.href = `/appels-offres/${data.data.id_appel_offre}/edit`;
+            //                 } else {
+            //                     alert(data.message || 'Une erreur est survenue');
+            //                 }
+            //             })
+            //             .catch(error => {
+            //                 console.error('Erreur:', error);
+            //                 alert('Une erreur est survenue');
+            //             });
+            //     }
+            // }
 
             // Confirmer suppression
             window.confirmDelete = function(id, numero, nbLots) {

@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Ajouter la colonne etat_appel_offre à la table appels_offres
+ *
+ * États possibles :
+ * 0 = En attente : Aucun lot ou aucun lot actif attribué
+ * 1 = En cours : Au moins un lot attribué, évaluations/paiements incomplets
+ * 2 = Terminé : Tous les lots attribués, évaluations et paiements complets
+ * 3 = Clôturé : Appel d'offres clôturé définitivement
+ */
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('appels_offres', function (Blueprint $table) {
+            $table->smallInteger('etat_appel_offre')
+                ->default(0)
+                ->comment('0=En attente, 1=En cours, 2=Terminé, 3=Clôturé');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('appels_offres', function (Blueprint $table) {
+            $table->dropColumn('etat_appel_offre');
+        });
+    }
+};

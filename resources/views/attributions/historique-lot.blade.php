@@ -27,13 +27,13 @@
                     </div>
                 </div>
                 @can('attributions_lots.assign')
-                @if(!$lot->attribution_lot)
-                    <a href="{{ route('attributions.create',  $lot->id_lot) }}"
-                        class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-md flex items-center space-x-2">
-                        <i class="fas fa-plus"></i>
-                        <span class="font-medium">Attribuer ce lot</span>
-                    </a>
-                @endif
+                    @if($lot->attribution_lot == 0)
+                        <a href="{{ route('lots-appels-offres.show',  [$lot->appel_offre_id, $lot->id_lot]) }}"
+                            class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-md flex items-center space-x-2">
+                            <i class="fas fa-plus"></i>
+                            <span class="font-medium">Détails du lot</span>
+                        </a>
+                    @endif
                 @endcan
             </div>
         </div>

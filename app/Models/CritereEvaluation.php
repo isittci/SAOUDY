@@ -32,7 +32,7 @@ class CritereEvaluation extends Model
     protected $casts = [
         'note_reference_critere_evaluation' => 'decimal:2',
         'statut_critere_evaluation' => 'integer',
-        'ordre_execution_critere_evaluation' => 'integer',
+        'ordre_execution_critere_evaluation' => 'integer', 
     ];
 
     // Relations

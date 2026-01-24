@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\PrestataireLot;
+use App\Models\AttributionLotPrestataire;
 use App\Models\Prestataire;
 use App\Models\Facture;
 use App\Models\Paiement;
@@ -131,8 +131,8 @@ class RapportExportService
 
     public function getLotsEnCoursData(): array
     {
-        return PrestataireLot::with(['lot.appelOffre', 'prestataire', 'proforma'])
-            ->whereIn('statut_attribution', [PrestataireLot::STATUT_ATTRIBUE, PrestataireLot::STATUT_SUSPENDU])
+        return AttributionLotPrestataire::with(['lot.appelOffre', 'prestataire', 'proforma'])
+            ->whereIn('statut_attribution', [AttributionLotPrestataire::STATUT_ATTRIBUE, AttributionLotPrestataire::STATUT_SUSPENDU])
             ->where('is_active', true)
             ->get()
             ->map(function ($attribution) {
@@ -157,9 +157,8 @@ class RapportExportService
                     'montant_proforma_ttc' => $montantProformaTTC,
                     'montant_paye' => $montantPaye,
                     'reste_a_payer' => $resteAPayer,
-                    'statut' => PrestataireLot::STATUT_LABELS[$attribution->statut_attribution] ?? 'Inconnu',
+                    'statut' => AttributionLotPrestataire::STATUT_LABELS[$attribution->statut_attribution] ?? 'Inconnu',
                     'jours_retard' => $attribution->jours_retard_actuels ?? 0,
-                    'penalites_appliquees' => $attribution->penalites_appliquees ?? 0,
                     'observations' => $attribution->observations ?? '',
                 ];
             })->toArray();
@@ -187,17 +186,19 @@ class RapportExportService
         // En-têtes
         $headers = ['N° Lot', 'Libellé', 'Appel d\'Offre', 'Prestataire', 'N° Attribution',
                     'Date Attribution', 'Date Début', 'Date Fin', 'Avancement',
-                    'Montant TTC', 'Payé', 'Reste', 'Statut', 'Retard', 'Pénalités'];
+                    'Montant TTC', 'Payé', 'Reste', 'Statut', 'Retard'];
+
+
 
         foreach ($headers as $col => $header) {
-            $cell = $sheet->getCellByColumnAndRow($col + 1, 4);
-            $cell->setValue($header);
+            $cellCoordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1) . '4';
+            $sheet->setCellValue($cellCoordinate, $header);
         }
         $sheet->getStyle('A4:O4')->applyFromArray($this->getHeaderStyle());
 
         // Données
         $row = 5;
-        $totaux = ['montant' => 0, 'paye' => 0, 'reste' => 0, 'penalites' => 0];
+        $totaux = ['montant' => 0, 'paye' => 0, 'reste' => 0];
 
         foreach ($data as $item) {
             $sheet->setCellValue("A{$row}", $item['numero_lot']);
@@ -223,13 +224,11 @@ class RapportExportService
 
             $sheet->setCellValue("M{$row}", $item['statut']);
             $sheet->setCellValue("N{$row}", $item['jours_retard']);
-            $sheet->setCellValue("O{$row}", $item['penalites_appliquees']);
-            $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
+            // $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
 
             $totaux['montant'] += $item['montant_proforma_ttc'];
             $totaux['paye'] += $item['montant_paye'];
             $totaux['reste'] += $item['reste_a_payer'];
-            $totaux['penalites'] += $item['penalites_appliquees'];
             $row++;
         }
 
@@ -240,14 +239,13 @@ class RapportExportService
         $sheet->setCellValue("J{$row}", $totaux['montant']);
         $sheet->setCellValue("K{$row}", $totaux['paye']);
         $sheet->setCellValue("L{$row}", $totaux['reste']);
-        $sheet->setCellValue("O{$row}", $totaux['penalites']);
         $sheet->getStyle("J{$row}:L{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
-        $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
-        $sheet->getStyle("A{$row}:O{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FED7AA');
-        $sheet->getStyle("A{$row}:O{$row}")->getFont()->setBold(true);
+        // $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
+        // $sheet->getStyle("A{$row}:O{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FED7AA');
+        // $sheet->getStyle("A{$row}:O{$row}")->getFont()->setBold(true);
 
         // Largeurs
-        $widths = ['A'=>15,'B'=>35,'C'=>30,'D'=>25,'E'=>16,'F'=>14,'G'=>14,'H'=>14,'I'=>12,'J'=>18,'K'=>16,'L'=>16,'M'=>12,'N'=>10,'O'=>15];
+        $widths = ['A'=>15,'B'=>35,'C'=>30,'D'=>25,'E'=>16,'F'=>14,'G'=>14,'H'=>14,'I'=>12,'J'=>18,'K'=>16,'L'=>16,'M'=>12,'N'=>10];
         foreach ($widths as $col => $width) {
             $sheet->getColumnDimension($col)->setWidth($width);
         }
@@ -270,8 +268,7 @@ class RapportExportService
         $totaux = [
             'proforma' => array_sum(array_column($data, 'montant_proforma_ttc')),
             'paye' => array_sum(array_column($data, 'montant_paye')),
-            'reste' => array_sum(array_column($data, 'reste_a_payer')),
-            'penalites' => array_sum(array_column($data, 'penalites_appliquees')),
+            'reste' => array_sum(array_column($data, 'reste_a_payer'))
         ];
 
         $pdf = PDF::loadView('exports.rapport_lots_en_cours', [
@@ -280,7 +277,6 @@ class RapportExportService
             'totalProforma' => $this->formatMontant($totaux['proforma']),
             'totalPaye' => $this->formatMontant($totaux['paye']),
             'totalReste' => $this->formatMontant($totaux['reste']),
-            'totalPenalites' => $this->formatMontant($totaux['penalites']),
             'tauxPaiement' => $totaux['proforma'] > 0 ? number_format($totaux['paye'] / $totaux['proforma'] * 100, 2) . '%' : '0%',
             'nombreLots' => count($data),
         ])->setPaper('a4', 'landscape');
@@ -303,7 +299,7 @@ class RapportExportService
     {
         $prestataire = Prestataire::findOrFail($prestataireId);
 
-        $attributions = PrestataireLot::where('prestataire_id', $prestataireId)
+        $attributions = AttributionLotPrestataire::where('prestataire_id', $prestataireId)
             ->with(['proforma.facture.paiements.banque', 'lot.appelOffre'])
             ->get();
 
@@ -405,7 +401,7 @@ class RapportExportService
         $sheet->getStyle("A{$row}")->applyFromArray($this->getHeaderStyle());
 
         $infoRows = [
-            ['Raison Sociale:', $prestataire['raison_sociale'], 'N° Identification:', $prestataire['numero_identification']],
+            ['Nom du prestataire:', $prestataire['raison_sociale'], 'N° Identification:', $prestataire['numero_identification']],
             ['Email:', $prestataire['email'], 'Téléphone:', $prestataire['telephone']],
             ['Adresse:', $prestataire['adresse'] . ', ' . $prestataire['ville'], 'N° RCCM:', $prestataire['numero_rccm']],
         ];
@@ -579,7 +575,7 @@ class RapportExportService
     {
         $prestataire = Prestataire::with(['banques'])->findOrFail($prestataireId);
 
-        $attributions = PrestataireLot::where('prestataire_id', $prestataireId)
+        $attributions = AttributionLotPrestataire::where('prestataire_id', $prestataireId)
             ->with(['lot.appelOffre', 'proforma.facture.paiements'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -611,7 +607,7 @@ class RapportExportService
                 'date_debut_prevue' => $attribution->date_debut_prevue,
                 'date_fin_prevue' => $attribution->date_fin_prevue,
                 'pourcentage_avancement' => $attribution->pourcentage_avancement ?? 0,
-                'statut' => PrestataireLot::STATUT_LABELS[$attribution->statut_attribution] ?? 'Inconnu',
+                'statut' => AttributionLotPrestataire::STATUT_LABELS[$attribution->statut_attribution] ?? 'Inconnu',
                 'statut_code' => $attribution->statut_attribution,
                 'is_active' => $attribution->is_active,
                 'montant_proforma_ht' => $proforma->montant_retenu_proforma ?? 0,
@@ -620,7 +616,6 @@ class RapportExportService
                 'reste_a_payer' => $resteAPayer,
                 'taux_paiement' => $tauxPaiement,
                 'jours_retard' => $attribution->jours_retard ?? 0,
-                'penalites_appliquees' => $attribution->penalites_appliquees ?? 0,
                 'numero_proforma' => $proforma->numero_proforma ?? '',
                 'numero_facture' => $facture->numero_facture ?? '',
                 'observations' => $attribution->observations ?? '',
@@ -628,16 +623,15 @@ class RapportExportService
         })->toArray();
 
         // Statistiques
-        $lotsActifs = collect($lots)->whereIn('statut_code', [PrestataireLot::STATUT_ATTRIBUE, PrestataireLot::STATUT_SUSPENDU]);
+        $lotsActifs = collect($lots)->whereIn('statut_code', [AttributionLotPrestataire::STATUT_ATTRIBUE, AttributionLotPrestataire::STATUT_SUSPENDU]);
         $stats = [
             'total_lots' => count($lots),
             'lots_en_cours' => $lotsActifs->count(),
-            'lots_termines' => collect($lots)->where('statut_code', PrestataireLot::STATUT_TERMINE)->count(),
-            'lots_retires' => collect($lots)->where('statut_code', PrestataireLot::STATUT_RETIRE)->count(),
+            'lots_termines' => collect($lots)->where('statut_code', AttributionLotPrestataire::STATUT_TERMINE)->count(),
+            'lots_retires' => collect($lots)->where('statut_code', AttributionLotPrestataire::STATUT_RETIRE)->count(),
             'montant_total_engage' => collect($lots)->sum('montant_proforma_ttc'),
             'montant_total_paye' => collect($lots)->sum('montant_paye'),
             'reste_total_a_payer' => collect($lots)->sum('reste_a_payer'),
-            'penalites_totales' => collect($lots)->sum('penalites_appliquees'),
             'avancement_moyen' => $lotsActifs->avg('pourcentage_avancement') ?? 0,
         ];
         $stats['taux_paiement_global'] = $stats['montant_total_engage'] > 0 ?
@@ -737,8 +731,9 @@ class RapportExportService
             ['Lots terminés:', $stats['lots_termines'], 'Lots retirés:', $stats['lots_retires']],
             ['Montant engagé:', $this->formatMontant($stats['montant_total_engage']), 'Montant payé:', $this->formatMontant($stats['montant_total_paye'])],
             ['Reste à payer:', $this->formatMontant($stats['reste_total_a_payer']), 'Taux paiement:', number_format($stats['taux_paiement_global'], 2) . '%'],
-            ['Avancement moyen:', number_format($stats['avancement_moyen'], 2) . '%', 'Pénalités:', $this->formatMontant($stats['penalites_totales'])],
+            ['Avancement moyen:', number_format($stats['avancement_moyen'], 2) . '%', '', ''],
         ];
+
 
         foreach ($statRows as $stat) {
             $row++;
@@ -749,8 +744,10 @@ class RapportExportService
             $sheet->setCellValue("G{$row}", $stat[2]);
             $sheet->getStyle("G{$row}")->getFont()->setBold(true);
             $sheet->mergeCells("H{$row}:L{$row}");
+
             $sheet->setCellValue("H{$row}", $stat[3]);
             $sheet->getStyle("A{$row}:L{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FFF7ED');
+
         }
 
         // Section liste des lots
@@ -760,14 +757,14 @@ class RapportExportService
         $sheet->getStyle("A{$row}")->applyFromArray($this->getHeaderStyle());
 
         $row++;
-        $lotHeaders = ['N° Lot', 'Libellé', 'Appel d\'Offre', 'Avancement', 'Montant TTC', 'Payé', 'Reste', 'Statut', 'Retard', 'Pénalités', 'Date Fin'];
+        $lotHeaders = ['N° Lot', 'Libellé', 'Appel d\'Offre', 'Avancement', 'Montant TTC', 'Payé', 'Reste', 'Statut', 'Retard',  'Date Fin'];
         $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
         foreach ($lotHeaders as $idx => $header) {
             $sheet->setCellValue($cols[$idx] . $row, $header);
         }
         $sheet->getStyle("A{$row}:K{$row}")->applyFromArray($this->getSubHeaderStyle());
 
-        $totaux = ['montant' => 0, 'paye' => 0, 'reste' => 0, 'penalites' => 0];
+        $totaux = ['montant' => 0, 'paye' => 0, 'reste' => 0];
 
         foreach ($lots as $lot) {
             $row++;
@@ -794,14 +791,12 @@ class RapportExportService
             $sheet->getStyle("H{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($statutColor);
 
             $sheet->setCellValue("I{$row}", $lot['jours_retard'] > 0 ? $lot['jours_retard'] . ' j' : '-');
-            $sheet->setCellValue("J{$row}", $lot['penalites_appliquees']);
             $sheet->getStyle("J{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
             $sheet->setCellValue("K{$row}", $lot['date_fin_prevue'] ? Carbon::parse($lot['date_fin_prevue'])->format('d/m/Y') : '');
 
             $totaux['montant'] += $lot['montant_proforma_ttc'];
             $totaux['paye'] += $lot['montant_paye'];
             $totaux['reste'] += $lot['reste_a_payer'];
-            $totaux['penalites'] += $lot['penalites_appliquees'];
         }
 
         // Totaux
@@ -811,7 +806,6 @@ class RapportExportService
         $sheet->setCellValue("E{$row}", $totaux['montant']);
         $sheet->setCellValue("F{$row}", $totaux['paye']);
         $sheet->setCellValue("G{$row}", $totaux['reste']);
-        $sheet->setCellValue("J{$row}", $totaux['penalites']);
         $sheet->getStyle("E{$row}:G{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
         $sheet->getStyle("J{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
         $sheet->getStyle("A{$row}:K{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FED7AA');
@@ -991,7 +985,7 @@ class RapportExportService
             $sheet->getStyle("A{$row}")->applyFromArray($this->getHeaderStyle());
 
             $row++;
-            $sheet->setCellValue("A{$row}", 'Raison Sociale:');
+            $sheet->setCellValue("A{$row}", 'Nom du prestataire:');
             $sheet->getStyle("A{$row}")->getFont()->setBold(true);
             $sheet->mergeCells("B{$row}:G{$row}");
             $sheet->setCellValue("B{$row}", $data['prestataire']['raison_sociale'] . ' - ' . $data['prestataire']['email']);

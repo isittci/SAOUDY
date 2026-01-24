@@ -9,7 +9,7 @@ use App\Models\Proforma;
 use App\Models\Prestataire;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\PrestataireLot;
+use App\Models\AttributionLotPrestataire;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +70,7 @@ class PrestataireController extends Controller
                 'avec_lots' => Prestataire::whereHas('attributionsActives')->count(),
             ];
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $prestataires,
@@ -85,7 +85,7 @@ class PrestataireController extends Controller
 
             Log::error('Erreur lors de la récupération des prestataires: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération des prestataires.',
@@ -116,7 +116,7 @@ class PrestataireController extends Controller
                 ->orderBy('nom')
                 ->get();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -128,14 +128,12 @@ class PrestataireController extends Controller
                 ]);
             }
 
-            // dd($pays);
-
             return view('prestataires.create', compact('proformas', 'lotsNonAssignes', 'pays'));
 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du formulaire de création: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération du formulaire de création.',
@@ -169,7 +167,7 @@ class PrestataireController extends Controller
             ], $this->getValidationMessages());
 
             if ($validator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -201,7 +199,7 @@ class PrestataireController extends Controller
             ], $this->getRepresentantValidationMessages());
 
             if ($representantValidator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée pour le représentant légal.',
@@ -235,7 +233,7 @@ class PrestataireController extends Controller
 
             Log::info('Prestataire créé avec succès', ['id' => $prestataire->id_prestataire]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $prestataire,
@@ -251,7 +249,7 @@ class PrestataireController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la création du prestataire.',
@@ -284,7 +282,7 @@ class PrestataireController extends Controller
             // Statistiques du prestataire
             $statistiques = $prestataire->getStatistiques();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $prestataire,
@@ -296,8 +294,8 @@ class PrestataireController extends Controller
             return view('prestataires.show', compact('prestataire', 'statistiques'));
 
         } catch (ModelNotFoundException $e) {
-            dd($e->getMessage());
-            if ($request->wantsJson() || $request->is('api/*')) {
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Prestataire non trouvé.'
@@ -306,10 +304,9 @@ class PrestataireController extends Controller
             return redirect()->route('prestataires.index')->with('error', 'Prestataire non trouvé.');
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
             Log::error('Erreur lors de la récupération du prestataire: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -341,7 +338,7 @@ class PrestataireController extends Controller
                 ->orderBy('nom')
                 ->get();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -357,7 +354,7 @@ class PrestataireController extends Controller
             return view('prestataires.edit', compact('prestataire', 'proformas', 'lotsNonAssignes', 'pays'));
 
         } catch (ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Prestataire non trouvé.'
@@ -368,7 +365,7 @@ class PrestataireController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du formulaire d\'édition: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -409,7 +406,7 @@ class PrestataireController extends Controller
             ], $this->getValidationMessages());
 
             if ($validator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -424,7 +421,6 @@ class PrestataireController extends Controller
             // Gestion du représentant légal si fourni
             if ($request->filled('representant_legal_prestataire')) {
                 $representant = json_decode($validatedData['representant_legal_prestataire'], true);
-                // dd($representant);
 
                 if ($representant && !empty($representant['email'])) {
                     // Validation du représentant légal
@@ -447,7 +443,7 @@ class PrestataireController extends Controller
                     ]);
 
                     if ($representantValidator->fails()) {
-                        if ($request->wantsJson() || $request->is('api/*')) {
+                        if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                             return response()->json([
                                 'success' => false,
                                 'message' => 'Validation échouée pour le représentant légal.',
@@ -511,7 +507,7 @@ class PrestataireController extends Controller
 
             Log::info('Prestataire mis à jour avec succès', ['id' => $prestataire->id_prestataire]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $prestataire->fresh(),
@@ -523,7 +519,7 @@ class PrestataireController extends Controller
                 ->with('success', 'Prestataire mis à jour avec succès.');
 
         } catch (ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Prestataire non trouvé.'
@@ -538,7 +534,7 @@ class PrestataireController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la mise à jour du prestataire.',
@@ -562,7 +558,7 @@ class PrestataireController extends Controller
 
             // Vérifier si le prestataire a des lots en cours
             if ($prestataire->aDesLotsEnCours()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Impossible de supprimer ce prestataire car il a des lots en cours d\'exécution.'
@@ -582,7 +578,7 @@ class PrestataireController extends Controller
 
             Log::info('Prestataire supprimé avec succès', ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Prestataire supprimé avec succès'
@@ -592,7 +588,7 @@ class PrestataireController extends Controller
             return redirect()->route('prestataires.index')->with('success', 'Prestataire supprimé avec succès.');
 
         } catch (ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Prestataire non trouvé.'
@@ -604,7 +600,7 @@ class PrestataireController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression du prestataire: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la suppression du prestataire.',
@@ -635,7 +631,7 @@ class PrestataireController extends Controller
             $statusText = $prestataire->statut_prestataire ? 'activé' : 'désactivé';
             Log::info("Prestataire {$statusText}", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $prestataire,
@@ -646,7 +642,7 @@ class PrestataireController extends Controller
             return redirect()->back()->with('success', "Prestataire {$statusText} avec succès.");
 
         } catch (ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Prestataire non trouvé.'
@@ -658,7 +654,7 @@ class PrestataireController extends Controller
             DB::rollBack();
             Log::error('Erreur lors du changement de statut du prestataire: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -681,11 +677,11 @@ class PrestataireController extends Controller
 
             // Statistiques détaillées supplémentaires
             $statistiques['attributions_par_statut'] = [
-                'en_attente' => $prestataire->attributions()->where('statut_attribution', PrestataireLot::STATUT_EN_ATTENTE)->count(),
-                'attribue' => $prestataire->attributions()->where('statut_attribution', PrestataireLot::STATUT_ATTRIBUE)->count(),
-                'suspendu' => $prestataire->attributions()->where('statut_attribution', PrestataireLot::STATUT_SUSPENDU)->count(),
-                'termine' => $prestataire->attributions()->where('statut_attribution', PrestataireLot::STATUT_TERMINE)->count(),
-                'retire' => $prestataire->attributions()->where('statut_attribution', PrestataireLot::STATUT_RETIRE)->count(),
+                'en_attente' => $prestataire->attributions()->where('statut_attribution', AttributionLotPrestataire::STATUT_EN_ATTENTE)->count(),
+                'attribue' => $prestataire->attributions()->where('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE)->count(),
+                'suspendu' => $prestataire->attributions()->where('statut_attribution', AttributionLotPrestataire::STATUT_SUSPENDU)->count(),
+                'termine' => $prestataire->attributions()->where('statut_attribution', AttributionLotPrestataire::STATUT_TERMINE)->count(),
+                'retire' => $prestataire->attributions()->where('statut_attribution', AttributionLotPrestataire::STATUT_RETIRE)->count(),
             ];
 
             return response()->json([

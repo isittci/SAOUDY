@@ -268,11 +268,7 @@
                     <td class="label">Taux de Paiement</td>
                     <td><strong>{{ number_format($statistiques['taux_paiement_global'], 2) }}%</strong></td>
                 </tr>
-                <tr>
-                    <td class="label">Pénalités Totales</td>
-                    <td class="montant montant-reste">{{ $formatMontant($statistiques['penalites_totales']) }}</td>
-                    <td colspan="2"></td>
-                </tr>
+
             </table>
         </div>
 
@@ -291,7 +287,6 @@
                         <th class="text-right">Reste</th>
                         <th class="text-center">Statut</th>
                         <th class="text-center">Retard</th>
-                        <th class="text-right">Pénalités</th>
                         <th>Date Fin</th>
                     </tr>
                 </thead>
@@ -300,14 +295,12 @@
                         $totalMontant = 0;
                         $totalPaye = 0;
                         $totalReste = 0;
-                        $totalPenalites = 0;
                     @endphp
                     @forelse($lots as $lot)
                         @php
                             $totalMontant += $lot['montant_proforma_ttc'];
                             $totalPaye += $lot['montant_paye'];
                             $totalReste += $lot['reste_a_payer'];
-                            $totalPenalites += $lot['penalites_appliquees'];
 
                             $progressClass = $lot['pourcentage_avancement'] >= 80 ? 'progress-high' :
                                            ($lot['pourcentage_avancement'] >= 50 ? 'progress-medium' : 'progress-low');
@@ -339,9 +332,7 @@
                             <td class="text-center {{ $lot['jours_retard'] > 0 ? 'montant-reste' : '' }}">
                                 {{ $lot['jours_retard'] > 0 ? $lot['jours_retard'] . ' j' : '-' }}
                             </td>
-                            <td class="montant {{ $lot['penalites_appliquees'] > 0 ? 'montant-reste' : '' }}">
-                                {{ $lot['penalites_appliquees'] > 0 ? number_format($lot['penalites_appliquees'], 0, ',', ' ') : '-' }}
-                            </td>
+
                             <td>{{ $lot['date_fin_prevue'] ? \Carbon\Carbon::parse($lot['date_fin_prevue'])->format('d/m/Y') : '' }}</td>
                         </tr>
                     @empty
@@ -355,7 +346,7 @@
                         <td class="montant montant-paye">{{ number_format($totalPaye, 0, ',', ' ') }} FCFA</td>
                         <td class="montant montant-reste">{{ number_format($totalReste, 0, ',', ' ') }} FCFA</td>
                         <td colspan="2"></td>
-                        <td class="montant montant-reste">{{ number_format($totalPenalites, 0, ',', ' ') }} FCFA</td>
+
                         <td></td>
                     </tr>
                 </tbody>

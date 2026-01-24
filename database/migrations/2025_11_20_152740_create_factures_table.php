@@ -40,7 +40,7 @@ return new class extends Migration
             // ============================================================
 
             $table->decimal('montant_facture', 15, 2)
-                ->comment('Montant total TTC de la facture en FCFA. Doit correspondre au montant de la proforma validée (montant_retenu + TVA - remise + pénalités). Précision de 2 décimales pour les calculs comptables. Maximum: 9 999 999 999 999,99 FCFA.');
+                ->comment('Montant total TTC de la facture en FCFA. Doit correspondre au montant de la proforma validée (montant_retenu + TVA - remise). Précision de 2 décimales pour les calculs comptables. Maximum: 9 999 999 999 999,99 FCFA.');
 
             // ============================================================
             // DATES IMPORTANTES

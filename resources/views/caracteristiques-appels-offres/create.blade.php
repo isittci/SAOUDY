@@ -113,7 +113,7 @@
                                         <p class="text-sm text-gray-600">
                                             <i class="fas fa-coins mr-1"></i>
                                             Montant global:
-                                            <strong>{{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }}
+                                            <strong>{{ number_format($appelOffre->montant_global_appel_offre, 2, ',', ' ') }}
                                                 FCFA</strong>
                                         </p>
                                     </div>
@@ -136,17 +136,15 @@
                             </h2>
                         </div>
 
-                        {{-- {{ dd($appelOffre) }} --}}
-
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Date de démarrage prévue -->
                             <div>
                                 <label for="date_demarrage_prevue_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de démarrage prévue
+                                    Date de démarrage prévue <span class="text-red-500">*</span></label>
                                 </label>
                                 <input type="date"
-                                    min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}"
+                                    min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}" required
                                     onchange="verifyLivraisonDate(this)" id="date_demarrage_prevue_caracteristique_appel_offre"
                                     name="date_demarrage_prevue_caracteristique_appel_offre"
                                     value="{{ old('date_demarrage_prevue_caracteristique_appel_offre') }}"
@@ -156,15 +154,13 @@
                                 @enderror
                             </div>
 
-
-
                             <!-- Date de livraison prévisionnelle -->
                             <div>
                                 <label for="date_livraison_previsionnelle_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de livraison prévisionnelle
+                                    Date de livraison prévisionnelle <span class="text-red-500">*</span></label>
                                 </label>
-                                <input type="date" id="date_livraison_previsionnelle_caracteristique_appel_offre"
+                                <input type="date" id="date_livraison_previsionnelle_caracteristique_appel_offre" required
                                     min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}"
                                     name="date_livraison_previsionnelle_caracteristique_appel_offre"
                                     value="{{ old('date_livraison_previsionnelle_caracteristique_appel_offre') }}"
@@ -200,9 +196,9 @@
                             <div>
                                 <label for="lieu_execution_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Lieu d'exécution
+                                    Lieu d'exécution <span class="text-red-500">*</span></label>
                                 </label>
-                                <input type="text" id="lieu_execution_caracteristique_appel_offre"
+                                <input type="text" id="lieu_execution_caracteristique_appel_offre" required
                                     name="lieu_execution_caracteristique_appel_offre" maxlength="255"
                                     value="{{ old('lieu_execution_caracteristique_appel_offre') }}"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent @error('lieu_execution_caracteristique_appel_offre') border-red-500 @enderror"
@@ -214,7 +210,7 @@
                         </div>
                     </div>
 
-                  
+
 
                     <!-- Boutons d'action -->
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

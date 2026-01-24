@@ -9,7 +9,6 @@
 @endsection
 
 @section('content')
-    {{-- Récupération des données via PrestataireLot --}}
     @php
         $attribution = null;
         $prestataire = null;
@@ -18,7 +17,7 @@
         $representantsLegaux = [];
 
         if ($facture->proforma) {
-            $attribution = \App\Models\PrestataireLot::where('proforma_id', $facture->proforma->id_proforma)
+            $attribution = \App\Models\AttributionLotPrestataire::where('proforma_id', $facture->proforma->id_proforma)
                 ->with(['prestataire', 'lot.appelOffre'])
                 ->first();
 
@@ -114,13 +113,13 @@
                         @endcan
 
                         @can('paiements.create')
-                        @if($facture->peutRecevoirPaiement())
-                            <a href="{{ route('paiements.create', $facture->id_facture) }}"
-                                class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i class="fas fa-money-bill-wave text-sm"></i>
-                                <span class="text-sm font-bold">Ajouter Paiement</span>
-                            </a>
-                        @endif
+                            @if($facture->peutRecevoirPaiement() && (!$attribution->date_retrait || !$attribution->date_suspension))
+                                <a href="{{ route('paiements.create', $facture->id_facture) }}"
+                                    class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
+                                    <i class="fas fa-money-bill-wave text-sm"></i>
+                                    <span class="text-sm font-bold">Ajouter Paiement</span>
+                                </a>
+                            @endif
                         @endcan
 
                         @can('factures.pending')
@@ -137,24 +136,24 @@
                         @endcan
 
                         <div class="flex items-center space-x-3">
-    {{-- Excel --}}
-    <a href="{{ route('exports.factures.fiche.excel', $facture->id_facture) }}"
-       title="Télécharger la fiche facture détaillée au format Excel"
-       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-        <i class="fa fa-file-excel mr-2"></i>
-        <span>Fiche Excel</span>
-    </a>
+                            {{-- Excel --}}
+                            <a href="{{ route('exports.factures.fiche.excel', $facture->id_facture) }}"
+                            title="Télécharger la fiche facture détaillée au format Excel"
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                <i class="fa fa-file-excel mr-2"></i>
+                                <span>Fiche Excel</span>
+                            </a>
 
-    {{-- PDF --}}
-    <a href="{{ route('exports.factures.fiche.pdf', $facture->id_facture) }}"
-       title="Télécharger la fiche facture détaillée au format PDF"
-       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-        <i class="fa fa-file-pdf mr-2"></i>
-        <span>Fiche PDF</span>
-    </a>
-</div>
+                            {{-- PDF --}}
+                            <a href="{{ route('exports.factures.fiche.pdf', $facture->id_facture) }}"
+                            title="Télécharger la fiche facture détaillée au format PDF"
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                <i class="fa fa-file-pdf mr-2"></i>
+                                <span>Fiche PDF</span>
+                            </a>
+                        </div>
 
-                        @can('factures.duplicate')
+                        {{-- @can('factures.duplicate')
                         <form action="{{ route('factures.dupliquer', $facture->id_facture) }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
@@ -163,7 +162,7 @@
                                 <span class="text-sm font-bold">Dupliquer</span>
                             </button>
                         </form>
-                        @endcan
+                        @endcan --}}
                     </div>
                 @endcanany
             </div>
@@ -287,7 +286,8 @@
                             </span>
                         </h2>
                         @can('paiements.create')
-                        @if($facture->peutRecevoirPaiement())
+
+                        @if($facture->peutRecevoirPaiement() && (!$attribution->date_retrait || !$attribution->date_suspension))
                             <a href="{{ route('paiements.create', $facture->id_facture) }}"
                                 class="px-3 py-1.5 bg-white text-emerald-600 text-sm rounded-lg hover:bg-emerald-50 transition-colors font-bold">
                                 <i class="fas fa-plus mr-1"></i> Ajouter
@@ -479,7 +479,7 @@
                                             <span class="text-sm font-bold text-gray-600">Localisation</span>
                                         </div>
                                         <span class="font-bold text-gray-800 text-sm">
-                                            {{ collect([$prestataire->ville_prestataire, $prestataire->pays_prestataire])->filter()->implode(', ') }}
+                                            {{ collect([$prestataire->ville_prestataire, $prestataire->pays->nom])->filter()->implode(', ') }}
                                         </span>
                                     </div>
                                 @endif
@@ -781,6 +781,7 @@
                         </div>
                         <div class="p-6 space-y-4">
                             {{-- Statut --}}
+
                             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                                 <span class="text-sm font-bold text-gray-600">Statut</span>
                                 <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold {{ $attribution->statut_badge_class }}">
@@ -857,7 +858,7 @@
                             <div class="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
                                 <span class="text-sm font-bold text-gray-700">Montant TTC</span>
                                 @php
-                                    $montantTTC = $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma + $facture->proforma->penalites_proforma;
+                                    $montantTTC = $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma ;
                                 @endphp
                                 <span class="font-bold text-lg text-indigo-600">{{ number_format($montantTTC, 0, ',', ' ') }} FCFA</span>
                             </div>

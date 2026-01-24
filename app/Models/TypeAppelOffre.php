@@ -68,6 +68,35 @@ class TypeAppelOffre extends Model
             ->orWhereDoesntHave('versions');
     }
 
+    /**
+ * Scope pour obtenir uniquement les versions actives
+ */
+public function scopeVersionActive($query)
+{
+    return $query->where('actif_type_appel_offre', true);
+}
+
+/**
+ * Scope pour obtenir les types parents (originaux)
+ */
+public function scopeParentsOnly($query)
+{
+    return $query->whereNull('parent_id');
+}
+
+/**
+ * Obtenir la version active de ce type
+ */
+public function getVersionActiveAttribute()
+{
+    if ($this->actif_type_appel_offre) {
+        return $this;
+    }
+
+    return $this->versions()->where('actif_type_appel_offre', true)->first()
+        ?? $this->parent?->versions()->where('actif_type_appel_offre', true)->first();
+}
+
 
 
     public function scopeInactif($query)

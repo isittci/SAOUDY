@@ -26,7 +26,8 @@ return new class extends Migration
             // Contacts
             $table->text('adresse_prestataire')->comment('Adresse physique du prestataire');
             $table->string('ville_prestataire', 50);
-            $table->string('pays_prestataire', 50);
+            // $table->string('pays_prestataire', 50);
+            $table->foreignUuid('pays_prestataire')->references('id')->on('pays')->onDelete('set null');
 
             // Représentant légal
             $table->json('representant_legal_prestataire')->comment('Informations sur le représentant légal au format JSON (tableau de represents): id, statut, nom, prenoms, contact, email, nationalité, pays, adresse, profession, date_naissance, lieu_naissance, numero_piece_identite, type_piece_identite, date_delivrance, lieu_delivrance, date_expiration.');

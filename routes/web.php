@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+
 
 
 require __DIR__ . '/auth-route.php';
@@ -20,6 +20,7 @@ require __DIR__.'/paiements.php';
 require __DIR__.'/rbac.php';
 require __DIR__.'/routes_profile.php';
 require __DIR__.'/exports.php';
+
 
 
 

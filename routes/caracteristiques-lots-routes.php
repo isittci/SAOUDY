@@ -65,42 +65,4 @@ Route::middleware(['auth'])->prefix('appels-offres/{appel_offre}/lots')->name('l
     Route::post('/{id}/duplicate', [LotAppelOffreController::class, 'duplicate'])->name('duplicate')->middleware('can:lots.duplicate');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Routes API - Caractéristiques des Appels d'Offres
-|--------------------------------------------------------------------------
-*/
 
-Route::prefix('api')->middleware(['auth:sanctum'])->group(function () {
-
-    // API Caractéristiques
-    Route::prefix('appels-offres/{appel_offre}/caracteristiques')->name('api.caracteristiques-appels-offres.')->group(function () {
-        Route::get('/', [CaracteristiqueAppelOffreController::class, 'index'])->middleware('can:caracteristiques_appels_offres.read');
-        Route::post('/', [CaracteristiqueAppelOffreController::class, 'store'])->middleware('can:caracteristiques_appels_offres.create');
-        Route::get('/{caracteristique}', [CaracteristiqueAppelOffreController::class, 'show'])->middleware('can:caracteristiques_appels_offres.view-details');
-        Route::put('/{caracteristique}', [CaracteristiqueAppelOffreController::class, 'update'])->middleware('can:caracteristiques_appels_offres.update');
-        Route::delete('/{caracteristique}', [CaracteristiqueAppelOffreController::class, 'destroy'])->middleware('can:caracteristiques_appels_offres.delete');
-
-        Route::get('/{caracteristique}/historique', [CaracteristiqueAppelOffreController::class, 'historique'])->middleware('can:caracteristiques_appels_offres.view-history');
-        Route::post('/{caracteristique}/versions/{version}/restaurer', [CaracteristiqueAppelOffreController::class, 'restaurerVersion'])->middleware('can:caracteristiques_appels_offres.view-history');
-    });
-
-
-
-    Route::prefix('appels-offres/{appel_offre}/lots')->name('api.lots-appels-offres.')->group(function () {
-        Route::get('/', [LotAppelOffreController::class, 'index'])->name('index')->middleware('can:lots.read');
-        Route::get('/create', [LotAppelOffreController::class, 'create'])->name('create')->middleware('can:lots.create');
-        Route::post('/', [LotAppelOffreController::class, 'store'])->name('store')->middleware('can:lots.create');
-        Route::get('/{id}', [LotAppelOffreController::class, 'show'])->name('show')->middleware('can:lots.view-details');
-        Route::get('/{id}/edit', [LotAppelOffreController::class, 'edit'])->name('edit')->middleware('can:lots.update');
-        Route::put('/{id}', [LotAppelOffreController::class, 'update'])->name('update')->middleware('can:lots.update');
-        Route::delete('/{id}', [LotAppelOffreController::class, 'destroy'])->name('destroy')->middleware('can:lots.delete');
-
-        // Actions spécifiques
-        Route::post('/{id}/attribuer', [LotAppelOffreController::class, 'attribuer'])->name('attribuer')->middleware('can:attributions_lots.assign');
-        Route::post('/{id}/retirer', [LotAppelOffreController::class, 'retirer'])->name('retirer')->middleware('can:attributions_lots.withdraw');
-        Route::get('/{id}/historique', [LotAppelOffreController::class, 'historique'])->name('historique')->middleware('can:lots.view-history');
-        Route::get('/{id}/statistiques', [LotAppelOffreController::class, 'statistiques'])->name('statistiques')->middleware('can:lots.read');
-        Route::post('/{id}/duplicate', [LotAppelOffreController::class, 'duplicate'])->name('duplicate')->middleware('can:lots.duplicate');
-    });
-});

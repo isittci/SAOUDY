@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class PrestataireLot extends Model
+class AttributionLotPrestataire extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
@@ -75,11 +75,10 @@ class PrestataireLot extends Model
         'date_reprise_reelle',
         'motif_retrait',
         'date_retrait',
+        'date_effective_fin',
         'type_retrait',
         'jours_retard',
-        'taux_penalites',
-        'penalites_appliquees',
-        'penalites_payees',
+
         'pourcentage_avancement',
         'montant_engage',
         'montant_paye',
@@ -100,13 +99,12 @@ class PrestataireLot extends Model
         'date_reprise_prevue' => 'date',
         'date_reprise_reelle' => 'date',
         'date_retrait' => 'datetime',
+        'date_effective_fin' => 'date',
         'is_active' => 'boolean',
         'statut_attribution' => 'integer',
         'version_attribution' => 'integer',
         'jours_retard' => 'integer',
-        'taux_penalites' => 'decimal:2',
-        'penalites_appliquees' => 'decimal:2',
-        'penalites_payees' => 'decimal:2',
+
         'pourcentage_avancement' => 'decimal:2',
         'montant_engage' => 'decimal:2',
         'montant_paye' => 'decimal:2',
@@ -120,9 +118,7 @@ class PrestataireLot extends Model
         'statut_attribution' => 0,
         'version_attribution' => 1,
         'jours_retard' => 0,
-        'taux_penalites' => 0,
-        'penalites_appliquees' => 0,
-        'penalites_payees' => 0,
+
         'pourcentage_avancement' => 0,
         'montant_engage' => 0,
         'montant_paye' => 0,
@@ -142,7 +138,6 @@ class PrestataireLot extends Model
 
     public function proforma(): BelongsTo
     {
-        // dd(52);
         return $this->belongsTo(Proforma::class, 'proforma_id', 'id_proforma');
     }
 
@@ -275,10 +270,7 @@ class PrestataireLot extends Model
         return max(0, $this->montant_engage - $this->montant_paye);
     }
 
-    public function getPenalitesRestantesAttribute(): float
-    {
-        return max(0, $this->penalites_appliquees - $this->penalites_payees);
-    }
+
 
     public function getJoursRetardActuelsAttribute(): int
     {
@@ -356,7 +348,6 @@ class PrestataireLot extends Model
                 'date_debut_prevue' => $data['date_debut_prevue'] ?? null,
                 'date_fin_prevue' => $data['date_fin_prevue'] ?? null,
                 'statut_attribution' => self::STATUT_ATTRIBUE,
-                'taux_penalites' => $data['taux_penalites'] ?? 0,
                 'montant_engage' => $data['montant_engage'] ?? 0,
                 'observations' => $data['observations'] ?? null,
                 'conditions_particulieres' => $data['conditions_particulieres'] ?? null,
@@ -410,6 +401,10 @@ class PrestataireLot extends Model
         ]);
     }
 
+    public function ajoutDateEffectiveFin(Carbon $dateReprisePrevue){
+        return $this->update(['date_effective_fin' => $dateReprisePrevue, 'updated_by' => Auth::id()]);
+    }
+
     /**
      * Reprendre après suspension
      */
@@ -446,7 +441,7 @@ class PrestataireLot extends Model
         }
 
         return DB::transaction(function () use ($motif, $typeRetrait) {
-            $penalitesFinales = $this->calculerPenalites();
+
 
             $this->update([
                 'statut_attribution' => self::STATUT_RETIRE,
@@ -455,7 +450,6 @@ class PrestataireLot extends Model
                 'date_retrait' => now(),
                 'type_retrait' => $typeRetrait,
                 'jours_retard' => $this->jours_retard_actuels,
-                'penalites_appliquees' => $penalitesFinales,
                 'date_fin_reelle' => now(),
                 'updated_by' => Auth::id(),
             ]);
@@ -500,14 +494,12 @@ class PrestataireLot extends Model
 
         return DB::transaction(function () use ($observations) {
             $joursRetardFinal = $this->jours_retard_actuels;
-            $penalitesFinales = $this->calculerPenalites();
 
             $this->update([
                 'statut_attribution' => self::STATUT_TERMINE,
                 'date_fin_reelle' => now(),
                 'pourcentage_avancement' => 100,
                 'jours_retard' => $joursRetardFinal,
-                'penalites_appliquees' => $penalitesFinales,
                 'observations' => $observations
                     ? $this->observations . "\n[Terminé] " . $observations
                     : $this->observations,
@@ -536,25 +528,7 @@ class PrestataireLot extends Model
         ]);
     }
 
-    /**
-     * Calculer les pénalités
-     */
-    public function calculerPenalites(): float
-    {
-        if ($this->taux_penalites <= 0 || $this->montant_engage <= 0) {
-            return 0;
-        }
 
-        $joursRetard = $this->jours_retard_actuels;
-        if ($joursRetard <= 0) {
-            return 0;
-        }
-
-        $penalites = ($this->montant_engage * $this->taux_penalites * $joursRetard) / 100;
-        $plafond = $this->montant_engage * 0.10;
-
-        return min($penalites, $plafond);
-    }
 
     /**
      * Obtenir l'historique complet du lot
@@ -594,33 +568,183 @@ class PrestataireLot extends Model
             'suspendues' => $attributions->where('statut_attribution', self::STATUT_SUSPENDU)->count(),
             'retirees' => $attributions->where('statut_attribution', self::STATUT_RETIRE)->count(),
             'montant_total_engage' => $attributions->sum('montant_engage'),
-            'montant_total_paye' => $attributions->sum('montant_paye'),
-            'penalites_totales' => $attributions->sum('penalites_appliquees'),
+            'montant_total_paye' => $attributions->sum('montant_paye')
         ];
     }
 
+
+
+
+
+
+
+
+
+
+
+
+    /**
+ * Vérifier si le triplet (prestataire_id, lot_id, proforma_id) existe déjà
+ *
+ * @param string $prestataireId
+ * @param string $lotId
+ * @param string $proformaId
+ * @param string|null $excludeId ID à exclure (pour les mises à jour)
+ * @return bool
+ */
+public static function tripletExiste(string $prestataireId, string $lotId, string $proformaId, ?string $excludeId = null): bool
+{
+    $query = self::where('prestataire_id', $prestataireId)
+        ->where('lot_id', $lotId)
+        ->where('proforma_id', $proformaId);
+
+    if ($excludeId) {
+        $query->where('id_attribution', '!=', $excludeId);
+    }
+
+    return $query->exists();
+}
+
+/**
+ * Vérifier si une proforma est déjà utilisée dans une attribution
+ *
+ * @param string $proformaId
+ * @param string|null $excludeId ID d'attribution à exclure
+ * @return bool
+ */
+public static function proformaDejaUtilisee(string $proformaId, ?string $excludeId = null): bool
+{
+    $query = self::where('proforma_id', $proformaId);
+
+    if ($excludeId) {
+        $query->where('id_attribution', '!=', $excludeId);
+    }
+
+    return $query->exists();
+}
+
+/**
+ * Obtenir l'attribution associée à une proforma (relation 1:1)
+ *
+ * @param string $proformaId
+ * @return self|null
+ */
+public static function getAttributionParProforma(string $proformaId): ?self
+{
+    return self::where('proforma_id', $proformaId)->first();
+}
+
+/**
+ * Scope pour rechercher par triplet
+ */
+public function scopeParTriplet(Builder $query, string $prestataireId, string $lotId, string $proformaId): Builder
+{
+    return $query->where('prestataire_id', $prestataireId)
+        ->where('lot_id', $lotId)
+        ->where('proforma_id', $proformaId);
+}
+
+/**
+ * Scope pour rechercher par proforma
+ */
+public function scopeParProforma(Builder $query, string $proformaId): Builder
+{
+    return $query->where('proforma_id', $proformaId);
+}
+
+
+    /**
+ * Valider l'unicité avant création/mise à jour
+ *
+ * @throws \Exception
+ */
+public function validerUnicite(): void
+{
+    // Vérifier si la proforma est déjà utilisée par une autre attribution
+    if (self::proformaDejaUtilisee($this->proforma_id, $this->exists ? $this->id_attribution : null)) {
+        throw new \Exception("Cette proforma est déjà associée à une autre attribution. Chaque proforma ne peut être utilisée qu'une seule fois.");
+    }
+
+    // Vérifier l'unicité du triplet
+    if (self::tripletExiste(
+        $this->prestataire_id,
+        $this->lot_id,
+        $this->proforma_id,
+        $this->exists ? $this->id_attribution : null
+    )) {
+        throw new \Exception("Une attribution avec ce prestataire, lot et proforma existe déjà.");
+    }
+}
+
     // ==================== BOOT ====================
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->created_by)) {
-                $model->created_by = Auth::id();
-            }
-            if (empty($model->numero_attribution)) {
-                $model->numero_attribution = self::genererNumeroAttribution();
-            }
-        });
+    //     static::creating(function ($model) {
+    //         if (empty($model->created_by)) {
+    //             $model->created_by = Auth::id();
+    //         }
+    //         if (empty($model->numero_attribution)) {
+    //             $model->numero_attribution = self::genererNumeroAttribution();
+    //         }
+    //     });
 
-        static::updating(function ($model) {
-            $model->updated_by = Auth::id();
-        });
+    //     static::updating(function ($model) {
+    //         $model->updated_by = Auth::id();
+    //     });
 
-        static::deleting(function ($model) {
-            $model->deleted_by = Auth::id();
-            $model->save();
-        });
-    }
+    //     static::deleting(function ($model) {
+    //         $model->deleted_by = Auth::id();
+    //         $model->save();
+    //     });
+    // }
+
+
+    /**
+ * ============================================================================
+ * MODIFICATION DE LA MÉTHODE boot() EXISTANTE
+ * ============================================================================
+ *
+ * Remplacez votre méthode boot() actuelle par celle-ci :
+ */
+
+protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        // Validation de l'unicité du triplet et de la proforma
+        $model->validerUnicite();
+
+        if (empty($model->created_by)) {
+            $model->created_by = Auth::id();
+        }
+        if (empty($model->numero_attribution)) {
+            $model->numero_attribution = self::genererNumeroAttribution();
+        }
+    });
+
+    static::updating(function ($model) {
+        // Si les clés du triplet changent, valider l'unicité
+        if ($model->isDirty(['prestataire_id', 'lot_id', 'proforma_id'])) {
+            $model->validerUnicite();
+        }
+
+        $model->updated_by = Auth::id();
+    });
+
+    static::deleting(function ($model) {
+        $model->deleted_by = Auth::id();
+        $model->save();
+    });
+}
+
+
+
+
+
+
+
 }

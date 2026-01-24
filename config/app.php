@@ -83,7 +83,9 @@ return [
     |
     */
 
-    'locale' => 'en',
+    // 'locale' => 'en',
+    'locale' => 'fr',
+
 
     /*
     |--------------------------------------------------------------------------
@@ -98,6 +100,7 @@ return [
 
     'fallback_locale' => 'en',
 
+
     /*
     |--------------------------------------------------------------------------
     | Faker Locale
@@ -109,7 +112,8 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    // 'faker_locale' => 'en_US',
+    'faker_locale' => 'fr_FR',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,7 +172,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        
+
     ])->toArray(),
 
     /*

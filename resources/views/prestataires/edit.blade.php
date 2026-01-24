@@ -102,10 +102,10 @@
                 <!-- Onglet Informations générales -->
                 <div id="contentGeneral" class="tab-content p-6">
                     <div class="space-y-6">
-                        <!-- Raison sociale -->
+                        <!-- Nom du prestataire -->
                         <div>
                             <label for="raison_sociale_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Raison sociale <span class="text-red-500">*</span>
+                                Nom du prestataire <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="raison_sociale_prestataire" id="raison_sociale_prestataire"
                                 value="{{ old('raison_sociale_prestataire', $prestataire->raison_sociale_prestataire) }}" required maxlength="255"
@@ -379,8 +379,6 @@
                                     value="{{ $representantActif['nationalite'] ?? '' }}" maxlength="50"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
                             </div>
-
-{{-- {{ dd($representantActif['pays']) }} --}}
 
                              <!-- Pays -->
                                 <div>

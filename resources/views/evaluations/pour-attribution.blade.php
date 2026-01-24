@@ -3,10 +3,11 @@
 @section('title', 'Évaluations - Attribution ' . $attribution->numero_attribution)
 
 @section('breadcrumb')
-    <a @can('evaluations_attributions.read') href="{{ route('evaluations.index') }}" @endcan
-        class="text-white/80 hover:text-white transition-colors">Évaluations</a>
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Attributions</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <span class="text-white font-medium">Attribution {{ $attribution->numero_attribution }}</span>
+    <a  @can('attributions_lots.view-details') href="{{ route('attributions.show', $attribution->id_attribution) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ $attribution->numero_attribution }}</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <span class="text-white font-medium"> Évaluations {{ $attribution->numero_attribution }} </span>
 @endsection
 
 @section('content')
@@ -24,13 +25,11 @@
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Évaluations par critère</h1>
                         <p class="text-gray-600 mt-1">
-                            {{ $attribution->numero_attribution }} -
-                            Lot {{ $attribution->lot->numero ?? 'N/A' }}
+                            {{ $attribution->numero_attribution }} - Lot {{ $attribution->lot->numero ?? 'N/A' }}
                         </p>
                     </div>
                 </div>
 
-                {{-- {{ dd($statistiquesCriteres) }} --}}
                 @php
                     $noteReference = 0;
                     foreach ($criteresDisponibles as $note) {
@@ -75,11 +74,9 @@
 
                         @php
                             $stats = collect($statistiquesCriteres);
-
                             $totalNoteReference = $stats->sum(fn ($s) => (float) $s['note_reference']);
                             $totalEvalue        = $stats->sum('total_evalue');
                             $criteresComplets   = $stats->where('est_complet', true)->count();
-
                             $pourcentageGlobal = $totalNoteReference > 0 ? ($totalEvalue / $totalNoteReference) * 100 : 0;
                         @endphp
 
@@ -117,7 +114,6 @@
                     </div>
                 </div>
 
-                {{-- {{ dd(collect($statistiquesCriteres)->sum('total_evalue')) }} --}}
                 <!-- Liste des critères avec leurs évaluations -->
                 @foreach ($statistiquesCriteres as $critereId => $stat)
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -155,11 +151,9 @@
                             <!-- Barre de progression du critère -->
                             <div class="mt-3 flex items-center space-x-3">
                                 <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                    <div class="h-2 rounded-full transition-all {{ $stat['est_complet'] ? 'bg-green-500' : 'bg-orange-500' }}"
-                                        style="width: {{ min($stat['pourcentage_complete'], 100) }}%"></div>
+                                    <div class="h-2 rounded-full transition-all {{ $stat['est_complet'] ? 'bg-green-500' : 'bg-orange-500' }}" style="width: {{ min($stat['pourcentage_complete'], 100) }}%"></div>
                                 </div>
-                                <span
-                                    class="text-sm font-medium {{ $stat['est_complet'] ? 'text-green-600' : 'text-orange-600' }}">
+                                <span class="text-sm font-medium {{ $stat['est_complet'] ? 'text-green-600' : 'text-orange-600' }}">
                                     {{ number_format($stat['pourcentage_complete'], 1) }}%
                                 </span>
                             </div>
@@ -614,7 +608,7 @@
                     </div>
                     <div class="p-6 space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Raison sociale</label>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nom du prestataire</label>
                             <p class="text-gray-900 font-medium">
                                 {{ $attribution->prestataire->raison_sociale_prestataire ?? 'N/A' }}</p>
                         </div>

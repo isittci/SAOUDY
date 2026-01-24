@@ -982,7 +982,8 @@
                         @endcan
 
                         @can('paiements.create')
-                        @if ($montantRestant > 0)
+                        {{-- @if ($montantRestant > 0) --}}
+                        @if($montantRestant > 0 && $facture->peutRecevoirPaiement() && $attribution &&  (!$attribution->date_retrait || !$attribution->date_suspension) )
                             <a href="{{ route('paiements.create', $factureId) }}"
                                 class="w-full px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-all text-sm font-medium flex items-center justify-center">
                                 <i class="fas fa-plus mr-2"></i>

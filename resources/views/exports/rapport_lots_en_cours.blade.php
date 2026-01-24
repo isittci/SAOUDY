@@ -191,7 +191,6 @@
                     <th style="width: 10%">Reste</th>
                     <th style="width: 7%">Statut</th>
                     <th style="width: 5%">Retard</th>
-                    <th style="width: 8%">Pénalités</th>
                 </tr>
             </thead>
             <tbody>
@@ -214,9 +213,7 @@
                     <td class="text-center @if($lot['jours_retard'] > 0) text-danger @endif">
                         {{ $lot['jours_retard'] > 0 ? $lot['jours_retard'] . ' j' : '-' }}
                     </td>
-                    <td class="text-right @if($lot['penalites_appliquees'] > 0) text-danger @endif">
-                        {{ $lot['penalites_appliquees'] > 0 ? number_format($lot['penalites_appliquees'], 0, ',', ' ') : '-' }}
-                    </td>
+
                 </tr>
                 @endforeach
 
@@ -226,7 +223,6 @@
                     <td class="text-right text-success">{{ $totalPaye }}</td>
                     <td class="text-right text-danger">{{ $totalReste }}</td>
                     <td colspan="2"></td>
-                    <td class="text-right text-danger">{{ $totalPenalites }}</td>
                 </tr>
             </tbody>
         </table>

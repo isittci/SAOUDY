@@ -32,6 +32,10 @@ return new class extends Migration
             $table->date('date_debut_reelle')->nullable()->comment('Date réelle de début');
             $table->date('date_fin_reelle')->nullable()->comment('Date réelle de fin');
 
+            $table->date('date_effective_fin')
+                ->nullable()
+                ->comment('Date effective de fin');
+
             // Statut: 0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé, 5=Annulé
             $table->smallInteger('statut_attribution')->default(0)->comment('0=En attente, 1=Attribué, 2=Suspendu, 3=Retiré, 4=Terminé, 5=Annulé');
 
@@ -48,9 +52,6 @@ return new class extends Migration
 
             // Pénalités et retards
             $table->integer('jours_retard')->default(0)->comment('Jours de retard accumulés');
-            $table->decimal('taux_penalites', 5, 2)->default(0)->comment('Taux de pénalités (%)');
-            $table->decimal('penalites_appliquees', 15, 2)->default(0)->comment('Montant des pénalités');
-            $table->decimal('penalites_payees', 15, 2)->default(0)->comment('Pénalités payées');
 
             // Avancement et finances
             $table->decimal('pourcentage_avancement', 5, 2)->default(0)->comment('Avancement (0-100%)');

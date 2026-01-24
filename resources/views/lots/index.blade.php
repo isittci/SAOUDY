@@ -105,16 +105,16 @@
                         <div class="flex items-center space-x-3">
                             {{-- Excel --}}
                             <a href="{{ route('exports.lots-en-cours.excel') }}"
-                            title="Télécharger la liste des lots en cours au format Excel"
-                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                title="Télécharger la liste des lots en cours au format Excel"
+                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
                                 <i class="fa fa-file-excel mr-2"></i>
                                 <span>Exporter Excel</span>
                             </a>
 
                             {{-- PDF --}}
                             <a href="{{ route('exports.lots-en-cours.pdf') }}"
-                            title="Télécharger la liste des lots en cours au format PDF"
-                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
+                                title="Télécharger la liste des lots en cours au format PDF"
+                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
                                 <i class="fa fa-file-pdf mr-2"></i>
                                 <span>Exporter PDF</span>
                             </a>
@@ -152,6 +152,7 @@
                             @endcanany
                         </tr>
                     </thead>
+
                     <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
                         @forelse($lots as $lot)
                             <tr class="hover:bg-gray-50 transition-colors duration-150">
@@ -262,8 +263,7 @@
                                             @endcan
 
 
-                                            @canany(['attributions_lots.assign', 'attributions_lots.withdraw',
-                                                'lots.view-history', 'lots.duplicate', 'lots.delete'])
+                                            {{-- @canany(['attributions_lots.assign', 'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
                                                 <!-- Menu Actions -->
                                                 <div class="relative">
                                                     <button onclick="toggleMenu('{{ $lot->id_lot }}')"
@@ -309,6 +309,69 @@
                                                                     Dupliquer
                                                                 </button>
                                                             @endcan
+
+                                                            @can('lots.delete')
+                                                                @if (!$lot->isAttribue())
+                                                                    <button
+                                                                        onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                        <i class="fas fa-trash mr-2"></i>
+                                                                        Supprimer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endcanany --}}
+
+                                            @canany(['attributions_lots.assign', 'attributions_lots.withdraw',
+                                                'lots.view-history', 'lots.duplicate', 'lots.delete'])
+                                                <!-- Menu Actions -->
+                                                <div class="relative">
+                                                    <button onclick="toggleMenu(event, '{{ $lot->id_lot }}')"
+                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                                        title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v text-sm"></i>
+                                                    </button>
+                                                    <div id="menu-{{ $lot->id_lot }}"
+                                                        class="hidden fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
+                                                        <div class="py-1">
+                                                            @can('attributions_lots.assign')
+                                                                @if (!$lot->attribution_lot)
+                                                                    <button onclick="openAttributionModal('{{ $lot->id_lot }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-user-check mr-2 text-green-500"></i>
+                                                                        Attribuer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('attributions_lots.withdraw')
+                                                                @if ($lot->isAttribue() && !$lot->isRetire())
+                                                                    <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
+                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                        <i class="fas fa-ban mr-2 text-red-500"></i>
+                                                                        Retirer
+                                                                    </button>
+                                                                @endif
+                                                            @endcan
+
+                                                            @can('lots.view-history')
+                                                                <button onclick="viewHistorique('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-history mr-2 text-blue-500"></i>
+                                                                    Historique
+                                                                </button>
+                                                            @endcan
+
+                                                            {{-- @can('lots.duplicate')
+                                                                <button onclick="duplicate('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
+                                                                    Dupliquer
+                                                                </button>
+                                                            @endcan --}}
 
                                                             @can('lots.delete')
                                                                 @if (!$lot->isAttribue())
@@ -385,52 +448,90 @@
             <script>
                 let deleteLotId = null;
 
-                // Toggle menu
-                window.toggleMenu = function(id) {
-                    const menu = document.getElementById(`menu-${id}`);
-                    const allMenus = document.querySelectorAll('[id^="menu-"]');
+                // // Toggle menu
+                // window.toggleMenu = function(id) {
+                //     const menu = document.getElementById(`menu-${id}`);
+                //     const allMenus = document.querySelectorAll('[id^="menu-"]');
 
-                    allMenus.forEach(m => {
-                        if (m.id !== `menu-${id}`) {
-                            m.classList.add('hidden');
-                        }
+                //     allMenus.forEach(m => {
+                //         if (m.id !== `menu-${id}`) {
+                //             m.classList.add('hidden');
+                //         }
+                //     });
+
+                //     menu.classList.toggle('hidden');
+                // }
+
+                // // Fermer les menus en cliquant ailleurs
+                // document.addEventListener('click', function(e) {
+                //     if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
+                //         document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+                //     }
+                // });
+
+                // public/js/dropdown-menu.js
+                function toggleMenu(event, id) {
+                    event.stopPropagation();
+
+                    const button = event.currentTarget;
+                    const menu = document.getElementById('menu-' + id);
+
+                    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                        if (m.id !== 'menu-' + id) m.classList.add('hidden');
                     });
 
                     menu.classList.toggle('hidden');
+
+                    if (!menu.classList.contains('hidden')) {
+                        const rect = button.getBoundingClientRect();
+                        let top = rect.bottom + 8;
+                        let left = rect.right - menu.offsetWidth;
+
+                        if (top + menu.offsetHeight > window.innerHeight) {
+                            top = rect.top - menu.offsetHeight - 8;
+                        }
+                        if (left < 0) left = rect.left;
+
+                        menu.style.top = top + 'px';
+                        menu.style.left = left + 'px';
+                    }
                 }
 
-                // Fermer les menus en cliquant ailleurs
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                        document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
+                        document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
                     }
                 });
 
-                // Dupliquer
-                window.duplicate = function(id) {
-                    if (confirm('Voulez-vous dupliquer ce lot ?')) {
-                        fetch(`/lots/${id}/duplicate`, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    window.location.href = `/lots/${data.data.id_lot}/edit`;
-                                } else {
-                                    alert(data.message || 'Une erreur est survenue');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Erreur:', error);
-                                alert('Une erreur est survenue');
-                            });
-                    }
-                }
+                document.addEventListener('scroll', function() {
+                    document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
+                }, true);
+
+                // // Dupliquer
+                // window.duplicate = function(id) {
+                //     if (confirm('Voulez-vous dupliquer ce lot ?')) {
+                //         fetch(`/lots/${id}/duplicate`, {
+                //                 method: 'POST',
+                //                 headers: {
+                //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                //                     'Content-Type': 'application/json',
+                //                     'Accept': 'application/json'
+                //                 }
+                //             })
+                //             .then(response => response.json())
+                //             .then(data => {
+                //                 if (data.success) {
+                //                     window.location.href = `/lots/${data.data.id_lot}/edit`;
+                //                 } else {
+                //                     alert(data.message || 'Une erreur est survenue');
+                //                 }
+                //             })
+                //             .catch(error => {
+                //                 console.error('Erreur:', error);
+                //                 alert('Une erreur est survenue');
+                //             });
+                //     }
+                // }
 
                 // Voir historique
                 window.viewHistorique = function(id) {

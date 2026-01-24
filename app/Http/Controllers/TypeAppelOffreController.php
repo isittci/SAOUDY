@@ -10,10 +10,108 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+
+/**
+ * @OA\Tag(
+ *     name="Types d'Appels d'Offres",
+ *     description="Gestion des types d'appels d'offres (catégories selon les montants)"
+ * )
+ */
 class TypeAppelOffreController extends Controller
 {
     /**
      * Affiche la liste des types d'appels d'offres
+     *
+     * @OA\Get(
+     *     path="/types-appels-offres",
+     *     operationId="getTypesAppelsOffres",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Liste des types d'appels d'offres",
+     *     description="Récupère la liste paginée des types d'appels d'offres avec filtres et tri. Requiert la permission `type_appels_offres.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="actif",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrer par statut actif (true/false)",
+     *         @OA\Schema(type="boolean", example=true)
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         description="Recherche dans le libellé et le code",
+     *         @OA\Schema(type="string", example="Appel ouvert")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         required=false,
+     *         description="Champ de tri",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"created_at", "libelle_type_appel_offre", "code_type_appel_offre", "valeur_minimuim_type_appel_offre"},
+     *             default="created_at"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_order",
+     *         in="query",
+     *         required=false,
+     *         description="Ordre de tri",
+     *         @OA\Schema(type="string", enum={"asc", "desc"}, default="desc")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Nombre d'éléments par page",
+     *         @OA\Schema(type="integer", minimum=1, maximum=100, default=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         description="Numéro de la page",
+     *         @OA\Schema(type="integer", minimum=1, default=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste récupérée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/TypeAppelOffre")
+     *                 ),
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="last_page", type="integer", example=5),
+     *                 @OA\Property(property="per_page", type="integer", example=15),
+     *                 @OA\Property(property="total", type="integer", example=73)
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Liste des types d'appels d'offres récupérée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -22,7 +120,7 @@ class TypeAppelOffreController extends Controller
             $query = TypeAppelOffre::with(['creator', 'updater'])
                 ->with(['parent'])
                 ->withCount('appelOffres')
-                /*->where('actif_type_appel_offre', true)*/?->versionActuelle();
+                /*->where('actif_type_appel_offre', true)*/?->versionActive();
 
             // Filtres
             if ($request->filled('actif')) {
@@ -49,7 +147,7 @@ class TypeAppelOffreController extends Controller
             $typesAO = $query->paginate($perPage);
 
             // Retour selon le type de requête
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $typesAO,
@@ -61,7 +159,7 @@ class TypeAppelOffreController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des types AO: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des données',
@@ -77,28 +175,123 @@ class TypeAppelOffreController extends Controller
 
     /**
      * Enregistre un nouveau type d'appel d'offres
+     *
+     * @OA\Post(
+     *     path="/types-appels-offres",
+     *     operationId="createTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Créer un type d'appel d'offres",
+     *     description="Crée un nouveau type d'appel d'offres avec ses plages de valeurs. Requiert la permission `type_appels_offres.create`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Données du type d'appel d'offres",
+     *         @OA\JsonContent(
+     *             required={"libelle_type_appel_offre", "valeur_minimuim_type_appel_offre", "valeur_maximuim_type_appel_offre"},
+     *             @OA\Property(
+     *                 property="libelle_type_appel_offre",
+     *                 type="string",
+     *                 maxLength=160,
+     *                 description="Libellé du type d'appel d'offres",
+     *                 example="Appel d'Offres Ouvert National"
+     *             ),
+     *             @OA\Property(
+     *                 property="valeur_minimuim_type_appel_offre",
+     *                 type="number",
+     *                 format="decimal",
+     *                 minimum=0,
+     *                 description="Valeur minimale du marché (en FCFA)",
+     *                 example=50000000
+     *             ),
+     *             @OA\Property(
+     *                 property="valeur_maximuim_type_appel_offre",
+     *                 type="number",
+     *                 format="decimal",
+     *                 description="Valeur maximale du marché (en FCFA). Doit être supérieure à la valeur minimale.",
+     *                 example=500000000
+     *             ),
+     *             @OA\Property(
+     *                 property="description_critere_type_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Description détaillée du type et de ses critères",
+     *                 example="Appel d'offres ouvert à toutes les entreprises nationales pour les marchés de travaux."
+     *             ),
+     *             @OA\Property(
+     *                 property="actif_type_appel_offre",
+     *                 type="boolean",
+     *                 default=true,
+     *                 description="Statut actif/inactif",
+     *                 example=true
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Type créé avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/TypeAppelOffre"),
+     *             @OA\Property(property="message", type="string", example="Type d'appel d'offres créé avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Erreur de validation"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="libelle_type_appel_offre",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="Le libellé est obligatoire")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="valeur_maximuim_type_appel_offre",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="La valeur maximale doit être supérieure à la valeur minimale")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function store(Request $request)
     {
         // Validation
         $validator = Validator::make($request->all(), [
             'libelle_type_appel_offre' => 'required|string|max:160',
-            // 'code_type_appel_offre' => 'required|string|max:10|unique:types_appels_offres,code_type_appel_offre',
             'valeur_minimuim_type_appel_offre' => 'required|numeric|min:0',
             'valeur_maximuim_type_appel_offre' => 'required|numeric|gt:valeur_minimuim_type_appel_offre',
             'description_critere_type_appel_offre' => 'nullable|string',
             'actif_type_appel_offre' => 'boolean',
         ], [
             'libelle_type_appel_offre.required' => 'Le libellé est obligatoire',
-            // 'code_type_appel_offre.required' => 'Le code est obligatoire',
-            // 'code_type_appel_offre.unique' => 'Ce code existe déjà',
             'valeur_minimuim_type_appel_offre.required' => 'La valeur minimale est obligatoire',
             'valeur_maximuim_type_appel_offre.required' => 'La valeur maximale est obligatoire',
             'valeur_maximuim_type_appel_offre.gt' => 'La valeur maximale doit être supérieure à la valeur minimale',
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -113,7 +306,6 @@ class TypeAppelOffreController extends Controller
         try {
             $typeAO = TypeAppelOffre::create([
                 'libelle_type_appel_offre' => $request->libelle_type_appel_offre,
-                // 'code_type_appel_offre' => strtoupper($request->code_type_appel_offre), 
                 'valeur_minimuim_type_appel_offre' => $request->valeur_minimuim_type_appel_offre,
                 'valeur_maximuim_type_appel_offre' => $request->valeur_maximuim_type_appel_offre,
                 'description_critere_type_appel_offre' => $request->description_critere_type_appel_offre,
@@ -125,7 +317,7 @@ class TypeAppelOffreController extends Controller
 
             Log::info("Type d'AO créé avec succès", ['id' => $typeAO->id_type_appel_offre]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $typeAO->load('creator'),
@@ -139,7 +331,7 @@ class TypeAppelOffreController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création du type AO: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la création',
@@ -151,8 +343,54 @@ class TypeAppelOffreController extends Controller
         }
     }
 
+
+
     /**
      * Affiche les détails d'un type d'appel d'offres
+     *
+     * @OA\Get(
+     *     path="/types-appels-offres/{id}",
+     *     operationId="showTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Détails d'un type d'appel d'offres",
+     *     description="Récupère les détails complets d'un type d'appel d'offres avec ses 10 derniers appels d'offres associés. Requiert la permission `type_appels_offres.view-details`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Détails récupérés avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/TypeAppelOffreDetailed"),
+     *             @OA\Property(property="message", type="string", example="Détails récupérés avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Type d'appel d'offres introuvable"),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function show(Request $request, $id)
     {
@@ -167,7 +405,7 @@ class TypeAppelOffreController extends Controller
             ])->withCount('appelOffres')
                 ->findOrFail($id);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $typeAO,
@@ -179,7 +417,7 @@ class TypeAppelOffreController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du type AO: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Type d\'appel d\'offres introuvable',
@@ -192,6 +430,70 @@ class TypeAppelOffreController extends Controller
     }
 
 
+    /**
+     *
+     * Récupérer les appels d'offres d'un type spécifique
+     * @param Request $request
+     * @param mixed $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     *
+     *
+     * @OA\Get(
+     *     path="/types-appels-offres/{id}/appels-offres",
+     *     operationId="fetchAOByTAO",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Appels d'offres par type",
+     *     description="Récupère la liste paginée des appels d'offres associés à un type spécifique. Requiert la permission `appels_offres.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Nombre d'éléments par page",
+     *         @OA\Schema(type="integer", default=10, minimum=1, maximum=100)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste récupérée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="type_appel_offre", ref="#/components/schemas/TypeAppelOffre"),
+     *                 @OA\Property(
+     *                     property="appels_offres",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/AppelOffreSummary")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="pagination",
+     *                     type="object",
+     *                     @OA\Property(property="current_page", type="integer", example=1),
+     *                     @OA\Property(property="last_page", type="integer", example=3),
+     *                     @OA\Property(property="per_page", type="integer", example=10),
+     *                     @OA\Property(property="total", type="integer", example=25),
+     *                     @OA\Property(property="from", type="integer", example=1),
+     *                     @OA\Property(property="to", type="integer", example=10)
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Détails récupérés avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
 public function fetchAOByTAO(Request $request, $id)
 {
     try {
@@ -207,7 +509,7 @@ public function fetchAOByTAO(Request $request, $id)
             ->latest()
             ->paginate($perPage);
 
-        if ($request->wantsJson() || $request->is('api/*')) {
+        if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -231,7 +533,7 @@ public function fetchAOByTAO(Request $request, $id)
     } catch (Exception $e) {
         Log::error('Erreur lors de la récupération du type AO: ' . $e->getMessage());
 
-        if ($request->wantsJson() || $request->is('api/*')) {
+        if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Type d\'appel d\'offres introuvable',
@@ -256,16 +558,111 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
     /**
      * Met à jour un type d'appel d'offres
+     *
+     * @OA\Put(
+     *     path="/types-appels-offres/{id}",
+     *     operationId="updateTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Mettre à jour un type d'appel d'offres",
+     *     description="Met à jour un type d'appel d'offres. Si les valeurs min/max changent, une nouvelle version est créée (versioning). Requiert la permission `type_appels_offres.update`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"libelle_type_appel_offre", "valeur_minimuim_type_appel_offre", "valeur_maximuim_type_appel_offre"},
+     *             @OA\Property(
+     *                 property="libelle_type_appel_offre",
+     *                 type="string",
+     *                 maxLength=160,
+     *                 example="Appel d'Offres Ouvert International"
+     *             ),
+     *             @OA\Property(
+     *                 property="valeur_minimuim_type_appel_offre",
+     *                 type="number",
+     *                 format="decimal",
+     *                 minimum=0,
+     *                 example=100000000
+     *             ),
+     *             @OA\Property(
+     *                 property="valeur_maximuim_type_appel_offre",
+     *                 type="number",
+     *                 format="decimal",
+     *                 example=1000000000
+     *             ),
+     *             @OA\Property(
+     *                 property="description_critere_type_appel_offre",
+     *                 type="string",
+     *                 nullable=true,
+     *                 example="Appel d'offres ouvert aux entreprises internationales."
+     *             ),
+     *             @OA\Property(
+     *                 property="motif_modification_type_appel_offre",
+     *                 type="string",
+     *                 maxLength=255,
+     *                 nullable=true,
+     *                 description="Obligatoire si les valeurs min/max changent",
+     *                 example="Ajustement des seuils suite à la réforme des marchés publics 2024"
+     *             ),
+     *             @OA\Property(
+     *                 property="actif_type_appel_offre",
+     *                 type="boolean",
+     *                 example=true
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Type mis à jour avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/TypeAppelOffre"),
+     *             @OA\Property(property="message", type="string", example="Type d'appel d'offres mis à jour avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
         $typeAO = TypeAppelOffre::findOrFail($id);
-// dd(25);
+
         $validator = Validator::make($request->all(), [
             'libelle_type_appel_offre' => 'required|string|max:160',
-            // 'code_type_appel_offre' => 'nullable|string|max:10|unique:types_appels_offres,code_type_appel_offre,' . $id . ',id_type_appel_offre',
             'valeur_minimuim_type_appel_offre' => 'required|numeric|min:0',
             'valeur_maximuim_type_appel_offre' => 'required|numeric|gt:valeur_minimuim_type_appel_offre',
             'description_critere_type_appel_offre' => 'nullable|string',
@@ -283,7 +680,7 @@ public function fetchAOByTAO(Request $request, $id)
 
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -306,7 +703,7 @@ public function fetchAOByTAO(Request $request, $id)
             //         $typeAO->valeur_maximuim_type_appel_offre != $request->valeur_maximuim_type_appel_offre;
 
             //     if ($changementValeurs) {
-            //         if ($request->wantsJson() || $request->is('api/*')) {
+            //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
             //             return response()->json([
             //                 'success' => false,
             //                 'message' => 'Impossible de modifier les valeurs. Ce type est déjà utilisé dans des appels d\'offres.'
@@ -349,13 +746,11 @@ public function fetchAOByTAO(Request $request, $id)
                 // La durée sera calculée automatiquement par le modèle
             }
 
-
-
             DB::commit();
 
             Log::info("Type d'AO mis à jour", ['id' => $typeAO->id_type_appel_offre]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $typeAO->load('updater'),
@@ -369,7 +764,7 @@ public function fetchAOByTAO(Request $request, $id)
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour du type AO: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour',
@@ -381,8 +776,62 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
     /**
      * Supprime un type d'appel d'offres
+     *
+     * @OA\Delete(
+     *     path="/types-appels-offres/{id}",
+     *     operationId="deleteTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Supprimer un type d'appel d'offres",
+     *     description="Supprime (soft delete) un type d'appel d'offres. Impossible si le type est utilisé dans des appels d'offres. Requiert la permission `type_appels_offres.delete`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Type supprimé avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Type d'appel d'offres supprimé avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Impossible de supprimer - type utilisé",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Impossible de supprimer ce type. Il est utilisé dans 5 appel(s) d'offres.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function destroy(Request $request, $id)
     {
@@ -392,7 +841,7 @@ public function fetchAOByTAO(Request $request, $id)
 
             // Vérifier si le type est utilisé
             if ($typeAO->appel_offres_count > 0) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Impossible de supprimer ce type. Il est utilisé dans ' .
@@ -411,7 +860,7 @@ public function fetchAOByTAO(Request $request, $id)
 
             Log::info("Type d'AO supprimé", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Type d\'appel d\'offres supprimé avec succès'
@@ -424,7 +873,7 @@ public function fetchAOByTAO(Request $request, $id)
             DB::rollBack();
             Log::error('Erreur lors de la suppression du type AO: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la suppression',
@@ -436,8 +885,55 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
     /**
      * Active/Désactive un type d'appel d'offres
+     *
+     * @OA\Post(
+     *     path="/types-appels-offres/{id}/toggle-status",
+     *     operationId="toggleStatusTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Activer/Désactiver un type",
+     *     description="Inverse le statut actif/inactif d'un type d'appel d'offres. Requiert la permission `type_appels_offres.toggle-status`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Statut modifié avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/TypeAppelOffre"),
+     *             @OA\Property(property="message", type="string", example="Type d'appel d'offres activé avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function toggleStatus(Request $request, $id)
     {
@@ -455,7 +951,7 @@ public function fetchAOByTAO(Request $request, $id)
 
             Log::info("Type d'AO {$statut}", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $typeAO,
@@ -468,7 +964,7 @@ public function fetchAOByTAO(Request $request, $id)
             DB::rollBack();
             Log::error('Erreur lors du changement de statut: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors du changement de statut',
@@ -480,8 +976,61 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
+
     /**
      * Vérifie si un montant correspond à un type d'AO
+     *
+     * @OA\Post(
+     *     path="/types-appels-offres/check-montant",
+     *     operationId="checkMontantTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Vérifier le type par montant",
+     *     description="Recherche les types d'appels d'offres dont la plage de valeurs inclut le montant donné. Requiert la permission `type_appels_offres.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"montant"},
+     *             @OA\Property(
+     *                 property="montant",
+     *                 type="number",
+     *                 format="decimal",
+     *                 minimum=0,
+     *                 description="Montant du marché à vérifier (en FCFA)",
+     *                 example=75000000
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Vérification effectuée",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/TypeAppelOffre")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Type(s) correspondant(s) trouvé(s)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Montant invalide",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Montant invalide"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function checkMontant(Request $request)
     {
@@ -521,8 +1070,58 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
     /**
      * Génère un numéro d'AO pour un type donné
+     *
+     * @OA\Get(
+     *     path="/types-appels-offres/{id}/generer-numero",
+     *     operationId="genererNumeroTypeAppelOffre",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Générer un numéro d'appel d'offres",
+     *     description="Génère un nouveau numéro d'appel d'offres basé sur le code du type et l'année. Requiert la permission `type_appels_offres.create`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du type d'appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="annee",
+     *         in="query",
+     *         required=false,
+     *         description="Année pour le numéro (défaut: année courante)",
+     *         @OA\Schema(type="integer", example=2024)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Numéro généré avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="numero", type="string", example="AON-2024-0042"),
+     *                 @OA\Property(property="annee", type="integer", example=2024),
+     *                 @OA\Property(property="type", type="string", example="AON")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Numéro généré avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type introuvable",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function genererNumero(Request $request, $id)
     {
@@ -552,8 +1151,54 @@ public function fetchAOByTAO(Request $request, $id)
         }
     }
 
+
+
     /**
      * Exporte les types d'AO (CSV, Excel, PDF)
+     *
+     * @OA\Get(
+     *     path="/types-appels-offres/export/{format}",
+     *     operationId="exportTypesAppelsOffres",
+     *     tags={"Types d'Appels d'Offres"},
+     *     summary="Exporter les types d'appels d'offres",
+     *     description="Exporte la liste des types d'appels d'offres dans le format spécifié. Requiert la permission `type_appels_offres.download`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="format",
+     *         in="path",
+     *         required=false,
+     *         description="Format d'export",
+     *         @OA\Schema(type="string", enum={"csv", "xlsx", "pdf"}, default="csv")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Export réussi ou en cours",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/TypeAppelOffre")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Export en cours de développement")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Non authentifié",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Permission refusée",
+     *         @OA\JsonContent(ref="#/components/schemas/ForbiddenResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erreur serveur",
+     *         @OA\JsonContent(ref="#/components/schemas/ServerErrorResponse")
+     *     )
+     * )
      */
     public function export(Request $request)
     {

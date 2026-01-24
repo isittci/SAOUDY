@@ -147,7 +147,7 @@
                                     <option value="">-- Rechercher une proforma --</option>
                                     @foreach($proformas as $proforma)
                                         @php
-                                            $montantTTC = $proforma->montant_retenu_proforma + $proforma->taxe_montant - $proforma->remise_montant_proforma + $proforma->penalites_proforma;
+                                            $montantTTC = $proforma->montant_retenu_proforma + $proforma->taxe_montant - $proforma->remise_montant_proforma;
                                             $isCurrent = $facture->proforma_id == $proforma->id_proforma;
                                         @endphp
                                         <option value="{{ $proforma->id_proforma }}"
@@ -184,7 +184,7 @@
                                         <span class="text-indigo-600 block text-xs uppercase tracking-wide">Montant TTC</span>
                                         @php
                                             $montantProforma = $facture->proforma
-                                                ? $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma + $facture->proforma->penalites_proforma
+                                                ? $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma 
                                                 : 0;
                                         @endphp
                                         <span id="proformaMontant" class="font-bold text-indigo-700">{{ number_format($montantProforma, 0, ',', ' ') }} FCFA</span>

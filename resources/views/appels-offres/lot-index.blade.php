@@ -1,9 +1,12 @@
 @extends('layouts.main')
 @section('title', 'Gestion des Lots')
 @section('breadcrumb')
-    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
+    <a @can('appels_offres.read') href="{{ route('appels-offres.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Appels d'Offres</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" @endcan class="text-white/80 hover:text-white transition-colors" title="{{ $appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50) }}</a>
+    <a @can('appels_offres.view-details') href="{{ route('appels-offres.show', $appelOffre->id_appel_offre) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors"
+        title="{{ $appelOffre->libelle_critere_appel_offre }}">{{ \Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Lots</span>
 @endsection
@@ -19,13 +22,16 @@
                         <i class="fas fa-boxes text-indigo-500"></i>
                         <span>Gestion des Lots</span>
                     </h1>
+
                     @can('lots.create')
-                        <button
-                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                            class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                            <i class="fas fa-plus text-sm"></i>
-                            <span class="text-sm">Nouveau</span>
-                        </button>
+                        @if ($appelOffre->caracteristiqueActive && $appelOffre->etat_appel_offre < 2)
+                            <button
+                                onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
+                                class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                                <i class="fas fa-plus text-sm"></i>
+                                <span class="text-sm">Nouveau</span>
+                            </button>
+                        @endif
                     @endcan
                 </div>
 
@@ -71,17 +77,15 @@
 
                     @can('lots.create')
                         <!-- Bouton créer (desktop) -->
-                        <button
-                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                            <i class="fas fa-plus text-sm"></i>
-                            <span class="text-sm">Créer</span>
-                        </button>
+                        @if ($appelOffre->etat_appel_offre !== 3)
+                            <button
+                                onclick="window.location.href='{{ route('lots.create') }}{{ '?appel_offre_id=' . (request('appel_offre_id') ?? $appelOffre->id_appel_offre) }}'"
+                                class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                                <i class="fas fa-plus text-sm"></i>
+                                <span class="text-sm">Créer</span>
+                            </button>
+                        @endif
                     @endcan
-
-
-
-
                 </div>
             </div>
         </div>
@@ -120,21 +124,28 @@
                     <h2 class="text-lg font-semibold text-gray-800">
                         Liste des lots (<span id="totalCount">{{ $lots->total() }}</span>)
                     </h2>
+
                     <div class="flex items-center space-x-2">
-                        <a href="{{ route('exports.lots-en-cours.pdf') }}" title="Télécharger en pdf les lots en cours" class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                            <i class="fa fa-file-excel"></i> Exporter PDF
+                        <!-- Export PDF -->
+                        <a href="{{ route('exports.lots-en-cours.pdf') }}" title="Télécharger en PDF les lots en cours"
+                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fas fa-file-pdf"></i>
+                            <span class="text-sm">Exporter PDF</span>
                         </a>
-                        <a href="{{ route('exports.lots-en-cours.excel') }}" title="Télécharger en excel les lots en cours"
-                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                            <i class="fa fa-file-excel"></i>
+
+                        <!-- Export Excel -->
+                        <a href="{{ route('exports.lots-en-cours.excel') }}" title="Télécharger en Excel les lots en cours"
+                            class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
+                            <i class="fas fa-file-excel"></i>
                             <span class="text-sm">Exporter Excel</span>
                         </a>
-                        <button onclick="refreshTable()"
-                            class="px-3 py-2 text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all duration-200">
+
+                        <!-- Rafraîchir -->
+                        <button onclick="refreshTable()" title="Actualiser le tableau"
+                            class="px-3 py-2.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
                             <i class="fas fa-sync-alt text-sm"></i>
                         </button>
                     </div>
-
 
                 </div>
             </div>
@@ -156,10 +167,11 @@
                                 Attribution</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Statut</th>
-                            @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read', 'attributions_lots.assign',
-                                            'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete', ])
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Actions</th>
+                            @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read',
+                                'attributions_lots.assign', 'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate',
+                                'lots.delete'])
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Actions</th>
                             @endcanany
                         </tr>
                     </thead>
@@ -246,8 +258,9 @@
                                         </span>
                                     @endif
                                 </td>
-                                @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read', 'attributions_lots.assign',
-                                            'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete', ])
+                                @canany(['lots.view-details', 'lots.update', 'criteres_evaluations.read',
+                                    'attributions_lots.assign', 'attributions_lots.withdraw', 'lot.view-history',
+                                    'lots.duplicate', 'lots.delete'])
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="flex items-center justify-center space-x-2">
                                             @can('lots.view-details')
@@ -276,13 +289,13 @@
                                                 'attributions_lots.withdraw', 'lot.view-history', 'lots.duplicate', 'lots.delete'])
                                                 <!-- Menu Actions -->
                                                 <div class="relative">
-                                                    <button onclick="toggleMenu('{{ $lot->id_lot }}')"
+                                                    <button onclick="toggleMenu(event, '{{ $lot->id_lot }}')"
                                                         class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                                                         title="Plus d'actions">
                                                         <i class="fas fa-ellipsis-v text-sm"></i>
                                                     </button>
                                                     <div id="menu-{{ $lot->id_lot }}"
-                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                                        class="hidden fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
                                                         <div class="py-1">
 
                                                             @can('criteres_evaluations.read')
@@ -322,13 +335,6 @@
                                                                 </button>
                                                             @endcan
 
-                                                            @can('lots.duplicate')
-                                                                <button onclick="duplicate('{{ $lot->id_lot }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                                    Dupliquer
-                                                                </button>
-                                                            @endcan
 
                                                             @can('lots.delete')
                                                                 @if (!$lot->isAttribue())
@@ -412,52 +418,68 @@
             let deleteLotId = null;
             let appelOffreId = null;
 
-            // Toggle menu
-            window.toggleMenu = function(id) {
-                const menu = document.getElementById(`menu-${id}`);
-                const allMenus = document.querySelectorAll('[id^="menu-"]');
+            function toggleMenu(event, id) {
+                event.stopPropagation();
 
-                allMenus.forEach(m => {
-                    if (m.id !== `menu-${id}`) {
-                        m.classList.add('hidden');
-                    }
+                const button = event.currentTarget;
+                const menu = document.getElementById('menu-' + id);
+
+                document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                    if (m.id !== 'menu-' + id) m.classList.add('hidden');
                 });
 
                 menu.classList.toggle('hidden');
+
+                if (!menu.classList.contains('hidden')) {
+                    const rect = button.getBoundingClientRect();
+                    let top = rect.bottom + 8;
+                    let left = rect.right - menu.offsetWidth;
+
+                    if (top + menu.offsetHeight > window.innerHeight) {
+                        top = rect.top - menu.offsetHeight - 8;
+                    }
+                    if (left < 0) left = rect.left;
+
+                    menu.style.top = top + 'px';
+                    menu.style.left = left + 'px';
+                }
             }
 
-            // Fermer les menus en cliquant ailleurs
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                    document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
+                    document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
                 }
             });
 
+            document.addEventListener('scroll', function() {
+                document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
+            }, true);
+
             // Dupliquer
-            window.duplicate = function(id) {
-                if (confirm('Voulez-vous dupliquer ce lot ?')) {
-                    fetch(`/lots/${id}/duplicate`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = `/lots/${data.data.id_lot}/edit`;
-                            } else {
-                                alert(data.message || 'Une erreur est survenue');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                            alert('Une erreur est survenue');
-                        });
-                }
-            }
+            // window.duplicate = function(id) {
+            //     if (confirm('Voulez-vous dupliquer ce lot ?')) {
+            //         fetch(`/lots/${id}/duplicate`, {
+            //                 method: 'POST',
+            //                 headers: {
+            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            //                     'Content-Type': 'application/json',
+            //                     'Accept': 'application/json'
+            //                 }
+            //             })
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 if (data.success) {
+            //                     window.location.href = `/lots/${data.data.id_lot}/edit`;
+            //                 } else {
+            //                     alert(data.message || 'Une erreur est survenue');
+            //                 }
+            //             })
+            //             .catch(error => {
+            //                 console.error('Erreur:', error);
+            //                 alert('Une erreur est survenue');
+            //             });
+            //     }
+            // }
 
             // Voir historique
             window.viewHistorique = function(id) {
@@ -493,7 +515,8 @@
             window.executeDelete = function() {
                 if (!deleteLotId) return;
 
-                fetch("{{ route('lots-appels-offres.destroy', [':appelOffreId', ':id']) }}".replace(':appelOffreId', appelOffreId).replace(':id', deleteLotId), {
+                fetch("{{ route('lots-appels-offres.destroy', [':appelOffreId', ':id']) }}".replace(':appelOffreId',
+                        appelOffreId).replace(':id', deleteLotId), {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',

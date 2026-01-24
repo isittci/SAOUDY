@@ -116,6 +116,8 @@ class DashboardController extends Controller
                 $query->whereNull('deleted_at');
             });
 
+
+
         if ($dateDebut && $dateFin) {
             $paiementsPayesQuery->whereBetween('created_at', [$dateDebut, $dateFin]);
         }
@@ -123,11 +125,10 @@ class DashboardController extends Controller
         $montantPayeFactures = $paiementsPayesQuery->sum('montant_net_paye_paiement');
         $montantTotalFactures = (clone $facturesQuery)->sum('montant_facture');
 
+
         $statsGlobales = [
             'appels_offres' => [
                 'total' => (clone $appelsOffresQuery)->count(),
-                'en_cours' => (clone $appelsOffresQuery)->whereDate('date_limite_depot_critere_appel_offre', '>=', now())->count(),
-                'clotures' => (clone $appelsOffresQuery)->whereDate('date_limite_depot_critere_appel_offre', '<', now())->count(),
                 'montant_total' => (clone $appelsOffresQuery)->sum('montant_global_appel_offre'),
             ],
             'lots' => [
@@ -236,7 +237,6 @@ class DashboardController extends Controller
             ->orderBy('mois')
             ->get();
 
-        // dd($evolutionAppelsOffres);
 
         // ================================================================
         // GRAPHIQUE BARRES - Factures par statut
@@ -355,9 +355,7 @@ class DashboardController extends Controller
         $alertes = [
             'factures_en_attente' => Facture::where('statut_facture', 'en_attente')->count(),
             'paiements_a_valider' => Paiement::where('statut_paiement', Paiement::STATUT_EN_ATTENTE)->count(),
-            'appels_offres_expirant' => AppelOffre::where('date_limite_depot_critere_appel_offre', '<=', Carbon::now()->addDays(7))
-                ->where('date_limite_depot_critere_appel_offre', '>=', Carbon::now())
-                ->count(),
+
             'lots_non_attribues' => Lot::whereNull('parent_id')->where('attribution_lot', 0)->where('statut_lot', 1)->count(),
             'prestataires_inactifs' => Prestataire::where('statut_prestataire', false)->count(),
         ];
@@ -498,17 +496,62 @@ class DashboardController extends Controller
                 // Calcul du délai restant
                 $delaiRestant = null;
                 $delaiJours = null;
-                if ($attribution && $lot->date_fin_prevue) {
-                    $dateFin = Carbon::parse($lot->date_fin_prevue);
+                // if ($attribution && $lot->date_fin_prevue) {
+                //     $dateFin = Carbon::parse($lot->date_fin_prevue);
+                //     $maintenant = Carbon::now();
+
+                //     if ($dateFin->isFuture()) {
+                //         $delaiJours = $maintenant->diffInDays($dateFin);
+                //         $delaiRestant = $delaiJours . ' jour(s)';
+                //     } else {
+                //         $delaiJours = -$maintenant->diffInDays($dateFin);
+                //         $delaiRestant = 'Retard de ' . abs($delaiJours) . ' jour(s)';
+                //     }
+                // }
+                if ($attribution) {
+                    $dateFin = $attribution->date_fin_prevue ? Carbon::parse($attribution->date_fin_prevue) : null;
+                    $dateEffective = $attribution->date_effective_fin ? Carbon::parse($attribution->date_effective_fin) : null;
                     $maintenant = Carbon::now();
 
-                    if ($dateFin->isFuture()) {
-                        $delaiJours = $maintenant->diffInDays($dateFin);
-                        $delaiRestant = $delaiJours . ' jour(s)';
+                    if ($dateFin) {
+                        if ($dateEffective) {
+                            // Travaux terminés : comparer date effective vs date prévue
+                            $delaiJours = $dateFin->diffInDays($dateEffective, false);
+
+                            if ($delaiJours > 0) {
+                                // Terminé en retard
+                                $delaiRestant = 'Retard de ' . $delaiJours . ' jour' . ($delaiJours > 1 ? 's' : '');
+                            } elseif ($delaiJours < 0) {
+                                // Terminé en avance
+                                $joursAvance = abs($delaiJours);
+                                $delaiRestant = $joursAvance . ' jour' . ($joursAvance > 1 ? 's' : '') . ' d\'avance';
+                            } else {
+                                // Terminé à temps
+                                $delaiRestant = 'Terminé à temps';
+                            }
+                        } else {
+                            // Travaux en cours : comparer aujourd'hui vs date prévue
+                            $delaiJours = $maintenant->diffInDays($dateFin, false);
+
+                            if ($delaiJours > 0) {
+                                // Dans les délais
+                                $delaiRestant = $delaiJours . ' jour' . ($delaiJours > 1 ? 's' : '') . ' restant' . ($delaiJours > 1 ? 's' : '');
+                            } elseif ($delaiJours < 0) {
+                                // En retard
+                                $joursRetard = abs($delaiJours);
+                                $delaiRestant = 'Retard de ' . $joursRetard . ' jour' . ($joursRetard > 1 ? 's' : '');
+                            } else {
+                                // Aujourd'hui
+                                $delaiRestant = 'Échéance aujourd\'hui';
+                            }
+                        }
                     } else {
-                        $delaiJours = -$maintenant->diffInDays($dateFin);
-                        $delaiRestant = 'Retard de ' . abs($delaiJours) . ' jour(s)';
+                        $delaiJours = null;
+                        $delaiRestant = null;
                     }
+                } else {
+                    $delaiJours = null;
+                    $delaiRestant = null;
                 }
 
                 return [
@@ -519,6 +562,7 @@ class DashboardController extends Controller
                     'numero_attribution' => $attribution?->numero_attribution ?? '-',
                     'numero_prestataire' => $attribution?->prestataire?->numero_identification_prestataire ?? '-',
                     'raison_sociale_prestataire' => $attribution?->prestataire?->raison_sociale_prestataire ?? '-',
+                    'attribution' => $attribution,
                     'montant_lot' => $montantLot,
                     'montant_paye' => $montantPaye,
                     'reste_a_payer' => $resteAPayer,
@@ -527,10 +571,35 @@ class DashboardController extends Controller
                     'avancement' => $attribution?->pourcentage_avancement ?? 0,
                     'est_attribue' => $lot->attribution_lot == 1, // Comparaison avec string car enum
                     'statut_attribution' => $attribution?->statut_attribution,
-                    'date_fin_prevue' => $lot?->date_fin_prevue,
+                    'date_debut_prevue' => $attribution?->date_debut_prevue,
+                    'date_effective_fin' => $attribution?->date_effective_fin,
+                    'date_fin_prevue' => $attribution?->date_fin_prevue,
+
                 ];
             });
 
+        if($request->expectsJson() || $request->wantsJson()){
+            return response()->json([
+                'periode' => $periode,
+                'statsGlobales' => $statsGlobales,
+                'appelsParType' => $appelsParType,
+                'lotsParPrestataire' => $lotsParPrestataire,
+                'evolutionAppelsOffres' => $evolutionAppelsOffres,
+                'facturesParStatut' => $facturesParStatut,
+                'paiementsParStatut' => $paiementsParStatut,
+                'topPrestataires' => $topPrestataires,
+                'dernieresFactures' => $dernieresFactures,
+                'derniersPaiements' => $derniersPaiements,
+                'alertes' => $alertes,
+                'evolutionPaiements' => $evolutionPaiements,
+                'appelsOffresRecents' => $appelsOffresRecents,
+                'tauxAttributionLots' => $tauxAttributionLots,
+                'comparaison' => $comparaison,
+                'lotsEnCours' => $lotsEnCours,
+            ], 200);
+        }
+
+        // dd($lotsEnCours);
 
         return view('dashboard', compact(
             'periode',

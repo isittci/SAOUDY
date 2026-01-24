@@ -107,13 +107,13 @@
                                     </button>
                                     @endcan
 
-                                    @can('lots.duplicate')
+                                    {{-- @can('lots.duplicate')
                                     <button onclick="duplicate()"
                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                         <i class="fas fa-copy mr-2 text-indigo-500"></i>
                                         Dupliquer
                                     </button>
-                                    @endcan
+                                    @endcan --}}
 
                                     @can('lots.delete')
                                     @if(!$lot->isAttribue())
@@ -569,7 +569,7 @@
                             </button>
                             @endcan
 
-                            @can('lots.duplicate')
+                            {{-- @can('lots.duplicate')
                             <button onclick="duplicate()"
                                 class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-purple-50 border border-purple-200 rounded-lg transition-all duration-200 group">
                                 <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
@@ -577,7 +577,7 @@
                                 </div>
                                 <span class="text-sm font-semibold text-gray-700">Dupliquer le lot</span>
                             </button>
-                            @endcan
+                            @endcan --}}
 
                             {{-- <button onclick="window.print()"
                                 class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-all duration-200 group">

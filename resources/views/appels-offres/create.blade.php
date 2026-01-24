@@ -164,19 +164,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Objet -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Objet de l'Appel d'Offres <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="objet_critere_appel_offre" id="objet" required rows="4"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                                        placeholder="Description officielle de ce qui est demandé...">{{ old('objet_critere_appel_offre') }}</textarea>
-                                    @error('objet_critere_appel_offre')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
                                 <!-- Description détaillée -->
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -189,6 +176,21 @@
                                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+                                <!-- Objet -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Objet de l'Appel d'Offres
+                                    </label>
+                                    <textarea name="objet_critere_appel_offre" id="objet" rows="4"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
+                                        placeholder="Description officielle de ce qui est demandé...">{{ old('objet_critere_appel_offre') }}</textarea>
+                                    @error('objet_critere_appel_offre')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+
                             </div>
                         </div>
 
@@ -213,24 +215,7 @@
                                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                                     </div>
 
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Date Limite de Dépôt <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="date" name="date_limite_depot_critere_appel_offre" id="date_limite"
-                                            required value="{{ old('date_limite_depot_critere_appel_offre') }}"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                    </div>
 
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Date d'Ouverture <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="date" name="date_ouverture_plis_critere_appel_offre"
-                                            id="date_ouverture" required
-                                            value="{{ old('date_ouverture_plis_critere_appel_offre') }}"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                    </div>
                                 </div>
 
                                 <div id="dateInfo"
@@ -913,31 +898,11 @@
 
                 // Validation des dates
                 const datePublication = document.getElementById('date_publication');
-                const dateLimite = document.getElementById('date_limite');
-                const dateOuverture = document.getElementById('date_ouverture');
                 const dateInfo = document.getElementById('dateInfo');
                 const dateInfoText = document.getElementById('dateInfoText');
 
-                function validateDates() {
-                    const pub = datePublication.value ? new Date(datePublication.value) : new Date();
-                    const limite = dateLimite.value ? new Date(dateLimite.value) : null;
-                    const ouverture = dateOuverture.value ? new Date(dateOuverture.value) : null;
 
-                    if (limite) {
-                        const diffJours = Math.ceil((limite - pub) / (1000 * 60 * 60 * 24));
 
-                        if (diffJours > 0) {
-                            dateInfo.classList.remove('hidden');
-                            dateInfoText.textContent = `Délai de dépôt : ${diffJours} jour(s)`;
-                        } else {
-                            dateInfo.classList.add('hidden');
-                        }
-                    }
-                }
-
-                datePublication.addEventListener('change', validateDates);
-                dateLimite.addEventListener('change', validateDates);
-                dateOuverture.addEventListener('change', validateDates);
 
                 // Soumission du formulaire principal
                 document.getElementById('aoForm').addEventListener('submit', function(e) {
@@ -959,8 +924,7 @@
                     }
                 });
 
-                // Initialiser les validations si des valeurs existent
-                validateDates();
+
             </script>
 
             <style>

@@ -186,7 +186,7 @@
             <div class="section-title">INFORMATIONS DU PRESTATAIRE</div>
             <table>
                 <tr>
-                    <td style="width: 15%; background: #fef3c7; font-weight: bold;">Raison Sociale</td>
+                    <td style="width: 15%; background: #fef3c7; font-weight: bold;">Nom du prestataire</td>
                     <td style="width: 35%;">{{ $prestataire['raison_sociale'] }}</td>
                     <td style="width: 15%; background: #fef3c7; font-weight: bold;">N° Identification</td>
                     <td style="width: 35%;">{{ $prestataire['numero_identification'] }}</td>

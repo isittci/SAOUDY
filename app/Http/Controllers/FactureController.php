@@ -68,7 +68,7 @@ class FactureController extends Controller
             // Statuts disponibles
             $statuts = Facture::getStatuts();
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -84,11 +84,10 @@ class FactureController extends Controller
                 'proformas',
                 'statuts'
             ));
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des factures: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des factures.',
@@ -120,9 +119,9 @@ class FactureController extends Controller
                 'lots.attributionActive.prestataire',
                 'lots.attributionActive.proforma'
             ])
-            ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
-            ->orderBy('numero_appel_offre', 'desc')
-            ->get();
+                ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
+                ->orderBy('numero_appel_offre', 'desc')
+                ->get();
 
 
 
@@ -139,7 +138,7 @@ class FactureController extends Controller
                 $proformaSelectionnee = Proforma::find($request->proforma_id);
             }
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -150,11 +149,10 @@ class FactureController extends Controller
             }
 
             return view('factures.create', compact('proformas', 'proformaSelectionnee', 'appelsOffres'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors du chargement du formulaire de création: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors du chargement du formulaire.',
@@ -166,41 +164,40 @@ class FactureController extends Controller
         }
     }
 
-        /**
-         * Afficher le formulaire de création d'une facture.
-         *
-         * @param Request $request
-         * @return View|JsonResponse
-         */
-        public function create(Request $request)
-        {
-            try {
-                // dd(52);
-                // Récupérer les types d'appels d'offres actifs avec leurs relations
-                $typesAppelsOffres = TypeAppelOffre::with([
-                    'creator',
-                    'updater',
-                    'appelOffres' => function ($query) {
-                        $query->actif()
-                            ->with([
-                                'lots' => function ($query) {
-                                    $query->versionActuelle()
-                                        ->actif()
-                                        ->with([
-                                            'attributionActive' => function ($query) {
-                                                $query->with([
-                                                    'proforma' => function ($query) {
-                                                        $query->actif()
-                                                            ->whereDoesntHave('facture');
-                                                    },
-                                                    'prestataire'
-                                                ]);
-                                            }
-                                        ]);
-                                }
-                            ]);
-                    }
-                ])
+    /**
+     * Afficher le formulaire de création d'une facture.
+     *
+     * @param Request $request
+     * @return View|JsonResponse
+     */
+    public function create(Request $request)
+    {
+        try {
+            // Récupérer les types d'appels d'offres actifs avec leurs relations
+            $typesAppelsOffres = TypeAppelOffre::with([
+                'creator',
+                'updater',
+                'appelOffres' => function ($query) {
+                    $query->actif()
+                        ->with([
+                            'lots' => function ($query) {
+                                $query->versionActuelle()
+                                    ->actif()
+                                    ->with([
+                                        'attributionActive' => function ($query) {
+                                            $query->with([
+                                                'proforma' => function ($query) {
+                                                    $query->actif()
+                                                        ->whereDoesntHave('facture');
+                                                },
+                                                'prestataire'
+                                            ]);
+                                        }
+                                    ]);
+                            }
+                        ]);
+                }
+            ])
                 ->versionActuelle()
                 ->actif()
                 ->withCount([
@@ -212,108 +209,107 @@ class FactureController extends Controller
                 ->get();
 
 
-                $appelsOffres = AppelOffre::with([
-                    'typeAppelOffre',
-                    'lots.attributionActive.prestataire',
-                    'lots.attributionActive.proforma'
-                ])
+            $appelsOffres = AppelOffre::with([
+                'typeAppelOffre',
+                'lots.attributionActive.prestataire',
+                'lots.attributionActive.proforma'
+            ])
                 ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
                 ->orderBy('numero_appel_offre', 'desc')
                 ->get();
 
-                // $appelsOffres = AppelOffre::with([
-                //     'typeAppelOffre',
-                //     'lots.attributionActive.prestataire',
-                //     'lots.attributionActive.proforma',
-                //     'lots.criteresEvaluation.evaluations'
-                // ])
-                // ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
-                // ->get()
-                // ->filter(function ($appelOffre) {
-                //     return !$appelOffre->isCloture(); // Filtrer les non clôturés
-                // })
-                // ->sortByDesc('numero_appel_offre')
-                // ->values(); // Réindexer la collection
+            // $appelsOffres = AppelOffre::with([
+            //     'typeAppelOffre',
+            //     'lots.attributionActive.prestataire',
+            //     'lots.attributionActive.proforma',
+            //     'lots.criteresEvaluation.evaluations'
+            // ])
+            // ->whereHas('lots.attributionActive.proforma') // Seulement les AO avec au moins un lot ayant une proforma
+            // ->get()
+            // ->filter(function ($appelOffre) {
+            //     return !$appelOffre->isCloture(); // Filtrer les non clôturés
+            // })
+            // ->sortByDesc('numero_appel_offre')
+            // ->values(); // Réindexer la collection
 
-//                 $appelsOffres = AppelOffre::with([
-//     'typeAppelOffre',
-//     'lots' => function ($query) {
-//         $query->whereDoesntHave('attributionActive.proforma')
-//               ->orWhereDoesntHave('attributionActive');
-//     },
-//     'lots.attributionActive.prestataire'
-// ])
-// ->whereHas('lots', function ($query) {
-//     $query->whereDoesntHave('attributionActive.proforma')
-//           ->orWhereDoesntHave('attributionActive');
-// })
-// ->orderBy('numero_appel_offre', 'desc')
-// ->get();
+            //                 $appelsOffres = AppelOffre::with([
+            //     'typeAppelOffre',
+            //     'lots' => function ($query) {
+            //         $query->whereDoesntHave('attributionActive.proforma')
+            //               ->orWhereDoesntHave('attributionActive');
+            //     },
+            //     'lots.attributionActive.prestataire'
+            // ])
+            // ->whereHas('lots', function ($query) {
+            //     $query->whereDoesntHave('attributionActive.proforma')
+            //           ->orWhereDoesntHave('attributionActive');
+            // })
+            // ->orderBy('numero_appel_offre', 'desc')
+            // ->get();
 
-$appelsOffres = AppelOffre::with([
-    'typeAppelOffre',
-    'lots.attributionActive.prestataire',
-    'lots.attributionActive.proforma' => function ($query) {
-        $query->whereDoesntHave('facture');
-    }
-])
-->whereHas('lots.attributionActive.proforma', function ($query) {
-    $query->whereDoesntHave('facture');
-})
-->orderBy('numero_appel_offre', 'desc')
-->get();
-
-// dd($appelsOffres);
+            $appelsOffres = AppelOffre::with([
+                'typeAppelOffre',
+                'lots.attributionActive.prestataire',
+                'lots.attributionActive.proforma' => function ($query) {
+                    $query->whereDoesntHave('facture');
+                }
+            ])
+                ->whereHas('lots.attributionActive.proforma', function ($query) {
+                    $query->whereDoesntHave('facture');
+                })
+                ->orderBy('numero_appel_offre', 'desc')
+                ->get();
 
 
-                // Si lot_id est passé en paramètre, pré-sélectionner le lot et sa proforma
-                $lotSelectionne = null;
-                if ($request->filled('lot_id')) {
-                    $lotSelectionne = Lot::with([
-                        'appelOffre.typeAppelOffre',
-                        'attributionActive' => function ($query) {
-                            $query->with([
-                                'proforma' => function ($query) {
-                                    $query->actif();
-                                },
-                                'prestataire'
-                            ]);
-                        }
-                    ])
+
+            // Si lot_id est passé en paramètre, pré-sélectionner le lot et sa proforma
+            $lotSelectionne = null;
+            if ($request->filled('lot_id')) {
+                $lotSelectionne = Lot::with([
+                    'appelOffre.typeAppelOffre',
+                    'attributionActive' => function ($query) {
+                        $query->with([
+                            'proforma' => function ($query) {
+                                $query->actif();
+                            },
+                            'prestataire'
+                        ]);
+                    }
+                ])
                     ->find($request->lot_id);
-                }
-
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'data' => [
-                            'types_appels_offres' => $typesAppelsOffres,
-                            'lot_selectionne' => $lotSelectionne,
-                            'proforma' => $lotSelectionne?->attributionActive?->proforma,
-                        ],
-                    ]);
-                }
-
-                // proformaSelectionnee
-                return view('factures.create', compact(
-                    'typesAppelsOffres',
-                    'lotSelectionne', 'appelsOffres'
-                ));
-
-            } catch (Exception $e) {
-                Log::error('Erreur lors du chargement du formulaire de création: ' . $e->getMessage());
-
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Erreur lors du chargement du formulaire.',
-                        'error' => $e->getMessage(),
-                    ], 500);
-                }
-
-                return back()->with('error', 'Erreur lors du chargement du formulaire.');
             }
+
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'types_appels_offres' => $typesAppelsOffres,
+                        'lot_selectionne' => $lotSelectionne,
+                        'proforma' => $lotSelectionne?->attributionActive?->proforma,
+                    ],
+                ]);
+            }
+
+            // proformaSelectionnee
+            return view('factures.create', compact(
+                'typesAppelsOffres',
+                'lotSelectionne',
+                'appelsOffres'
+            ));
+        } catch (Exception $e) {
+            Log::error('Erreur lors du chargement du formulaire de création: ' . $e->getMessage());
+
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors du chargement du formulaire.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors du chargement du formulaire.');
         }
+    }
 
 
 
@@ -344,7 +340,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture créée avec succès', ['id' => $facture->id_facture]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture créée avec succès.',
@@ -355,12 +351,11 @@ $appelsOffres = AppelOffre::with([
             return redirect()
                 ->route('factures.show', $facture->id_facture)
                 ->with('success', 'Facture créée avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la création de la facture.',
@@ -404,7 +399,7 @@ $appelsOffres = AppelOffre::with([
                     : 0,
             ];
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -415,11 +410,10 @@ $appelsOffres = AppelOffre::with([
             }
 
             return view('factures.show', compact('facture', 'statistiquesPaiements'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Facture non trouvée.',
@@ -445,7 +439,7 @@ $appelsOffres = AppelOffre::with([
 
             // Vérifier si la facture peut être modifiée
             if (!$facture->peutEtreModifiee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut plus être modifiée.',
@@ -464,7 +458,7 @@ $appelsOffres = AppelOffre::with([
                 ->orderBy('numero_proforma')
                 ->get();
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -475,11 +469,10 @@ $appelsOffres = AppelOffre::with([
             }
 
             return view('factures.edit', compact('facture', 'proformas'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors du chargement du formulaire de modification: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors du chargement du formulaire.',
@@ -505,7 +498,7 @@ $appelsOffres = AppelOffre::with([
 
             // Vérifier si la facture peut être modifiée
             if (!$facture->peutEtreModifiee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut plus être modifiée.',
@@ -526,7 +519,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture mise à jour avec succès', ['id' => $facture->id_facture]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture mise à jour avec succès.',
@@ -537,12 +530,11 @@ $appelsOffres = AppelOffre::with([
             return redirect()
                 ->route('factures.show', $facture->id_facture)
                 ->with('success', 'Facture mise à jour avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour de la facture.',
@@ -570,7 +562,7 @@ $appelsOffres = AppelOffre::with([
 
             // Vérifier si la facture peut être supprimée
             if (!$facture->peutEtreAnnulee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut pas être supprimée car elle a des paiements associés.',
@@ -590,7 +582,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture supprimée avec succès', ['id' => $id]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture supprimée avec succès.',
@@ -600,12 +592,11 @@ $appelsOffres = AppelOffre::with([
             return redirect()
                 ->route('factures.index')
                 ->with('success', 'Facture supprimée avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la suppression de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la suppression de la facture.',
@@ -630,7 +621,7 @@ $appelsOffres = AppelOffre::with([
             $facture = Facture::findOrFail($id);
 
             if (!$facture->peutEtreValidee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut pas être validée dans son état actuel.',
@@ -648,7 +639,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture validée avec succès', ['id' => $facture->id_facture]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture validée avec succès.',
@@ -657,12 +648,11 @@ $appelsOffres = AppelOffre::with([
             }
 
             return back()->with('success', 'Facture validée avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la validation de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la validation de la facture.',
@@ -695,7 +685,7 @@ $appelsOffres = AppelOffre::with([
             $facture = Facture::findOrFail($id);
 
             if (!$facture->peutEtreRejetee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut pas être rejetée dans son état actuel.',
@@ -713,7 +703,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture rejetée avec succès', ['id' => $facture->id_facture, 'motif' => $request->motif]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture rejetée avec succès.',
@@ -722,12 +712,11 @@ $appelsOffres = AppelOffre::with([
             }
 
             return back()->with('success', 'Facture rejetée avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors du rejet de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors du rejet de la facture.',
@@ -760,7 +749,7 @@ $appelsOffres = AppelOffre::with([
             $facture = Facture::findOrFail($id);
 
             if (!$facture->peutEtreAnnulee()) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Cette facture ne peut pas être annulée.',
@@ -778,7 +767,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture annulée avec succès', ['id' => $facture->id_facture, 'motif' => $request->motif]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture annulée avec succès.',
@@ -787,12 +776,11 @@ $appelsOffres = AppelOffre::with([
             }
 
             return back()->with('success', 'Facture annulée avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de l\'annulation de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de l\'annulation de la facture.',
@@ -817,7 +805,7 @@ $appelsOffres = AppelOffre::with([
             $facture = Facture::findOrFail($id);
 
             if ($facture->statut_facture !== Facture::STATUT_REJETEE) {
-                if ($request->expectsJson()) {
+                if ($request->expectsJson() || $request->wantsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Seules les factures rejetées peuvent être remises en attente.',
@@ -838,7 +826,7 @@ $appelsOffres = AppelOffre::with([
 
             Log::info('Facture remise en attente avec succès', ['id' => $facture->id_facture]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture remise en attente avec succès.',
@@ -847,12 +835,11 @@ $appelsOffres = AppelOffre::with([
             }
 
             return back()->with('success', 'Facture remise en attente avec succès.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la remise en attente de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la remise en attente de la facture.',
@@ -887,7 +874,7 @@ $appelsOffres = AppelOffre::with([
                 'nouvelle_id' => $nouvelleFacture->id_facture,
             ]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Facture dupliquée avec succès.',
@@ -898,12 +885,11 @@ $appelsOffres = AppelOffre::with([
             return redirect()
                 ->route('factures.edit', $nouvelleFacture->id_facture)
                 ->with('success', 'Facture dupliquée avec succès. Vous pouvez maintenant la modifier.');
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la duplication de la facture: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la duplication de la facture.',
@@ -930,18 +916,16 @@ $appelsOffres = AppelOffre::with([
             // Calculer le montant total TTC
             $montantTTC = $proforma->montant_retenu_proforma
                 + $proforma->taxe_montant
-                - $proforma->remise_montant_proforma
-                + $proforma->penalites_proforma;
+                - $proforma->remise_montant_proforma;
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'proforma' => $proforma,
                     'montant_ttc' => $montantTTC,
-                    'montant_ttc_formate' => number_format($montantTTC, 0, ',', ' ') . ' FCFA',
+                    'montant_ttc_formate' => number_format($montantTTC, 2, ',', ' ') . ' FCFA',
                 ],
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des informations de la proforma: ' . $e->getMessage());
 
@@ -980,7 +964,7 @@ $appelsOffres = AppelOffre::with([
                 ->limit(10)
                 ->get();
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -992,11 +976,10 @@ $appelsOffres = AppelOffre::with([
             }
 
             return view('factures.statistiques', compact('statistiques', 'parMois', 'topProformas', 'annee'));
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des statistiques: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des statistiques.',

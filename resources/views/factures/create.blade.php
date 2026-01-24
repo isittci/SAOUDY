@@ -107,8 +107,8 @@
                                             data-numero="{{ $ao->numero_appel_offre }}"
                                             data-objet="{{ $ao->libelle_critere_appel_offre }}"
                                             data-montant="{{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }}"
-                                            data-date-pub="{{ $ao->date_publication_critere_appel_offre }}"
-                                            data-date-limite="{{ $ao->date_limite_depot_critere_appel_offre }}"
+
+
                                             data-type="{{ $ao->typeAppelOffre->code_type_appel_offre ?? '' }}"
                                             data-lots-count="{{ $ao->lots->count() }}">
                                             {{ $ao->numero_appel_offre }} - {{ Str::limit($ao->libelle_critere_appel_offre, 50) }}
@@ -142,14 +142,8 @@
                                         <span class="detail-label">Montant Global</span>
                                         <span id="infoAOMontant" class="detail-value text-green-700 font-bold">-</span>
                                     </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Date Publication</span>
-                                        <span id="infoAODatePub" class="detail-value">-</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Date Limite Dépôt</span>
-                                        <span id="infoAODateLimite" class="detail-value text-orange-600">-</span>
-                                    </div>
+
+
                                     <div class="detail-row">
                                         <span class="detail-label">Nombre de Lots</span>
                                         <span id="infoAOLotsCount" class="detail-value">
@@ -198,7 +192,7 @@
                                         <span class="detail-label">Date Attribution</span>
                                         <span id="infoLotDateAttrib" class="detail-value">-</span>
                                     </div>
-                                    
+
                                 </div>
                             </div>
 
@@ -229,7 +223,7 @@
                                     <div class="space-y-2 text-sm">
                                         <h4 class="font-semibold text-indigo-700 border-b border-indigo-200 pb-1">Prestataire</h4>
                                         <div class="detail-row">
-                                            <span class="detail-label">Raison Sociale</span>
+                                            <span class="detail-label">Nom du prestataire</span>
                                             <span id="infoPrestaRaison" class="detail-value text-xs">-</span>
                                         </div>
                                         <div class="detail-row">
@@ -577,8 +571,7 @@
         document.getElementById('infoAOType').innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${ao.type_appel_offre?.code_type_appel_offre || '-'}</span>`;
         document.getElementById('infoAOObjet').textContent = truncateText(ao.libelle_critere_appel_offre, 60);
         document.getElementById('infoAOMontant').textContent = formatNumber(ao.montant_global_appel_offre) + ' FCFA';
-        document.getElementById('infoAODatePub').textContent = formatDate(ao.date_publication_critere_appel_offre);
-        document.getElementById('infoAODateLimite').textContent = formatDate(ao.date_limite_depot_critere_appel_offre);
+
         document.getElementById('infoAOLotsCount').innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">${ao.lots?.length || 0} lot(s)</span>`;
 
         document.getElementById('infoAO').classList.remove('hidden');
@@ -656,7 +649,6 @@
         document.getElementById('infoLotNumero').textContent = lot.numero || '-';
         document.getElementById('infoLotLibelle').textContent = truncateText(lot.libelle, 50);
         document.getElementById('infoLotDateAttrib').textContent = formatDate(lot.date_attribution);
-        // document.getElementById('infoLotPenalite').textContent = (lot.taux_penalites || '0') + ' %';
 
         document.getElementById('infoLot').classList.remove('hidden');
     }

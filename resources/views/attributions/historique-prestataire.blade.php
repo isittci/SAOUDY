@@ -121,7 +121,7 @@
                     </div>
                     <div class="p-6 space-y-4">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-1">Raison sociale</label>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1">Nom du prestataire</label>
                             <p class="text-gray-800 font-medium">{{ $prestataire->raison_sociale_prestataire }}</p>
                         </div>
                         @if($prestataire->ville_prestataire)
@@ -169,7 +169,7 @@
                             <span class="text-green-100">Montant payé</span>
                             <span class="font-bold">{{ number_format($statistiques['montant_total_paye'], 0, ',', ' ') }} FCFA</span>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

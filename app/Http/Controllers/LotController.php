@@ -12,10 +12,95 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+
+/**
+ * @OA\Tag(
+ *     name="Lots",
+ *     description="Gestion des lots (CRUD global, attribution, retrait, versioning, statistiques)"
+ * )
+ */
 class LotController extends Controller
 {
-    /**
+
+
+   /**
      * Affiche la liste des lots
+     *
+     * @OA\Get(
+     *     path="/lots",
+     *     operationId="getLots",
+     *     tags={"Lots"},
+     *     summary="Liste globale des lots",
+     *     description="Récupère la liste paginée de tous les lots (toutes appels d'offres confondues) avec filtres. Requiert la permission `lots.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="appel_offre_id",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrer par appel d'offres",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="attribution",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrer par statut d'attribution (0=non attribué, 1=attribué)",
+     *         @OA\Schema(type="integer", enum={0, 1})
+     *     ),
+     *     @OA\Parameter(
+     *         name="statut",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrer par statut du lot (0=inactif, 1=actif)",
+     *         @OA\Schema(type="integer", enum={0, 1})
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         required=false,
+     *         description="Recherche dans numéro et libellé",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         required=false,
+     *         description="Champ de tri",
+     *         @OA\Schema(type="string", default="created_at")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_order",
+     *         in="query",
+     *         required=false,
+     *         description="Ordre de tri",
+     *         @OA\Schema(type="string", enum={"asc", "desc"}, default="desc")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Nombre d'éléments par page",
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste récupérée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Lot")),
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Liste des lots récupérée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function index(Request $request)
     {
@@ -56,7 +141,7 @@ class LotController extends Controller
             $lots = $query->paginate($perPage);
 
             // Retour selon le type de requête
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $lots,
@@ -74,7 +159,7 @@ class LotController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des lots: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la récupération des données',
@@ -95,8 +180,10 @@ class LotController extends Controller
         // Vérifier qu'un appel d'offres est spécifié
         $appelOffreId = $request->get('appel_offre_id');
 
+
+
         if (!$appelOffreId) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Un appel d\'offres doit être spécifié pour créer un lot',
@@ -117,7 +204,7 @@ class LotController extends Controller
             }
 
             // Vérifier que l'appel d'offres n'est pas clôturé
-            if ($appelOffre->isCloture()) {
+            if ($appelOffre->etat_appel_offre === 3) {
                 return back()->with('error', 'Impossible de créer un lot pour un appel d\'offres clôturé');
             }
 
@@ -127,9 +214,87 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+        /**
      * Enregistre un nouveau lot
-     * IMPORTANT: Un lot doit obligatoirement être lié à un appel d'offres
+     *
+     * @OA\Post(
+     *     path="/lots",
+     *     operationId="createLot",
+     *     tags={"Lots"},
+     *     summary="Créer un lot",
+     *     description="Crée un nouveau lot pour un appel d'offres. L'AO doit être actif et non clôturé. Requiert la permission `lots.create`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"appel_offre_id", "numero", "libelle", "statut_lot"},
+     *             @OA\Property(
+     *                 property="appel_offre_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 description="UUID de l'appel d'offres"
+     *             ),
+     *             @OA\Property(
+     *                 property="numero",
+     *                 type="string",
+     *                 maxLength=50,
+     *                 description="Numéro unique du lot dans l'AO",
+     *                 example="LOT-001"
+     *             ),
+     *             @OA\Property(
+     *                 property="libelle",
+     *                 type="string",
+     *                 maxLength=160,
+     *                 description="Libellé du lot",
+     *                 example="Gros œuvre - Bâtiment principal"
+     *             ),
+     *             @OA\Property(
+     *                 property="description_critere",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Description détaillée"
+     *             ),
+     *             @OA\Property(
+     *                 property="specifications_techniques",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Spécifications techniques"
+     *             ),
+     *             @OA\Property(
+     *                 property="date_debut_prevue",
+     *                 type="string",
+     *                 format="date",
+     *                 nullable=true
+     *             ),
+     *             @OA\Property(
+     *                 property="date_fin_prevue",
+     *                 type="string",
+     *                 format="date",
+     *                 nullable=true,
+     *                 description="Doit être après date_debut_prevue"
+     *             ),
+     *             @OA\Property(
+     *                 property="statut_lot",
+     *                 type="integer",
+     *                 enum={0, 1},
+     *                 description="Statut (0=inactif, 1=actif)"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Lot créé avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Lot"),
+     *             @OA\Property(property="message", type="string", example="Lot créé avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Erreur de validation ou AO inactif/clôturé"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function store(Request $request)
     {
@@ -153,7 +318,7 @@ class LotController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -231,7 +396,7 @@ class LotController extends Controller
                 'appel_offre_id' => $request->appel_offre_id
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $lot->load(['appelOffre', 'creator']),
@@ -251,7 +416,7 @@ class LotController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création du lot: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la création',
@@ -263,8 +428,45 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Affiche les détails d'un lot
+     *
+     * @OA\Get(
+     *     path="/lots/{id}",
+     *     operationId="showLot",
+     *     tags={"Lots"},
+     *     summary="Détails d'un lot",
+     *     description="Récupère les détails complets d'un lot avec son historique, attributions et statistiques. Requiert la permission `lots.view-details`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Détails récupérés avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/LotDetailed"),
+     *             @OA\Property(property="historique", type="array", @OA\Items(ref="#/components/schemas/Lot")),
+     *             @OA\Property(
+     *                 property="statistiques",
+     *                 type="object",
+     *                 @OA\Property(property="duree_jours", type="integer", example=180),
+     *                 @OA\Property(property="est_attribue", type="boolean"),
+     *                 @OA\Property(property="est_retire", type="boolean"),
+     *                 @OA\Property(property="a_attribution_active", type="boolean")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Détails récupérés avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable")
+     * )
      */
     public function show(Request $request, $id)
     {
@@ -282,7 +484,7 @@ class LotController extends Controller
                 'updater'
             ])->findOrFail($id);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $lot,
@@ -302,7 +504,7 @@ class LotController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du lot: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Lot introuvable',
@@ -328,8 +530,55 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+       /**
      * Met à jour un lot (crée une nouvelle version)
+     *
+     * @OA\Put(
+     *     path="/lots/{id}",
+     *     operationId="updateLot",
+     *     tags={"Lots"},
+     *     summary="Mettre à jour un lot",
+     *     description="Met à jour un lot en créant une nouvelle version. L'ancienne version est conservée. Requiert la permission `lots.update`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"libelle", "statut_lot", "motif_modification"},
+     *             @OA\Property(property="libelle", type="string", maxLength=160),
+     *             @OA\Property(property="description_critere", type="string", nullable=true),
+     *             @OA\Property(property="specifications_techniques", type="string", nullable=true),
+     *             @OA\Property(property="date_debut_prevue", type="string", format="date", nullable=true),
+     *             @OA\Property(property="date_fin_prevue", type="string", format="date", nullable=true),
+     *             @OA\Property(property="statut_lot", type="integer", enum={0, 1}),
+     *             @OA\Property(
+     *                 property="motif_modification",
+     *                 type="string",
+     *                 description="Motif de la modification (obligatoire)",
+     *                 example="Modification des spécifications suite à validation technique"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Nouvelle version créée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/LotDetailed"),
+     *             @OA\Property(property="message", type="string", example="Nouvelle version créée avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable"),
+     *     @OA\Response(response=422, description="Erreur de validation"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -349,7 +598,7 @@ class LotController extends Controller
         ]);
 
         if ($validator->fails()) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur de validation',
@@ -383,7 +632,7 @@ class LotController extends Controller
 
             Log::info("Nouvelle version de lot créée", ['id' => $nouvelleVersion->id_lot]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouvelleVersion->load(['appelOffre', 'creator', 'parent']),
@@ -399,7 +648,7 @@ class LotController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour',
@@ -411,8 +660,44 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+      /**
      * Supprime un lot (soft delete)
+     *
+     * @OA\Delete(
+     *     path="/lots/{id}",
+     *     operationId="deleteLot",
+     *     tags={"Lots"},
+     *     summary="Supprimer un lot",
+     *     description="Supprime (soft delete) un lot. Impossible si le lot est déjà attribué. Requiert la permission `lots.delete`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lot supprimé avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Lot supprimé avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Impossible de supprimer un lot attribué",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Impossible de supprimer un lot attribué")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function destroy(Request $request, $id)
     {
@@ -422,7 +707,7 @@ class LotController extends Controller
 
             // Vérifier si le lot est attribué
             if ($lot->isAttribue()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Impossible de supprimer un lot attribué'
@@ -440,7 +725,7 @@ class LotController extends Controller
 
             Log::info("Lot supprimé", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Lot supprimé avec succès'
@@ -453,7 +738,7 @@ class LotController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la suppression',
@@ -465,8 +750,65 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Attribue un lot à un prestataire
+     *
+     * @OA\Post(
+     *     path="/lots/{id}/attribuer",
+     *     operationId="attribuerLot",
+     *     tags={"Lots"},
+     *     summary="Attribuer un lot",
+     *     description="Attribue un lot à un prestataire avec une proforma. Le lot ne doit pas être déjà attribué. Requiert la permission `attributions_lots.assign`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"prestataire_id", "proforma_id"},
+     *             @OA\Property(
+     *                 property="prestataire_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 description="UUID du prestataire attributaire"
+     *             ),
+     *             @OA\Property(
+     *                 property="proforma_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 description="UUID de la proforma associée"
+     *             ),
+     *             @OA\Property(
+     *                 property="date_attribution",
+     *                 type="string",
+     *                 format="date",
+     *                 nullable=true,
+     *                 description="Date d'attribution (défaut: aujourd'hui)"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lot attribué avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Attribution"),
+     *             @OA\Property(property="message", type="string", example="Lot attribué avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Lot déjà attribué ou validation échouée"
+     *     ),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function attribuer(Request $request, $id)
     {
@@ -527,8 +869,49 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Retire un lot
+     *
+     * @OA\Post(
+     *     path="/lots/{id}/retirer",
+     *     operationId="retirerLot",
+     *     tags={"Lots"},
+     *     summary="Retirer un lot",
+     *     description="Retire un lot (annule son attribution ou le désactive). Requiert la permission `attributions_lots.withdraw`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"motif_retrait"},
+     *             @OA\Property(
+     *                 property="motif_retrait",
+     *                 type="string",
+     *                 description="Motif du retrait",
+     *                 example="Non-respect des délais contractuels"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lot retiré avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Lot"),
+     *             @OA\Property(property="message", type="string", example="Lot retiré avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Erreur de validation"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function retirer(Request $request, $id)
     {
@@ -571,8 +954,37 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Obtient l'historique des versions
+     *
+     * @OA\Get(
+     *     path="/lots/{id}/historique",
+     *     operationId="historiqueLot",
+     *     tags={"Lots"},
+     *     summary="Historique des versions",
+     *     description="Récupère l'historique complet des versions d'un lot. Requiert la permission `lots.view-history`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Historique récupéré avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Lot")),
+     *             @OA\Property(property="message", type="string", example="Historique récupéré avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function historique(Request $request, $id)
     {
@@ -580,7 +992,7 @@ class LotController extends Controller
             $lot = Lot::findOrFail($id);
             $historique = $lot->getHistorique();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $historique,
@@ -601,8 +1013,50 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Obtient les statistiques d'un lot
+     *
+     * @OA\Get(
+     *     path="/lots/{id}/statistiques",
+     *     operationId="statistiquesLot",
+     *     tags={"Lots"},
+     *     summary="Statistiques d'un lot",
+     *     description="Retourne les statistiques détaillées d'un lot (durée, attribution, etc.). Requiert la permission `lots.read`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Statistiques récupérées avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="general",
+     *                     type="object",
+     *                     @OA\Property(property="numero", type="string", example="LOT-001"),
+     *                     @OA\Property(property="libelle", type="string", example="Gros œuvre"),
+     *                     @OA\Property(property="duree_prevue_jours", type="integer", example=180),
+     *                     @OA\Property(property="est_attribue", type="boolean"),
+     *                     @OA\Property(property="est_retire", type="boolean")
+     *                 ),
+     *                 @OA\Property(property="attribution", type="object")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Statistiques récupérées avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function statistiques(Request $request, $id)
     {
@@ -636,8 +1090,48 @@ class LotController extends Controller
         }
     }
 
-    /**
+
+
+       /**
      * Duplique un lot
+     *
+     * @OA\Post(
+     *     path="/lots/{id}/duplicate",
+     *     operationId="duplicateLot",
+     *     tags={"Lots"},
+     *     summary="Dupliquer un lot",
+     *     description="Crée une copie d'un lot avec un nouveau numéro. La copie n'est pas attribuée. Les critères d'évaluation sont également copiés. Requiert la permission `lots.duplicate`.",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID du lot à dupliquer",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="nouveau_numero",
+     *                 type="string",
+     *                 description="Nouveau numéro pour la copie (défaut: numero-COPIE)",
+     *                 example="LOT-001-BIS"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Lot dupliqué avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Lot"),
+     *             @OA\Property(property="message", type="string", example="Lot dupliqué avec succès")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Lot introuvable"),
+     *     @OA\Response(response=500, description="Erreur serveur")
+     * )
      */
     public function duplicate(Request $request, $id)
     {
@@ -667,7 +1161,7 @@ class LotController extends Controller
                 'nouveau' => $nouveauLot->id_lot
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouveauLot->load('appelOffre'),
@@ -681,7 +1175,7 @@ class LotController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la duplication: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Erreur lors de la duplication',

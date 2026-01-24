@@ -192,7 +192,7 @@ class Facture extends Model
      *
      * @return BelongsTo
      */
-    public function proforma(): BelongsTo 
+    public function proforma(): BelongsTo
     {
         return $this->belongsTo(Proforma::class, 'proforma_id', 'id_proforma');
     }
@@ -279,7 +279,7 @@ class Facture extends Model
      */
     public function getMontantFormateAttribute(): string
     {
-        return number_format($this->montant_facture, 0, ',', ' ') . ' FCFA';
+        return number_format($this->montant_facture, 2, ',', ' ') . ' FCFA';
     }
 
     /**

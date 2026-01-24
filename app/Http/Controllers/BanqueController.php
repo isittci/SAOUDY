@@ -25,7 +25,7 @@ class BanqueController extends Controller
      */
     public function index(Request $request, string $prestataireId)
     {
-        
+
         try {
             // Récupérer le prestataire
             $prestataire = Prestataire::findOrFail($prestataireId);
@@ -79,7 +79,7 @@ class BanqueController extends Controller
             ];
 
             // Réponse JSON ou Vue
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Liste des banques récupérée avec succès.',
@@ -96,7 +96,7 @@ class BanqueController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des banques: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération des banques.',
@@ -119,7 +119,7 @@ class BanqueController extends Controller
     {
         $prestataire = Prestataire::findOrFail($prestataireId);
 
-        if ($request->expectsJson() || $request->ajax()) {
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Formulaire de création prêt.',
@@ -157,7 +157,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque créée avec succès.',
@@ -173,7 +173,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la création de la banque.',
@@ -223,7 +223,7 @@ class BanqueController extends Controller
                 'has_swift' => $banque->hasSwift(),
             ];
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Détails de la banque récupérés avec succès.',
@@ -240,7 +240,7 @@ class BanqueController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération de la banque.',
@@ -267,7 +267,7 @@ class BanqueController extends Controller
 
         $prestataire = Prestataire::findOrFail($prestataireId);
 
-        if ($request->expectsJson() || $request->ajax()) {
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Données pour modification récupérées.',
@@ -309,7 +309,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque mise à jour avec succès.',
@@ -325,7 +325,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la mise à jour de la banque.',
@@ -357,7 +357,7 @@ class BanqueController extends Controller
             if ($banque->hasPaiements()) {
                 $message = 'Impossible de supprimer cette banque car elle possède des paiements associés.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => $message,
@@ -375,7 +375,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque supprimée avec succès.',
@@ -390,7 +390,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la suppression de la banque.',
@@ -422,7 +422,7 @@ class BanqueController extends Controller
                 ? 'Banque activée avec succès.'
                 : 'Banque désactivée avec succès.';
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => $message,
@@ -438,7 +438,7 @@ class BanqueController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors du changement de statut de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors du changement de statut.',
@@ -471,7 +471,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque dupliquée avec succès.',
@@ -487,7 +487,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la duplication de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la duplication de la banque.',
@@ -523,7 +523,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque restaurée avec succès.',
@@ -539,7 +539,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la restauration de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la restauration de la banque.',
@@ -570,7 +570,7 @@ class BanqueController extends Controller
             if ($banque->hasPaiements()) {
                 $message = 'Impossible de supprimer définitivement cette banque car elle possède des paiements associés.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => $message,
@@ -586,7 +586,7 @@ class BanqueController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banque supprimée définitivement.',
@@ -601,7 +601,7 @@ class BanqueController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression définitive de la banque: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la suppression définitive.',
@@ -643,7 +643,7 @@ class BanqueController extends Controller
                 ->paginate($perPage)
                 ->withQueryString();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Banques supprimées récupérées avec succès.',
@@ -659,7 +659,7 @@ class BanqueController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des banques supprimées: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',

@@ -19,7 +19,7 @@ return new class extends Migration
             // Strings
             $table->string('numero', 35);
             $table->string('libelle', 160)->nullable();
-            
+
             // Textes
             $table->text('description_critere')->nullable();
             $table->text('specifications_techniques')->nullable();
@@ -37,7 +37,6 @@ return new class extends Migration
             $table->enum('statut_lot', [0, 1])->nullable();
 
             // Nombres
-            $table->decimal('taux_penalites', 5, 2)->nullable();
             $table->decimal('budget_lot', 15, 2)->nullable();
 
             $table->smallInteger('statut_retrait')->nullable();

@@ -262,7 +262,7 @@
                         </div>
 
                         <!-- Responsables (OBLIGATOIRES) -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-white border-b border-gray-200">
                                 <h2 class="text-lg font-bold text-gray-800 flex items-center">
                                     <i class="fas fa-users text-red-500 mr-2"></i>
@@ -341,7 +341,15 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> --}}
+                        @include('evaluations.partials.responsables-fields', [
+                            'responsablesExistants' => $responsablesExistants ?? [],
+                            'evaluation' => $evaluation ?? null,
+                        ])
+
+                         @push('scripts')
+                            @include('evaluations.partials.responsables-autocomplete-script')
+                        @endpush
 
                         <!-- Actions -->
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

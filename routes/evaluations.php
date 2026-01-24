@@ -20,6 +20,13 @@ Route::prefix('evaluations')->name('evaluations.')->middleware(['auth'])->group(
     // Liste de toutes les évaluations
     Route::get('/', [EvaluationController::class, 'index'])->name('index')->middleware('can:evaluations_attributions.read');
 
+
+    // ROUTES POUR L'AUTO-COMPLÉTION
+    Route::get('/responsables/search', [EvaluationController::class, 'getResponsablesExistants'])->name('responsables.search');
+    Route::get('/responsables/all', [EvaluationController::class, 'getTousResponsables'])->name('responsables.all');
+
+
+
     // ==================== ROUTES LIÉES À UNE ATTRIBUTION ====================
 
     // Évaluations pour une attribution spécifique

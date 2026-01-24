@@ -285,7 +285,7 @@
             <div class="section-title">PRESTATAIRE</div>
             <table class="info-table">
                 <tr>
-                    <td class="label">Raison Sociale</td>
+                    <td class="label">Nom du prestataire</td>
                     <td class="value"><strong>{{ $prestataire['raison_sociale'] }}</strong></td>
                     <td class="label">N° Identification</td>
                     <td class="value">{{ $prestataire['numero_identification'] }}</td>

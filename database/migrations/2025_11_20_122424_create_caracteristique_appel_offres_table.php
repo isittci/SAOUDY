@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('duree_estimee_jours_caracteristique_appel_offre')->nullable()->comment('Durée estimée des travaux en jours.');
             $table->date('date_livraison_previsionnelle_caracteristique_appel_offre')->nullable()->comment('Date prévue de livraison des travaux.');
             $table->string('lieu_execution_caracteristique_appel_offre', 255)->nullable()->comment('Lieu prévu pour l\'exécution des travaux.');
-            $table->decimal('penalites_retard_journalier_caracteristique_appel_offre', 15,2)->nullable()->comment('Montant de pénalité par jour de retard (ex: 50 000 FCFA/jour). Dissuasif.');
+           
             //montant_garantie
             $table->decimal('montant_garantie_caracteristique_appel_offre',15,2)->nullable()->comment("Caution de bonne exécution (souvent 5-10% du marché).");
             //delai_garantie_jours

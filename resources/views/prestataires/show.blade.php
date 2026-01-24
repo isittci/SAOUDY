@@ -141,10 +141,10 @@
                     </div>
 
                     <div class="p-6 space-y-5">
-                        <!-- Raison sociale et ID -->
+                        <!-- Nom du prestataire et ID -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Raison sociale</label>
+                                <label class="block text-sm font-semibold text-gray-600 mb-2">Nom du prestataire</label>
                                 <p class="text-gray-900 font-medium text-lg">{{ $prestataire->raison_sociale_prestataire }}
                                 </p>
                             </div>
@@ -260,7 +260,7 @@
                                     @if ($prestataire->ville_prestataire && ($prestataire->pays_prestataire ?? $prestataire->pays))
                                         ,
                                     @endif
-                                    {{ $prestataire->pays_prestataire ?? ($prestataire->pays ?? '') }}
+                                    {{ $prestataire->pays->nom ?? ($prestataire->pays ?? '') }}
                                 </p>
                             </div>
                         </div>
@@ -376,7 +376,7 @@
                         <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                             <span class="text-sm text-gray-600">Lots terminés</span>
                             <span class="text-lg font-bold text-green-600">
-                                {{ $prestataire->attributions()->where('statut_attribution', \App\Models\PrestataireLot::STATUT_TERMINE)->count() ?? 0 }}
+                                {{ $prestataire->attributions()->where('statut_attribution', \App\Models\AttributionLotPrestataire::STATUT_TERMINE)->count() ?? 0 }}
                             </span>
                         </div>
 
@@ -435,7 +435,7 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </a>
 
-                        <a @can('capacites_techniques.read') href="{{ route('prestataires.capacites-techniques.index', $prestataire->id_prestataire) }}" @endcan
+                        {{-- <a @can('capacites_techniques.read') href="{{ route('prestataires.capacites-techniques.index', $prestataire->id_prestataire) }}" @endcan
                             class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-purple-200 transition-colors">
@@ -447,9 +447,9 @@
                                     référence(s)</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a>
+                        </a> --}}
 
-                        <a @can('situations_financieres.read') href="{{ route('prestataires.situations-financieres.index', $prestataire->id_prestataire) }}" @endcan
+                        {{-- <a @can('situations_financieres.read') href="{{ route('prestataires.situations-financieres.index', $prestataire->id_prestataire) }}" @endcan
                             class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-all group">
                             <div
                                 class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-indigo-200 transition-colors">
@@ -461,7 +461,7 @@
                                     exercice(s)</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
-                        </a>
+                        </a> --}}
 
 
                     </div>
@@ -593,7 +593,7 @@
 
                                             @can('attributions_lots.withdraw')
                                                 {{-- Bouton Retirer --}}
-                                                @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+                                                @if ($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_ATTRIBUE)
                                                     <button type="button"
                                                         onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
                                                         class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -642,7 +642,7 @@
 
                                                     @canany(['attributions_lots.assign', 'attributions_lots.suspend',
                                                         'attributions_lots.withdraw'])
-                                                        @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+                                                        @if ($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_ATTRIBUE)
                                                             <hr class="my-1 border-gray-100">
                                                             @can('attributions_lots.suspend')
                                                                 <button
@@ -664,7 +664,7 @@
                                                         @endif
 
                                                         @can('attributions_lots.assign')
-                                                            @if ($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_SUSPENDU)
+                                                            @if ($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_SUSPENDU)
                                                                 <button
                                                                     onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
                                                                     class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">

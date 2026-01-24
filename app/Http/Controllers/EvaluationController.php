@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Lot;
 use App\Models\Evaluation;
-use App\Models\PrestataireLot;
+use App\Models\AttributionLotPrestataire;
 use App\Models\CritereEvaluation;
 use App\Models\EvaluationLotPrestataire;
 use Illuminate\Http\Request;
@@ -129,7 +129,7 @@ class EvaluationController extends Controller
     {
 
         try {
-            $attribution = PrestataireLot::with([
+            $attribution = AttributionLotPrestataire::with([
                     'lot.appelOffre',
                     'lot.criteresEvaluation' => function ($q) {
                         $q->actif()->ordonne();
@@ -182,7 +182,6 @@ class EvaluationController extends Controller
             ));
 
         } catch (ModelNotFoundException $e) {
-            // dd($e->getMessage());
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -192,7 +191,6 @@ class EvaluationController extends Controller
 
             return back()->with('error', 'Attribution introuvable');
         } catch (Exception $e) {
-            // dd($e->getMessage(), 2);
             Log::error('Erreur: ' . $e->getMessage());
 
             if ($request->wantsJson()) {
@@ -212,7 +210,7 @@ class EvaluationController extends Controller
     public function create(Request $request, $attributionId)
     {
         try {
-            $attribution = PrestataireLot::with([
+            $attribution = AttributionLotPrestataire::with([
                     'lot.appelOffre',
                     'lot.criteresEvaluation' => function ($q) {
                         $q->actif()->ordonne();
@@ -319,7 +317,7 @@ class EvaluationController extends Controller
 
         DB::beginTransaction();
         try {
-            $attribution = PrestataireLot::with(['lot', 'prestataire'])
+            $attribution = AttributionLotPrestataire::with(['lot', 'prestataire'])
                 ->findOrFail($attributionId);
 
             $critere = CritereEvaluation::findOrFail($request->critere_id);
@@ -413,7 +411,6 @@ class EvaluationController extends Controller
      */
     public function show(Request $request, $id)
     {
-        // dd(25);
         try {
             $evaluation = Evaluation::with([
                     'attribution.lot.appelOffre',
@@ -430,8 +427,6 @@ class EvaluationController extends Controller
                     'versions'
                 ])
                 ->findOrFail($id);
-
-                // dd($evaluation);
 
             // Historique des versions
             $historiqueVersions = $evaluation->getHistoriqueVersions();
@@ -483,7 +478,6 @@ class EvaluationController extends Controller
             ));
 
         } catch (ModelNotFoundException $e) {
-            // dd($e->getMessage(), 40);
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -810,9 +804,9 @@ class EvaluationController extends Controller
 
 
 
-            $attribution = $evaluation->attribution;
-            $attribution->pourcentage_avancement += $evaluation->note_reference_critere_evaluation;
-            $attribution->save();
+            // $attribution = $evaluation->attribution;
+            // $attribution->pourcentage_avancement += $evaluation->note_reference_critere_evaluation;
+            // $attribution->save();
 
 
             DB::commit();
@@ -882,7 +876,24 @@ class EvaluationController extends Controller
 
                 return back()->with('error', $messageErreur);
             }
- 
+
+
+            // TODO
+            $critereEvaluation = $evaluation->critereEvaluation;
+            $lot = $critereEvaluation->lot;
+
+            $attribution = $evaluation->attribution;
+            $attribution->pourcentage_avancement += $evaluation->note_reference_critere_evaluation;
+            $attribution->save();
+
+            if($lot->isCloture()){
+                $attributionActive = $lot->attributionActive;
+                $attributionActive->statut_attribution = 4;
+                $attributionActive->save();
+            }
+
+
+
 
 
             DB::commit();
@@ -1214,4 +1225,172 @@ class EvaluationController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+ * Récupère les responsables existants pour l'auto-complétion
+ * Fusionne tous les types de responsables en une seule liste
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function getResponsablesExistants(Request $request)
+{
+    try {
+        $search = $request->get('search', '');
+
+        // Colonnes JSON contenant les responsables
+        $colonnes = [
+            'respo_technique_evaluation',
+            'superviseur_evaluation',
+            'evalue_par',
+        ];
+
+        // Collecter tous les responsables de toutes les colonnes
+        $tousResponsables = collect();
+
+        foreach ($colonnes as $colonne) {
+            $data = Evaluation::whereNotNull($colonne)
+                ->where('is_current', true)
+                ->select($colonne)
+                ->get()
+                ->map(function ($item) use ($colonne) {
+                    $data = $item->$colonne;
+                    if (is_string($data)) {
+                        $data = json_decode($data, true);
+                    }
+                    return $data;
+                })
+                ->filter(function ($item) {
+                    return is_array($item) && !empty($item['nom_complet']);
+                });
+
+            $tousResponsables = $tousResponsables->merge($data);
+        }
+
+        // Dédupliquer par nom_complet (insensible à la casse)
+        $responsables = $tousResponsables
+            ->unique(function ($item) {
+                return mb_strtolower(trim($item['nom_complet'] ?? ''));
+            })
+            ->values();
+
+        // Filtrer par recherche si spécifié
+        if (!empty($search)) {
+            $searchLower = mb_strtolower($search);
+            $responsables = $responsables->filter(function ($item) use ($searchLower) {
+                $nomComplet = mb_strtolower($item['nom_complet'] ?? '');
+                $email = mb_strtolower($item['email'] ?? '');
+                $telephone = mb_strtolower($item['telephone'] ?? '');
+
+                return str_contains($nomComplet, $searchLower)
+                    || str_contains($email, $searchLower)
+                    || str_contains($telephone, $searchLower);
+            })->values();
+        }
+
+        // Trier par nom
+        $responsables = $responsables->sortBy(function ($item) {
+            return mb_strtolower($item['nom_complet'] ?? '');
+        })->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $responsables->take(10)->values(),
+        ]);
+
+    } catch (Exception $e) {
+        Log::error('Erreur récupération responsables: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la récupération des responsables.',
+        ], 500);
+    }
+}
+
+/**
+ * Récupère tous les responsables existants
+ * Retourne la même liste pour tous les types (partagés)
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function getTousResponsables(Request $request)
+{
+    try {
+        // Colonnes JSON contenant les responsables
+        $colonnes = [
+            'respo_technique_evaluation',
+            'superviseur_evaluation',
+            'evalue_par',
+        ];
+
+        // Collecter tous les responsables de toutes les colonnes
+        $tousResponsables = collect();
+
+        foreach ($colonnes as $colonne) {
+            $data = Evaluation::whereNotNull($colonne)
+                ->where('is_current', true)
+                ->select($colonne)
+                ->get()
+                ->map(function ($item) use ($colonne) {
+                    $data = $item->$colonne;
+                    if (is_string($data)) {
+                        $data = json_decode($data, true);
+                    }
+                    return $data;
+                })
+                ->filter(function ($item) {
+                    return is_array($item) && !empty($item['nom_complet']);
+                });
+
+            $tousResponsables = $tousResponsables->merge($data);
+        }
+
+        // Dédupliquer par nom_complet (insensible à la casse)
+        $responsablesUniques = $tousResponsables
+            ->unique(function ($item) {
+                return mb_strtolower(trim($item['nom_complet'] ?? ''));
+            })
+            ->sortBy(function ($item) {
+                return mb_strtolower($item['nom_complet'] ?? '');
+            })
+            ->values();
+
+        // Retourner la même liste pour tous les types
+        // Car un responsable peut occuper n'importe quel rôle
+        $responsables = [
+            'respo_technique' => $responsablesUniques,
+            'superviseur' => $responsablesUniques,
+            'evalue_par' => $responsablesUniques,
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $responsables,
+        ]);
+
+    } catch (Exception $e) {
+        Log::error('Erreur récupération tous responsables: ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la récupération des responsables.',
+        ], 500);
+    }
+}
+
+
 }

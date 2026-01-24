@@ -231,10 +231,10 @@
                 </div>
             </div>
 
-           
+
 
             <!-- Modalités et Documents -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fas fa-file-contract text-purple-500 mr-2"></i>
@@ -309,7 +309,7 @@
                         </div>
                     @endif
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Métadonnées -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">

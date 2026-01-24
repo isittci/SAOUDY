@@ -49,7 +49,7 @@ return new class extends Migration
 
             $table->decimal('montant_net_paye_paiement', 20, 2)
                 ->nullable()
-                ->comment('Montant effectivement versé au prestataire en FCFA. Représente la somme nette créditée sur le compte bancaire. Peut différer du montant facturé en cas de: retenues de garantie, pénalités déduites, acomptes, ou paiements partiels. Précision de 2 décimales. Maximum: 99 999 999 999 999 999,99 FCFA.');
+                ->comment('Montant effectivement versé au prestataire en FCFA. Représente la somme nette créditée sur le compte bancaire. Peut différer du montant facturé en cas de: retenues de garantie,  acomptes, ou paiements partiels. Précision de 2 décimales. Maximum: 99 999 999 999 999 999,99 FCFA.');
 
             $table->smallInteger('statut_paiement')
                 ->nullable()

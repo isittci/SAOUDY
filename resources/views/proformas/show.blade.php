@@ -89,13 +89,13 @@
                                         </button>
                                     @endcan
 
-                                    @can('proformas.update')
+                                    {{-- @can('proformas.update')
                                         <button onclick="duplicate()"
                                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                             <i class="fas fa-copy mr-2 text-purple-500"></i>
                                             Dupliquer
                                         </button>
-                                    @endcan
+                                    @endcan --}}
 
 
 
@@ -476,7 +476,7 @@
                                 </button>
                             @endcan
 
-                            @can('proformas.update')
+                            {{-- @can('proformas.update')
                                 <button onclick="duplicate()"
                                     class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-colors group">
                                     <span class="flex items-center">
@@ -485,7 +485,7 @@
                                     </span>
                                     <i class="fas fa-chevron-right text-gray-400 group-hover:text-purple-500"></i>
                                 </button>
-                            @endcan
+                            @endcan --}}
 
                             @can('proformas.update')
                                 <button onclick="window.location.href='{{ route('proformas.edit', $proforma->id_proforma) }}'"
@@ -674,31 +674,31 @@
                         });
                 }
 
-                // Dupliquer
-                window.duplicate = function() {
-                    if (confirm('Voulez-vous dupliquer cette proforma ?')) {
-                        fetch(`/proformas/{{ $proforma->id_proforma }}/duplicate`, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    window.location.href = `/proformas/${data.data.id_proforma}/edit`;
-                                } else {
-                                    alert(data.message || 'Une erreur est survenue');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Erreur:', error);
-                                alert('Une erreur est survenue');
-                            });
-                    }
-                }
+                // // Dupliquer
+                // window.duplicate = function() {
+                //     if (confirm('Voulez-vous dupliquer cette proforma ?')) {
+                //         fetch(`/proformas/{{ $proforma->id_proforma }}/duplicate`, {
+                //                 method: 'POST',
+                //                 headers: {
+                //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                //                     'Content-Type': 'application/json',
+                //                     'Accept': 'application/json'
+                //                 }
+                //             })
+                //             .then(response => response.json())
+                //             .then(data => {
+                //                 if (data.success) {
+                //                     window.location.href = `/proformas/${data.data.id_proforma}/edit`;
+                //                 } else {
+                //                     alert(data.message || 'Une erreur est survenue');
+                //                 }
+                //             })
+                //             .catch(error => {
+                //                 console.error('Erreur:', error);
+                //                 alert('Une erreur est survenue');
+                //             });
+                //     }
+                // }
 
                 // Créer version
                 window.creerVersion = function() {

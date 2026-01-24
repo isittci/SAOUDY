@@ -2,43 +2,58 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreRoleRequest;
-use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
+use App\Models\User;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 
 class RolesController extends Controller
 {
+   
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $query = Role::withCount(['users', 'permissions']);
+ * Display a listing of the resource.
+ */
+public function index(Request $request)
+{
+    $query = Role::withCount(['users', 'permissions']);
 
-        // Recherche
-        if ($search = $request->search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('slug', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+    /**
+         * @var User ùuser
+         */
+        $user = auth()->user();
 
-        // Filtre par type
-        if ($request->type === 'system') {
-            $query->where('is_system_role', true);
-        } elseif ($request->type === 'custom') {
-            $query->where('is_system_role', false);
-        }
-
-        $roles = $query->orderBy('level', 'desc')->paginate(20);
-
-        return view('admin.roles.index', compact('roles'));
+    // Exclure le rôle super admin si l'utilisateur connecté n'est pas super admin
+    if (!$user->isSuperAdmin()) {
+        $query->where('slug', '!=', 'super-administrateur');
+        // ou selon votre structure :
+        // $query->where('is_super_admin', false);
+        // $query->where('level', '<', 100);
     }
+
+    // Recherche
+    if ($search = $request->search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        });
+    }
+
+    // Filtre par type
+    if ($request->type === 'system') {
+        $query->where('is_system_role', true);
+    } elseif ($request->type === 'custom') {
+        $query->where('is_system_role', false);
+    }
+
+    $roles = $query->orderBy('level', 'desc')->paginate(20);
+
+    return view('admin.roles.index', compact('roles'));
+}
 
     /**
      * Show the form for creating a new resource.

@@ -59,7 +59,7 @@
                             @endif
                         @endcan
 
-                        @can('roles.duplicate')
+                        {{-- @can('roles.duplicate')
                             <form action="{{ route('admin.roles.duplicate', $role) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit"
@@ -68,7 +68,7 @@
                                     <span class="text-sm font-medium">Dupliquer</span>
                                 </button>
                             </form>
-                        @endcan
+                        @endcan --}}
 
                         @can('roles.delete')
                             @if ($role->canBeDeleted())

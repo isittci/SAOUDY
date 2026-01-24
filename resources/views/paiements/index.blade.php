@@ -328,8 +328,7 @@
                                         ];
                                         $couleur = $couleurs[$paiement->statut_paiement] ?? 'gray';
                                     @endphp
-                                    {{-- fas fa-check-double mr-1 --}}
-                                    {{-- {{ dd($paiement->statut_icone) }} --}}
+                                    
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-{{ $couleur }}-100 text-{{ $couleur }}-800">
                                         <i class="fas {{ $paiement->statut_icone }} mr-1"></i>

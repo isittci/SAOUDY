@@ -7,7 +7,7 @@
 {{-- BOUTON ÉVALUATION - À AJOUTER DANS LE HEADER DES ACTIONS --}}
 {{-- ====================================================================== --}}
 
-@if($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+@if($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_ATTRIBUE)
     @php
         $evaluationExistante = \App\Models\Evaluation::pourAttribution($attribution->id_attribution)
             ->current()
@@ -116,7 +116,7 @@
     </div>
 @else
     {{-- Pas encore d'évaluation --}}
-    @if($attribution->statut_attribution === \App\Models\PrestataireLot::STATUT_ATTRIBUE)
+    @if($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_ATTRIBUE)
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center">

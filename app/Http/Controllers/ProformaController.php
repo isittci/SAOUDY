@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proforma;
-use App\Models\PrestataireLot;
+use App\Models\AttributionLotPrestataire;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,7 +73,7 @@ class ProformaController extends Controller
                 'utilisees' => Proforma::whereHas('prestataireLotsAttributions')->count(),
             ];
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $proformas,
@@ -87,7 +87,7 @@ class ProformaController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des proformas: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération des proformas.',
@@ -118,7 +118,7 @@ class ProformaController extends Controller
                 'Acompte + solde à la livraison',
             ];
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -134,7 +134,7 @@ class ProformaController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du formulaire de création: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -159,12 +159,11 @@ class ProformaController extends Controller
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
                 'modalite_proforma' => 'nullable|string|max:255',
-                'penalites_proforma' => 'nullable|numeric|min:0',
                 'actif_proforma' => 'nullable|boolean',
             ], $this->getValidationMessages());
 
             if ($validator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -180,7 +179,7 @@ class ProformaController extends Controller
             if (isset($validatedData['remise_montant_proforma']) &&
                 $validatedData['remise_montant_proforma'] > $validatedData['montant_retenu_proforma']) {
                 $error = ['remise_montant_proforma' => ['La remise ne peut pas dépasser le montant retenu.']];
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -198,7 +197,6 @@ class ProformaController extends Controller
             $dataToCreate['actif_proforma'] = $request->boolean('actif_proforma', true);
             $dataToCreate['taxe_montant'] = $validatedData['taxe_montant'] ?? 0;
             $dataToCreate['remise_montant_proforma'] = $validatedData['remise_montant_proforma'] ?? 0;
-            $dataToCreate['penalites_proforma'] = $validatedData['penalites_proforma'] ?? 0;
             $dataToCreate['created_by'] = Auth::id();
 
             // Le numéro sera généré automatiquement si non fourni (via boot())
@@ -208,7 +206,7 @@ class ProformaController extends Controller
 
             Log::info('Proforma créée avec succès', ['id' => $proforma->id_proforma, 'numero' => $proforma->numero_proforma]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $proforma,
@@ -224,7 +222,7 @@ class ProformaController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la création de la proforma.',
@@ -259,7 +257,7 @@ class ProformaController extends Controller
             // Résumé financier
             $resume = $proforma->getResume();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $proforma,
@@ -272,7 +270,7 @@ class ProformaController extends Controller
             return view('proformas.show', compact('proforma', 'historique', 'resume'));
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Proforma non trouvée.'
@@ -283,7 +281,7 @@ class ProformaController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération de la proforma: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -312,7 +310,7 @@ class ProformaController extends Controller
                 'Acompte + solde à la livraison',
             ];
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => [
@@ -326,7 +324,7 @@ class ProformaController extends Controller
             return view('proformas.edit', compact('proforma', 'modalites'));
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Proforma non trouvée.'
@@ -337,7 +335,7 @@ class ProformaController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du formulaire d\'édition: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -369,13 +367,12 @@ class ProformaController extends Controller
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
                 'modalite_proforma' => 'nullable|string|max:255',
-                'penalites_proforma' => 'nullable|numeric|min:0',
                 'actif_proforma' => 'nullable|boolean',
                 'motif_modification_proforma' => 'nullable|string|max:1000',
             ], $this->getValidationMessages());
 
             if ($validator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -391,7 +388,7 @@ class ProformaController extends Controller
             if (isset($validatedData['remise_montant_proforma']) &&
                 $validatedData['remise_montant_proforma'] > $validatedData['montant_retenu_proforma']) {
                 $error = ['remise_montant_proforma' => ['La remise ne peut pas dépasser le montant retenu.']];
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -406,7 +403,7 @@ class ProformaController extends Controller
 
             if (!$hasChanges) {
                 // Aucune modification détectée, retourner sans créer de version
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => true,
                         'data' => $proforma,
@@ -426,7 +423,6 @@ class ProformaController extends Controller
                 'taxe_montant' => $validatedData['taxe_montant'] ?? 0,
                 'remise_montant_proforma' => $validatedData['remise_montant_proforma'] ?? 0,
                 'modalite_proforma' => $validatedData['modalite_proforma'] ?? null,
-                'penalites_proforma' => $validatedData['penalites_proforma'] ?? 0,
                 'actif_proforma' => $request->boolean('actif_proforma', true),
                 'updated_by' => Auth::id(),
             ];
@@ -445,7 +441,7 @@ class ProformaController extends Controller
                 'version' => $nouvelleVersion->version_proforma
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouvelleVersion,
@@ -458,7 +454,7 @@ class ProformaController extends Controller
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Proforma non trouvée.'
@@ -474,7 +470,7 @@ class ProformaController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la mise à jour de la proforma.',
@@ -499,7 +495,6 @@ class ProformaController extends Controller
             'taxe_montant',
             'remise_montant_proforma',
             'modalite_proforma',
-            'penalites_proforma',
         ];
 
         foreach ($fieldsToCompare as $field) {
@@ -512,7 +507,7 @@ class ProformaController extends Controller
             }
 
             // Gérer les valeurs numériques
-            if (in_array($field, ['montant_retenu_proforma', 'taxe_montant', 'remise_montant_proforma', 'penalites_proforma'])) {
+            if (in_array($field, ['montant_retenu_proforma', 'taxe_montant', 'remise_montant_proforma'])) {
                 $oldValue = floatval($oldValue ?? 0);
                 $newValue = floatval($newValue ?? 0);
             }
@@ -534,31 +529,26 @@ class ProformaController extends Controller
 
         // Comparer le montant
         if (floatval($proforma->montant_retenu_proforma) != floatval($newData['montant_retenu_proforma'])) {
-            $ancien = number_format($proforma->montant_retenu_proforma, 0, ',', ' ');
-            $nouveau = number_format($newData['montant_retenu_proforma'], 0, ',', ' ');
+            $ancien = number_format($proforma->montant_retenu_proforma, 2, ',', ' ');
+            $nouveau = number_format($newData['montant_retenu_proforma'], 2, ',', ' ');
             $modifications[] = "Montant HT: {$ancien} → {$nouveau} FCFA";
         }
 
         // Comparer la remise
         if (floatval($proforma->remise_montant_proforma ?? 0) != floatval($newData['remise_montant_proforma'] ?? 0)) {
-            $ancien = number_format($proforma->remise_montant_proforma ?? 0, 0, ',', ' ');
-            $nouveau = number_format($newData['remise_montant_proforma'] ?? 0, 0, ',', ' ');
+            $ancien = number_format($proforma->remise_montant_proforma ?? 0, 2, ',', ' ');
+            $nouveau = number_format($newData['remise_montant_proforma'] ?? 0, 2, ',', ' ');
             $modifications[] = "Remise: {$ancien} → {$nouveau} FCFA";
         }
 
         // Comparer la taxe
         if (floatval($proforma->taxe_montant ?? 0) != floatval($newData['taxe_montant'] ?? 0)) {
-            $ancien = number_format($proforma->taxe_montant ?? 0, 0, ',', ' ');
-            $nouveau = number_format($newData['taxe_montant'] ?? 0, 0, ',', ' ');
+            $ancien = number_format($proforma->taxe_montant ?? 0, 2, ',', ' ');
+            $nouveau = number_format($newData['taxe_montant'] ?? 0, 2, ',', ' ');
             $modifications[] = "Taxe: {$ancien} → {$nouveau} FCFA";
         }
 
-        // Comparer les pénalités
-        if (floatval($proforma->penalites_proforma ?? 0) != floatval($newData['penalites_proforma'] ?? 0)) {
-            $ancien = number_format($proforma->penalites_proforma ?? 0, 0, ',', ' ');
-            $nouveau = number_format($newData['penalites_proforma'] ?? 0, 0, ',', ' ');
-            $modifications[] = "Pénalités: {$ancien} → {$nouveau} FCFA";
-        }
+
 
         // Comparer la date
         $oldDate = $proforma->date_proforma ? $proforma->date_proforma->format('Y-m-d') : null;
@@ -588,7 +578,7 @@ class ProformaController extends Controller
 
             // Vérifier si la proforma est utilisée
             if ($proforma->estUtilisee()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Impossible de supprimer cette proforma car elle est utilisée dans des attributions.'
@@ -608,7 +598,7 @@ class ProformaController extends Controller
 
             Log::info('Proforma supprimée avec succès', ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Proforma supprimée avec succès'
@@ -618,7 +608,7 @@ class ProformaController extends Controller
             return redirect()->route('proformas.index')->with('success', 'Proforma supprimée avec succès.');
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Proforma non trouvée.'
@@ -630,7 +620,7 @@ class ProformaController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la suppression de la proforma: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la suppression.',
@@ -661,7 +651,7 @@ class ProformaController extends Controller
             $statusText = $proforma->actif_proforma ? 'activée' : 'désactivée';
             Log::info("Proforma {$statusText}", ['id' => $id]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $proforma,
@@ -672,7 +662,7 @@ class ProformaController extends Controller
             return redirect()->back()->with('success', "Proforma {$statusText} avec succès.");
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Proforma non trouvée.'
@@ -684,7 +674,7 @@ class ProformaController extends Controller
             DB::rollBack();
             Log::error('Erreur lors du changement de statut de la proforma: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -710,12 +700,11 @@ class ProformaController extends Controller
                 'montant_retenu_proforma' => 'nullable|numeric|min:0',
                 'taxe_montant' => 'nullable|numeric|min:0',
                 'remise_montant_proforma' => 'nullable|numeric|min:0',
-                'modalite_proforma' => 'nullable|string|max:255',
-                'penalites_proforma' => 'nullable|numeric|min:0',
+                'modalite_proforma' => 'nullable|string|max:255'
             ]);
 
             if ($validator->fails()) {
-                if ($request->wantsJson() || $request->is('api/*')) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Validation échouée.',
@@ -745,7 +734,7 @@ class ProformaController extends Controller
                 'version' => $nouvelleVersion->version_proforma
             ]);
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $nouvelleVersion,
@@ -760,7 +749,7 @@ class ProformaController extends Controller
             DB::rollBack();
             Log::error('Erreur lors de la création de la nouvelle version: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -803,7 +792,7 @@ class ProformaController extends Controller
     //             'id_nouvelle' => $nouvelleProforma->id_proforma
     //         ]);
 
-    //         if ($request->wantsJson() || $request->is('api/*')) {
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
     //             return response()->json([
     //                 'success' => true,
     //                 'data' => $nouvelleProforma,
@@ -818,7 +807,7 @@ class ProformaController extends Controller
     //         DB::rollBack();
     //         Log::error('Erreur lors de la duplication de la proforma: ' . $e->getMessage());
 
-    //         if ($request->wantsJson() || $request->is('api/*')) {
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
     //             return response()->json([
     //                 'success' => false,
     //                 'message' => 'Une erreur est survenue.',
@@ -839,7 +828,7 @@ class ProformaController extends Controller
             $proforma = Proforma::findOrFail($id);
             $historique = $proforma->getHistorique();
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => true,
                     'data' => $historique,
@@ -852,7 +841,7 @@ class ProformaController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération de l\'historique: ' . $e->getMessage());
 
-            if ($request->wantsJson() || $request->is('api/*')) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -882,8 +871,6 @@ class ProformaController extends Controller
             'taxe_montant.min' => 'La taxe ne peut pas être négative.',
             'remise_montant_proforma.numeric' => 'La remise doit être un nombre.',
             'remise_montant_proforma.min' => 'La remise ne peut pas être négative.',
-            'penalites_proforma.numeric' => 'Les pénalités doivent être un nombre.',
-            'penalites_proforma.min' => 'Les pénalités ne peuvent pas être négatives.',
             'modalite_proforma.max' => 'Les modalités ne peuvent pas dépasser 255 caractères.',
         ];
     }

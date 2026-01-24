@@ -14,6 +14,10 @@ class Paiement extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
+    protected $dispatchesEvents = [
+        'validated' => \App\Events\PaiementValidated::class,
+    ];
+
     /**
      * La table associée au modèle.
      *

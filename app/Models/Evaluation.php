@@ -126,7 +126,7 @@ class Evaluation extends Model
      */
     public function attribution(): BelongsTo
     {
-        return $this->belongsTo(PrestataireLot::class, 'attribution_id', 'id_attribution');
+        return $this->belongsTo(AttributionLotPrestataire::class, 'attribution_id', 'id_attribution');
     }
 
     /**
@@ -279,7 +279,7 @@ class Evaluation extends Model
 
     public function getStatutBadgeClassAttribute(): string
     {
-        
+
         $colors = [
             self::STATUT_EN_ATTENTE => 'bg-gray-100 text-gray-800',
             self::STATUT_EN_COURS => 'bg-blue-100 text-blue-800',
@@ -693,8 +693,6 @@ class Evaluation extends Model
 
         $validateurId = $userId ?? Auth::id();
 
-        // dd($this, $this->critereEvaluation, $this->critereEvaluation->lot->attributionActive);
-
         $updated = $this->update([
             'statut_evaluation' => self::STATUT_VALIDEE,
             'valide_par' => $validateurId,
@@ -708,6 +706,7 @@ class Evaluation extends Model
         }
 
         $attributionActive = $this->critereEvaluation->lot->attributionActive;
+
         $attributionActive->pourcentage_avancement += $this->resultat_evaluation;
         $attributionActive->save();
 
@@ -876,7 +875,7 @@ class Evaluation extends Model
      */
     public static function genererNumeroEvaluation(string $attributionId, ?string $critereId = null): string
     {
-        $attribution = PrestataireLot::with('lot')->find($attributionId);
+        $attribution = AttributionLotPrestataire::with('lot')->find($attributionId);
         $annee = date('Y');
         $lotNumero = $attribution?->lot?->numero ?? 'LOT';
 
@@ -907,7 +906,7 @@ class Evaluation extends Model
      * Créer une évaluation pour une attribution et un critère spécifique
      */
     public static function creerPourAttributionCritere(
-        PrestataireLot $attribution,
+        AttributionLotPrestataire $attribution,
         CritereEvaluation $critere,
         float $resultatEvaluation = 0,
         ?array $responsables = null,
@@ -1037,14 +1036,14 @@ class Evaluation extends Model
      */
     public static function statistiquesCriterePourAttribution(string $attributionId): array
     {
-        $attribution = PrestataireLot::with('lot.criteresEvaluation')->find($attributionId);
+        $attribution = AttributionLotPrestataire::with('lot.criteresEvaluation')->find($attributionId);
         if (!$attribution) {
             return [];
         }
 
         $stats = [];
         $criteres = $attribution->lot->criteresEvaluation()->actif()->ordonne()->get();
-// dd($criteres);
+
         foreach ($criteres as $critere) {
             $evaluations = self::where('critere_evaluation_id', $critere->id_critere_evaluation)
                 ->where('attribution_id', $attributionId)

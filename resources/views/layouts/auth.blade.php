@@ -98,7 +98,8 @@
     @endif
 
 
-    <link rel="stylesheet" href="{{ asset('build/assets/app-COSr8-42.css') }}">
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    <link rel="stylesheet" href="{{ asset('build/assets/app-Cnh10ZxB.css') }}">
     <script src="{{ asset('build/assets/app-CAiCLEjY.js') }}" defer></script>
     @stack('styles')
 </head>

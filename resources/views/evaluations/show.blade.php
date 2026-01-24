@@ -3,10 +3,22 @@
 @section('title', 'Évaluation ' . $evaluation->numero_evaluation)
 
 @section('breadcrumb')
+
+
+
+    <a @can('attributions_lots.read') href="{{ route('attributions.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Attributions</a>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+    <span class="text-white/80 hover:text-white transition-colors">{{ $evaluation->attribution->numero_attribution }}</span>
+    <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
+
     <a @can('evaluations_attributions.read') href="{{ route('evaluations.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Évaluations</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">{{ $evaluation->numero_evaluation }}</span>
 @endsection
+
+
+
 
 @section('content')
     <!-- Header avec actions -->
@@ -58,7 +70,7 @@
                                         <span class="text-sm font-medium">Terminer</span>
                                     </button>
                                 </form>
-                            @elseif($evaluation->isEnCours() && !empty($raisonsNonTerminable))
+                            @elseif($evaluation->etat_appel_offre == 1 && !empty($raisonsNonTerminable))
                                 <button type="button" onclick="openRaisonsModal()"
                                     class="px-4 py-2.5 bg-gray-300 text-gray-600 rounded-lg flex items-center space-x-2"
                                     title="Conditions non remplies">
@@ -113,7 +125,7 @@
         @include('partials.alerts')
 
         <!-- Alerte si conditions non remplies -->
-        @if($evaluation->isEnCours() && !empty($raisonsNonTerminable))
+        @if($evaluation->etat_appel_offre == 1 && !empty($raisonsNonTerminable))
             <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm">
                 <div class="flex">
                     <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>

@@ -299,7 +299,7 @@
 
                         <div class="p-6 space-y-5">
 
-                            <!-- Montant du lot -->
+                            <!-- Budget du lot -->
                             <div class="group">
                                 <label for="budget_lot" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-hand-holding-usd text-orange-500 mr-2 text-xs"></i>

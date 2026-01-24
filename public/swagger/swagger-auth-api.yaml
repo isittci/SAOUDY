@@ -1,0 +1,912 @@
+openapi: 3.0.3
+info:
+  title: API d'Authentification Laravel
+  description: |
+    Documentation complète de l'API d'authentification avec vérification en deux étapes.
+
+    ## Flux d'authentification
+    1. **Connexion** : L'utilisateur envoie ses identifiants (email/téléphone + mot de passe)
+    2. **Vérification** : Un code à 6 chiffres est envoyé par email
+    3. **Validation** : L'utilisateur entre le code pour finaliser la connexion
+    4. **Token** : Un token Sanctum est généré pour les requêtes authentifiées
+
+    ## Sécurité
+    - Rate limiting sur les endpoints sensibles
+    - Tokens avec expiration (10 minutes pour les codes de vérification)
+    - Authentification via Laravel Sanctum
+  version: 1.0.0
+  contact:
+    name: Support API
+    email: support@example.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+  - url: https://api.example.com
+    description: Serveur de production
+
+tags:
+  - name: Authentification
+    description: Endpoints de connexion et déconnexion
+  - name: Vérification
+    description: Gestion des codes de vérification à deux facteurs
+  - name: Mot de passe
+    description: Réinitialisation et changement de mot de passe
+
+paths:
+  /auth:
+    get:
+      tags:
+        - Authentification
+      summary: Informations sur l'endpoint de connexion
+      description: Retourne les informations sur l'endpoint de connexion disponible (utile pour les clients API)
+      operationId: getLoginInfo
+      responses:
+        '200':
+          description: Informations sur l'endpoint de connexion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Endpoint de connexion disponible"
+                  method:
+                    type: string
+                    example: "POST"
+                  endpoint:
+                    type: string
+                    example: "http://localhost:8000/api/auth"
+                  required_fields:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        example: "string|required|email"
+                      password:
+                        type: string
+                        example: "string|required|min:8"
+
+    post:
+      tags:
+        - Authentification
+      summary: Connexion utilisateur (Étape 1)
+      description: |
+        Authentifie l'utilisateur avec email/téléphone et mot de passe.
+        Envoie un code de vérification à 6 chiffres par email.
+
+        **Note**: Accepte email ou numéro de téléphone dans le champ 'email'
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: Email ou numéro de téléphone de l'utilisateur
+                  example: "utilisateur@example.com"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Mot de passe de l'utilisateur
+                  example: "MotDePasse123!"
+            examples:
+              avec_email:
+                summary: Connexion avec email
+                value:
+                  email: "utilisateur@example.com"
+                  password: "MotDePasse123!"
+              avec_telephone:
+                summary: Connexion avec téléphone
+                value:
+                  email: "+225 07 00 00 00 00"
+                  password: "MotDePasse123!"
+      responses:
+        '200':
+          description: Code de vérification envoyé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Code de vérification envoyé par email."
+                  token:
+                    type: string
+                    description: Token temporaire pour la vérification (valide 10 minutes)
+                    example: "aB3dE5fG7hI9jK1lM2nO4pQ6rS8tU0vW1xY3zA5bC7dE9fG1hI3jK5lM7nO9pQ"
+                  expires_in:
+                    type: string
+                    example: "600 secondes"
+                  debug_code:
+                    type: string
+                    nullable: true
+                    description: Code de vérification (uniquement en mode développement)
+                    example: "123456"
+        '401':
+          description: Identifiants incorrects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Identifiants incorrects."
+        '403':
+          description: Compte désactivé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Votre compte est désactivé. Contactez l'administrateur."
+        '422':
+          description: Données de validation invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '429':
+          description: Trop de tentatives
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Trop de tentatives. Réessayez dans 300 secondes."
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erreur lors de l'envoi du code."
+                  error:
+                    type: string
+                    example: "Message d'erreur détaillé"
+
+  /auth/verify/{token}:
+    get:
+      tags:
+        - Vérification
+      summary: Vérifier la validité du token
+      description: Vérifie si le token de vérification est toujours valide
+      operationId: showVerifyForm
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de vérification reçu lors de la connexion
+          schema:
+            type: string
+            example: "aB3dE5fG7hI9jK1lM2nO4pQ6rS8tU0vW1xY3zA5bC7dE9fG1hI3jK5lM7nO9pQ"
+      responses:
+        '200':
+          description: Token valide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Veuillez entrer le code de vérification."
+                  token:
+                    type: string
+                    example: "aB3dE5fG7hI9jK1lM2nO4pQ6rS8tU0vW1xY3zA5bC7dE9fG1hI3jK5lM7nO9pQ"
+        '404':
+          description: Token expiré ou invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Code expiré ou invalide."
+
+    post:
+      tags:
+        - Vérification
+      summary: Vérifier le code (Étape 2)
+      description: |
+        Vérifie le code à 6 chiffres reçu par email et finalise la connexion.
+        Génère un token Sanctum pour les requêtes authentifiées.
+      operationId: verifyCode
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de vérification reçu lors de la connexion
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: Code de vérification à 6 chiffres
+                  example: "123456"
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Connexion réussie."
+                  token:
+                    type: string
+                    description: Token Sanctum pour l'authentification
+                    example: "1|abcdefghijklmnopqrstuvwxyz123456789"
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Code incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Code de vérification incorrect."
+        '404':
+          description: Token expiré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Code expiré ou invalide."
+        '422':
+          description: Validation échouée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /auth/verify/{token}/resend:
+    post:
+      tags:
+        - Vérification
+      summary: Renvoyer le code de vérification
+      description: |
+        Génère et envoie un nouveau code de vérification.
+
+        **Rate limit**: Maximum 3 envois par 5 minutes
+      operationId: resendCode
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de vérification actuel
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nouveau code envoyé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Un nouveau code a été envoyé."
+                  expires_in:
+                    type: integer
+                    example: 600
+                  debug_code:
+                    type: string
+                    nullable: true
+                    description: Nouveau code (uniquement en développement)
+                    example: "654321"
+        '404':
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Trop de tentatives
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Veuillez attendre 60 secondes avant de renvoyer un code."
+        '500':
+          description: Erreur d'envoi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                  error:
+                    type: string
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentification
+      summary: Déconnexion utilisateur
+      description: |
+        Déconnecte l'utilisateur et révoque le token Sanctum actuel.
+
+        **Nécessite**: Authentification Bearer token
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Déconnexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Déconnexion réussie."
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/password/forgot:
+    get:
+      tags:
+        - Mot de passe
+      summary: Formulaire de mot de passe oublié
+      description: Retourne les informations sur le formulaire de réinitialisation
+      operationId: showForgotPasswordForm
+      responses:
+        '200':
+          description: Informations du formulaire
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Formulaire de réinitialisation"
+
+  /auth/password/email:
+    post:
+      tags:
+        - Mot de passe
+      summary: Demander un lien de réinitialisation
+      description: |
+        Envoie un lien de réinitialisation du mot de passe par email.
+
+        **Rate limit**: Maximum 3 demandes toutes les 5 minutes
+      operationId: sendResetLink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email de l'utilisateur
+                  example: "utilisateur@example.com"
+      responses:
+        '200':
+          description: Lien envoyé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Lien de réinitialisation envoyé."
+                  debug_link:
+                    type: string
+                    nullable: true
+                    description: Lien de réinitialisation (uniquement en développement)
+                    example: "http://localhost:8000/password/reset/abc123"
+        '422':
+          description: Email invalide ou inexistant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '429':
+          description: Trop de tentatives
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Veuillez attendre 300 secondes."
+        '500':
+          description: Erreur d'envoi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                  error:
+                    type: string
+
+  /auth/password/reset/{token}:
+    get:
+      tags:
+        - Mot de passe
+      summary: Vérifier le token de réinitialisation
+      description: Vérifie la validité du token de réinitialisation et retourne l'email associé
+      operationId: showResetForm
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de réinitialisation
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token valide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  email:
+                    type: string
+                    example: "utilisateur@example.com"
+        '404':
+          description: Token invalide ou expiré
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                message: "Lien invalide ou expiré."
+
+    post:
+      tags:
+        - Mot de passe
+      summary: Réinitialiser le mot de passe
+      description: Réinitialise le mot de passe de l'utilisateur avec le token fourni
+      operationId: resetPassword
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de réinitialisation
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - password_confirmation
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Nouveau mot de passe
+                  example: "NouveauMotDePasse123!"
+                password_confirmation:
+                  type: string
+                  format: password
+                  description: Confirmation du nouveau mot de passe
+                  example: "NouveauMotDePasse123!"
+      responses:
+        '200':
+          description: Mot de passe réinitialisé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Mot de passe réinitialisé avec succès."
+        '404':
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation échouée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                  error:
+                    type: string
+
+  /auth/password/change:
+    post:
+      tags:
+        - Mot de passe
+      summary: Changer le mot de passe (utilisateur connecté)
+      description: |
+        Permet à un utilisateur authentifié de changer son mot de passe.
+
+        **Nécessite**: Authentification Bearer token
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - current_password
+                - password
+                - password_confirmation
+              properties:
+                current_password:
+                  type: string
+                  format: password
+                  description: Mot de passe actuel
+                  example: "AncienMotDePasse123!"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Nouveau mot de passe
+                  example: "NouveauMotDePasse123!"
+                password_confirmation:
+                  type: string
+                  format: password
+                  description: Confirmation du nouveau mot de passe
+                  example: "NouveauMotDePasse123!"
+      responses:
+        '200':
+          description: Mot de passe changé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Mot de passe changé avec succès."
+        '401':
+          description: Mot de passe actuel incorrect ou non authentifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation échouée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /auth/password/status:
+    get:
+      tags:
+        - Mot de passe
+      summary: Statut des tentatives de changement de mot de passe
+      description: |
+        Retourne le statut et les tentatives de changement de mot de passe de l'utilisateur.
+
+        **Nécessite**: Authentification Bearer token
+      operationId: passwordChangeStatus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statut récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      attempts:
+                        type: integer
+                        example: 2
+                      max_attempts:
+                        type: integer
+                        example: 5
+                      locked_until:
+                        type: string
+                        format: date-time
+                        nullable: true
+                        example: null
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/password/stats:
+    get:
+      tags:
+        - Mot de passe
+      summary: Statistiques des tentatives de mot de passe
+      description: |
+        Retourne les statistiques détaillées des tentatives de changement de mot de passe.
+
+        **Nécessite**: Authentification Bearer token
+      operationId: getPasswordAttemptStats
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  stats:
+                    type: object
+                    properties:
+                      total_attempts:
+                        type: integer
+                        example: 15
+                      failed_attempts:
+                        type: integer
+                        example: 3
+                      successful_attempts:
+                        type: integer
+                        example: 12
+                      last_attempt:
+                        type: string
+                        format: date-time
+                        example: "2026-01-21T10:30:00Z"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Token Sanctum obtenu après connexion réussie.
+
+        Format: `Bearer {token}`
+
+        Exemple: `Bearer 1|abcdefghijklmnopqrstuvwxyz123456789`
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "9d3e4b7a-1c2d-4e5f-6a7b-8c9d0e1f2a3b"
+        nom_complet:
+          type: string
+          example: "Jean Dupont"
+        email:
+          type: string
+          format: email
+          example: "jean.dupont@example.com"
+        telephone_principal:
+          type: string
+          nullable: true
+          example: "+225 07 00 00 00 00"
+        telephone_secondaire:
+          type: string
+          nullable: true
+          example: "+225 05 00 00 00 00"
+        role_id:
+          type: string
+          format: uuid
+          example: "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+        role:
+          $ref: '#/components/schemas/Role'
+        statut:
+          type: integer
+          enum: [0, 1]
+          description: "0 = Inactif, 1 = Actif"
+          example: 1
+        email_verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-01-15T14:30:00Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-01T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-01-20T15:45:00Z"
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+        name:
+          type: string
+          example: "Administrateur"
+        slug:
+          type: string
+          example: "administrateur"
+        description:
+          type: string
+          nullable: true
+          example: "Accès complet au système"
+        level:
+          type: integer
+          description: "Niveau hiérarchique du rôle"
+          example: 1
+        is_system_role:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Message d'erreur"
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Les données fournies sont invalides."
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email:
+              - "Le champ email est obligatoire."
+            password:
+              - "Le mot de passe doit contenir au moins 8 caractères."
+
+  responses:
+    UnauthorizedError:
+      description: Token d'authentification manquant ou invalide
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Non authentifié."
+
+  examples:
+    LoginSuccess:
+      value:
+        success: true
+        message: "Code de vérification envoyé par email."
+        token: "aB3dE5fG7hI9jK1lM2nO4pQ6rS8tU0vW1xY3zA5bC7dE9fG1hI3jK5lM7nO9pQ"
+        expires_in: "600 secondes"
+        debug_code: "123456"
+
+    VerifySuccess:
+      value:
+        success: true
+        message: "Connexion réussie."
+        token: "1|abcdefghijklmnopqrstuvwxyz123456789"
+        user:
+          id: "9d3e4b7a-1c2d-4e5f-6a7b-8c9d0e1f2a3b"
+          nom_complet: "Jean Dupont"
+          email: "jean.dupont@example.com"
+          telephone_principal: "+225 07 00 00 00 00"
+          telephone_secondaire: null
+          role_id: "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+          statut: 1
+          email_verified_at: "2026-01-15T14:30:00Z"
+          created_at: "2026-01-01T10:00:00Z"
+          updated_at: "2026-01-20T15:45:00Z"

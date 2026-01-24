@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Paiement;
-use App\Models\Facture;
+use Exception;
 use App\Models\Banque;
-use App\Http\Requests\StorePaiementRequest;
-use App\Http\Requests\UpdatePaiementRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Models\Facture;
+use App\Models\Paiement;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use App\Events\PaiementValidated;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StorePaiementRequest;
+use App\Http\Requests\UpdatePaiementRequest;
 
 class PaiementController extends Controller
 {
@@ -151,7 +152,7 @@ class PaiementController extends Controller
                 ->get();
 
             // Réponse JSON ou Vue
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Liste de tous les paiements récupérée avec succès.',
@@ -167,7 +168,7 @@ class PaiementController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération de tous les paiements: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération des paiements.',
@@ -277,7 +278,7 @@ class PaiementController extends Controller
             ];
 
             // Réponse JSON ou Vue
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Liste des paiements récupérée avec succès.',
@@ -294,7 +295,7 @@ class PaiementController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération des paiements: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la récupération des paiements.',
@@ -318,7 +319,7 @@ class PaiementController extends Controller
 
             // Vérifier que la facture est validée
             if (method_exists($facture, 'peutRecevoirPaiement') && !$facture->peutRecevoirPaiement()) {
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'La facture doit être validée avant de créer un paiement.',
@@ -343,7 +344,7 @@ class PaiementController extends Controller
 
 
             if ($banques->isEmpty()) {
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Aucune banque active trouvée pour ce prestataire.',
@@ -355,7 +356,7 @@ class PaiementController extends Controller
 
             $statuts = Paiement::getStatuts();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Formulaire de création prêt.',
@@ -371,7 +372,7 @@ class PaiementController extends Controller
         } catch (Exception $e) {
             Log::error('Erreur lors de la préparation du formulaire de création: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -439,7 +440,7 @@ class PaiementController extends Controller
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement créé avec succès.',
@@ -453,7 +454,7 @@ class PaiementController extends Controller
 
             Log::error('Erreur lors de la création du paiement: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => $e->getMessage(),
@@ -488,7 +489,7 @@ class PaiementController extends Controller
                 'modificateur',
             ]);
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Détails du paiement récupérés avec succès.',
@@ -499,8 +500,8 @@ class PaiementController extends Controller
             return view('paiements.show', compact('paiement', 'factureId'));
         } catch (Exception $e) {
             Log::error('Erreur lors de la récupération du paiement: ' . $e->getMessage());
-            // dd($e->getMessage());
-            if ($request->expectsJson() || $request->ajax()) {
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue.',
@@ -544,7 +545,7 @@ class PaiementController extends Controller
     //             ->orderBy('nom_banque')
     //             ->get();
 
-    //         if ($request->expectsJson() || $request->ajax()) {
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
     //             return response()->json([
     //                 'success' => true,
     //                 'data' => [
@@ -559,7 +560,7 @@ class PaiementController extends Controller
     //     } catch (Exception $e) {
     //         Log::error('Erreur: ' . $e->getMessage());
 
-    //         if ($request->expectsJson() || $request->ajax()) {
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
     //             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     //         }
 
@@ -569,72 +570,72 @@ class PaiementController extends Controller
 
 
     /**
- * Afficher le formulaire d'édition.
- */
-public function edit(Request $request, string $factureId, Paiement $paiement)
-{
-    try {
-        // Vérifier que le paiement appartient à la facture
-        if ($paiement->facture_id !== $factureId) {
-            abort(404);
+     * Afficher le formulaire d'édition.
+     */
+    public function edit(Request $request, string $factureId, Paiement $paiement)
+    {
+        try {
+            // Vérifier que le paiement appartient à la facture
+            if ($paiement->facture_id !== $factureId) {
+                abort(404);
+            }
+
+            // Vérifier que le paiement peut être modifié
+            if (!$paiement->peutEtreModifie()) {
+                throw new Exception(
+                    'Ce paiement ne peut plus être modifié (statut: ' . $paiement->statut_libelle . ').'
+                );
+            }
+
+            // CORRIGÉ: Charger facture avec prestatairePrincipal (même structure que create)
+            $facture = Facture::with([
+                'proforma.prestatairePrincipal.prestataire',
+                'proforma.prestatairePrincipal.lot.appelOffre',
+                'paiements.banque'
+            ])->findOrFail($factureId);
+
+            // CORRIGÉ: Utiliser la méthode getPrestataireId() comme dans create()
+            $prestataireId = $facture->proforma?->getPrestataireId();
+
+            if (!$prestataireId) {
+                throw new Exception('Impossible de déterminer le prestataire pour cette facture. Vérifiez que la proforma a une attribution active.');
+            }
+
+            // Récupérer les banques actives du prestataire
+            $banques = Banque::where('prestataire_id', $prestataireId)
+                ->where('actif_banque', true)
+                ->orderBy('nom_banque')
+                ->get();
+
+            if ($banques->isEmpty()) {
+                throw new Exception('Aucune banque active trouvée pour ce prestataire.');
+            }
+
+            // Charger les relations du paiement pour la vue
+            $paiement->load(['facture', 'banque']);
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'paiement' => $paiement,
+                        'facture' => $facture,
+                        'banques' => $banques,
+                    ],
+                ], 200);
+            }
+
+            return view('paiements.edit', compact('paiement', 'facture', 'banques', 'factureId'));
+        } catch (Exception $e) {
+            Log::error('Erreur lors de l\'édition du paiement: ' . $e->getMessage());
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+
+            return back()->with('error', $e->getMessage());
         }
-
-        // Vérifier que le paiement peut être modifié
-        if (!$paiement->peutEtreModifie()) {
-            throw new Exception(
-                'Ce paiement ne peut plus être modifié (statut: ' . $paiement->statut_libelle . ').'
-            );
-        }
-
-        // CORRIGÉ: Charger facture avec prestatairePrincipal (même structure que create)
-        $facture = Facture::with([
-            'proforma.prestatairePrincipal.prestataire',
-            'proforma.prestatairePrincipal.lot.appelOffre',
-            'paiements.banque'
-        ])->findOrFail($factureId);
-
-        // CORRIGÉ: Utiliser la méthode getPrestataireId() comme dans create()
-        $prestataireId = $facture->proforma?->getPrestataireId();
-
-        if (!$prestataireId) {
-            throw new Exception('Impossible de déterminer le prestataire pour cette facture. Vérifiez que la proforma a une attribution active.');
-        }
-
-        // Récupérer les banques actives du prestataire
-        $banques = Banque::where('prestataire_id', $prestataireId)
-            ->where('actif_banque', true)
-            ->orderBy('nom_banque')
-            ->get();
-
-        if ($banques->isEmpty()) {
-            throw new Exception('Aucune banque active trouvée pour ce prestataire.');
-        }
-
-        // Charger les relations du paiement pour la vue
-        $paiement->load(['facture', 'banque']);
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'paiement' => $paiement,
-                    'facture' => $facture,
-                    'banques' => $banques,
-                ],
-            ], 200);
-        }
-
-        return view('paiements.edit', compact('paiement', 'facture', 'banques', 'factureId'));
-    } catch (Exception $e) {
-        Log::error('Erreur lors de l\'édition du paiement: ' . $e->getMessage());
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-
-        return back()->with('error', $e->getMessage());
     }
-}
 
     /**
      * Mettre à jour un paiement.
@@ -687,7 +688,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement modifié avec succès.',
@@ -702,7 +703,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur lors de la modification du paiement: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => $e->getMessage(),
@@ -738,7 +739,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if ($paiement->statut_paiement === Paiement::STATUT_PAYE) {
                 $message = 'Un paiement déjà effectué ne peut pas être supprimé.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json([
                         'success' => false,
                         'message' => $message,
@@ -756,7 +757,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement supprimé avec succès.',
@@ -770,7 +771,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur lors de la suppression du paiement: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Une erreur est survenue lors de la suppression.',
@@ -791,6 +792,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
      */
     public function valider(Request $request, string $factureId, Paiement $paiement)
     {
+
         try {
             if ($paiement->facture_id !== $factureId) {
                 abort(404);
@@ -799,7 +801,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if (!$paiement->peutEtreValide()) {
                 $message = 'Ce paiement ne peut pas être validé (statut actuel: ' . $paiement->statut_libelle . ').';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -810,7 +812,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->valider(auth()->id());
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement validé avec succès.',
@@ -825,7 +827,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur lors de la validation du paiement: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -838,6 +840,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
      */
     public function mettreEnTraitement(Request $request, string $factureId, Paiement $paiement)
     {
+
         try {
             if ($paiement->facture_id !== $factureId) {
                 abort(404);
@@ -846,7 +849,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if ($paiement->statut_paiement !== Paiement::STATUT_VALIDE) {
                 $message = 'Seul un paiement validé peut être mis en traitement bancaire.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -857,7 +860,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->mettreEnTraitement(auth()->id());
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement mis en traitement bancaire.',
@@ -872,7 +875,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -893,7 +896,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if (!in_array($paiement->statut_paiement, [Paiement::STATUT_VALIDE, Paiement::STATUT_EN_TRAITEMENT])) {
                 $message = 'Seul un paiement validé ou en traitement peut être confirmé comme payé.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -902,9 +905,30 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             DB::beginTransaction();
             $paiement->confirmerPaiement(auth()->id());
+
+
+            // TODO
+            $facture = $paiement->facture;
+            $proforma = $facture->proforma;
+            $attributionActive = $proforma->attributionActive;
+            $lot = $attributionActive->lot;
+
+            if ($lot->isCloture()) {
+                $attributionActive->statut_attribution = 4;
+
+                $attributionActive->save();
+            }
+
+
+            // Déclencher l'événement
+            // event(new PaiementValidated($paiement));
+
+            PaiementValidated::dispatch($paiement);
+
+
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement confirmé avec succès.',
@@ -919,7 +943,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -947,7 +971,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if (!$paiement->peutEtreRejete()) {
                 $message = 'Ce paiement ne peut pas être rejeté (statut actuel: ' . $paiement->statut_libelle . ').';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -958,7 +982,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->rejeter($request->motif_rejet, auth()->id());
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement rejeté avec succès.',
@@ -973,7 +997,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -1001,7 +1025,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if (!$paiement->peutEtreAnnule()) {
                 $message = 'Ce paiement ne peut pas être annulé (statut actuel: ' . $paiement->statut_libelle . ').';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -1012,7 +1036,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->annuler($request->motif_annulation, auth()->id());
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement annulé avec succès.',
@@ -1027,7 +1051,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -1048,7 +1072,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if ($paiement->statut_paiement !== Paiement::STATUT_REJETE) {
                 $message = 'Seul un paiement rejeté peut être remis en attente.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -1059,7 +1083,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->remettreEnAttente(auth()->id());
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement remis en attente avec succès.',
@@ -1074,7 +1098,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -1119,7 +1143,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             $message = "{$valides} paiement(s) validé(s) avec succès.";
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => $message,
@@ -1132,7 +1156,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
             }
 
@@ -1173,7 +1197,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             $message = "{$confirmes} paiement(s) confirmé(s) avec succès.";
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => $message,
@@ -1186,7 +1210,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
             }
 
@@ -1372,7 +1396,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
                 ->paginate($perPage)
                 ->withQueryString();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiements supprimés récupérés avec succès.',
@@ -1387,7 +1411,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
         } catch (Exception $e) {
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -1408,7 +1432,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if (!$paiement->trashed()) {
                 $message = 'Ce paiement n\'est pas supprimé.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -1423,7 +1447,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
 
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement restauré avec succès.',
@@ -1438,7 +1462,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 
@@ -1460,7 +1484,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             if ($paiement->statut_paiement === Paiement::STATUT_PAYE) {
                 $message = 'Un paiement effectué ne peut jamais être supprimé définitivement pour des raisons d\'audit.';
 
-                if ($request->expectsJson() || $request->ajax()) {
+                if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                     return response()->json(['success' => false, 'message' => $message], 422);
                 }
 
@@ -1471,7 +1495,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             $paiement->forceDelete();
             DB::commit();
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement supprimé définitivement.',
@@ -1485,7 +1509,7 @@ public function edit(Request $request, string $factureId, Paiement $paiement)
             DB::rollBack();
             Log::error('Erreur: ' . $e->getMessage());
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => 'Une erreur est survenue.'], 500);
             }
 

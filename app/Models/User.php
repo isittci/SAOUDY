@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use App\Traits\HasPermissions;
 use App\Traits\Auditable;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Traits\HasPermissions;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids, SoftDeletes, Auditable, HasPermissions;
+    use HasFactory, HasApiTokens, Notifiable, HasUuids, SoftDeletes, Auditable, HasPermissions;
 
     /**
      * Statuts des utilisateurs.
@@ -77,11 +78,11 @@ class User extends Authenticatable
     public function getInitialsAttribute(): string
     {
         $parts = explode(' ', $this->nom_complet);
-        
+
         if (count($parts) >= 2) {
             return strtoupper(substr($parts[0], 0, 1) . substr($parts[1], 0, 1));
         }
-        
+
         return strtoupper(substr($this->nom_complet, 0, 2));
     }
 
@@ -152,10 +153,10 @@ class User extends Authenticatable
      */
     public function toggleStatus(): bool
     {
-        $newStatus = $this->statut === self::STATUT_ACTIF 
-            ? self::STATUT_INACTIF 
+        $newStatus = $this->statut === self::STATUT_ACTIF
+            ? self::STATUT_INACTIF
             : self::STATUT_ACTIF;
-            
+
         return $this->update(['statut' => $newStatus]);
     }
 

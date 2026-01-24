@@ -518,7 +518,7 @@
                                             <i class="fas fa-user-tie text-gray-400 mr-1"></i>
                                             Représentant Légal
                                         </p>
-                                        {{-- {{ dd($representant) }} --}}
+                                        
                                         <div class="space-y-2 text-sm">
                                             {{-- Nom complet --}}
                                             @if(!empty($representant['nom']) || !empty($representant['prenoms']))

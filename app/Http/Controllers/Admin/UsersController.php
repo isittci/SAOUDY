@@ -19,10 +19,56 @@ class UsersController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     $query = User::with('role')
+    //         ->viewable();
+
+    //     // Recherche
+    //     if ($search = $request->search) {
+    //         $query->search($search);
+    //     }
+
+    //     // Filtre par rôle
+    //     if ($roleId = $request->role_id) {
+    //         $query->byRole($roleId);
+    //     }
+
+    //     // Filtre par statut
+    //     if ($statut = $request->statut) {
+    //         if ($statut === 'actif') {
+    //             $query->actif();
+    //         } elseif ($statut === 'inactif') {
+    //             $query->inactif();
+    //         }
+    //     }
+
+    //     $users = $query->orderedByName()->paginate(20);
+    //     $roles = Role::orderBy('level', 'desc')->get();
+
+    //     return view('admin.users.index', compact('users', 'roles'));
+    // }
+
+
     public function index(Request $request)
     {
         $query = User::with('role')
             ->viewable();
+
+        /**
+         * @var User ùuser
+         */
+        $user = auth()->user();
+
+        // Exclure les super admins si l'utilisateur connecté n'est pas super admin
+        if (!$user->isSuperAdmin()) {
+            $query->whereHas('role', function ($q) {
+                $q->where('slug', '!=', 'super-administrateur');
+                // ou selon votre structure :
+                // $q->where('is_super_admin', false);
+                // $q->where('level', '<', 100); // si level 100 = super admin
+            });
+        }
 
         // Recherche
         if ($search = $request->search) {
@@ -44,7 +90,13 @@ class UsersController extends Controller
         }
 
         $users = $query->orderedByName()->paginate(20);
-        $roles = Role::orderBy('level', 'desc')->get();
+
+        // Également filtrer les rôles affichés
+        $roles = Role::when(!$user->isSuperAdmin(), function ($q) {
+            $q->where('slug', '!=', 'super-administrateur');
+            // ou ->where('is_super_admin', false);
+            // ou ->where('level', '<', 100);
+        })->orderBy('level', 'desc')->get();
 
         return view('admin.users.index', compact('users', 'roles'));
     }
@@ -82,14 +134,15 @@ class UsersController extends Controller
         try {
             DB::beginTransaction();
 
-             /**
-         * @var User ùuser
-         */
+            /**
+             * @var User $user
+             */
+            $user = auth()->user();
             $data = $request->validated();
 
             // Vérifier que l'utilisateur peut attribuer ce rôle
             $role = Role::findOrFail($data['role_id']);
-            if (!auth()->user()->isSuperAdmin() && $role->level >= auth()->user()->role->level) {
+            if (!$user->isSuperAdmin() && $role->level >= auth()->user()->role->level) {
                 return back()->with('error', 'Vous ne pouvez pas attribuer un rôle de niveau égal ou supérieur au vôtre.')
                     ->withInput();
             }
@@ -105,7 +158,6 @@ class UsersController extends Controller
 
             return redirect()->route('admin.users.show', $user)
                 ->with('success', 'Utilisateur créé avec succès.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Erreur lors de la création de l\'utilisateur : ' . $e->getMessage())
@@ -185,7 +237,6 @@ class UsersController extends Controller
 
             return redirect()->route('admin.users.show', $user)
                 ->with('success', 'Utilisateur modifié avec succès.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Erreur lors de la modification de l\'utilisateur : ' . $e->getMessage())
@@ -274,7 +325,7 @@ class UsersController extends Controller
     //     }
     // }
 
-        public function resetPassword(Request $request, User $user)
+    public function resetPassword(Request $request, User $user)
     {
         if (!auth()->user()->canManageUser($user)) {
             abort(403, 'Vous n\'avez pas l\'autorisation de réinitialiser le mot de passe de cet utilisateur.');
@@ -333,7 +384,6 @@ class UsersController extends Controller
             DB::commit();
 
             return back()->with('success', 'Mot de passe réinitialisé avec succès. Un email a été envoyé à l\'utilisateur.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Erreur lors de la réinitialisation : ' . $e->getMessage());

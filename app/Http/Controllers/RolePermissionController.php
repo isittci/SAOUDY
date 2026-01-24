@@ -39,6 +39,7 @@ class RolePermissionController extends Controller
      */
     public function show(string $roleId, string $permissionId)
     {
+        
         $rolePermission = RolePermission::where('role_id', $roleId)
             ->where('permission_id', $permissionId)
             ->with(['role', 'permission', 'attributeur'])

@@ -29,7 +29,6 @@ class Lot extends Model
         'date_fin_prevue',
         'attribution_lot',
         'statut_lot',
-        'taux_penalites',
         'date_retrait',
         'motif_retrait',
         'statut_retrait',
@@ -45,7 +44,6 @@ class Lot extends Model
         'date_retrait' => 'date',
         'attribution_lot' => 'integer',
         'statut_lot' => 'integer',
-        'taux_penalites' => 'decimal:2',
         'statut_retrait' => 'integer',
     ];
 
@@ -73,43 +71,46 @@ class Lot extends Model
     }
 
     public function isCloture()
-{
-    // Un lot est clôturé si :
-    // 1. Il a une attribution active
-    // 2. L'évaluation est terminée (si prévue)
-    // 3. Le paiement est terminé (si prévu)
+    {
+        // Un lot est clôturé si :
+        // 1. Il a une attribution active
+        // 2. L'évaluation est terminée (si prévue)
+        // 3. Le paiement est terminé (si prévu)
 
-    $attributionActive = $this->attributionActive;
+        $attributionActive = $this->attributionActive;
 
-    // Si pas d'attribution active, le lot n'est pas clôturé
-    if (!$attributionActive) {
-        return false;
+        // Si pas d'attribution active, le lot n'est pas clôturé
+        if (!$attributionActive) {
+            return false;
+        }
+
+        // Vérification de l'évaluation
+        $sommesReferencesCriteresEvaluations = $this->criteresEvaluation->sum('note_reference_critere_evaluation');
+        $sommesNotesEvaluations = $this->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+
+
+        // Si une évaluation est prévue mais non terminée
+        if ($sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations < $sommesReferencesCriteresEvaluations) {
+            return false;
+        }
+
+        // Vérification du paiement
+        $facture = $attributionActive->proforma?->facture;
+
+        // Si pas de facture, considérer le lot comme non clôturé (paiement d'abord avant de clôturer)
+        if (!$facture) {
+            return false;
+        }
+
+        $allPaiements = $facture->paiements ?? collect();
+        $montantPaye = $allPaiements->sum('montant_net_paye_paiement');
+        $montantFacture = $facture->montant_facture ?? 0;
+
+
+
+        // Le lot est clôturé si le paiement est terminé
+        return $montantFacture > 0 && $montantPaye >= $montantFacture;
     }
-
-    // Vérification de l'évaluation
-    $sommesReferencesCriteresEvaluations = $this->criteresEvaluation->sum('note_reference_critere_evaluation');
-    $sommesNotesEvaluations = $this->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
-
-    // Si une évaluation est prévue mais non terminée
-    if ($sommesReferencesCriteresEvaluations > 0 && $sommesNotesEvaluations < $sommesReferencesCriteresEvaluations) {
-        return false;
-    }
-
-    // Vérification du paiement
-    $facture = $attributionActive->proforma?->facture;
-
-    // Si pas de facture, considérer le lot comme clôturé (pas de paiement prévu)
-    if (!$facture) {
-        return true;
-    }
-
-    $allPaiements = $facture->paiements ?? collect();
-    $montantPaye = $allPaiements->sum('montant_net_paye_paiement');
-    $montantFacture = $facture->montant_facture ?? 0;
-
-    // Le lot est clôturé si le paiement est terminé
-    return $montantFacture > 0 && $montantPaye >= $montantFacture;
-}
 
     public function criteresEvaluation()
     {
@@ -150,7 +151,6 @@ class Lot extends Model
                 'motif_retrait',
                 'date_retrait',
                 'jours_retard',
-                'penalites_appliquees',
                 'pourcentage_avancement',
                 'observations',
                 'created_by',
@@ -158,35 +158,31 @@ class Lot extends Model
                 'deleted_by'
             ])
             ->withTimestamps()
-            ->using(PrestataireLot::class);
+            ->using(AttributionLotPrestataire::class);
     }
 
     public function prestataireActuel()
     {
         return $this->prestataires()
-            ->wherePivot('statut_attribution', PrestataireLot::STATUT_ATTRIBUE)
+            ->wherePivot('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE)
             ->wherePivotNull('deleted_at')
             ->latest('prestataires_lots.created_at');
     }
 
     public function attributions()
     {
-        return $this->hasMany(PrestataireLot::class, 'lot_id', 'id_lot');
+        return $this->hasMany(AttributionLotPrestataire::class, 'lot_id', 'id_lot');
     }
 
     public function attributionActive()
     {
 
-        return $this->hasOne(PrestataireLot::class, 'lot_id', 'id_lot')
-            ->whereIn('statut_attribution', [
-                PrestataireLot::STATUT_ATTRIBUE,
-                PrestataireLot::STATUT_SUSPENDU
-            ]);
+        return $this->hasOne(AttributionLotPrestataire::class, 'lot_id', 'id_lot');
     }
 
     public function historiqueAttributions()
     {
-        return $this->hasMany(PrestataireLot::class, 'lot_id', 'id_lot')
+        return $this->hasMany(AttributionLotPrestataire::class, 'lot_id', 'id_lot')
             ->withTrashed()
             ->orderBy('created_at', 'desc');
     }
@@ -288,14 +284,7 @@ class Lot extends Model
         return null;
     }
 
-    public function calculerPenalites($joursRetard)
-    {
-        if ($this->taux_penalites && $joursRetard > 0) {
-            // Calcul basé sur le taux de pénalités
-            return $this->taux_penalites * $joursRetard;
-        }
-        return 0;
-    }
+
 
     public function retirer($motif, $userId = null)
     {
@@ -325,7 +314,7 @@ class Lot extends Model
     {
 
         // Vérifier l'éligibilité
-        $eligibilite = PrestataireLot::prestataireEligible($prestataire, $this);
+        $eligibilite = AttributionLotPrestataire::prestataireEligible($prestataire, $this);
 
         if (!$eligibilite['eligible']) {
             throw new \Exception($eligibilite['raison']);
@@ -333,9 +322,9 @@ class Lot extends Model
 
         // Créer l'attribution
         /**
-         * @var PrestataireLot $attribution
+         * @var AttributionLotPrestataire $attribution
          */
-        $attribution = PrestataireLot::create([
+        $attribution = AttributionLotPrestataire::create([
             'prestataire_id' => $prestataire->id_prestataire,
             'lot_id' => $this->id_lot,
             'proforma_id' => $proforma->id_proforma,
@@ -354,7 +343,7 @@ class Lot extends Model
     public function retirerAttribution($motif, $userId = null)
     {
         /**
-         * @var PrestataireLot $attributionActive
+         * @var AttributionLotPrestataire $attributionActive
          */
         $attributionActive = $this->attributionActive;
 
@@ -414,4 +403,281 @@ class Lot extends Model
 
         return $attributionActive->getStatistiquesExecution();
     }
+
+
+
+
+
+
+
+
+
+
+
+    /**
+ * Obtenir toutes les proformas utilisées pour ce lot (via attributions)
+ *
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+public function proformasUtilisees()
+{
+    return Proforma::whereHas('attribution', function ($query) {
+        $query->where('lot_id', $this->id_lot);
+    })->get();
+}
+
+/**
+ * Relation pour obtenir les proformas directement via les attributions
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+ */
+public function proformas()
+{
+    return $this->hasManyThrough(
+        Proforma::class,
+        AttributionLotPrestataire::class,
+        'lot_id',           // Clé étrangère sur prestataires_lots
+        'id_proforma',      // Clé primaire sur proformas
+        'id_lot',           // Clé locale sur lots
+        'proforma_id'       // Clé étrangère sur prestataires_lots vers proformas
+    );
+}
+
+/**
+ * Vérifier si une proforma spécifique est déjà utilisée pour ce lot
+ *
+ * @param string $proformaId
+ * @return bool
+ */
+public function proformaDejaUtiliseePourCeLot(string $proformaId): bool
+{
+    return $this->attributions()
+        ->where('proforma_id', $proformaId)
+        ->exists();
+}
+
+/**
+ * Obtenir l'attribution pour un prestataire et une proforma donnés
+ *
+ * @param string $prestataireId
+ * @param string $proformaId
+ * @return AttributionLotPrestataire|null
+ */
+public function getAttributionParPrestataireEtProforma(string $prestataireId, string $proformaId): ?AttributionLotPrestataire
+{
+    return $this->attributions()
+        ->where('prestataire_id', $prestataireId)
+        ->where('proforma_id', $proformaId)
+        ->first();
+}
+
+/**
+ * Vérifier si le triplet existe pour ce lot
+ *
+ * @param string $prestataireId
+ * @param string $proformaId
+ * @return bool
+ */
+public function tripletExistePourCeLot(string $prestataireId, string $proformaId): bool
+{
+    return AttributionLotPrestataire::tripletExiste($prestataireId, $this->id_lot, $proformaId);
+}
+
+/**
+ * Obtenir la proforma de l'attribution active
+ *
+ * @return Proforma|null
+ */
+public function getProformaActive(): ?Proforma
+{
+    return $this->attributionActive?->proforma;
+}
+
+/**
+ * Vérifier si une proforma peut être utilisée pour ce lot
+ *
+ * @param Proforma $proforma
+ * @param string|null $prestataireId
+ * @return array ['valide' => bool, 'raison' => string|null]
+ */
+public function validerProformaPourAttribution(Proforma $proforma, ?string $prestataireId = null): array
+{
+    // Vérifier si la proforma est déjà utilisée (globalement)
+    if ($proforma->estAttribuee()) {
+        return [
+            'valide' => false,
+            'raison' => "Cette proforma est déjà utilisée dans une autre attribution."
+        ];
+    }
+
+    // Vérifier si la proforma est active
+    if (!$proforma->actif_proforma) {
+        return [
+            'valide' => false,
+            'raison' => "Cette proforma est inactive."
+        ];
+    }
+
+    // Vérifier le triplet si un prestataire est spécifié
+    if ($prestataireId && $this->tripletExistePourCeLot($prestataireId, $proforma->id_proforma)) {
+        return [
+            'valide' => false,
+            'raison' => "Une attribution avec ce prestataire et cette proforma existe déjà pour ce lot."
+        ];
+    }
+
+    return [
+        'valide' => true,
+        'raison' => null
+    ];
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * Notifier l'appel d'offres parent pour qu'il recalcule son état
+ * À appeler après toute modification impactant l'état (attribution, évaluation, paiement)
+ *
+ * @param int|null $userId ID de l'utilisateur
+ * @return void
+ */
+public function notifierAppelOffreParent(?int $userId = null): void
+{
+    if ($this->appelOffre) {
+        $this->appelOffre->mettreAJourEtat($userId);
+    }
+}
+
+/**
+ * Obtenir le détail du statut de clôture du lot
+ *
+ * @return array
+ */
+public function getDetailStatutCloture(): array
+{
+    $attributionActive = $this->attributionActive;
+
+    // Vérification de l'attribution
+    $aAttribution = $attributionActive !== null;
+
+    // Vérification des évaluations
+    $sommesReferencesCriteres = $this->criteresEvaluation->sum('note_reference_critere_evaluation');
+    $sommesNotesEvaluations = $this->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+    $evaluationsCompletes = $sommesReferencesCriteres === 0 || $sommesNotesEvaluations >= $sommesReferencesCriteres;
+    $pourcentageEvaluations = $sommesReferencesCriteres > 0
+        ? round(($sommesNotesEvaluations / $sommesReferencesCriteres) * 100, 1)
+        : 100;
+
+    // Vérification des paiements
+    $facture = $attributionActive?->proforma?->facture;
+    $montantFacture = $facture?->montant_facture ?? 0;
+    $montantPaye = $facture?->paiements?->sum('montant_net_paye_paiement') ?? 0;
+    $paiementsComplets = $montantFacture === 0 || $montantPaye >= $montantFacture;
+    $pourcentagePaiements = $montantFacture > 0
+        ? round(($montantPaye / $montantFacture) * 100, 1)
+        : 100;
+
+    return [
+        'est_cloture' => $this->isCloture(),
+        'a_attribution' => $aAttribution,
+        'evaluations' => [
+            'completes' => $evaluationsCompletes,
+            'note_reference' => $sommesReferencesCriteres,
+            'note_obtenue' => $sommesNotesEvaluations,
+            'pourcentage' => $pourcentageEvaluations,
+        ],
+        'paiements' => [
+            'complets' => $paiementsComplets,
+            'montant_facture' => $montantFacture,
+            'montant_paye' => $montantPaye,
+            'pourcentage' => $pourcentagePaiements,
+        ],
+        'raison_non_cloture' => $this->getRaisonNonCloture(),
+    ];
+}
+
+/**
+ * Obtenir la raison pour laquelle le lot n'est pas clôturé
+ *
+ * @return string|null
+ */
+public function getRaisonNonCloture(): ?string
+{
+    if ($this->isCloture()) {
+        return null;
+    }
+
+    $attributionActive = $this->attributionActive;
+
+    if (!$attributionActive) {
+        return "Aucune attribution active";
+    }
+
+    // Vérification des évaluations
+    $sommesReferencesCriteres = $this->criteresEvaluation->sum('note_reference_critere_evaluation');
+    $sommesNotesEvaluations = $this->criteresEvaluation->flatMap->evaluations->sum('resultat_evaluation');
+
+    if ($sommesReferencesCriteres > 0 && $sommesNotesEvaluations < $sommesReferencesCriteres) {
+        $reste = $sommesReferencesCriteres - $sommesNotesEvaluations;
+        return "Évaluations incomplètes (reste {$reste} points)";
+    }
+
+    // Vérification des paiements
+    $facture = $attributionActive->proforma?->facture;
+
+    if ($facture) {
+        $montantFacture = $facture->montant_facture ?? 0;
+        $montantPaye = $facture->paiements?->sum('montant_net_paye_paiement') ?? 0;
+
+        if ($montantFacture > 0 && $montantPaye < $montantFacture) {
+            $reste = $montantFacture - $montantPaye;
+            return "Paiements incomplets (reste " . number_format($reste, 0, ',', ' ') . " FCFA)";
+        }
+    }
+
+    return "Raison inconnue";
+}
+
+/**
+ * Obtenir le pourcentage de progression du lot
+ *
+ * @return float
+ */
+public function getPourcentageProgressionAttribute(): float
+{
+    if (!$this->aUneAttributionActive()) {
+        return 0;
+    }
+
+    $details = $this->getDetailStatutCloture();
+
+    $poids = 0;
+    $total = 0;
+
+    // Évaluations (50% du poids si prévues)
+    if ($details['evaluations']['note_reference'] > 0) {
+        $total += $details['evaluations']['pourcentage'] * 0.5;
+        $poids += 0.5;
+    }
+
+    // Paiements (50% du poids si prévus)
+    if ($details['paiements']['montant_facture'] > 0) {
+        $total += $details['paiements']['pourcentage'] * 0.5;
+        $poids += 0.5;
+    }
+
+    // Si ni évaluations ni paiements prévus, 100% si attribué
+    if ($poids === 0) {
+        return 100;
+    }
+
+    return round($total / $poids, 1);
+}
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DisposableEmail;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,7 @@ class UpdateUserRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->route('user');
-        return auth()->check() && 
+        return auth()->check() &&
                auth()->user()->hasPermission('users.update') &&
                auth()->user()->canManageUser($user);
     }
@@ -29,7 +30,13 @@ class UpdateUserRequest extends FormRequest
 
         return [
             'nom_complet' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore($userId), 'max:255'],
+            'email' => [
+                'required',
+                'email:rfc,dns', // Validation RFC + vérification DNS
+                Rule::unique('users')->ignore($userId),
+                'max:255',
+                new DisposableEmail(), // Règle personnalisée pour bloquer les emails jetables
+            ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'telephone_principal' => ['nullable', 'string', 'max:20'],
             'telephone_secondaire' => ['nullable', 'string', 'max:20'],

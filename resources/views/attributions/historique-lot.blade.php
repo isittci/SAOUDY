@@ -110,7 +110,7 @@
                                                     </div>
                                                     <div>
                                                         <span class="text-gray-500">Avancement:</span>
-                                                        <p class="font-medium text-gray-800">{{ number_format($attr->pourcentage_avancement, 0) }}%</p>
+                                                        <p class="font-medium text-gray-800">{{ number_format($attr->pourcentage_avancement, 2) }}%</p>
                                                     </div>
                                                 </div>
 

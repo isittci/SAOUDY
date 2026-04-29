@@ -36,12 +36,11 @@ class PrestataireController extends Controller
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
                     $q->where('raison_sociale_prestataire', 'like', "%{$search}%")
-                        ->orWhere('numero_identification_prestataire', 'like', "%{$search}%")
                         ->orWhere('numero_cc_prestataire', 'like', "%{$search}%")
                         ->orWhere('numero_rccm_prestataire', 'like', "%{$search}%")
                         ->orWhere('telephone_principal_prestataire', 'like', "%{$search}%")
                         ->orWhere('telephone_secondaire_prestataire', 'like', "%{$search}%")
-                        ->orWhere('email_prestataire', 'like', "%{$search}%")
+
                         ->orWhere('ville_prestataire', 'like', "%{$search}%")
                         ->orWhere('pays_prestataire', 'like', "%{$search}%");
                 });
@@ -154,10 +153,8 @@ class PrestataireController extends Controller
             // Validation des données principales du prestataire
             $validator = Validator::make($request->all(), [
                 'raison_sociale_prestataire' => 'required|string|max:255',
-                'numero_identification_prestataire' => 'required|string|max:25|unique:prestataires,numero_identification_prestataire',
-                'email_prestataire' => 'required|email|max:255|unique:prestataires,email_prestataire',
-                'numero_cc_prestataire' => 'required|string|max:50|unique:prestataires,numero_cc_prestataire',
-                'numero_rccm_prestataire' => 'required|string|max:50|unique:prestataires,numero_rccm_prestataire',
+                'numero_cc_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_cc_prestataire',
+                'numero_rccm_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_rccm_prestataire',
                 'telephone_principal_prestataire' => 'required|string|max:20|unique:prestataires,telephone_principal_prestataire',
                 'telephone_secondaire_prestataire' => 'nullable|string|max:20',
                 'adresse_prestataire' => 'required|string|max:500',
@@ -184,8 +181,8 @@ class PrestataireController extends Controller
                 'nom' => 'required|string|max:100',
                 'prenoms' => 'nullable|string|max:150',
                 'contact' => 'required|string|max:20',
-                'email' => 'required|email|max:255',
-                'nationalite' => 'required|string|max:50',
+                'email' => 'nullable|email|max:255',
+                'nationalite' => 'nullable|string|max:50',
                 'pays' => 'nullable|string|max:50',
                 'adresse' => 'required|string|max:255',
                 'profession' => 'required|string|max:100',
@@ -245,6 +242,7 @@ class PrestataireController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e->getMessage());
             Log::error('Erreur lors de la création du prestataire: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
@@ -351,6 +349,8 @@ class PrestataireController extends Controller
                 ]);
             }
 
+
+
             return view('prestataires.edit', compact('prestataire', 'proformas', 'lotsNonAssignes', 'pays'));
 
         } catch (ModelNotFoundException $e) {
@@ -379,29 +379,194 @@ class PrestataireController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, string $id)
+    // {
+    //     try {
+    //         $prestataire = Prestataire::findOrFail($id);
+
+
+    //         // Validation des données principales
+    //         $validator = Validator::make($request->all(), [
+    //             'raison_sociale_prestataire' => 'required|string|max:255',
+    //             'numero_cc_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_cc_prestataire,' . $id . ',id_prestataire',
+    //             'numero_rccm_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_rccm_prestataire,' . $id . ',id_prestataire',
+    //             'telephone_principal_prestataire' => 'nullable|string|max:20',
+    //             'telephone_secondaire_prestataire' => 'nullable|string|max:20',
+    //             'telephone_prestataire' => 'nullable|string|max:20',
+    //             // 'contact_principal_prestataire' => 'nullable|string|max:100',
+    //             // 'contact_secondaire_prestataire' => 'nullable|string|max:100',
+    //             'adresse_prestataire' => 'required|string|max:500',
+    //             'ville_prestataire' => 'required|string|max:50',
+    //             'pays_prestataire' => 'nullable|string|max:50',
+    //             // 'pays' => 'nullable|string|max:50',
+    //             'representant_legal_prestataire' => 'nullable|json',
+    //             'statut_prestataire' => 'nullable|boolean',
+    //         ], $this->getValidationMessages());
+
+    //         if ($validator->fails()) {
+    //             if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+    //                 return response()->json([
+    //                     'success' => false,
+    //                     'message' => 'Validation échouée.',
+    //                     'errors' => $validator->errors()
+    //                 ], 422);
+    //             }
+    //             return back()->withErrors($validator)->withInput();
+    //         }
+
+    //         $validatedData = $validator->validated();
+
+    //         // Gestion du représentant légal si fourni
+    //         if ($request->filled('representant_legal_prestataire')) {
+    //             $representant = json_decode($validatedData['representant_legal_prestataire'], true);
+
+    //             if ($representant && !empty($representant['email'])) {
+    //                 // Validation du représentant légal
+    //                 $representantValidator = Validator::make($representant, [
+    //                     'nom' => 'required|string|max:100',
+    //                     // 'prenoms' => 'nullable|string|max:150',
+    //                     'contact' => 'required|string|max:20',
+    //                     'email' => 'nullable|email|max:255',
+    //                     'nationalite' => 'required|string|max:50',
+    //                     'pays' => 'nullable|string|max:50',
+    //                     'adresse' => 'nullable|string|max:255',
+    //                     'profession' => 'required|string|max:100',
+    //                     'date_naissance' => 'nullable|date',
+    //                     'lieu_naissance' => 'nullable|string|max:100',
+    //                     'numero_piece_identite' => 'nullable|string|max:50',
+    //                     'type_piece_identite' => 'nullable|string|max:50',
+    //                     'date_delivrance' => 'nullable|date',
+    //                     'lieu_delivrance' => 'nullable|string|max:100',
+    //                     'date_expiration' => 'nullable|date|after:date_delivrance',
+    //                 ]);
+
+    //                 if ($representantValidator->fails()) {
+    //                     if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+    //                         return response()->json([
+    //                             'success' => false,
+    //                             'message' => 'Validation échouée pour le représentant légal.',
+    //                             'errors' => $representantValidator->errors()
+    //                         ], 422);
+    //                     }
+    //                     return back()->withErrors($representantValidator)->withInput();
+    //                 }
+
+    //                 // Récupération des représentants existants
+    //                 $representantsExistants = json_decode($prestataire->representant_legal_prestataire, true) ?? [];
+    //                 $trouve = false;
+
+    //                 // Vérifier si c'est une mise à jour ou un nouvel ajout
+    //                 foreach ($representantsExistants as &$rep) {
+    //                     if (isset($rep['email']) && $rep['email'] === $representant['email']) {
+    //                         // Mise à jour du représentant existant
+    //                         $rep = array_merge($rep, $representant);
+    //                         $rep['updated_at'] = now()->toIso8601String();
+    //                         $trouve = true;
+    //                         break;
+    //                     }
+    //                 }
+
+    //                 if (!$trouve) {
+    //                     // Nouveau représentant : désactiver les anciens
+    //                     foreach ($representantsExistants as &$rep) {
+    //                         $rep['statut'] = 0;
+    //                     }
+    //                     // Ajouter le nouveau
+    //                     $representant['id'] = (string) Str::uuid();
+    //                     $representant['statut'] = 1;
+    //                     $representant['created_at'] = now()->toIso8601String();
+    //                     $representantsExistants[] = $representant;
+    //                 }
+
+    //                 $validatedData['representant_legal_prestataire'] = json_encode($representantsExistants);
+    //             }
+    //         }
+
+    //         // Normaliser le champ pays
+    //         if (isset($validatedData['pays']) && !isset($validatedData['pays_prestataire'])) {
+    //             $validatedData['pays_prestataire'] = $validatedData['pays'];
+    //         }
+    //         unset($validatedData['pays']);
+
+    //         // Normaliser le champ téléphone
+    //         if (isset($validatedData['telephone_prestataire']) && !isset($validatedData['telephone_principal_prestataire'])) {
+    //             $validatedData['telephone_principal_prestataire'] = $validatedData['telephone_prestataire'];
+    //         }
+    //         unset($validatedData['telephone_prestataire']);
+
+    //         DB::beginTransaction();
+
+    //         // Mise à jour
+    //         $validatedData['updated_by'] = Auth::id();
+    //         $prestataire->update($validatedData);
+
+
+    //         DB::commit();
+
+    //         Log::info('Prestataire mis à jour avec succès', ['id' => $prestataire->id_prestataire]);
+
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'data' => $prestataire->fresh(),
+    //                 'message' => 'Prestataire mis à jour avec succès'
+    //             ]);
+    //         }
+
+    //         return redirect()->route('prestataires.show', $prestataire->id_prestataire)
+    //             ->with('success', 'Prestataire mis à jour avec succès.');
+
+    //     } catch (ModelNotFoundException $e) {
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Prestataire non trouvé.'
+    //             ], 404);
+    //         }
+    //         return redirect()->route('prestataires.index')->with('error', 'Prestataire non trouvé.');
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Erreur lors de la mise à jour du prestataire: ' . $e->getMessage(), [
+    //             'id' => $id,
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+
+    //         if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Une erreur est survenue lors de la mise à jour du prestataire.',
+    //                 'error' => config('app.debug') ? $e->getMessage() : 'Erreur interne'
+    //             ], 500);
+    //         }
+
+    //         return redirect()->back()
+    //             ->with('error', 'Une erreur est survenue lors de la mise à jour du prestataire.')
+    //             ->withInput();
+    //     }
+    // }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
         try {
             $prestataire = Prestataire::findOrFail($id);
 
-
             // Validation des données principales
             $validator = Validator::make($request->all(), [
                 'raison_sociale_prestataire' => 'required|string|max:255',
-                'numero_identification_prestataire' => 'required|string|max:25|unique:prestataires,numero_identification_prestataire,' . $id . ',id_prestataire',
-                'email_prestataire' => 'required|email|max:255|unique:prestataires,email_prestataire,' . $id . ',id_prestataire',
-                'numero_cc_prestataire' => 'required|string|max:50|unique:prestataires,numero_cc_prestataire,' . $id . ',id_prestataire',
-                'numero_rccm_prestataire' => 'required|string|max:50|unique:prestataires,numero_rccm_prestataire,' . $id . ',id_prestataire',
+                'numero_cc_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_cc_prestataire,' . $id . ',id_prestataire',
+                'numero_rccm_prestataire' => 'nullable|string|max:50|unique:prestataires,numero_rccm_prestataire,' . $id . ',id_prestataire',
                 'telephone_principal_prestataire' => 'nullable|string|max:20',
                 'telephone_secondaire_prestataire' => 'nullable|string|max:20',
                 'telephone_prestataire' => 'nullable|string|max:20',
-                // 'contact_principal_prestataire' => 'nullable|string|max:100',
-                // 'contact_secondaire_prestataire' => 'nullable|string|max:100',
                 'adresse_prestataire' => 'required|string|max:500',
                 'ville_prestataire' => 'required|string|max:50',
                 'pays_prestataire' => 'nullable|string|max:50',
-                // 'pays' => 'nullable|string|max:50',
-                'representant_legal_prestataire' => 'nullable|json',
+                'representant_legal_prestataire' => 'nullable|string',
                 'statut_prestataire' => 'nullable|boolean',
             ], $this->getValidationMessages());
 
@@ -420,67 +585,114 @@ class PrestataireController extends Controller
 
             // Gestion du représentant légal si fourni
             if ($request->filled('representant_legal_prestataire')) {
+                // Décoder le JSON reçu du formulaire
                 $representant = json_decode($validatedData['representant_legal_prestataire'], true);
 
-                if ($representant && !empty($representant['email'])) {
-                    // Validation du représentant légal
-                    $representantValidator = Validator::make($representant, [
-                        'nom' => 'required|string|max:100',
-                        // 'prenoms' => 'nullable|string|max:150',
-                        'contact' => 'required|string|max:20',
-                        'email' => 'required|email|max:255',
-                        'nationalite' => 'required|string|max:50',
-                        'pays' => 'nullable|string|max:50',
-                        'adresse' => 'required|string|max:255',
-                        'profession' => 'required|string|max:100',
-                        'date_naissance' => 'required|date',
-                        'lieu_naissance' => 'required|string|max:100',
-                        'numero_piece_identite' => 'required|string|max:50',
-                        'type_piece_identite' => 'required|string|max:50',
-                        'date_delivrance' => 'required|date',
-                        'lieu_delivrance' => 'required|string|max:100',
-                        'date_expiration' => 'required|date|after:date_delivrance',
-                    ]);
+                if ($representant && is_array($representant)) {
+                    // Validation du représentant légal (seulement si des données importantes sont présentes)
+                    if (!empty($representant['nom']) || !empty($representant['contact'])) {
+                        $representantValidator = Validator::make($representant, [
+                            'nom' => 'required|string|max:100',
+                            'contact' => 'required|string|max:20',
+                            'email' => 'nullable|email|max:255',
+                            'nationalite' => 'nullable|string|max:50',
+                            'pays' => 'nullable|string|max:50',
+                            'adresse' => 'nullable|string|max:255',
+                            'profession' => 'nullable|string|max:100',
+                            'date_naissance' => 'nullable|date',
+                            'lieu_naissance' => 'nullable|string|max:100',
+                            'numero_piece_identite' => 'nullable|string|max:50',
+                            'type_piece_identite' => 'nullable|string|max:50',
+                            'date_delivrance' => 'nullable|date',
+                            'lieu_delivrance' => 'nullable|string|max:100',
+                            'date_expiration' => 'nullable|date|after:date_delivrance',
+                        ]);
 
-                    if ($representantValidator->fails()) {
-                        if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Validation échouée pour le représentant légal.',
-                                'errors' => $representantValidator->errors()
-                            ], 422);
+                        if ($representantValidator->fails()) {
+                            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => 'Validation échouée pour le représentant légal.',
+                                    'errors' => $representantValidator->errors()
+                                ], 422);
+                            }
+                            return back()->withErrors($representantValidator)->withInput();
                         }
-                        return back()->withErrors($representantValidator)->withInput();
-                    }
 
-                    // Récupération des représentants existants
-                    $representantsExistants = json_decode($prestataire->representant_legal_prestataire, true) ?? [];
-                    $trouve = false;
+                        // ============================================================
+                        // RÉCUPÉRATION ROBUSTE DES REPRÉSENTANTS EXISTANTS
+                        // ============================================================
+                        $representantsExistants = [];
+                        $existingData = $prestataire->representant_legal_prestataire;
 
-                    // Vérifier si c'est une mise à jour ou un nouvel ajout
-                    foreach ($representantsExistants as &$rep) {
-                        if (isset($rep['email']) && $rep['email'] === $representant['email']) {
-                            // Mise à jour du représentant existant
-                            $rep = array_merge($rep, $representant);
-                            $rep['updated_at'] = now()->toIso8601String();
-                            $trouve = true;
-                            break;
+                        // Cas 1: C'est déjà un tableau (grâce au cast 'array' du modèle)
+                        if (is_array($existingData)) {
+                            $representantsExistants = $existingData;
                         }
-                    }
-
-                    if (!$trouve) {
-                        // Nouveau représentant : désactiver les anciens
-                        foreach ($representantsExistants as &$rep) {
-                            $rep['statut'] = 0;
+                        // Cas 2: C'est une chaîne JSON non vide
+                        elseif (is_string($existingData) && !empty($existingData)) {
+                            $decoded = json_decode($existingData, true);
+                            if (is_array($decoded)) {
+                                $representantsExistants = $decoded;
+                            }
                         }
-                        // Ajouter le nouveau
-                        $representant['id'] = (string) Str::uuid();
-                        $representant['statut'] = 1;
-                        $representant['created_at'] = now()->toIso8601String();
-                        $representantsExistants[] = $representant;
-                    }
+                        // Cas 3: null ou vide -> tableau vide par défaut
 
-                    $validatedData['representant_legal_prestataire'] = json_encode($representantsExistants);
+                        // Vérifier que c'est bien un tableau de tableaux (pas un tableau associatif simple)
+                        // Si le premier élément n'est pas un tableau, c'est peut-être un seul représentant mal formaté
+                        if (!empty($representantsExistants) && !isset($representantsExistants[0])) {
+                            // C'est un tableau associatif unique, le convertir en tableau de tableaux
+                            if (isset($representantsExistants['nom']) || isset($representantsExistants['id'])) {
+                                $representantsExistants = [$representantsExistants];
+                            } else {
+                                // Format inconnu, réinitialiser
+                                $representantsExistants = [];
+                            }
+                        }
+
+                        $trouve = false;
+
+                        // Vérifier si c'est une mise à jour ou un nouvel ajout (basé sur l'email)
+                        if (!empty($representant['email'])) {
+                            for ($i = 0; $i < count($representantsExistants); $i++) {
+                                if (is_array($representantsExistants[$i]) &&
+                                    isset($representantsExistants[$i]['email']) &&
+                                    $representantsExistants[$i]['email'] === $representant['email']) {
+                                    // Mise à jour du représentant existant
+                                    $representantsExistants[$i] = array_merge($representantsExistants[$i], $representant);
+                                    $representantsExistants[$i]['updated_at'] = now()->toIso8601String();
+                                    $trouve = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!$trouve) {
+                            // Nouveau représentant : désactiver les anciens
+                            for ($i = 0; $i < count($representantsExistants); $i++) {
+                                if (is_array($representantsExistants[$i])) {
+                                    $representantsExistants[$i]['statut'] = 0;
+                                }
+                            }
+
+                            // Ajouter le nouveau
+                            $representant['id'] = (string) Str::uuid();
+                            $representant['statut'] = 1;
+                            $representant['created_at'] = now()->toIso8601String();
+                            $representantsExistants[] = $representant;
+                        }
+
+                        // Stocker le tableau (le cast 'array' du modèle le convertira en JSON automatiquement)
+                        // Si pas de cast 'array', on encode manuellement
+                        $validatedData['representant_legal_prestataire'] = $representantsExistants;
+
+                    } else {
+                        // Si pas de données importantes, ne pas modifier le représentant légal
+                        unset($validatedData['representant_legal_prestataire']);
+                    }
+                } else {
+                    // JSON invalide, ne pas modifier
+                    unset($validatedData['representant_legal_prestataire']);
                 }
             }
 
@@ -501,7 +713,6 @@ class PrestataireController extends Controller
             // Mise à jour
             $validatedData['updated_by'] = Auth::id();
             $prestataire->update($validatedData);
-
 
             DB::commit();
 
@@ -718,14 +929,10 @@ class PrestataireController extends Controller
         return [
             'raison_sociale_prestataire.required' => 'La raison sociale du prestataire est obligatoire.',
             'raison_sociale_prestataire.max' => 'La raison sociale ne peut pas dépasser 255 caractères.',
-            'numero_identification_prestataire.required' => 'Le numéro d\'identification du prestataire est obligatoire.',
-            'numero_identification_prestataire.unique' => 'Ce numéro d\'identification est déjà utilisé.',
-            'email_prestataire.required' => 'L\'adresse email du prestataire est obligatoire.',
-            'email_prestataire.email' => 'L\'adresse email n\'est pas valide.',
-            'email_prestataire.unique' => 'Cette adresse email est déjà utilisée.',
-            'numero_cc_prestataire.required' => 'Le numéro de carte de contribuable est obligatoire.',
-            'numero_cc_prestataire.unique' => 'Ce numéro de carte de contribuable est déjà utilisé.',
-            'numero_rccm_prestataire.required' => 'Le numéro RCCM est obligatoire.',
+
+            // 'numero_cc_prestataire.required' => 'Le numéro de carte de contribuable est obligatoire.',
+            // 'numero_cc_prestataire.nullable' => 'Ce numéro de carte de contribuable est déjà utilisé.',
+            // 'numero_rccm_prestataire.nullable' => 'Le numéro RCCM est obligatoire.',
             'numero_rccm_prestataire.unique' => 'Ce numéro RCCM est déjà utilisé.',
             'telephone_principal_prestataire.required' => 'Le téléphone principal est obligatoire.',
             'telephone_principal_prestataire.unique' => 'Ce numéro de téléphone est déjà utilisé.',
@@ -742,10 +949,7 @@ class PrestataireController extends Controller
     {
         return [
             'nom.required' => 'Le nom du représentant légal est obligatoire.',
-            'contact.required' => 'Le contact du représentant légal est obligatoire.',
-            'email.required' => 'L\'email du représentant légal est obligatoire.',
-            'email.email' => 'L\'email du représentant légal n\'est pas valide.',
-            'nationalite.required' => 'La nationalité du représentant légal est obligatoire.',
+
             'adresse.required' => 'L\'adresse du représentant légal est obligatoire.',
             'profession.required' => 'La profession du représentant légal est obligatoire.',
             'date_naissance.before' => 'La date de naissance doit être antérieure à aujourd\'hui.',

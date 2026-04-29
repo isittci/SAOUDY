@@ -234,17 +234,17 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Montant Facture</p>
-                                <p class="text-xl font-bold text-gray-800">{{ number_format($montantFacture, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-gray-800">{{ number_format(floor($montantFacture), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-gray-500">FCFA</p>
                             </div>
                             <div class="bg-emerald-50 rounded-xl p-4 text-center">
                                 <p class="text-xs text-emerald-600 uppercase tracking-wide mb-1">Déjà Payé (autres)</p>
-                                <p class="text-xl font-bold text-emerald-700">{{ number_format($montantPaye - $montantActuelPaiement, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-emerald-700">{{ number_format(floor($montantPaye - $montantActuelPaiement), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-emerald-600">FCFA</p>
                             </div>
                             <div class="bg-orange-50 rounded-xl p-4 text-center pulse-orange">
                                 <p class="text-xs text-orange-600 uppercase tracking-wide mb-1">Disponible pour ce paiement</p>
-                                <p class="text-xl font-bold text-orange-700">{{ number_format($montantRestant, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-orange-700">{{ number_format(floor($montantRestant), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-orange-600">FCFA</p>
                             </div>
                         </div>
@@ -255,7 +255,7 @@
                             <div>
                                 <p class="text-sm text-blue-800">
                                     <strong>Note :</strong> Le montant disponible inclut le montant actuel de ce paiement
-                                    (<span class="font-semibold">{{ number_format($montantActuelPaiement, 0, ',', ' ') }} FCFA</span>).
+                                    (<span class="font-semibold">{{ number_format(floor($montantActuelPaiement), 0, ',', ' ') }} FCFA</span>).
                                 </p>
                             </div>
                         </div>
@@ -357,12 +357,12 @@
                                     <button type="button" onclick="setMontant({{ $montantRestant }})"
                                         class="px-3 py-1.5 text-sm bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-all">
                                         <i class="fas fa-check-double mr-1"></i>
-                                        Solde total ({{ number_format($montantRestant, 0, ',', ' ') }})
+                                        Solde total ({{ number_format(floor($montantRestant), 0, ',', ' ') }})
                                     </button>
                                     <button type="button" onclick="setMontant({{ $montantActuelPaiement }})"
                                         class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all">
                                         <i class="fas fa-undo mr-1"></i>
-                                        Valeur initiale ({{ number_format($montantActuelPaiement, 0, ',', ' ') }})
+                                        Valeur initiale ({{ number_format(floor($montantActuelPaiement), 0, ',', ' ') }})
                                     </button>
                                     @if($montantRestant > 100000)
                                     <button type="button" onclick="setMontant({{ floor($montantRestant / 2) }})"
@@ -461,7 +461,7 @@
                                         {{ $autrePaiement->banque->nom_banque ?? 'N/A' }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-right font-semibold text-gray-800">
-                                        {{ number_format($autrePaiement->montant_net_paye_paiement, 0, ',', ' ') }} FCFA
+                                        {{ number_format(floor($autrePaiement->montant_net_paye_paiement), 0, ',', ' ') }} FCFA
                                     </td>
                                     <td class="px-4 py-3 text-center">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -503,7 +503,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-800">{{ $prestataire->raison_sociale_prestataire }}</p>
-                                <p class="text-sm text-gray-500">{{ $prestataire->numero_identification_prestataire ?? 'N/A' }}</p>
+                                <p class="text-sm text-gray-500">{{ $prestataire->numero_cc_prestataire ?? 'N/A' }}</p>
                             </div>
                         </div>
 
@@ -602,7 +602,7 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Montant</span>
-                            <span class="detail-value text-lg font-bold text-blue-600">{{ number_format($facture->montant_facture, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-lg font-bold text-blue-600">{{ number_format(floor($facture->montant_facture), 0, ',', ' ') }} FCFA</span>
                         </div>
                     </div>
                 </div>
@@ -623,19 +623,19 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Montant HT</span>
-                            <span class="detail-value">{{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value">{{ number_format(floor($proforma->montant_retenu_proforma), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">TVA</span>
-                            <span class="detail-value text-blue-600">+ {{ number_format($proforma->taxe_montant ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-blue-600">+ {{ number_format(floor($proforma->taxe_montant ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Remise</span>
-                            <span class="detail-value text-red-600">- {{ number_format($proforma->remise_montant_proforma ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-red-600">- {{ number_format(floor($proforma->remise_montant_proforma ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row border-t-2 pt-2">
                             <span class="detail-label font-semibold">Total TTC</span>
-                            <span class="detail-value text-lg font-bold text-amber-600">{{ number_format($proforma->montant_ttc ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-lg font-bold text-amber-600">{{ number_format(floor($proforma->montant_ttc ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @if($proforma->modalite_proforma)
                         <div class="mt-3 p-3 bg-amber-50 rounded-lg">
@@ -679,13 +679,13 @@
                         @if($attribution->montant_engage > 0)
                         <div class="detail-row">
                             <span class="detail-label">Engagé</span>
-                            <span class="detail-value">{{ number_format($attribution->montant_engage, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value">{{ number_format(floor($attribution->montant_engage), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @endif
                         @if($attribution->montant_paye > 0)
                         <div class="detail-row">
                             <span class="detail-label">Payé</span>
-                            <span class="detail-value text-green-600">{{ number_format($attribution->montant_paye, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-green-600">{{ number_format(floor($attribution->montant_paye), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @endif
                     </div>

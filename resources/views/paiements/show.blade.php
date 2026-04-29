@@ -169,7 +169,7 @@
                         </div>
                         <p class="text-gray-600 mt-1">
                             <span
-                                class="font-semibold text-green-600">{{ number_format($paiement->montant_net_paye_paiement, 0, ',', ' ') }}
+                                class="font-semibold text-green-600">{{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }}
                                 FCFA</span>
                             • Facture {{ $facture->numero_facture }}
                         </p>
@@ -409,12 +409,12 @@
                         <div class="text-center mb-6 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl">
                             <p class="text-sm text-gray-500 uppercase tracking-wide mb-2">Montant payé</p>
                             <p class="text-4xl font-bold text-green-600">
-                                {{ number_format($paiement->montant_net_paye_paiement, 0, ',', ' ') }}
+                                {{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }}
                                 <span class="text-xl">FCFA</span>
                             </p>
                             <p class="text-sm text-gray-500 mt-2">
                                 Représente <span
-                                    class="font-semibold text-green-600">{{ number_format(($paiement->montant_net_paye_paiement / $montantFacture) * 100, 1) }}%</span>
+                                    class="font-semibold text-green-600">{{ number_format(($paiement->montant_net_paye_paiement / $montantFacture) * 100, 2) }}%</span>
                                 de la facture
                             </p>
                         </div>
@@ -428,7 +428,7 @@
                                 <div class="flex justify-between text-sm mb-2">
                                     <span class="text-gray-600">Total payé sur la facture</span>
                                     <span
-                                        class="font-bold text-emerald-600">{{ number_format($pourcentagePaye, 1) }}%</span>
+                                        class="font-bold text-emerald-600">{{ number_format($pourcentagePaye, 2) }}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                     <div class="h-3 rounded-full progress-bar-animated transition-all duration-500
@@ -444,17 +444,17 @@
                             <div class="grid grid-cols-3 gap-4 text-center">
                                 <div class="bg-gray-50 rounded-xl p-3">
                                     <p class="text-xs text-gray-500 mb-1">Facture</p>
-                                    <p class="font-bold text-gray-800">{{ number_format($montantFacture, 0, ',', ' ') }}
+                                    <p class="font-bold text-gray-800">{{ number_format(floor($montantFacture), 0, ',', ' ') }}
                                     </p>
                                 </div>
                                 <div class="bg-green-50 rounded-xl p-3">
                                     <p class="text-xs text-green-600 mb-1">Total payé</p>
                                     <p class="font-bold text-green-700">
-                                        {{ number_format($montantPayeTotal, 0, ',', ' ') }}</p>
+                                        {{ number_format(floor($montantPayeTotal), 0, ',', ' ') }}</p>
                                 </div>
                                 <div class="bg-orange-50 rounded-xl p-3">
                                     <p class="text-xs text-orange-600 mb-1">Reste</p>
-                                    <p class="font-bold text-orange-700">{{ number_format($montantRestant, 0, ',', ' ') }}
+                                    <p class="font-bold text-orange-700">{{ number_format(floor($montantRestant), 0, ',', ' ') }}
                                     </p>
                                 </div>
                             </div>
@@ -787,7 +787,7 @@
                                     <p class="font-semibold text-gray-800">{{ $prestataire->raison_sociale_prestataire }}
                                     </p>
                                     <p class="text-sm text-gray-500">
-                                        {{ $prestataire->numero_identification_prestataire ?? 'N/A' }}</p>
+                                        {{ $prestataire->numero_cc_prestataire ?? 'N/A' }}</p>
                                 </div>
                             </div>
 
@@ -865,7 +865,7 @@
                         <div class="detail-row">
                             <span class="detail-label">Montant</span>
                             <span
-                                class="detail-value font-bold text-teal-600">{{ number_format($montantFacture, 0, ',', ' ') }}
+                                class="detail-value font-bold text-teal-600">{{ number_format(floor($montantFacture), 0, ',', ' ') }}
                                 FCFA</span>
                         </div>
                         <div class="detail-row">
@@ -934,7 +934,7 @@
                             <div class="detail-row border-t pt-2">
                                 <span class="detail-label font-semibold">Total TTC</span>
                                 <span
-                                    class="detail-value font-bold text-amber-600">{{ number_format($proforma->montant_ttc ?? 0, 0, ',', ' ') }}
+                                    class="detail-value font-bold text-amber-600">{{ number_format(floor($proforma->montant_ttc ?? 0), 0, ',', ' ') }}
                                     FCFA</span>
                             </div>
                         </div>
@@ -1018,7 +1018,7 @@
                                     <i class="fas fa-user text-gray-500 text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500">Créé par</p>
+                                    <p class="text-xs text-gray-500">Enregistré par</p>
                                     <p class="text-sm font-medium text-gray-800">
                                         {{ $paiement->createur->nom_complet ?? 'N/A' }}</p>
                                     <p class="text-xs text-gray-400">{{ $paiement->created_at->format('d/m/Y à H:i') }}

@@ -143,7 +143,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-orange-100 text-sm font-medium uppercase tracking-wide">Montant Total Facturé</p>
-                        <p class="text-3xl font-bold mt-2">{{ number_format($statistiques['montant_total'], 0, ',', ' ') }}</p>
+                        <p class="text-3xl font-bold mt-2">{{ number_format(floor($statistiques['montant_total']), 0, ',', ' ') }}</p>
                         <p class="text-orange-200 text-sm mt-1">FCFA</p>
                     </div>
                     <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -156,7 +156,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-100 text-sm font-medium uppercase tracking-wide">Montant Payé</p>
-                        <p class="text-3xl font-bold mt-2">{{ number_format($statistiques['montant_paye'], 0, ',', ' ') }}</p>
+                        <p class="text-3xl font-bold mt-2">{{ number_format(floor($statistiques['montant_paye']), 0, ',', ' ') }}</p>
                         <p class="text-green-200 text-sm mt-1">FCFA</p>
                     </div>
                     <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -178,7 +178,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-red-100 text-sm font-medium uppercase tracking-wide">Reste à Payer</p>
-                        <p class="text-3xl font-bold mt-2">{{ number_format($statistiques['montant_restant'], 0, ',', ' ') }}</p>
+                        <p class="text-3xl font-bold mt-2">{{ number_format(floor($statistiques['montant_restant']), 0, ',', ' ') }}</p>
                         <p class="text-red-200 text-sm mt-1">FCFA</p>
                     </div>
                     <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -234,7 +234,7 @@
                                     </div>
                                 </div>
                                 <span class="w-28 text-xs text-gray-600 text-right">
-                                    {{ number_format($data['montant'], 0, ',', ' ') }}
+                                    {{ number_format(floor($data['montant']), 0, ',', ' ') }}
                                 </span>
                             </div>
                         @endforeach
@@ -386,7 +386,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right">
                                             <span class="text-lg font-bold text-gray-900">
-                                                {{ number_format($item->total_facture, 0, ',', ' ') }}
+                                                {{ number_format(floor($item->total_facture), 0, ',', ' ') }}
                                             </span>
                                             <span class="text-sm text-gray-500 ml-1">FCFA</span>
                                         </td>
@@ -472,7 +472,7 @@
                         ? $statistiques['montant_total'] / $statistiques['total']
                         : 0;
                 @endphp
-                <p class="text-2xl font-bold text-orange-600">{{ number_format($montantMoyen, 0, ',', ' ') }}</p>
+                <p class="text-2xl font-bold text-orange-600">{{ number_format(floor($montantMoyen), 0, ',', ' ') }}</p>
                 <p class="text-xs text-gray-500 mt-1">FCFA / facture</p>
             </div>
         </div>

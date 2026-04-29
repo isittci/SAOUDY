@@ -1,9 +1,11 @@
 @extends('layouts.main')
 @section('title', 'Modifier Prestataire - ' . $prestataire->raison_sociale_prestataire)
 @section('breadcrumb')
-    <a @can('prestataires.read') href="{{ route('prestataires.index') }}" @endcan class="text-white/80 hover:text-white transition-colors">Prestataires</a>
+    <a @can('prestataires.read') href="{{ route('prestataires.index') }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">Prestataires</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
-    <a @can('prestataires.view-details') href="{{ route('prestataires.show', $prestataire->id_prestataire) }}" @endcan class="text-white/80 hover:text-white transition-colors">{{ Str::limit($prestataire->raison_sociale_prestataire, 20) }}</a>
+    <a @can('prestataires.view-details') href="{{ route('prestataires.show', $prestataire->id_prestataire) }}" @endcan
+        class="text-white/80 hover:text-white transition-colors">{{ Str::limit($prestataire->raison_sociale_prestataire, 20) }}</a>
     <i class="fas fa-chevron-right text-white/50 text-xs mx-2"></i>
     <span class="text-white font-medium">Modifier</span>
 @endsection
@@ -15,12 +17,11 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     @can('prestataires.view-details')
-                    <a href="{{ route('prestataires.show', $prestataire->id_prestataire) }}"
-                        class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
-                        <i class="fas fa-arrow-left text-gray-600"></i>
-                    </a>
+                        <a href="{{ route('prestataires.show', $prestataire->id_prestataire) }}"
+                            class="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                            <i class="fas fa-arrow-left text-gray-600"></i>
+                        </a>
                     @endcan
-
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-edit text-orange-500 mr-2"></i>
@@ -31,11 +32,13 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     @if ($prestataire->statut_prestataire)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                             <i class="fas fa-check-circle mr-1"></i> Actif
                         </span>
                     @else
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
                             <i class="fas fa-times-circle mr-1"></i> Inactif
                         </span>
                     @endif
@@ -73,204 +76,250 @@
             </div>
         @endif
 
-        @can('prestataires.update')
-        <form action="{{ route('prestataires.update', $prestataire->id_prestataire) }}" method="POST" id="prestataireForm" class="space-y-6">
-            @csrf
-            @method('PUT')
+        <!-- Message de validation d'étape (caché par défaut) -->
+        <div id="validationAlert"
+            class="hidden mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg shadow-sm animate-fadeIn">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-amber-500 text-xl mr-3 mt-0.5"></i>
+                <div>
+                    <p class="text-amber-700 font-medium mb-2">Champs obligatoires manquants :</p>
+                    <ul id="validationList" class="list-disc list-inside text-amber-600 text-sm space-y-1">
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-            <!-- Navigation par onglets -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="border-b border-gray-200">
-                    <nav class="flex -mb-px overflow-x-auto" aria-label="Tabs">
-                        <button type="button" onclick="showTab('general')" id="tabGeneral"
-                            class="tab-btn whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-orange-500 text-orange-600">
-                            <i class="fas fa-building mr-2"></i>Informations générales
+        @can('prestataires.update')
+            <form action="{{ route('prestataires.update', $prestataire->id_prestataire) }}" method="POST"
+                id="prestataireForm" class="space-y-6">
+                @csrf
+                @method('PUT')
+
+                <!-- Champ caché pour le représentant légal -->
+                <input type="hidden" name="representant_legal_prestataire" id="representant_legal_json">
+
+                <!-- Étapes -->
+                <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+                    <div class="flex items-center justify-center flex-wrap gap-2">
+                        <button type="button" onclick="goToStep(1)" id="step1Btn"
+                            class="step-btn flex items-center space-x-2 px-4 py-2 rounded-lg bg-orange-500 text-white font-medium transition-all">
+                            <span
+                                class="w-6 h-6 bg-white text-orange-500 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                            <span class="hidden sm:inline">Informations générales</span>
                         </button>
-                        <button type="button" onclick="showTab('contact')" id="tabContact"
-                            class="tab-btn whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                            <i class="fas fa-address-book mr-2"></i>Contact & Adresse
+                        <div class="w-8 h-0.5 bg-gray-300 hidden sm:block step-line" id="line1"></div>
+                        <button type="button" onclick="goToStep(2)" id="step2Btn"
+                            class="step-btn flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 font-medium transition-all">
+                            <span
+                                class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                            <span class="hidden sm:inline">Contact & Adresse</span>
                         </button>
-                        <button type="button" onclick="showTab('representant')" id="tabRepresentant"
-                            class="tab-btn whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                            <i class="fas fa-user-tie mr-2"></i>Représentant légal
+                        <div class="w-8 h-0.5 bg-gray-300 hidden sm:block step-line" id="line2"></div>
+                        <button type="button" onclick="goToStep(3)" id="step3Btn"
+                            class="step-btn flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 font-medium transition-all">
+                            <span
+                                class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                            <span class="hidden sm:inline">Représentant légal</span>
                         </button>
-                    </nav>
+                    </div>
+
+                    <!-- Barre de progression -->
+                    <div class="mt-4 px-4">
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progressBar"
+                                class="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full transition-all duration-500"
+                                style="width: 33.33%"></div>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">Étape <span id="currentStepText">1</span> sur 3
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Contenu des onglets -->
-
-                <!-- Onglet Informations générales -->
-                <div id="contentGeneral" class="tab-content p-6">
-                    <div class="space-y-6">
-                        <!-- Nom du prestataire -->
-                        <div>
-                            <label for="raison_sociale_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Nom du prestataire <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="raison_sociale_prestataire" id="raison_sociale_prestataire"
-                                value="{{ old('raison_sociale_prestataire', $prestataire->raison_sociale_prestataire) }}" required maxlength="255"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('raison_sociale_prestataire') border-red-500 @enderror">
-                            @error('raison_sociale_prestataire')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
+                <!-- Étape 1: Informations générales -->
+                <div id="step1" class="step-content">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-building text-orange-500 mr-2"></i>
+                                Informations générales
+                            </h2>
                         </div>
 
-                        <!-- Numéro d'identification -->
-                        <div>
-                            <label for="numero_identification_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Numéro d'identification <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="numero_identification_prestataire" id="numero_identification_prestataire"
-                                value="{{ old('numero_identification_prestataire', $prestataire->numero_identification_prestataire) }}" required maxlength="25"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_identification_prestataire') border-red-500 @enderror">
-                            @error('numero_identification_prestataire')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Numéro CC -->
+                        <div class="p-6 space-y-6">
+                            <!-- Nom du prestataire -->
                             <div>
-                                <label for="numero_cc_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    N° Compte Contribuable <span class="text-red-500">*</span>
+                                <label for="raison_sociale_prestataire"
+                                    class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Nom du prestataire <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="numero_cc_prestataire" id="numero_cc_prestataire"
-                                    value="{{ old('numero_cc_prestataire', $prestataire->numero_cc_prestataire) }}" required maxlength="50"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_cc_prestataire') border-red-500 @enderror">
-                                @error('numero_cc_prestataire')
+                                <input type="text" name="raison_sociale_prestataire" id="raison_sociale_prestataire"
+                                    value="{{ old('raison_sociale_prestataire', $prestataire->raison_sociale_prestataire) }}"
+                                    required maxlength="255" data-label="Nom du prestataire"
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('raison_sociale_prestataire') border-red-500 @enderror"
+                                    placeholder="Ex: Société Générale de Construction SARL">
+                                @error('raison_sociale_prestataire')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Numéro RCCM -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Numéro CC -->
+                                <div>
+                                    <label for="numero_cc_prestataire"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        N° Compte Contribuable <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="numero_cc_prestataire" id="numero_cc_prestataire"
+                                        value="{{ old('numero_cc_prestataire', $prestataire->numero_cc_prestataire) }}"
+                                        required maxlength="50" data-label="N° Compte Contribuable"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_cc_prestataire') border-red-500 @enderror"
+                                        placeholder="Ex: CC-123456789">
+                                    @error('numero_cc_prestataire')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Numéro RCCM -->
+                                <div>
+                                    <label for="numero_rccm_prestataire"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        N° RCCM
+                                    </label>
+                                    <input type="text" name="numero_rccm_prestataire" id="numero_rccm_prestataire"
+                                        value="{{ old('numero_rccm_prestataire', $prestataire->numero_rccm_prestataire) }}"
+                                        maxlength="50"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_rccm_prestataire') border-red-500 @enderror"
+                                        placeholder="Ex: RCCM-ABJ-2024-B-12345">
+                                    @error('numero_rccm_prestataire')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Statut -->
                             <div>
-                                <label for="numero_rccm_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    N° RCCM <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="numero_rccm_prestataire" id="numero_rccm_prestataire"
-                                    value="{{ old('numero_rccm_prestataire', $prestataire->numero_rccm_prestataire) }}" required maxlength="50"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_rccm_prestataire') border-red-500 @enderror">
-                                @error('numero_rccm_prestataire')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
+                                <div class="flex items-center space-x-6">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="radio" name="statut_prestataire" value="1"
+                                            {{ old('statut_prestataire', $prestataire->statut_prestataire) == '1' || old('statut_prestataire', $prestataire->statut_prestataire) === true ? 'checked' : '' }}
+                                            class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400">
+                                        <span class="ml-2 text-sm text-gray-700">Actif</span>
+                                    </label>
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="radio" name="statut_prestataire" value="0"
+                                            {{ old('statut_prestataire', $prestataire->statut_prestataire) == '0' || old('statut_prestataire', $prestataire->statut_prestataire) === false ? 'checked' : '' }}
+                                            class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400">
+                                        <span class="ml-2 text-sm text-gray-700">Inactif</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Statut -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Statut</label>
-                            <div class="flex items-center space-x-6">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="radio" name="statut_prestataire" value="1"
-                                        {{ old('statut_prestataire', $prestataire->statut_prestataire) == '1' || old('statut_prestataire', $prestataire->statut_prestataire) === true ? 'checked' : '' }}
-                                        class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400">
-                                    <span class="ml-2 text-sm text-gray-700">Actif</span>
-                                </label>
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="radio" name="statut_prestataire" value="0"
-                                        {{ old('statut_prestataire', $prestataire->statut_prestataire) == '0' || old('statut_prestataire', $prestataire->statut_prestataire) === false ? 'checked' : '' }}
-                                        class="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-400">
-                                    <span class="ml-2 text-sm text-gray-700">Inactif</span>
-                                </label>
-                            </div>
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+                            <button type="button" onclick="nextStep(1)"
+                                class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2">
+                                <span>Suivant</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Onglet Contact & Adresse -->
-                <div id="contentContact" class="tab-content p-6 hidden">
-                    <div class="space-y-6">
-                        <!-- Email -->
-                        <div>
-                            <label for="email_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Email <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-envelope text-gray-400"></i>
-                                </div>
-                                <input type="email" name="email_prestataire" id="email_prestataire"
-                                    value="{{ old('email_prestataire', $prestataire->email_prestataire) }}" required maxlength="255"
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('email_prestataire') border-red-500 @enderror">
-                            </div>
-                            @error('email_prestataire')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
+                <!-- Étape 2: Contact & Adresse -->
+                <div id="step2" class="step-content hidden">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-address-book text-blue-500 mr-2"></i>
+                                Contact & Adresse
+                            </h2>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Téléphone principal -->
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Téléphone principal -->
+                                <div>
+                                    <label for="telephone_principal_prestataire"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Téléphone principal <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-phone text-gray-400"></i>
+                                        </div>
+                                        <input type="tel" name="telephone_principal_prestataire"
+                                            id="telephone_principal_prestataire"
+                                            value="{{ old('telephone_principal_prestataire', $prestataire->telephone_principal_prestataire) }}"
+                                            required maxlength="20" data-label="Téléphone principal"
+                                            class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('telephone_principal_prestataire') border-red-500 @enderror"
+                                            placeholder="+225 07 XX XX XX XX">
+                                    </div>
+                                    @error('telephone_principal_prestataire')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Téléphone secondaire -->
+                                <div>
+                                    <label for="telephone_secondaire_prestataire"
+                                        class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Téléphone secondaire
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-mobile-alt text-gray-400"></i>
+                                        </div>
+                                        <input type="tel" name="telephone_secondaire_prestataire"
+                                            id="telephone_secondaire_prestataire"
+                                            value="{{ old('telephone_secondaire_prestataire', $prestataire->telephone_secondaire_prestataire) }}"
+                                            maxlength="20"
+                                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+                                            placeholder="+225 05 XX XX XX XX">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Adresse -->
                             <div>
-                                <label for="telephone_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Téléphone principal <span class="text-red-500">*</span>
+                                <label for="adresse_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Adresse <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fas fa-phone text-gray-400"></i>
+                                    <div class="absolute top-3 left-0 pl-3 pointer-events-none">
+                                        <i class="fas fa-map-marker-alt text-gray-400"></i>
                                     </div>
-                                    <input type="tel" name="telephone_prestataire" id="telephone_prestataire"
-                                        value="{{ old('telephone_prestataire', $prestataire->telephone_principal_prestataire ?? $prestataire->telephone_prestataire) }}" required maxlength="20"
-                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('telephone_prestataire') border-red-500 @enderror">
+                                    <textarea name="adresse_prestataire" id="adresse_prestataire" rows="2" required data-label="Adresse"
+                                        class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all resize-none @error('adresse_prestataire') border-red-500 @enderror"
+                                        placeholder="Adresse complète du siège social">{{ old('adresse_prestataire', $prestataire->adresse_prestataire) }}</textarea>
                                 </div>
-                                @error('telephone_prestataire')
+                                @error('adresse_prestataire')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Contact secondaire -->
-                        <div>
-                            <label for="contact_secondaire_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Téléphone secondaire
-                            </label>
-                            <input type="text" name="contact_secondaire_prestataire" id="contact_secondaire_prestataire"
-                                value="{{ old('contact_secondaire_prestataire', $prestataire->telephone_secondaire_prestataire) }}" maxlength="20"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
-                        </div>
-                        </div>
-
-
-
-                        <!-- Adresse -->
-                        <div>
-                            <label for="adresse_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Adresse <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <div class="absolute top-3 left-0 pl-3 pointer-events-none">
-                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Ville -->
+                                <div>
+                                    <label for="ville_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Ville <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="ville_prestataire" id="ville_prestataire"
+                                        value="{{ old('ville_prestataire', $prestataire->ville_prestataire) }}" required
+                                        maxlength="50" data-label="Ville"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('ville_prestataire') border-red-500 @enderror"
+                                        placeholder="Ex: Yamoussoukro">
+                                    @error('ville_prestataire')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
                                 </div>
-                                <textarea name="adresse_prestataire" id="adresse_prestataire" rows="2" required
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all resize-none @error('adresse_prestataire') border-red-500 @enderror">{{ old('adresse_prestataire', $prestataire->adresse_prestataire) }}</textarea>
-                            </div>
-                            @error('adresse_prestataire')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Ville -->
-                            <div>
-                                <label for="ville_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Ville <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="ville_prestataire" id="ville_prestataire"
-                                    value="{{ old('ville_prestataire', $prestataire->ville_prestataire) }}" required maxlength="50"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('ville_prestataire') border-red-500 @enderror">
-                                @error('ville_prestataire')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-
-
-
-
-                                 <!-- Pays -->
+                                <!-- Pays -->
                                 <div>
                                     <label for="pays_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Pays
+                                        Pays <span class="text-red-500">*</span>
                                     </label>
-                                    <select name="pays_prestataire" id="pays_prestataire"
+                                    <select name="pays_prestataire" id="pays_prestataire" required data-label="Pays"
                                         class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('pays_prestataire') border-red-500 @enderror">
                                         <option value="">Sélectionner un pays</option>
                                         @forelse ($pays as $p)
@@ -287,111 +336,165 @@
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                     @enderror
                                 </div>
+                            </div>
+                        </div>
 
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+                            <button type="button" onclick="prevStep(2)"
+                                class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 font-medium flex items-center space-x-2">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Précédent</span>
+                            </button>
+                            <button type="button" onclick="nextStep(2)"
+                                class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2">
+                                <span>Suivant</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Onglet Représentant légal -->
-                <div id="contentRepresentant" class="tab-content p-6 hidden">
-                    @php
-                        $representants = json_decode($prestataire->representant_legal_prestataire, true) ?? [];
-                        $representantActif = collect($representants)->firstWhere('statut', 1);
-                    @endphp
-
-                    @if($representantActif)
-                        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                                <span class="text-blue-700 text-sm">
-                                    Représentant légal actuel: <strong>{{ $representantActif['nom'] ?? '' }} {{ $representantActif['prenoms'] ?? '' }}</strong>
-                                    - Modifier les informations ci-dessous pour mettre à jour.
-                                </span>
-                            </div>
+                <!-- Étape 3: Représentant légal -->
+                <div id="step3" class="step-content hidden">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-user-tie text-purple-500 mr-2"></i>
+                                Représentant légal
+                            </h2>
                         </div>
-                    @endif
 
-                    <div class="space-y-6">
-                        <!-- Info: Modification ou ajout -->
-                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <div class="flex items-start">
-                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-0.5"></i>
-                                <div class="text-sm text-yellow-700">
-                                    <p class="font-medium">Important :</p>
-                                    <p>Si vous modifiez l'email du représentant légal, un nouveau représentant sera créé et l'ancien sera désactivé (conservé dans l'historique).</p>
+                        @php
+                            // Récupération robuste du représentant légal actif
+                            $representantActif = null;
+
+                            // Récupérer les données du représentant légal
+                            $representantsData = $prestataire->representant_legal_prestataire;
+
+                            // Si c'est une chaîne JSON, la décoder
+                            if (is_string($representantsData)) {
+                                $representantsData = json_decode($representantsData, true);
+                            }
+
+                            // Si c'est un tableau valide, chercher le représentant actif
+                            if (is_array($representantsData) && !empty($representantsData)) {
+                                // Chercher le représentant avec statut actif (gère int, bool, string)
+                                foreach ($representantsData as $rep) {
+                                    $statut = $rep['statut'] ?? null;
+                                    if ($statut === 1 || $statut === true || $statut === '1' || $statut === 'true') {
+                                        $representantActif = $rep;
+                                        break;
+                                    }
+                                }
+
+                                // Si aucun représentant actif trouvé, prendre le premier
+                                if (!$representantActif) {
+                                    $representantActif = $representantsData[0] ?? null;
+                                }
+                            }
+                        @endphp
+
+                        <div class="p-6 space-y-6">
+                            @if ($representantActif)
+                                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                        <span class="text-blue-700 text-sm">
+                                            Représentant légal actuel:
+                                            <strong>{{ $representantActif['nom'] ?? '' }}</strong>
+                                            - Modifier les informations ci-dessous pour mettre à jour.
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Info: Modification ou ajout -->
+                            <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <div class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-0.5"></i>
+                                    <div class="text-sm text-yellow-700">
+                                        <p class="font-medium">Important :</p>
+                                        <p>Si vous modifiez l'email du représentant légal, un nouveau représentant sera
+                                            créé et l'ancien sera désactivé (conservé dans l'historique).</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Représentant légal en JSON -->
-                        <input type="hidden" name="representant_legal_prestataire" id="representant_legal_json">
-
-                        <!-- Nom -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Nom -->
                             <div>
-                                <label for="rep_nom" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nom <span class="text-red-500">*</span>
+                                <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Nom complet <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="rep_nom"
-                                    value="{{ $representantActif['nom'] ?? '' }}" maxlength="100"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
+                                <input type="text" name="nom" id="nom"
+                                    value="{{ old('nom', $representantActif['nom'] ?? '') }}" required maxlength="100"
+                                    data-label="Nom complet"
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('nom') border-red-500 @enderror"
+                                    placeholder="Ex: KOUASSI Jean-Marc">
+                                @error('nom')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <div>
-                                <label for="rep_prenoms" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Prénoms
-                                </label>
-                                <input type="text" id="rep_prenoms"
-                                    value="{{ $representantActif['prenoms'] ?? '' }}" maxlength="150"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                            </div>
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Email représentant -->
+                                <div>
+                                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Email
+                                    </label>
+                                    <input type="email" name="email" id="email"
+                                        value="{{ old('email', $representantActif['email'] ?? '') }}" maxlength="255"
+                                        data-label="Email du représentant"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('email') border-red-500 @enderror"
+                                        placeholder="representant@email.com">
+                                    @error('email')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Email -->
-                            <div>
-                                <label for="rep_email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Email <span class="text-red-500">*</span>
-                                </label>
-                                <input type="email" id="rep_email"
-                                    value="{{ $representantActif['email'] ?? '' }}" maxlength="255"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                            </div>
-
-                            <!-- Contact -->
-                            <div>
-                                <label for="rep_contact" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Contact <span class="text-red-500">*</span>
-                                </label>
-                                <input type="tel" id="rep_contact"
-                                    value="{{ $representantActif['contact'] ?? '' }}" maxlength="20"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Nationalité -->
-                            <div>
-                                <label for="rep_nationalite" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nationalité <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="rep_nationalite"
-                                    value="{{ $representantActif['nationalite'] ?? '' }}" maxlength="50"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
+                                <!-- Contact -->
+                                <div>
+                                    <label for="contact" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Contact <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="tel" name="contact" id="contact"
+                                        value="{{ old('contact', $representantActif['contact'] ?? '') }}" required
+                                        maxlength="20" data-label="Contact du représentant"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('contact') border-red-500 @enderror"
+                                        placeholder="+225 XX XX XX XX XX">
+                                    @error('contact')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
 
-                             <!-- Pays -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Nationalité -->
+                                <div>
+                                    <label for="nationalite" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Nationalité
+                                    </label>
+                                    <input type="text" name="nationalite" id="nationalite"
+                                        value="{{ old('nationalite', $representantActif['nationalite'] ?? '') }}"
+                                        maxlength="50" data-label="Nationalité"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('nationalite') border-red-500 @enderror"
+                                        placeholder="Ex: Ivoirienne">
+                                    @error('nationalite')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Pays -->
                                 <div>
                                     <label for="pays" class="block text-sm font-semibold text-gray-700 mb-2">
                                         Pays de résidence <span class="text-red-500">*</span>
                                     </label>
-                                    <select name="pays" id="pays"
+                                    <select name="pays" id="pays" required data-label="Pays de résidence"
                                         class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('pays') border-red-500 @enderror">
                                         <option value="">Sélectionner un pays</option>
                                         @forelse ($pays as $p)
                                             <option value="{{ $p->id }}" data-indicatif="{{ $p->indicatif }}"
                                                 data-code="{{ $p->code_iso_2 }}"
-                                                {{ old('pays', $representantActif['pays']) == $p->id ? 'selected' : '' }}>
+                                                {{ old('pays', $representantActif['pays'] ?? '') == $p->id ? 'selected' : '' }}>
                                                 {{ $p->nom }} ({{ $p->indicatif }})
                                             </option>
                                         @empty
@@ -402,211 +505,536 @@
                                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                     @enderror
                                 </div>
-                        </div>
+                            </div>
 
-                        <!-- Adresse -->
-                        <div>
-                            <label for="rep_adresse" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Adresse <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="rep_adresse"
-                                value="{{ $representantActif['adresse'] ?? '' }}" maxlength="255"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                        </div>
-
-                        <!-- Profession -->
-                        <div>
-                            <label for="rep_profession" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Profession <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="rep_profession"
-                                value="{{ $representantActif['profession'] ?? '' }}" maxlength="100"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Date de naissance -->
+                            <!-- Adresse -->
                             <div>
-                                <label for="rep_date_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de naissance
+                                <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Adresse
                                 </label>
-                                <input type="date" id="rep_date_naissance"
-                                    value="{{ $representantActif['date_naissance'] ?? '' }}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
+                                <input type="text" name="adresse" id="adresse"
+                                    value="{{ old('adresse', $representantActif['adresse'] ?? '') }}" maxlength="255"
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('adresse') border-red-500 @enderror"
+                                    placeholder="Adresse du représentant légal">
+                                @error('adresse')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <!-- Lieu de naissance -->
+                            <!-- Profession -->
                             <div>
-                                <label for="rep_lieu_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Lieu de naissance
+                                <label for="profession" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Profession <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="rep_lieu_naissance"
-                                    value="{{ $representantActif['lieu_naissance'] ?? '' }}" maxlength="100"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
+                                <input type="text" name="profession" id="profession"
+                                    value="{{ old('profession', $representantActif['profession'] ?? '') }}" required
+                                    maxlength="100" data-label="Profession"
+                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('profession') border-red-500 @enderror"
+                                    placeholder="Ex: Gérant, Directeur Général">
+                                @error('profession')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Date de naissance -->
+                                <div>
+                                    <label for="date_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Date de naissance
+                                    </label>
+                                    <input type="date" name="date_naissance" id="date_naissance"
+                                        value="{{ old('date_naissance', $representantActif['date_naissance'] ?? '') }}"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('date_naissance') border-red-500 @enderror">
+                                    @error('date_naissance')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Lieu de naissance -->
+                                <div>
+                                    <label for="lieu_naissance" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Lieu de naissance
+                                    </label>
+                                    <input type="text" name="lieu_naissance" id="lieu_naissance"
+                                        value="{{ old('lieu_naissance', $representantActif['lieu_naissance'] ?? '') }}"
+                                        maxlength="100"
+                                        class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('lieu_naissance') border-red-500 @enderror"
+                                        placeholder="Ex: Abidjan">
+                                    @error('lieu_naissance')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Pièce d'identité -->
+                            <div class="p-4 bg-gray-50 rounded-lg space-y-4">
+                                <h4 class="font-semibold text-gray-700 flex items-center">
+                                    <i class="fas fa-id-card text-gray-500 mr-2"></i>
+                                    Pièce d'identité
+                                </h4>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Type pièce -->
+                                    <div>
+                                        <label for="type_piece_identite"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Type
+                                        </label>
+                                        <select name="type_piece_identite" id="type_piece_identite"
+                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('type_piece_identite') border-red-500 @enderror">
+                                            <option value="">Sélectionner</option>
+                                            <option value="CNI"
+                                                {{ old('type_piece_identite', $representantActif['type_piece_identite'] ?? '') == 'CNI' ? 'selected' : '' }}>
+                                                CNI</option>
+                                            <option value="Passeport"
+                                                {{ old('type_piece_identite', $representantActif['type_piece_identite'] ?? '') == 'Passeport' ? 'selected' : '' }}>
+                                                Passeport</option>
+                                            <option value="Carte Consulaire"
+                                                {{ old('type_piece_identite', $representantActif['type_piece_identite'] ?? '') == 'Carte Consulaire' ? 'selected' : '' }}>
+                                                Carte Consulaire</option>
+                                            <option value="Attestation"
+                                                {{ old('type_piece_identite', $representantActif['type_piece_identite'] ?? '') == 'Attestation' ? 'selected' : '' }}>
+                                                Attestation d'identité</option>
+                                        </select>
+                                        @error('type_piece_identite')
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Numéro pièce -->
+                                    <div>
+                                        <label for="numero_piece_identite"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Numéro
+                                        </label>
+                                        <input type="text" name="numero_piece_identite" id="numero_piece_identite"
+                                            value="{{ old('numero_piece_identite', $representantActif['numero_piece_identite'] ?? '') }}"
+                                            maxlength="50"
+                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('numero_piece_identite') border-red-500 @enderror"
+                                            placeholder="Numéro de la pièce">
+                                        @error('numero_piece_identite')
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <!-- Date délivrance -->
+                                    <div>
+                                        <label for="date_delivrance"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Date de délivrance
+                                        </label>
+                                        <input type="date" name="date_delivrance" id="date_delivrance"
+                                            value="{{ old('date_delivrance', $representantActif['date_delivrance'] ?? '') }}"
+                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('date_delivrance') border-red-500 @enderror">
+                                        @error('date_delivrance')
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Lieu délivrance -->
+                                    <div>
+                                        <label for="lieu_delivrance"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Lieu de délivrance
+                                        </label>
+                                        <input type="text" name="lieu_delivrance" id="lieu_delivrance"
+                                            value="{{ old('lieu_delivrance', $representantActif['lieu_delivrance'] ?? '') }}"
+                                            maxlength="100"
+                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('lieu_delivrance') border-red-500 @enderror"
+                                            placeholder="Ex: Abidjan">
+                                        @error('lieu_delivrance')
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Date expiration -->
+                                    <div>
+                                        <label for="date_expiration"
+                                            class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Date d'expiration
+                                        </label>
+                                        <input type="date" name="date_expiration" id="date_expiration"
+                                            value="{{ old('date_expiration', $representantActif['date_expiration'] ?? '') }}"
+                                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('date_expiration') border-red-500 @enderror">
+                                        @error('date_expiration')
+                                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Pièce d'identité -->
-                        <div class="p-4 bg-gray-50 rounded-lg space-y-4">
-                            <h4 class="font-semibold text-gray-700 flex items-center">
-                                <i class="fas fa-id-card text-gray-500 mr-2"></i>
-                                Pièce d'identité
-                            </h4>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Type pièce -->
-                                <div>
-                                    <label for="rep_type_piece" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Type
-                                    </label>
-                                    <select id="rep_type_piece"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                                        <option value="">Sélectionner</option>
-                                        <option value="CNI" {{ ($representantActif['type_piece_identite'] ?? '') == 'CNI' ? 'selected' : '' }}>CNI</option>
-                                        <option value="Passeport" {{ ($representantActif['type_piece_identite'] ?? '') == 'Passeport' ? 'selected' : '' }}>Passeport</option>
-                                        <option value="Carte Consulaire" {{ ($representantActif['type_piece_identite'] ?? '') == 'Carte Consulaire' ? 'selected' : '' }}>Carte Consulaire</option>
-                                        <option value="Attestation" {{ ($representantActif['type_piece_identite'] ?? '') == 'Attestation' ? 'selected' : '' }}>Attestation d'identité</option>
-                                    </select>
-                                </div>
-
-                                <!-- Numéro pièce -->
-                                <div>
-                                    <label for="rep_numero_piece" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Numéro
-                                    </label>
-                                    <input type="text" id="rep_numero_piece"
-                                        value="{{ $representantActif['numero_piece_identite'] ?? '' }}" maxlength="50"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Date délivrance -->
-                                <div>
-                                    <label for="rep_date_delivrance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Date de délivrance
-                                    </label>
-                                    <input type="date" id="rep_date_delivrance"
-                                        value="{{ $representantActif['date_delivrance'] ?? '' }}"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                                </div>
-
-                                <!-- Lieu délivrance -->
-                                <div>
-                                    <label for="rep_lieu_delivrance" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Lieu de délivrance
-                                    </label>
-                                    <input type="text" id="rep_lieu_delivrance"
-                                        value="{{ $representantActif['lieu_delivrance'] ?? '' }}" maxlength="100"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                                </div>
-
-                                <!-- Date expiration -->
-                                <div>
-                                    <label for="rep_date_expiration" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Date d'expiration
-                                    </label>
-                                    <input type="date" id="rep_date_expiration"
-                                        value="{{ $representantActif['date_expiration'] ?? '' }}"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
-                                </div>
-                            </div>
+                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+                            <button type="button" onclick="prevStep(3)"
+                                class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 font-medium flex items-center space-x-2">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Précédent</span>
+                            </button>
+                            <button type="submit" id="submitBtn"
+                                class="px-8 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2 shadow-md hover:shadow-lg">
+                                <i class="fas fa-save"></i>
+                                <span>Enregistrer les modifications</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Footer avec boutons -->
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
-                    <a href="{{ route('prestataires.show', $prestataire->id_prestataire) }}"
-                        class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 font-medium flex items-center space-x-2">
-                        <i class="fas fa-times"></i>
-                        <span>Annuler</span>
-                    </a>
-                    <button type="submit" id="submitBtn"
-                        class="px-8 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2 shadow-md hover:shadow-lg">
-                        <i class="fas fa-save"></i>
-                        <span>Enregistrer les modifications</span>
-                    </button>
-                </div>
-            </div>
-        </form>
+            </form>
         @endcan
     </main>
 
-     @can('prestataires.update')
-    @push('scripts')
-        <script>
-            // Gestion des onglets
-            function showTab(tabName) {
-                // Masquer tous les contenus
-                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    @can('prestataires.update')
+        @push('scripts')
+            <script>
+                let currentStep = 1;
+                const totalSteps = 3;
 
-                // Réinitialiser tous les boutons
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.remove('border-orange-500', 'text-orange-600');
-                    btn.classList.add('border-transparent', 'text-gray-500');
-                });
-
-                // Afficher le contenu sélectionné
-                document.getElementById(`content${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.remove('hidden');
-
-                // Activer le bouton
-                const activeBtn = document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
-                activeBtn.classList.remove('border-transparent', 'text-gray-500');
-                activeBtn.classList.add('border-orange-500', 'text-orange-600');
-            }
-
-            // Préparer le JSON du représentant légal avant soumission
-            document.getElementById('prestataireForm').addEventListener('submit', function(e) {
-                // Construire l'objet représentant légal
-                const representant = {
-                    nom: document.getElementById('rep_nom')?.value || '',
-                    prenoms: document.getElementById('rep_prenoms')?.value || '',
-                    email: document.getElementById('rep_email')?.value || '',
-                    contact: document.getElementById('rep_contact')?.value || '',
-                    nationalite: document.getElementById('rep_nationalite')?.value || '',
-                    pays: document.getElementById('pays')?.value || '',
-                    adresse: document.getElementById('rep_adresse')?.value || '',
-                    profession: document.getElementById('rep_profession')?.value || '',
-                    date_naissance: document.getElementById('rep_date_naissance')?.value || '',
-                    lieu_naissance: document.getElementById('rep_lieu_naissance')?.value || '',
-                    type_piece_identite: document.getElementById('rep_type_piece')?.value || '',
-                    numero_piece_identite: document.getElementById('rep_numero_piece')?.value || '',
-                    date_delivrance: document.getElementById('rep_date_delivrance')?.value || '',
-                    lieu_delivrance: document.getElementById('rep_lieu_delivrance')?.value || '',
-                    date_expiration: document.getElementById('rep_date_expiration')?.value || ''
+                // Définition des champs obligatoires par étape
+                const requiredFieldsByStep = {
+                    1: [
+                        'raison_sociale_prestataire',
+                        'numero_cc_prestataire',
+                    ],
+                    2: [
+                        'telephone_principal_prestataire',
+                        'adresse_prestataire',
+                        'ville_prestataire',
+                        'pays_prestataire'
+                    ],
+                    3: [
+                        'nom',
+                        'contact',
+                        'pays',
+                        'profession'
+                    ]
                 };
 
-                // Mettre à jour le champ caché
-                document.getElementById('representant_legal_json').value = JSON.stringify(representant);
+                // Fonction de validation d'une étape
+                function validateStep(step) {
+                    const fields = requiredFieldsByStep[step] || [];
+                    const errors = [];
 
-                // Désactiver le bouton et afficher le chargement
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement en cours...';
-            });
-        </script>
+                    fields.forEach(fieldName => {
+                        const field = document.querySelector(`[name="${fieldName}"]`);
+                        if (field) {
+                            const value = field.value.trim();
+                            if (!value) {
+                                const label = field.getAttribute('data-label') || fieldName;
+                                errors.push(label);
+                                field.classList.add('border-red-500', 'bg-red-50');
+                                field.classList.remove('border-gray-300');
+                            } else {
+                                field.classList.remove('border-red-500', 'bg-red-50');
+                                field.classList.add('border-gray-300');
+                            }
+                        }
+                    });
 
-        <style>
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-10px);
+                    return errors;
                 }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+
+                // Afficher les erreurs de validation
+                function showValidationErrors(errors) {
+                    const alertDiv = document.getElementById('validationAlert');
+                    const listDiv = document.getElementById('validationList');
+
+                    if (errors.length > 0) {
+                        listDiv.innerHTML = errors.map(error => `<li>${error}</li>`).join('');
+                        alertDiv.classList.remove('hidden');
+                        alertDiv.classList.add('animate-shake');
+                        setTimeout(() => alertDiv.classList.remove('animate-shake'), 500);
+
+                        // Scroll vers l'alerte
+                        alertDiv.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    } else {
+                        alertDiv.classList.add('hidden');
+                    }
                 }
-            }
 
-            .animate-fadeIn {
-                animation: fadeIn 0.3s ease-out;
-            }
+                // Passer à l'étape suivante
+                function nextStep(currentStepNum) {
+                    const errors = validateStep(currentStepNum);
 
-            .tab-content {
-                animation: fadeIn 0.3s ease-out;
-            }
-        </style>
-    @endpush
+                    if (errors.length > 0) {
+                        showValidationErrors(errors);
+                        return;
+                    }
+
+                    document.getElementById('validationAlert').classList.add('hidden');
+                    showStep(currentStepNum + 1);
+                }
+
+                // Revenir à l'étape précédente
+                function prevStep(currentStepNum) {
+                    document.getElementById('validationAlert').classList.add('hidden');
+                    showStep(currentStepNum - 1);
+                }
+
+                // Aller directement à une étape (depuis les boutons d'étape)
+                function goToStep(targetStep) {
+                    // On peut toujours revenir en arrière
+                    if (targetStep < currentStep) {
+                        document.getElementById('validationAlert').classList.add('hidden');
+                        showStep(targetStep);
+                        return;
+                    }
+
+                    // Pour avancer, valider les étapes intermédiaires
+                    for (let step = currentStep; step < targetStep; step++) {
+                        const errors = validateStep(step);
+                        if (errors.length > 0) {
+                            showValidationErrors(errors);
+                            showStep(step);
+                            return;
+                        }
+                    }
+
+                    document.getElementById('validationAlert').classList.add('hidden');
+                    showStep(targetStep);
+                }
+
+                // Afficher une étape spécifique
+                function showStep(step) {
+                    // Masquer toutes les étapes
+                    document.querySelectorAll('.step-content').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+
+                    // Afficher l'étape cible
+                    document.getElementById(`step${step}`).classList.remove('hidden');
+
+                    // Mettre à jour les boutons d'étape
+                    for (let i = 1; i <= totalSteps; i++) {
+                        const btn = document.getElementById(`step${i}Btn`);
+                        const numSpan = btn.querySelector('span:first-child');
+
+                        if (i < step) {
+                            // Étape complétée
+                            btn.classList.remove('bg-orange-500', 'text-white', 'bg-gray-100', 'text-gray-600');
+                            btn.classList.add('bg-green-100', 'text-green-700');
+                            numSpan.classList.remove('bg-white', 'text-orange-500', 'bg-gray-300');
+                            numSpan.classList.add('bg-green-500', 'text-white');
+                            numSpan.innerHTML = '<i class="fas fa-check text-xs"></i>';
+                        } else if (i === step) {
+                            // Étape courante
+                            btn.classList.remove('bg-gray-100', 'text-gray-600', 'bg-green-100', 'text-green-700');
+                            btn.classList.add('bg-orange-500', 'text-white');
+                            numSpan.classList.remove('bg-gray-300', 'bg-green-500');
+                            numSpan.classList.add('bg-white', 'text-orange-500');
+                            numSpan.innerHTML = i;
+                        } else {
+                            // Étape future
+                            btn.classList.remove('bg-orange-500', 'text-white', 'bg-green-100', 'text-green-700');
+                            btn.classList.add('bg-gray-100', 'text-gray-600');
+                            numSpan.classList.remove('bg-white', 'text-orange-500', 'bg-green-500');
+                            numSpan.classList.add('bg-gray-300', 'text-white');
+                            numSpan.innerHTML = i;
+                        }
+                    }
+
+                    // Mettre à jour la barre de progression
+                    const progress = (step / totalSteps) * 100;
+                    document.getElementById('progressBar').style.width = `${progress}%`;
+                    document.getElementById('currentStepText').textContent = step;
+
+                    // Mettre à jour les lignes de connexion
+                    for (let i = 1; i < totalSteps; i++) {
+                        const line = document.getElementById(`line${i}`);
+                        if (line) {
+                            if (i < step) {
+                                line.classList.remove('bg-gray-300');
+                                line.classList.add('bg-green-500');
+                            } else {
+                                line.classList.remove('bg-green-500');
+                                line.classList.add('bg-gray-300');
+                            }
+                        }
+                    }
+
+                    currentStep = step;
+
+                    // Scroll vers le haut
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+
+                // Validation en temps réel des champs
+                document.querySelectorAll('.form-input').forEach(field => {
+                    field.addEventListener('input', function() {
+                        if (this.value.trim()) {
+                            this.classList.remove('border-red-500', 'bg-red-50');
+                            this.classList.add('border-gray-300');
+                        }
+                    });
+
+                    field.addEventListener('blur', function() {
+                        if (this.hasAttribute('required') && !this.value.trim()) {
+                            this.classList.add('border-red-500', 'bg-red-50');
+                            this.classList.remove('border-gray-300');
+                        }
+                    });
+                });
+
+                // Validation date expiration > date délivrance
+                document.getElementById('date_expiration').addEventListener('change', function() {
+                    const dateDelivrance = document.getElementById('date_delivrance').value;
+                    const dateExpiration = this.value;
+
+                    if (dateDelivrance && dateExpiration && new Date(dateExpiration) <= new Date(dateDelivrance)) {
+                        alert('La date d\'expiration doit être postérieure à la date de délivrance');
+                        this.value = '';
+                        this.classList.add('border-red-500', 'bg-red-50');
+                    }
+                });
+
+                // Validation date de naissance (doit être majeur)
+                document.getElementById('date_naissance').addEventListener('change', function() {
+                    const dateNaissance = new Date(this.value);
+                    const today = new Date();
+                    const age = Math.floor((today - dateNaissance) / (365.25 * 24 * 60 * 60 * 1000));
+
+                    if (age < 18) {
+                        alert('Le représentant légal doit être majeur (18 ans minimum)');
+                        this.value = '';
+                        this.classList.add('border-red-500', 'bg-red-50');
+                    }
+                });
+
+                // Préparation des données du représentant légal avant soumission
+                function prepareRepresentantData() {
+                    const representant = {
+                        nom: document.getElementById('nom')?.value || '',
+                        email: document.getElementById('email')?.value || '',
+                        contact: document.getElementById('contact')?.value || '',
+                        nationalite: document.getElementById('nationalite')?.value || '',
+                        pays: document.getElementById('pays')?.value || '',
+                        adresse: document.getElementById('adresse')?.value || '',
+                        profession: document.getElementById('profession')?.value || '',
+                        date_naissance: document.getElementById('date_naissance')?.value || '',
+                        lieu_naissance: document.getElementById('lieu_naissance')?.value || '',
+                        type_piece_identite: document.getElementById('type_piece_identite')?.value || '',
+                        numero_piece_identite: document.getElementById('numero_piece_identite')?.value || '',
+                        date_delivrance: document.getElementById('date_delivrance')?.value || '',
+                        lieu_delivrance: document.getElementById('lieu_delivrance')?.value || '',
+                        date_expiration: document.getElementById('date_expiration')?.value || ''
+                    };
+
+                    document.getElementById('representant_legal_json').value = JSON.stringify(representant);
+                }
+
+                // Soumission du formulaire avec validation finale
+                document.getElementById('prestataireForm').addEventListener('submit', function(e) {
+                    // Valider toutes les étapes avant soumission
+                    for (let step = 1; step <= totalSteps; step++) {
+                        const errors = validateStep(step);
+                        if (errors.length > 0) {
+                            e.preventDefault();
+                            showValidationErrors(errors);
+                            showStep(step);
+                            return;
+                        }
+                    }
+
+                    // Préparer les données du représentant légal
+                    prepareRepresentantData();
+
+                    const submitBtn = document.getElementById('submitBtn');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement en cours...';
+                });
+
+                // Initialisation au chargement
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Réinitialiser l'affichage des numéros d'étape
+                    for (let i = 1; i <= totalSteps; i++) {
+                        const btn = document.getElementById(`step${i}Btn`);
+                        const numSpan = btn.querySelector('span:first-child');
+                        if (i > 1) {
+                            numSpan.innerHTML = i;
+                        }
+                    }
+                });
+            </script>
+
+            <style>
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes shake {
+
+                    0%,
+                    100% {
+                        transform: translateX(0);
+                    }
+
+                    10%,
+                    30%,
+                    50%,
+                    70%,
+                    90% {
+                        transform: translateX(-5px);
+                    }
+
+                    20%,
+                    40%,
+                    60%,
+                    80% {
+                        transform: translateX(5px);
+                    }
+                }
+
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+
+                .animate-shake {
+                    animation: shake 0.5s ease-in-out;
+                }
+
+                .step-content {
+                    animation: fadeIn 0.3s ease-out;
+                }
+
+                /* Transition pour les champs invalides */
+                .form-input {
+                    transition: all 0.3s ease;
+                }
+
+                .form-input.border-red-500 {
+                    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+                }
+
+                /* Style pour les étapes complétées */
+                .step-btn.bg-green-100 {
+                    position: relative;
+                }
+
+                .step-btn.bg-green-100::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -2px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 80%;
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, #22c55e, transparent);
+                }
+            </style>
+        @endpush
     @endcan
 @endsection

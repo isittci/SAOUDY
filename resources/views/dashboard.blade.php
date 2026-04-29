@@ -230,7 +230,7 @@
                                     {{ $alertes['paiements_a_valider'] }} paiement(s) à valider
                                 </span>
                             @endif
-                            
+
                             @if ($alertes['lots_non_attribues'] > 0)
                                 <a @can('lots.read') href="{{ route('lots.index', ['attribution' => '0']) }}" @endcan
                                     class="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-800 rounded-full hover:bg-orange-200 transition-colors">
@@ -256,9 +256,6 @@
                 </div>
                 <p class="text-2xl font-bold text-gray-800">{{ $statsGlobales['appels_offres']['total'] }}</p>
                 <div class="flex items-center justify-between mt-2 text-xs">
-                    {{-- <span class="text-green-600">
-                            <i class="fas fa-clock mr-1"></i>{{ $statsGlobales['appels_offres']['en_cours'] }} en cours
-                        </span> --}}
                     @if ($comparaison ?? false)
                         <span
                             class="{{ $comparaison['appels_offres']['variation'] >= 0 ? 'variation-positive' : 'variation-negative' }}">
@@ -374,7 +371,7 @@
                     <div>
                         <p class="text-white/80 text-xs font-medium uppercase">Montant Total AO</p>
                         <p class="text-2xl font-bold mt-1">
-                            {{ number_format($statsGlobales['appels_offres']['montant_total'], 0, ',', ' ') }}</p>
+                            {{ number_format(floor($statsGlobales['appels_offres']['montant_total']), 0, ',', ' ') }}</p>
                         <p class="text-sm text-white/70">FCFA</p>
                     </div>
                     <i class="fas fa-chart-line text-4xl text-white/30"></i>
@@ -386,7 +383,7 @@
                     <div>
                         <p class="text-white/80 text-xs font-medium uppercase">Montant Facturé</p>
                         <p class="text-2xl font-bold mt-1">
-                            {{ number_format($statsGlobales['factures']['montant_total'], 0, ',', ' ') }}</p>
+                            {{ number_format(floor($statsGlobales['factures']['montant_total']), 0, ',', ' ') }}</p>
                         <p class="text-sm text-white/70">FCFA</p>
                     </div>
                     <i class="fas fa-file-invoice text-4xl text-white/30"></i>
@@ -398,7 +395,7 @@
                     <div>
                         <p class="text-white/80 text-xs font-medium uppercase">Montant Payé</p>
                         <p class="text-2xl font-bold mt-1">
-                            {{ number_format($statsGlobales['factures']['montant_paye'], 0, ',', ' ') }}</p>
+                            {{ number_format(floor($statsGlobales['factures']['montant_paye']), 0, ',', ' ') }}</p>
                         <p class="text-sm text-white/70">FCFA</p>
                     </div>
                     <i class="fas fa-hand-holding-usd text-4xl text-white/30"></i>
@@ -410,7 +407,7 @@
                     <div>
                         <p class="text-white/80 text-xs font-medium uppercase">Reste à Payer</p>
                         <p class="text-2xl font-bold mt-1">
-                            {{ number_format($statsGlobales['factures']['montant_total'] - $statsGlobales['factures']['montant_paye'], 0, ',', ' ') }}
+                            {{ number_format(floor($statsGlobales['factures']['montant_total'] - $statsGlobales['factures']['montant_paye']), 0, ',', ' ') }}
                         </p>
                         <p class="text-sm text-white/70">FCFA</p>
                     </div>
@@ -603,7 +600,7 @@
                             </div>
                             <div class="text-right">
                                 <p class="font-bold text-gray-800 text-sm">
-                                    {{ number_format($prestataire->montant_total, 0, ',', ' ') }}</p>
+                                    {{ number_format(floor($prestataire->montant_total), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-gray-500">FCFA</p>
                             </div>
                         </div>
@@ -650,7 +647,7 @@
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500">{{ $facture->created_at->format('d/m/Y') }}</span>
                                 <span
-                                    class="font-semibold text-gray-700">{{ number_format($facture->montant_facture, 0, ',', ' ') }}
+                                    class="font-semibold text-gray-700">{{ number_format(floor($facture->montant_facture), 0, ',', ' ') }}
                                     FCFA</span>
                             </div>
                         </a>
@@ -693,7 +690,7 @@
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500">{{ $paiement->banque?->nom_banque ?? 'N/A' }}</span>
                                 <span
-                                    class="font-semibold text-green-600">{{ number_format($paiement->montant_net_paye_paiement, 0, ',', ' ') }}
+                                    class="font-semibold text-green-600">{{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }}
                                     FCFA</span>
                             </div>
                         </div>
@@ -752,7 +749,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <span
-                                        class="font-semibold text-gray-800">{{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }}</span>
+                                        class="font-semibold text-gray-800">{{ number_format(floor($ao->montant_global_appel_offre), 0, ',', ' ') }}</span>
                                     <span class="text-xs text-gray-500">FCFA</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -832,44 +829,44 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-hashtag mr-1"></i>N° Lot
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Statut
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     N° Attribution
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     Prestataire
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-coins mr-1"></i>Montant Lot
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-check-circle mr-1"></i>Déjà Payé
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-exclamation-circle mr-1"></i>Reste à Payer
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-clock mr-1"></i>Délai Restant
                                 </th>
                                 <th scope="col"
-                                    class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                     <i class="fas fa-chart-line mr-1"></i>Avancement
                                 </th>
                                 @can('lots.view-details')
                                     <th scope="col"
-                                        class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                                         <i class="fas fa-cog mr-1"></i>Actions
                                     </th>
                                 @endcan
@@ -918,34 +915,43 @@
                                         </div>
                                     </td>
 
+
                                     <!-- Prestataire -->
                                     <td class="px-4 py-3">
                                         @if ($lot['est_attribue'])
                                             <div class="text-sm">
                                                 <div class="font-medium text-gray-900">
                                                     {{ Str::limit($lot['raison_sociale_prestataire'], 25) }}</div>
-                                                <div class="text-xs text-gray-500">{{ $lot['numero_prestataire'] }}</div>
+                                                <div class="text-xs text-gray-500">{{ $lot['numero_lot'] }}</div>
                                             </div>
                                         @else
                                             <span class="text-sm text-gray-400 italic">-</span>
                                         @endif
                                     </td>
 
+
+
+
                                     @php
-                                            $facture = $lot['attribution']->proforma->facture;
-                                            $montant_net_paye_paiement = $facture
-                                                ? $facture->paiementsValides->sum('montant_net_paye_paiement')
-                                                : 0;
-                                            $montant_reste_paiement = $facture ? $facture->montant_facture - $montant_net_paye_paiement : 0;
-                                        @endphp
+                                        $proforma = $lot['attribution']->proforma ?? null;
+                                        $facture = $proforma?->facture;
+                                        $montant_net_paye_paiement = $facture
+                                            ? $facture->paiementsValides->sum('montant_net_paye_paiement')
+                                            : 0;
+                                        $montant_reste_paiement = $facture ? $facture->montant_facture - $montant_net_paye_paiement : 0;
+                                    @endphp
 
                                     <!-- Montant Lot -->
                                     <td class="px-4 py-3 whitespace-nowrap text-right">
-                                        @if ($lot['est_attribue'])
+                                        @if ($lot['est_attribue'] && $facture)
                                             <div class="text-sm font-semibold text-gray-900">
-                                                {{ number_format($facture->montant_facture, 0, ',', ' ') }}
+                                                {{ number_format(floor($facture->montant_facture), 0, ',', ' ') }}
                                             </div>
                                             <div class="text-xs text-gray-500">FCFA</div>
+                                        @elseif ($lot['est_attribue'] && !$facture)
+                                            <span class="text-sm text-orange-500 italic">
+                                                <i class="fas fa-clock mr-1"></i>En attente
+                                            </span>
                                         @else
                                             <span class="text-sm text-gray-400">-</span>
                                         @endif
@@ -957,7 +963,7 @@
 
                                         @if ($lot['est_attribue'])
                                             <div class="text-sm font-medium text-green-600">
-                                                {{ number_format($montant_net_paye_paiement, 0, ',', ' ') }}
+                                                {{ number_format(floor($montant_net_paye_paiement), 0, ',', ' ') }}
                                             </div>
                                             <div class="text-xs text-gray-500">FCFA</div>
                                         @else
@@ -970,7 +976,7 @@
                                         @if ($lot['est_attribue'])
                                             <div
                                                 class="text-sm font-medium {{ $lot['reste_a_payer'] > 0 ? 'text-orange-600' : 'text-gray-400' }}">
-                                                {{ number_format($montant_reste_paiement, 0, ',', ' ') }}
+                                                {{ number_format(floor($montant_reste_paiement), 0, ',', ' ') }}
                                             </div>
                                             <div class="text-xs text-gray-500">FCFA</div>
                                         @else
@@ -1031,7 +1037,7 @@
                                                 <div class="w-full max-w-[100px]">
                                                     <div class="flex items-center justify-between mb-1">
                                                         <span
-                                                            class="text-xs font-medium text-gray-700">{{ number_format($lot['avancement'], 1) }}%</span>
+                                                            class="text-xs font-medium text-gray-700">{{ number_format($lot['avancement'], 2) }}%</span>
                                                     </div>
                                                     <div class="w-full bg-gray-200 rounded-full h-2">
                                                         <div class="h-2 rounded-full transition-all progress-animated

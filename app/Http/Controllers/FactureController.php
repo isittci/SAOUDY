@@ -923,7 +923,7 @@ class FactureController extends Controller
                 'data' => [
                     'proforma' => $proforma,
                     'montant_ttc' => $montantTTC,
-                    'montant_ttc_formate' => number_format($montantTTC, 2, ',', ' ') . ' FCFA',
+                    'montant_ttc_formate' => number_format(floor($montantTTC), 0, ',', ' ') . ' FCFA',
                 ],
             ]);
         } catch (Exception $e) {

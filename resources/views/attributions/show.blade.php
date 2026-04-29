@@ -309,7 +309,7 @@
                                     style="width: {{ min($attribution->pourcentage_avancement, 100) }}%"></div>
                             </div>
                             <span
-                                class="text-2xl font-bold text-gray-800">{{ number_format($attribution->pourcentage_avancement, 0) }}%</span>
+                                class="text-2xl font-bold text-gray-800">{{ number_format($attribution->pourcentage_avancement, 2) }}%</span>
                         </div>
                     </div>
 
@@ -327,19 +327,19 @@
                         <div class="text-center">
                             <p class="text-gray-500">Montant engagé</p>
                             <p class="text-lg font-bold text-gray-800">
-                                {{ $facture ? number_format($facture->montant_facture, 0, ',', ' ') : 0 }} <span
+                                {{ $facture ? number_format(floor($facture->montant_facture), 0, ',', ' ') : 0 }} <span
                                     class="text-xs">FCFA</span></p>
                         </div>
                         <div class="text-center">
                             <p class="text-gray-500">Montant payé</p>
                             <p class="text-lg font-bold text-green-600">
-                                {{ number_format($montant_net_paye_paiement, 0, ',', ' ') }} <span
+                                {{ number_format(floor($montant_net_paye_paiement), 0, ',', ' ') }} <span
                                     class="text-xs">FCFA</span></p>
                         </div>
                         <div class="text-center">
                             <p class="text-gray-500">Restant</p>
                             <p class="text-lg font-bold text-orange-600">
-                                {{ number_format($montant_reste_paiement, 0, ',', ' ') }} <span class="text-xs">FCFA</span>
+                                {{ number_format(floor($montant_reste_paiement), 0, ',', ' ') }} <span class="text-xs">FCFA</span>
                             </p>
                         </div>
                     </div>
@@ -459,13 +459,14 @@
                                     <span class="text-sm font-semibold text-gray-600">Début prévu</span>
                                     <i class="fas fa-play text-blue-500"></i>
                                 </div>
-                                @if ($attribution->date_debut_prevue)
+
+                                @if ($attribution->proforma->date_debut_validee_proforma)
                                     <p class="text-lg font-bold text-gray-900">
-                                        {{ $attribution->date_debut_prevue->format('d/m/Y') }}</p>
-                                    @if ($attribution->date_debut_reelle)
+                                        {{ $attribution->proforma->date_debut_validee_proforma->format('d/m/Y') }}</p>
+                                    @if ($attribution->proforma->date_debut_validee_proforma)
                                         <p class="text-xs text-green-600 mt-1">
                                             <i class="fas fa-check mr-1"></i>Réel:
-                                            {{ $attribution->date_debut_reelle->format('d/m/Y') }}
+                                            {{ $attribution->proforma->date_debut_validee_proforma->format('d/m/Y') }}
                                         </p>
                                     @endif
                                 @else
@@ -480,9 +481,9 @@
                                     <i
                                         class="fas fa-flag-checkered text-{{ $attribution->estEnRetard() ? 'red' : 'green' }}-500"></i>
                                 </div>
-                                @if ($attribution->date_fin_prevue)
+                                @if ($attribution->proforma->date_fin_validee_proforma)
                                     <p class="text-lg font-bold text-gray-900">
-                                        {{ $attribution->date_fin_prevue->format('d/m/Y') }}</p>
+                                        {{ $attribution->proforma->date_fin_validee_proforma->format('d/m/Y') }}</p>
                                     @if ($attribution->estEnRetard())
                                         <p class="text-xs text-red-600 font-semibold mt-1">
                                             <i
@@ -608,35 +609,6 @@
             <div class="space-y-6">
 
                 <!-- Proforma -->
-                {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-file-invoice text-purple-500 mr-2"></i>
-                            Proforma
-                        </h2>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Numéro</label>
-                            <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold bg-purple-100 text-purple-700">
-                                {{ $attribution->proforma->numero_proforma ?? 'N/A' }}
-                            </span>
-                        </div>
-                        @if ($attribution->proforma)
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Montant TTC</label>
-                                <p class="text-xl font-bold text-gray-900">
-                                    {{ number_format($attribution->proforma->montant_ttc ?? 0, 0, ',', ' ') }}
-                                    <span class="text-sm text-gray-500">FCFA</span>
-                                </p>
-                            </div>
-                        @endif
-                    </div>
-                </div> --}}
-
-                {{-- Section Proforma complète pour show.blade.php --}}
-                {{-- Remplacer la section proforma existante par celle-ci --}}
-
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
                         <div class="flex items-center justify-between">
@@ -712,17 +684,6 @@
                                             {{ $attribution->proforma->date_fin_validee_proforma ? $attribution->proforma->date_fin_validee_proforma->format('d/m/Y') : '-' }}
                                         </p>
                                     </div>
-                                    {{-- <div class="bg-white/70 rounded-lg p-3">
-                                        <label class="block text-xs text-gray-500 mb-1">En retard de</label>
-                                        <p class="text-sm font-semibold {{ $attribution->date_debut_prevue ? 'text-green-700' : 'text-gray-800' }}">
-                                            @if ($attribution->date_debut_prevue && $attribution->date_effective_fin)
-                                                <i class="fas fa-play-circle mr-1"></i>
-                                            @endif
-                                            {{ $attribution->date_debut_prevue && $attribution->date_effective_fin  ? $attribution->date_effective_fin->format('d/m/Y') : '-' }}
-                                        </p>
-                                    </div> --}}
-
-
 
                                     <div class="bg-white/70 rounded-lg p-3">
                                         @php
@@ -842,7 +803,7 @@
                                             class="flex justify-between items-center py-2 border-b border-green-100 bg-gray-50 -mx-4 px-4">
                                             <span class="text-sm text-gray-600">Montant HT après remise</span>
                                             <span class="text-sm font-semibold text-gray-800">
-                                                {{ number_format($attribution->proforma->montant_ht_apres_remise ?? 0, 2, ',', ' ') }}
+                                                {{ number_format($attribution->proforma->montant_ht_apres_remise ?? 0, 0, ',', ' ') }}
                                                 FCFA
                                             </span>
                                         </div>
@@ -855,7 +816,7 @@
                                             TVA ({{ $attribution->proforma->taux_taxe }}%)
                                         </span>
                                         <span class="text-sm font-semibold text-blue-600">
-                                            + {{ number_format($attribution->proforma->taxe_montant ?? 0, 2, ',', ' ') }}
+                                            + {{ number_format(floor($attribution->proforma->taxe_montant ?? 0), 0, ',', ' ') }}
                                             FCFA
                                         </span>
                                     </div>
@@ -867,7 +828,7 @@
                                             <i class="fas fa-calculator mr-2"></i>Total TTC
                                         </span>
                                         <span class="text-xl font-bold text-white">
-                                            {{ number_format($attribution->proforma->montant_ttc ?? 0, 2, ',', ' ') }} FCFA
+                                            {{ number_format(floor($attribution->proforma->montant_ttc ?? 0), 0, ',', ' ') }} FCFA
                                         </span>
                                     </div>
                                 </div>
@@ -934,12 +895,12 @@
                     </div>
                     <div class="p-6 space-y-4 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Créé par</span>
+                            <span class="text-gray-600">Enregistré par</span>
                             <span
                                 class="font-medium text-gray-800">{{ $attribution->createdBy->nom_complet ?? 'N/A' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Créé le</span>
+                            <span class="text-gray-600">Enregistré le</span>
                             <span
                                 class="font-medium text-gray-800">{{ $attribution->created_at ? $attribution->created_at->format('d/m/Y H:i') : 'N/A' }}</span>
                         </div>
@@ -951,8 +912,7 @@
                                     <span class="text-gray-600">Réattribution de</span>
                                     <a href="{{ route('attributions.show', $attribution->parent_attribution_id) }}"
                                         class="block mt-1 text-orange-600 hover:text-orange-800 font-medium">
-                                        <i
-                                            class="fas fa-link mr-1"></i>{{ $attribution->parentAttribution->numero_attribution }}
+                                        <i class="fas fa-link mr-1"></i>{{ $attribution->parentAttribution->numero_attribution }}
                                     </a>
                                 </div>
                             @endif

@@ -49,7 +49,7 @@
             </div>
             <div class="bg-white rounded-xl shadow-md p-4 border-l-4 border-purple-500">
                 <p class="text-xs text-gray-500 uppercase font-semibold">Montant engagé</p>
-                <p class="text-lg font-bold text-purple-600">{{ number_format($statistiques['montant_total_engage'], 0, ',', ' ') }}</p>
+                <p class="text-lg font-bold text-purple-600">{{ number_format(floor($statistiques['montant_total_engage']), 0, ',', ' ') }}</p>
             </div>
         </div>
 
@@ -89,14 +89,14 @@
                                     </p>
                                     <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                                         <span><i class="fas fa-calendar mr-1"></i>{{ $attr->date_attribution ? $attr->date_attribution->format('d/m/Y') : '-' }}</span>
-                                        <span><i class="fas fa-chart-line mr-1"></i>{{ number_format($attr->pourcentage_avancement, 0) }}%</span>
+                                        <span><i class="fas fa-chart-line mr-1"></i>{{ number_format($attr->pourcentage_avancement, 2) }}%</span>
                                         @if($attr->estEnRetard())
                                             <span class="text-red-600"><i class="fas fa-exclamation-triangle mr-1"></i>{{ $attr->jours_retard_actuels }}j retard</span>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="text-right ml-4">
-                                    <p class="text-sm font-semibold text-gray-800">{{ number_format($attr->montant_engage, 0, ',', ' ') }}</p>
+                                    <p class="text-sm font-semibold text-gray-800">{{ number_format(floor($attr->montant_engage), 0, ',', ' ') }}</p>
                                     <p class="text-xs text-gray-500">FCFA</p>
                                 </div>
                             </a>
@@ -163,11 +163,11 @@
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="text-green-100">Montant engagé</span>
-                            <span class="font-bold">{{ number_format($statistiques['montant_total_engage'], 0, ',', ' ') }} FCFA</span>
+                            <span class="font-bold">{{ number_format(floor($statistiques['montant_total_engage']), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-green-100">Montant payé</span>
-                            <span class="font-bold">{{ number_format($statistiques['montant_total_paye'], 0, ',', ' ') }} FCFA</span>
+                            <span class="font-bold">{{ number_format(floor($statistiques['montant_total_paye']), 0, ',', ' ') }} FCFA</span>
                         </div>
 
                     </div>

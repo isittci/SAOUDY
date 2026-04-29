@@ -38,7 +38,7 @@ class RapportExportService
      */
     public function formatMontant($montant): string
     {
-        return number_format($montant ?? 0, 0, ',', ' ') . ' FCFA';
+        return number_format(floor($montant ?? 0), 0, ',', ' ') . ' FCFA';
     }
 
     /**
@@ -224,7 +224,6 @@ class RapportExportService
 
             $sheet->setCellValue("M{$row}", $item['statut']);
             $sheet->setCellValue("N{$row}", $item['jours_retard']);
-            // $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
 
             $totaux['montant'] += $item['montant_proforma_ttc'];
             $totaux['paye'] += $item['montant_paye'];
@@ -240,9 +239,7 @@ class RapportExportService
         $sheet->setCellValue("K{$row}", $totaux['paye']);
         $sheet->setCellValue("L{$row}", $totaux['reste']);
         $sheet->getStyle("J{$row}:L{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
-        // $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0 "FCFA"');
-        // $sheet->getStyle("A{$row}:O{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FED7AA');
-        // $sheet->getStyle("A{$row}:O{$row}")->getFont()->setBold(true);
+
 
         // Largeurs
         $widths = ['A'=>15,'B'=>35,'C'=>30,'D'=>25,'E'=>16,'F'=>14,'G'=>14,'H'=>14,'I'=>12,'J'=>18,'K'=>16,'L'=>16,'M'=>12,'N'=>10];
@@ -357,8 +354,7 @@ class RapportExportService
             'prestataire' => [
                 'id' => $prestataire->id_prestataire,
                 'raison_sociale' => $prestataire->raison_sociale_prestataire,
-                'numero_identification' => $prestataire->numero_identification_prestataire,
-                'email' => $prestataire->email_prestataire,
+
                 'telephone' => $prestataire->telephone_principal_prestataire,
                 'adresse' => $prestataire->adresse_prestataire,
                 'ville' => $prestataire->ville_prestataire,
@@ -401,7 +397,7 @@ class RapportExportService
         $sheet->getStyle("A{$row}")->applyFromArray($this->getHeaderStyle());
 
         $infoRows = [
-            ['Nom du prestataire:', $prestataire['raison_sociale'], 'N° Identification:', $prestataire['numero_identification']],
+            ['Nom du prestataire:', $prestataire['raison_sociale'], 'N° Identification:', $prestataire['numero_cc_prestataire']],
             ['Email:', $prestataire['email'], 'Téléphone:', $prestataire['telephone']],
             ['Adresse:', $prestataire['adresse'] . ', ' . $prestataire['ville'], 'N° RCCM:', $prestataire['numero_rccm']],
         ];
@@ -648,8 +644,7 @@ class RapportExportService
             'prestataire' => [
                 'id' => $prestataire->id_prestataire,
                 'raison_sociale' => $prestataire->raison_sociale_prestataire,
-                'numero_identification' => $prestataire->numero_identification_prestataire,
-                'email' => $prestataire->email_prestataire,
+
                 'telephone' => $prestataire->telephone_principal_prestataire,
                 'adresse' => $prestataire->adresse_prestataire,
                 'ville' => $prestataire->ville_prestataire,
@@ -907,8 +902,7 @@ class RapportExportService
             ] : null,
             'prestataire' => $prestataire ? [
                 'raison_sociale' => $prestataire->raison_sociale_prestataire,
-                'numero_identification' => $prestataire->numero_identification_prestataire,
-                'email' => $prestataire->email_prestataire,
+
                 'telephone' => $prestataire->telephone_principal_prestataire,
                 'adresse' => $prestataire->adresse_prestataire . ', ' . $prestataire->ville_prestataire,
             ] : null,

@@ -197,7 +197,7 @@
                             <span class="font-medium text-gray-800">{{ $capacite->competences_cles_capacite_technique ?: 'Non renseigné' }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="text-gray-500 text-sm">Créé le</span>
+                            <span class="text-gray-500 text-sm">Enregistré le</span>
                             <span class="font-medium text-gray-800">{{ $capacite->created_at->format('d/m/Y') }}</span>
                         </div>
                         <div class="info-row">

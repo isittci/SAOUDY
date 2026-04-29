@@ -97,7 +97,7 @@
                     <div class="flex items-center justify-between">
                         <div class="min-w-0 flex-1">
                             <p class="text-orange-100 text-xs font-medium uppercase truncate">Montant Total</p>
-                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format($stats['montant_total'], 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
+                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format(floor($stats['montant_total']), 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
                         </div>
                         <i class="fas fa-coins text-2xl sm:text-3xl text-orange-300 opacity-50 ml-2 flex-shrink-0"></i>
                     </div>
@@ -106,7 +106,7 @@
                     <div class="flex items-center justify-between">
                         <div class="min-w-0 flex-1">
                             <p class="text-green-100 text-xs font-medium uppercase truncate">Montant Payé</p>
-                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format($stats['montant_paye'], 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
+                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format(floor($stats['montant_paye']), 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
                         </div>
                         <i class="fas fa-hand-holding-usd text-2xl sm:text-3xl text-green-300 opacity-50 ml-2 flex-shrink-0"></i>
                     </div>
@@ -115,7 +115,7 @@
                     <div class="flex items-center justify-between">
                         <div class="min-w-0 flex-1">
                             <p class="text-blue-100 text-xs font-medium uppercase truncate">En cours de traitement</p>
-                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format($stats['montant_en_attente'], 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
+                            <p class="text-lg sm:text-xl font-bold mt-1 truncate">{{ number_format(floor($stats['montant_en_attente']), 0, ',', ' ') }} <span class="text-sm">FCFA</span></p>
                         </div>
                         <i class="fas fa-hourglass-half text-2xl sm:text-3xl text-blue-300 opacity-50 ml-2 flex-shrink-0"></i>
                     </div>

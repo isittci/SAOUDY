@@ -182,7 +182,7 @@
                             <span class="font-bold text-gray-800">{{ $situation->exercice_fiscal_situation_financiere }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="text-gray-500 text-sm">Créé le</span>
+                            <span class="text-gray-500 text-sm">Enregistré le</span>
                             <span class="font-medium text-gray-800">{{ $situation->created_at->format('d/m/Y') }}</span>
                         </div>
                         <div class="info-row">
@@ -205,7 +205,7 @@
                                 <i class="fas fa-coins text-green-600 text-sm"></i>
                             </div>
                         </div>
-                        <p class="text-lg font-bold text-gray-800">{{ number_format($situation->chiffre_affaire_situation_financiere ?? 0, 0, ',', ' ') }}</p>
+                        <p class="text-lg font-bold text-gray-800">{{ number_format(floor($situation->chiffre_affaire_situation_financiere ?? 0), 0, ',', ' ') }}</p>
                         <p class="text-xs text-gray-400">FCFA</p>
                     </div>
 
@@ -218,7 +218,7 @@
                             </div>
                         </div>
                         <p class="text-lg font-bold {{ ($situation->resultat_net_situation_financiere ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                            {{ number_format($situation->resultat_net_situation_financiere ?? 0, 0, ',', ' ') }}
+                            {{ number_format(floor($situation->resultat_net_situation_financiere ?? 0), 0, ',', ' ') }}
                         </p>
                         <p class="text-xs text-gray-400">FCFA</p>
                     </div>
@@ -231,7 +231,7 @@
                                 <i class="fas fa-landmark text-purple-600 text-sm"></i>
                             </div>
                         </div>
-                        <p class="text-lg font-bold text-gray-800">{{ number_format($situation->fonds_propres_situation_financiere ?? 0, 0, ',', ' ') }}</p>
+                        <p class="text-lg font-bold text-gray-800">{{ number_format(floor($situation->fonds_propres_situation_financiere ?? 0), 0, ',', ' ') }}</p>
                         <p class="text-xs text-gray-400">FCFA</p>
                     </div>
 
@@ -286,7 +286,7 @@
                                 </h3>
                                 <div class="bg-green-50 rounded-xl p-4 text-center">
                                     <p class="text-2xl font-bold text-green-700">
-                                        {{ number_format($situation->total_actif_situation_financiere ?? 0, 0, ',', ' ') }}
+                                        {{ number_format(floor($situation->total_actif_situation_financiere ?? 0), 0, ',', ' ') }}
                                     </p>
                                     <p class="text-sm text-green-600">FCFA</p>
                                 </div>
@@ -299,7 +299,7 @@
                                 </h3>
                                 <div class="bg-red-50 rounded-xl p-4 text-center">
                                     <p class="text-2xl font-bold text-red-700">
-                                        {{ number_format($situation->total_passif_situation_financiere ?? 0, 0, ',', ' ') }}
+                                        {{ number_format(floor($situation->total_passif_situation_financiere ?? 0), 0, ',', ' ') }}
                                     </p>
                                     <p class="text-sm text-red-600">FCFA</p>
                                 </div>
@@ -312,7 +312,7 @@
                                 <div>
                                     <p class="text-sm text-gray-500">Capacité d'emprunt</p>
                                     <p class="text-xl font-bold text-gray-800">
-                                        {{ number_format($situation->capacite_emprunt_situation_financiere ?? 0, 0, ',', ' ') }} FCFA
+                                        {{ number_format(floor($situation->capacite_emprunt_situation_financiere ?? 0), 0, ',', ' ') }} FCFA
                                     </p>
                                 </div>
                                 <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">

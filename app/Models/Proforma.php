@@ -24,7 +24,6 @@ class Proforma extends Model
         'date_proforma',
         'date_fin_validee_proforma',
         'date_debut_validee_proforma',
-        'date_redemarrage_proforma',
         'montant_retenu_proforma',
         'taxe_montant',
         'remise_montant_proforma',
@@ -40,7 +39,6 @@ class Proforma extends Model
         'date_proforma' => 'date',
         'date_fin_validee_proforma' => 'date',
         'date_debut_validee_proforma' => 'date',
-        'date_redemarrage_proforma' => 'date',
         'montant_retenu_proforma' => 'decimal:2',
         'taxe_montant' => 'decimal:2',
         'remise_montant_proforma' => 'decimal:2',
@@ -70,7 +68,6 @@ class Proforma extends Model
         return $this->hasMany(Proforma::class, 'parent_id', 'id_proforma')
             ->orderBy('version_proforma', 'desc');
     }
-
 
 
     /**
@@ -331,11 +328,11 @@ class Proforma extends Model
             'numero' => $this->numero_proforma,
             'version' => $this->version_proforma,
             'date' => $this->date_proforma ? $this->date_proforma->format('d/m/Y') : null,
-            'montant_ht' => number_format($this->montant_retenu_proforma, 2, ',', ' '),
-            'remise' => number_format($this->remise_montant_proforma, 2, ',', ' '),
-            'montant_ht_apres_remise' => number_format($this->calculerMontantHTApresRemise(), 2, ',', ' '),
-            'taxe' => number_format($this->taxe_montant, 2, ',', ' '),
-            'montant_ttc' => number_format($this->calculerMontantTTC(), 2, ',', ' '),
+            'montant_ht' => number_format(floor($this->montant_retenu_proforma), 0, ',', ' '),
+            'remise' => number_format(floor($this->remise_montant_proforma), 0, ',', ' '),
+            'montant_ht_apres_remise' => number_format(floor($this->calculerMontantHTApresRemise()), 0, ',', ' '),
+            'taxe' => number_format(floor($this->taxe_montant), 0, ',', ' '),
+            'montant_ttc' => number_format(floor($this->calculerMontantTTC()), 0, ',', ' '),
             'modalite' => $this->modalite_proforma,
             'actif' => $this->actif_proforma,
         ];
@@ -392,7 +389,6 @@ class Proforma extends Model
     }
 
 
-
     /**
      * Vérifier si la proforma a une facture.
      *
@@ -447,7 +443,7 @@ class Proforma extends Model
         return $this->prestatairePrincipal?->prestataire;
     }
 
-     public function getPrestataireRetire()
+    public function getPrestataireRetire()
     {
         return $this->prestataireRetire?->prestataire;
     }
@@ -465,153 +461,141 @@ class Proforma extends Model
     }
 
 
-
-
-
-
-
-
-
+    /**
+     * Relation unique vers l'attribution (1 proforma = 1 attribution max)
+     * Une proforma ne peut être liée qu'à une seule attribution
+     *
+     * @return HasOne
+     */
+    public function attribution(): HasOne
+    {
+        return $this->hasOne(AttributionLotPrestataire::class, 'proforma_id', 'id_proforma');
+    }
 
     /**
- * Relation unique vers l'attribution (1 proforma = 1 attribution max)
- * Une proforma ne peut être liée qu'à une seule attribution
- *
- * @return HasOne
- */
-public function attribution(): HasOne
-{
-    return $this->hasOne(AttributionLotPrestataire::class, 'proforma_id', 'id_proforma');
-}
+     * Relation vers l'attribution active uniquement
+     *
+     * @return HasOne
+     */
+    public function attributionActive(): HasOne
+    {
+        return $this->hasOne(AttributionLotPrestataire::class, 'proforma_id', 'id_proforma')
+            ->where('is_active', true);
+    }
 
-/**
- * Relation vers l'attribution active uniquement
- *
- * @return HasOne
- */
-public function attributionActive(): HasOne
-{
-    return $this->hasOne(AttributionLotPrestataire::class, 'proforma_id', 'id_proforma')
-        ->where('is_active', true);
-}
+    /**
+     * Vérifier si la proforma est déjà attribuée
+     *
+     * @return bool
+     */
+    public function estAttribuee(): bool
+    {
+        return $this->attribution()->exists();
+    }
 
-/**
- * Vérifier si la proforma est déjà attribuée
- *
- * @return bool
- */
-public function estAttribuee(): bool
-{
-    return $this->attribution()->exists();
-}
+    /**
+     * Vérifier si la proforma peut être utilisée pour une nouvelle attribution
+     *
+     * @return array ['disponible' => bool, 'raison' => string|null]
+     */
+    public function peutEtreAttribuee(): array
+    {
+        // Vérifier si déjà utilisée
+        if ($this->estAttribuee()) {
+            return [
+                'disponible' => false,
+                'raison' => "Cette proforma est déjà associée à une attribution."
+            ];
+        }
 
-/**
- * Vérifier si la proforma peut être utilisée pour une nouvelle attribution
- *
- * @return array ['disponible' => bool, 'raison' => string|null]
- */
-public function peutEtreAttribuee(): array
-{
-    // Vérifier si déjà utilisée
-    if ($this->estAttribuee()) {
+        // Vérifier si active
+        if (!$this->actif_proforma) {
+            return [
+                'disponible' => false,
+                'raison' => "Cette proforma est inactive."
+            ];
+        }
+
         return [
-            'disponible' => false,
-            'raison' => "Cette proforma est déjà associée à une attribution."
+            'disponible' => true,
+            'raison' => null
         ];
     }
 
-    // Vérifier si active
-    if (!$this->actif_proforma) {
+    /**
+     * Obtenir le lot associé via l'attribution
+     *
+     * @return Lot|null
+     */
+    public function getLotViaAttribution(): ?Lot
+    {
+        return $this->attribution?->lot;
+    }
+
+    /**
+     * Obtenir le prestataire associé via l'attribution
+     *
+     * @return Prestataire|null
+     */
+    public function getPrestataireViaAttribution(): ?Prestataire
+    {
+        return $this->attribution?->prestataire;
+    }
+
+    /**
+     * Scope pour les proformas disponibles (non encore attribuées et actives)
+     *
+     * Utilisation: Proforma::disponiblePourAttribution()->get();
+     */
+    public function scopeDisponiblePourAttribution($query)
+    {
+        return $query->where('actif_proforma', true)
+            ->whereDoesntHave('attribution');
+    }
+
+    /**
+     * Scope pour les proformas déjà attribuées
+     *
+     * Utilisation: Proforma::attribuees()->get();
+     */
+    public function scopeAttribuees($query)
+    {
+        return $query->whereHas('attribution');
+    }
+
+    /**
+     * Scope pour les proformas non attribuées
+     *
+     * Utilisation: Proforma::nonAttribuees()->get();
+     */
+    public function scopeNonAttribuees($query)
+    {
+        return $query->whereDoesntHave('attribution');
+    }
+
+    /**
+     * Obtenir les informations complètes de l'attribution
+     *
+     * @return array|null
+     */
+    public function getInfosAttribution(): ?array
+    {
+        $attribution = $this->attribution;
+
+        if (!$attribution) {
+            return null;
+        }
+
         return [
-            'disponible' => false,
-            'raison' => "Cette proforma est inactive."
+            'id_attribution' => $attribution->id_attribution,
+            'numero_attribution' => $attribution->numero_attribution,
+            'prestataire' => $attribution->prestataire?->raison_sociale_prestataire,
+            'lot' => $attribution->lot?->libelle,
+            'statut' => $attribution->statut_label,
+            'date_attribution' => $attribution->date_attribution?->format('d/m/Y'),
+            'is_active' => $attribution->is_active,
         ];
     }
-
-    return [
-        'disponible' => true,
-        'raison' => null
-    ];
-}
-
-/**
- * Obtenir le lot associé via l'attribution
- *
- * @return Lot|null
- */
-public function getLotViaAttribution(): ?Lot
-{
-    return $this->attribution?->lot;
-}
-
-/**
- * Obtenir le prestataire associé via l'attribution
- *
- * @return Prestataire|null
- */
-public function getPrestataireViaAttribution(): ?Prestataire
-{
-    return $this->attribution?->prestataire;
-}
-
-/**
- * Scope pour les proformas disponibles (non encore attribuées et actives)
- *
- * Utilisation: Proforma::disponiblePourAttribution()->get();
- */
-public function scopeDisponiblePourAttribution($query)
-{
-    return $query->where('actif_proforma', true)
-        ->whereDoesntHave('attribution');
-}
-
-/**
- * Scope pour les proformas déjà attribuées
- *
- * Utilisation: Proforma::attribuees()->get();
- */
-public function scopeAttribuees($query)
-{
-    return $query->whereHas('attribution');
-}
-
-/**
- * Scope pour les proformas non attribuées
- *
- * Utilisation: Proforma::nonAttribuees()->get();
- */
-public function scopeNonAttribuees($query)
-{
-    return $query->whereDoesntHave('attribution');
-}
-
-/**
- * Obtenir les informations complètes de l'attribution
- *
- * @return array|null
- */
-public function getInfosAttribution(): ?array
-{
-    $attribution = $this->attribution;
-
-    if (!$attribution) {
-        return null;
-    }
-
-    return [
-        'id_attribution' => $attribution->id_attribution,
-        'numero_attribution' => $attribution->numero_attribution,
-        'prestataire' => $attribution->prestataire?->raison_sociale_prestataire,
-        'lot' => $attribution->lot?->libelle,
-        'statut' => $attribution->statut_label,
-        'date_attribution' => $attribution->date_attribution?->format('d/m/Y'),
-        'is_active' => $attribution->is_active,
-    ];
-}
-
-
-
-
 
 
     /**

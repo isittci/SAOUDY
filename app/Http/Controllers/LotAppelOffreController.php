@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Lot;
+use App\Models\Proforma;
 use App\Models\AppelOffre;
 use App\Models\Prestataire;
-use App\Models\Proforma;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Exception;
 
 /**
  * @OA\Tag(
@@ -20,8 +21,6 @@ use Exception;
  */
 class LotAppelOffreController extends Controller
 {
-
-
 
     /**
      * Affiche la liste des lots d'un appel d'offres
@@ -352,7 +351,7 @@ class LotAppelOffreController extends Controller
             $lot = Lot::create([
                 'appel_offre_id' => $appelOffreIdFinal,
                 'numero' => $request->numero,
-                'libelle' => $request->libelle,
+                'libelle' => Str::upper($request->libelle),
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
@@ -392,7 +391,6 @@ class LotAppelOffreController extends Controller
             return back()->with('error', 'Erreur: ' . $e->getMessage())->withInput();
         }
     }
-
 
 
     /**
@@ -473,7 +471,7 @@ class LotAppelOffreController extends Controller
                 ->sum();
 
             // Montant total des montants retenus restant pour l'appel d'offres
-            $montantRestant = $lot->appelOffre->typeAppelOffre->valeur_maximuim_type_appel_offre - $sommeMontantsRetenus;
+            $montantRestant = $lot->appelOffre->montant_global_appel_offre - $sommeMontantsRetenus;
 
 
 
@@ -494,8 +492,6 @@ class LotAppelOffreController extends Controller
     }
 
 
-
-
     public function edit(Request $request, $appelOffreId, $id)
     {
 
@@ -503,9 +499,9 @@ class LotAppelOffreController extends Controller
             $lot = Lot::with(['appelOffre.typeAppelOffre'])->findOrFail($id);
 
             // Vérifier que le lot n'est pas attribué
-            if ($lot->isAttribue()) {
-                return back()->with('error', 'Impossible de modifier un lot attribué');
-            }
+            // if ($lot->isAttribue()) {
+            //     return back()->with('error', 'Impossible de modifier un lot attribué');
+            // }
 
             if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
                 return response()->json([
@@ -617,12 +613,12 @@ class LotAppelOffreController extends Controller
             $lot = Lot::findOrFail($id);
 
             // Vérifier que le lot n'est pas attribué
-            if ($lot->isAttribue()) {
-                throw new Exception('Impossible de modifier un lot attribué. Créez une nouvelle version.');
-            }
+            // if ($lot->isAttribue()) {
+            //     throw new Exception('Impossible de modifier un lot attribué. Créez une nouvelle version.');
+            // }
 
             $lot->update([
-                'libelle' => $request->libelle,
+                'libelle' => Str::upper($request->libelle),
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
@@ -631,6 +627,23 @@ class LotAppelOffreController extends Controller
                 'budget_lot' => $request->budget_lot,
                 'updated_by' => auth()->id(),
             ]);
+
+            $attributionActive = $lot->attributionActive;
+
+
+
+            if ($attributionActive) {
+                $proforma = $attributionActive->proforma;
+                if($proforma){
+                    $proforma->update([
+                        'montant_retenu_proforma' => $request->budget_lot - $request->budget_lot * 0.18,
+                        'taxe_montant' => $request->budget_lot * 0.18,
+                        'date_debut_validee_proforma' => $request->date_debut_prevue,
+                        'date_fin_validee_proforma' => $request->date_fin_prevue,
+                        'updated_by' => auth()->id(),
+                    ]);
+                }
+            }
 
             DB::commit();
 
@@ -925,7 +938,6 @@ class LotAppelOffreController extends Controller
                 $proforma = Proforma::create([
                     'date_proforma' => $request->new_date_proforma,
                     'date_debut_validee_proforma' => $request->new_date_debut_validee,
-                    // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
                     'date_fin_validee_proforma' => $request->new_date_fin_validee,
                     'montant_retenu_proforma' => $montantRetenu,
                     'taxe_montant' => $montantTVA,

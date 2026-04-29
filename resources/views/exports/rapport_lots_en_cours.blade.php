@@ -200,11 +200,11 @@
                     <td>{{ Str::limit($lot['libelle_lot'], 40) }}</td>
                     <td>{{ Str::limit($lot['prestataire'], 25) }}</td>
                     <td class="progress-cell @if($lot['pourcentage_avancement'] >= 80) progress-high @elseif($lot['pourcentage_avancement'] >= 50) progress-medium @else progress-low @endif">
-                        {{ number_format($lot['pourcentage_avancement'], 1) }}%
+                        {{ number_format($lot['pourcentage_avancement'], 2) }}%
                     </td>
-                    <td class="text-right text-primary">{{ number_format($lot['montant_proforma_ttc'], 0, ',', ' ') }}</td>
-                    <td class="text-right text-success">{{ number_format($lot['montant_paye'], 0, ',', ' ') }}</td>
-                    <td class="text-right text-danger">{{ number_format($lot['reste_a_payer'], 0, ',', ' ') }}</td>
+                    <td class="text-right text-primary">{{ number_format(floor($lot['montant_proforma_ttc']), 0, ',', ' ') }}</td>
+                    <td class="text-right text-success">{{ number_format(floor($lot['montant_paye']), 0, ',', ' ') }}</td>
+                    <td class="text-right text-danger">{{ number_format(floor($lot['reste_a_payer']), 0, ',', ' ') }}</td>
                     <td class="text-center">
                         <span class="badge @if($lot['statut'] == 'Attribué') badge-success @elseif($lot['statut'] == 'Suspendu') badge-warning @else badge-danger @endif">
                             {{ $lot['statut'] }}
@@ -219,9 +219,9 @@
 
                 <tr class="total-row">
                     <td colspan="4" class="text-right">TOTAUX</td>
-                    <td class="text-right text-primary">{{ $totalProforma }}</td>
-                    <td class="text-right text-success">{{ $totalPaye }}</td>
-                    <td class="text-right text-danger">{{ $totalReste }}</td>
+                    <td class="text-right text-primary">{{ number_format(floor($totalProforma), 0, ',', ' ') }}</td>
+                    <td class="text-right text-success">{{ number_format(floor($totalPaye), 0, ',', ' ') }}</td>
+                    <td class="text-right text-danger">{{ number_format(floor($totalReste), 0, ',', ' ') }}</td>
                     <td colspan="2"></td>
                 </tr>
             </tbody>

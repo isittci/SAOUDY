@@ -324,7 +324,7 @@
                                 <i class="fas fa-plus-circle text-blue-600"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-600">Créé le</p>
+                                <p class="text-xs text-gray-600">Enregistré le</p>
                                 <p class="text-sm font-semibold text-gray-900">
                                     {{ $critere->created_at->format('d/m/Y à H:i') }}</p>
                                 <p class="text-xs text-gray-600">par {{ $critere->creator->nom_complet ?? 'N/A' }}</p>
@@ -373,7 +373,7 @@
                                 @endcan
 
                                 @can('criteres_evaluations.create')
-                                    
+
                                         <a href="{{ route('criteres-evaluations.create', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
 
                                             class="w-full flex items-center justify-center px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all shadow-md hover:shadow-lg">

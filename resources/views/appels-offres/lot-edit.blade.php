@@ -128,7 +128,7 @@
                                         <p class="text-sm text-gray-600">
                                             <i class="fas fa-coins mr-1"></i>
                                             Montant global:
-                                            <strong>{{ number_format($lot->appelOffre->montant_global_appel_offre, 0, ',', ' ') }}
+                                            <strong>{{ number_format(floor($lot->appelOffre->montant_global_appel_offre), 0, ',', ' ') }}
                                                 FCFA</strong>
                                         </p>
                                     </div>
@@ -301,18 +301,23 @@
 
                             <!-- Budget du lot -->
                             <div class="group">
-                                <label for="budget_lot" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                                <label for="budget_lot_display" class="flex items-center text-sm font-semibold text-gray-700 mb-2">
                                     <i class="fas fa-hand-holding-usd text-orange-500 mr-2 text-xs"></i>
                                     Budget du lot <span class="text-red-500 px-1"> *</span>
                                 </label>
                                 <div class="relative">
-                                    <input type="number" id="budget_lot" min="0" step="5" required
-                                        value="{{ old('budget_lot', $lot->budget_lot) }}" name="budget_lot"
-                                        class="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
-                                        placeholder="Ex: 5 500 000 000">
+                                    <!-- Champ caché pour envoyer la valeur numérique -->
+                                    <input type="hidden" id="budget_lot" name="budget_lot"
+                                        value="{{ old('budget_lot', $lot->budget_lot) }}">
+
+                                    <!-- Champ affiché avec formatage -->
+                                    <input type="text" id="budget_lot_display" required
+                                        value="{{ old('budget_lot', $lot->budget_lot) ? number_format(floor(old('budget_lot', $lot->budget_lot)), 0, ',', ' ') : '' }}"
+                                        class="w-full px-4 py-3 pr-16 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
+                                        placeholder="Ex: 5 500 000 000"
+                                        oninput="formatBudget(this)">
                                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">FCFA</div>
                                 </div>
-
                             </div>
 
                             <!-- Statut -->
@@ -415,6 +420,41 @@
                         return false;
                     }
                 });
+
+
+
+                function formatBudget(input) {
+    // Récupérer la position du curseur
+    let cursorPos = input.selectionStart;
+    let oldLength = input.value.length;
+
+    // Supprimer tout sauf les chiffres
+    let value = input.value.replace(/\D/g, '');
+
+    // Mettre à jour le champ caché avec la valeur numérique
+    document.getElementById('budget_lot').value = value;
+
+    // Formater avec séparateur de milliers (espace)
+    if (value) {
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+
+    // Mettre à jour l'affichage
+    input.value = value;
+
+    // Ajuster la position du curseur
+    let newLength = input.value.length;
+    cursorPos = cursorPos + (newLength - oldLength);
+    input.setSelectionRange(cursorPos, cursorPos);
+}
+
+// Initialiser au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    const displayInput = document.getElementById('budget_lot_display');
+    if (displayInput && displayInput.value) {
+        formatBudget(displayInput);
+    }
+});
             </script>
 
             <style>

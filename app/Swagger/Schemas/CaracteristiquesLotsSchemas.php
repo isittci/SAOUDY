@@ -412,18 +412,6 @@ namespace App\Swagger\Schemas;
  *         example="Entreprise BTP Excellence SARL"
  *     ),
  *     @OA\Property(
- *         property="numero_identification_prestataire",
- *         type="string",
- *         maxLength=25,
- *         example="CI-2020-12345"
- *     ),
- *     @OA\Property(
- *         property="email_prestataire",
- *         type="string",
- *         format="email",
- *         example="contact@btp-excellence.ci"
- *     ),
- *     @OA\Property(
  *         property="numero_cc_prestataire",
  *         type="string",
  *         maxLength=50,
@@ -528,12 +516,6 @@ namespace App\Swagger\Schemas;
  *         type="string",
  *         format="date",
  *         description="Date de début validée"
- *     ),
- *     @OA\Property(
- *         property="date_redemarrage_proforma",
- *         type="string",
- *         format="date",
- *         description="Date de redémarrage"
  *     ),
  *     @OA\Property(
  *         property="date_fin_validee_proforma",

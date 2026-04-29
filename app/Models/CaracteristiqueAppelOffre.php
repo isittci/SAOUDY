@@ -152,7 +152,7 @@ class CaracteristiqueAppelOffre extends Model
     public function getDureeEstimeeFormatteeAttribute()
     {
         if ($this->duree_estimee_jours_caracteristique_appel_offre !== null) {
-            return number_format($this->duree_estimee_jours_caracteristique_appel_offre, 2, ',', ' ') . ' jours';
+            return number_format(floor($this->duree_estimee_jours_caracteristique_appel_offre), 0, ',', ' ') . ' jours';
         }
         return 'N/A';
     }

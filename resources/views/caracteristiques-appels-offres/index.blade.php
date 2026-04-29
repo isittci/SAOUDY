@@ -110,7 +110,7 @@
                         </h3>
                         <p class="text-sm text-gray-600">
                             <i class="fas fa-coins mr-1"></i>
-                            Montant global: <strong>{{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }} FCFA</strong>
+                            Montant global: <strong>{{ number_format(floor($appelOffre->montant_global_appel_offre), 0, ',', ' ') }} FCFA</strong>
                         </p>
                     </div>
                     @can('appels_offres.view-details')
@@ -207,20 +207,18 @@
                                 <td class="px-6 py-4 text-center">
                                     @if($caract->duree_estimee_jours_caracteristique_appel_offre)
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-700">
-                                            {{-- {{ number_format($caract->duree_estimee_jours_caracteristique_appel_offre, 0, ',', ' ') }}j --}}
                                             {{ number_format($caract->duree_estimee_jours_caracteristique_appel_offre, 0, ',', ' ') }} jours
-                                            {{-- {{ $caract->duree_estimee_jours_caracteristique_appel_offre ? \Carbon\Carbon::parse($caract->duree_estimee_jours_caracteristique_appel_offre)->locale('fr')->isoFormat('DD MMMM YYYY') : 'N/A' }} --}}
                                         </span>
                                     @else
                                         <span class="text-gray-400 text-xs">-</span>
                                     @endif
                                 </td>
-                                
+
                                 <td class="px-6 py-4 text-center">
                                     @if($caract->montant_garantie_caracteristique_appel_offre)
                                         <div class="text-sm">
                                             <div class="font-semibold text-green-600">
-                                                {{ number_format($caract->montant_garantie_caracteristique_appel_offre, 0, ',', ' ') }} F
+                                                {{ number_format(floor($caract->montant_garantie_caracteristique_appel_offre), 0, ',', ' ') }} F
                                             </div>
                                             @if($caract->delai_garantie_jours_caracteristique_appel_offre)
                                                 <div class="text-xs text-gray-500">

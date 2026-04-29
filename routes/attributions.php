@@ -21,10 +21,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Liste et Dashboard
         Route::get('/', [AttributionLotPrestataireController::class, 'index'])->name('index');
-        // Route::get('/dashboard', [AttributionLotPrestataireController::class, 'dashboard'])->name('dashboard');
 
         // Création
-        // Route::get('/create', [AttributionLotPrestataireController::class, 'create'])->name('create');
         Route::post('/', [AttributionLotPrestataireController::class, 'store'])->name('store');
 
         // Affichage et Modification
@@ -61,7 +59,10 @@ Route::middleware(['auth'])->group(function () {
     // Depuis un prestataire
     Route::prefix('prestataires/{prestataire}')->name('prestataires.')->group(function () {
         Route::get('/attributions', [AttributionLotPrestataireController::class, 'historiquePrestataire'])->name('attributions');
+        Route::get('/lots-attribues', [AttributionLotPrestataireController::class, 'lotsAttribuesPrestataire'])->name('lots-attribues');
     });
 
 });
+
+
 

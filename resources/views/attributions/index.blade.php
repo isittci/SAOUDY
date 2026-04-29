@@ -279,21 +279,9 @@
                                             <div class="h-2 rounded-full {{ $attribution->pourcentage_avancement >= 100 ? 'bg-green-500' : 'bg-orange-500' }}"
                                                  style="width: {{ min($attribution->pourcentage_avancement, 100) }}%"></div>
                                         </div>
-                                        <span class="text-xs font-semibold text-gray-700">{{ number_format($attribution->pourcentage_avancement, 0) }}%</span>
+                                        <span class="text-xs font-semibold text-gray-700">{{ number_format($attribution->pourcentage_avancement, 2) }}%</span>
                                     </div>
                                 </td>
-                                {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="text-xs text-gray-700 space-y-1">
-                                        @if($attribution->date_debut_prevue)
-                                            <div><span class="font-medium">Début:</span> {{ $attribution->date_debut_prevue->format('d/m/Y') }}</div>
-                                        @endif
-                                        @if($attribution->date_fin_prevue)
-                                            <div class="{{ $attribution->estEnRetard() ? 'text-red-600 font-semibold' : '' }}">
-                                                <span class="font-medium">Fin:</span> {{ $attribution->date_fin_prevue->format('d/m/Y') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                </td> --}}
 
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="text-xs space-y-1.5">
@@ -630,52 +618,45 @@
 @push('scripts')
     <script>
         // Toggle menu dropdown
-        // function toggleMenu(id) {
-        //     const menu = document.getElementById('menu-' + id);
-        //     document.querySelectorAll('[id^="menu-"]').forEach(m => {
-        //         if (m.id !== 'menu-' + id) m.classList.add('hidden');
-        //     });
-        //     menu.classList.toggle('hidden');
-        // }
 
         function toggleMenu(event, id) {
-    event.stopPropagation();
+            event.stopPropagation();
 
-    const button = event.currentTarget;
-    const menu = document.getElementById('menu-' + id);
+            const button = event.currentTarget;
+            const menu = document.getElementById('menu-' + id);
 
-    // Fermer tous les autres menus
-    document.querySelectorAll('[id^="menu-"]').forEach(m => {
-        if (m.id !== 'menu-' + id) {
-            m.classList.add('hidden');
+            // Fermer tous les autres menus
+            document.querySelectorAll('[id^="menu-"]').forEach(m => {
+                if (m.id !== 'menu-' + id) {
+                    m.classList.add('hidden');
+                }
+            });
+
+            // Toggle le menu actuel
+            menu.classList.toggle('hidden');
+
+            // Positionner le menu
+            if (!menu.classList.contains('hidden')) {
+                const rect = button.getBoundingClientRect();
+
+                // Position par défaut : en dessous à droite
+                let top = rect.bottom + 8;
+                let left = rect.right - menu.offsetWidth;
+
+                // Si le menu déborde en bas, l'afficher au-dessus
+                if (top + menu.offsetHeight > window.innerHeight) {
+                    top = rect.top - menu.offsetHeight - 8;
+                }
+
+                // Si le menu déborde à gauche
+                if (left < 0) {
+                    left = rect.left;
+                }
+
+                menu.style.top = top + 'px';
+                menu.style.left = left + 'px';
+            }
         }
-    });
-
-    // Toggle le menu actuel
-    menu.classList.toggle('hidden');
-
-    // Positionner le menu
-    if (!menu.classList.contains('hidden')) {
-        const rect = button.getBoundingClientRect();
-
-        // Position par défaut : en dessous à droite
-        let top = rect.bottom + 8;
-        let left = rect.right - menu.offsetWidth;
-
-        // Si le menu déborde en bas, l'afficher au-dessus
-        if (top + menu.offsetHeight > window.innerHeight) {
-            top = rect.top - menu.offsetHeight - 8;
-        }
-
-        // Si le menu déborde à gauche
-        if (left < 0) {
-            left = rect.left;
-        }
-
-        menu.style.top = top + 'px';
-        menu.style.left = left + 'px';
-    }
-}
 
 // Fermer les menus en cliquant ailleurs
 document.addEventListener('click', function(event) {
@@ -694,11 +675,7 @@ document.addEventListener('scroll', function() {
 }, true);
 
         // Fermer menus au clic ailleurs
-        // document.addEventListener('click', function(e) {
-        //     if (!e.target.closest('[id^="menu-"]') && !e.target.closest('button')) {
-        //         document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
-        //     }
-        // });
+        
 
         // Modal Suspendre
         function openSuspendreModal(id) {

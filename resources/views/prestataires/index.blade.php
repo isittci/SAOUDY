@@ -184,7 +184,7 @@
                                             </div>
                                             <div class="text-xs text-gray-500">
                                                 <i
-                                                    class="fas fa-id-card mr-1"></i>{{ $prestataire->numero_identification_prestataire }}
+                                                    class="fas fa-id-card mr-1"></i>{{ $prestataire->numero_cc_prestataire }}
                                             </div>
                                         </div>
                                     </div>
@@ -225,7 +225,7 @@
                                             <span>{{ $prestataire->ville_prestataire ?? '-' }}</span>
                                         </div>
                                         <div class="text-xs text-gray-500 ml-5">
-                                            {{ $prestataire->pays_prestataire ?? ($prestataire->pays ?? '-') }}
+                                            {{ $prestataire->pays->nom ?? ($prestataire->pays ?? '-') }}
                                         </div>
                                     </div>
                                 </td>

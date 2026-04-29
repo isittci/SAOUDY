@@ -24,8 +24,6 @@ class AppelOffre extends Model
         'libelle_critere_appel_offre',
         'objet_critere_appel_offre',
         'montant_global_appel_offre',
-        'description_critere_critere_appel_offre',
-        'date_publication_critere_appel_offre',
         'statut_evaluation_critere_appel_offre',
         'conditions_participation_critere_appel_offre',
         'criteres_selection_critere_appel_offre',
@@ -36,7 +34,6 @@ class AppelOffre extends Model
 
     protected $casts = [
         'montant_global_appel_offre' => 'decimal:2',
-        'date_publication_critere_appel_offre' => 'datetime',
         'statut_evaluation_critere_appel_offre' => 'integer',
         'etat_appel_offre' => 'integer'
     ];

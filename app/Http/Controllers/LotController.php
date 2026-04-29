@@ -7,6 +7,7 @@ use App\Models\Lot;
 use App\Models\Proforma;
 use App\Models\AppelOffre;
 use App\Models\Prestataire;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -378,7 +379,7 @@ class LotController extends Controller
             $lot = Lot::create([
                 'appel_offre_id' => $request->appel_offre_id,
                 'numero' => $request->numero,
-                'libelle' => $request->libelle,
+                'libelle' => Str::upper($request->libelle),
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,
@@ -617,7 +618,7 @@ class LotController extends Controller
 
             // Créer une nouvelle version au lieu de modifier
             $nouvelleVersion = $lot->creerNouvelleVersion([
-                'libelle' => $request->libelle,
+                'libelle' => Str::upper($request->libelle),
                 'description_critere' => $request->description_critere,
                 'specifications_techniques' => $request->specifications_techniques,
                 'date_debut_prevue' => $request->date_debut_prevue,

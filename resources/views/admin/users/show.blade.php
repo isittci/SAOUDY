@@ -250,7 +250,7 @@
                     </div>
                     <div class="p-6 space-y-4 text-sm">
                         <div>
-                            <span class="text-gray-500">Créé le</span>
+                            <span class="text-gray-500">Enregistré le</span>
                             <p class="text-gray-900 font-medium">{{ $user->created_at->format('d/m/Y à H:i') }}</p>
                             @if ($user->creator)
                                 <p class="text-xs text-gray-500">par {{ $user->creator->nom_complet }}</p>
@@ -323,19 +323,57 @@
                         @csrf
                         @method('PATCH')
                         <div class="p-6 space-y-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe
-                                    *</label>
-                                <input type="password" name="password" required minlength="8"
-                                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                                    placeholder="Min. 8 caractères">
+                            {{-- <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="password" name="password" id="newPassword" required minlength="8"
+                                        class="w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                                        placeholder="Min. 8 caractères">
+                                    <button type="button" onclick="togglePassword('newPassword', 'eyeIcon1')"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        <i id="eyeIcon1" class="fas fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div>
+                            <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Confirmer le mot de passe <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="password" name="password_confirmation" id="confirmPassword" required
+                                        class="w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                                        placeholder="Confirmer">
+                                    <button type="button" onclick="togglePassword('confirmPassword', 'eyeIcon2')"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        <i id="eyeIcon2" class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div> --}}
+                            <div class="relative">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nouveau mot de passe <span
+                                        class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="password" name="password" id="newPassword" required minlength="8"
+                                        class="w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                                        placeholder="Min. 8 caractères" oninput="checkPasswordMatch()">
+                                    <button type="button" onclick="togglePassword('newPassword', 'eyeIcon1')"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        <i id="eyeIcon1" class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="relative">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Confirmer le mot de passe
-                                    *</label>
-                                <input type="password" name="password_confirmation" required
-                                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                                    placeholder="Confirmer">
+                                    <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="password" name="password_confirmation" id="confirmPassword" required
+                                        class="w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                                        placeholder="Confirmer" oninput="checkPasswordMatch()">
+                                    <button type="button" onclick="togglePassword('confirmPassword', 'eyeIcon2')"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        <i id="eyeIcon2" class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <!-- Message de validation -->
+                                <p id="passwordMatchMessage" class="mt-2 text-sm hidden"></p>
                             </div>
                         </div>
                         <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
@@ -408,6 +446,79 @@
                 if (e.key === 'Escape') {
                     closeResetPasswordModal();
                     closeDeleteModal();
+                }
+            });
+
+
+
+
+
+
+            function togglePassword(inputId, iconId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(iconId);
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+
+            function checkPasswordMatch() {
+                const password = document.getElementById('newPassword');
+                const confirmPassword = document.getElementById('confirmPassword');
+                const message = document.getElementById('passwordMatchMessage');
+                const submitBtn = document.getElementById('resetPasswordBtn');
+
+                // Si le champ de confirmation est vide, masquer le message
+                if (confirmPassword.value === '') {
+                    message.classList.add('hidden');
+                    confirmPassword.classList.remove('border-green-500', 'border-red-500');
+                    confirmPassword.classList.add('border-gray-300');
+                    return;
+                }
+
+                message.classList.remove('hidden');
+
+                if (password.value === confirmPassword.value) {
+                    // Mots de passe identiques
+                    message.textContent = '✓ Les mots de passe correspondent';
+                    message.classList.remove('text-red-500');
+                    message.classList.add('text-green-500');
+                    confirmPassword.classList.remove('border-red-500');
+                    confirmPassword.classList.add('border-green-500');
+                    if (submitBtn) submitBtn.disabled = false;
+                } else {
+                    // Mots de passe différents
+                    message.textContent = '✗ Les mots de passe ne correspondent pas';
+                    message.classList.remove('text-green-500');
+                    message.classList.add('text-red-500');
+                    confirmPassword.classList.remove('border-green-500');
+                    confirmPassword.classList.add('border-red-500');
+                    if (submitBtn) submitBtn.disabled = true;
+                }
+            }
+
+            // Validation avant soumission du formulaire
+            document.querySelector('#resetPasswordModal form').addEventListener('submit', function(e) {
+                const password = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas');
+                    return false;
+                }
+
+                if (password.length < 8) {
+                    e.preventDefault();
+                    alert('Le mot de passe doit contenir au moins 8 caractères');
+                    return false;
                 }
             });
         </script>

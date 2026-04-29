@@ -320,7 +320,7 @@
                     </div>
                     <div class="p-6 space-y-4 text-sm">
                         <div>
-                            <span class="text-gray-500">Créé le</span>
+                            <span class="text-gray-500">Enregistré le</span>
                             <p class="text-gray-900 font-medium">{{ $role->created_at->format('d/m/Y à H:i') }}</p>
                         </div>
                         <div>

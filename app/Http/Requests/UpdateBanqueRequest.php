@@ -3,17 +3,24 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateBanqueRequest extends FormRequest
 {
+    /**
+     * Détermine si l'utilisateur est autorisé à faire cette requête.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Règles de validation.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
@@ -29,9 +36,6 @@ class UpdateBanqueRequest extends FormRequest
                 'string',
                 'max:25',
                 'regex:/^[A-Za-z0-9]+$/',
-                Rule::unique('banques', 'code_banque')
-                    ->ignore($this->banque)
-                    ->whereNull('deleted_at'),
             ],
 
             'numero_compte_banque' => [
@@ -39,10 +43,6 @@ class UpdateBanqueRequest extends FormRequest
                 'string',
                 'max:25',
                 'regex:/^[A-Za-z0-9]+$/',
-                Rule::unique('banques', 'numero_compte_banque')
-                    ->ignore($this->banque)
-                    ->where('prestataire_id', $this->prestataire_id)
-                    ->whereNull('deleted_at'),
             ],
 
             'code_guichet_banque' => [
@@ -64,9 +64,6 @@ class UpdateBanqueRequest extends FormRequest
                 'string',
                 'max:34',
                 'regex:/^[A-Z]{2}[0-9]{2}[A-Za-z0-9]{1,30}$/',
-                Rule::unique('banques', 'iban_banque')
-                    ->ignore($this->banque)
-                    ->whereNull('deleted_at'),
             ],
 
             'swift_bic_banque' => [
@@ -74,9 +71,6 @@ class UpdateBanqueRequest extends FormRequest
                 'string',
                 'max:11',
                 'regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/',
-                Rule::unique('banques', 'swift_bic_banque')
-                    ->ignore($this->banque)
-                    ->whereNull('deleted_at'),
             ],
 
             'titulaire_compte_banque' => [
@@ -92,6 +86,11 @@ class UpdateBanqueRequest extends FormRequest
         ];
     }
 
+    /**
+     * Messages d'erreur personnalisés.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
@@ -102,12 +101,10 @@ class UpdateBanqueRequest extends FormRequest
             'code_banque.string' => 'Le code banque doit être une chaîne de caractères.',
             'code_banque.max' => 'Le code banque ne peut pas dépasser :max caractères.',
             'code_banque.regex' => 'Le code banque ne doit contenir que des lettres et des chiffres.',
-            'code_banque.unique' => 'Ce code banque existe déjà.',
 
             'numero_compte_banque.string' => 'Le numéro de compte doit être une chaîne de caractères.',
             'numero_compte_banque.max' => 'Le numéro de compte ne peut pas dépasser :max caractères.',
             'numero_compte_banque.regex' => 'Le numéro de compte ne doit contenir que des lettres et des chiffres.',
-            'numero_compte_banque.unique' => 'Ce numéro de compte existe déjà pour ce prestataire.',
 
             'code_guichet_banque.string' => 'Le code guichet doit être une chaîne de caractères.',
             'code_guichet_banque.max' => 'Le code guichet ne peut pas dépasser :max caractères.',
@@ -120,12 +117,10 @@ class UpdateBanqueRequest extends FormRequest
             'iban_banque.string' => 'L\'IBAN doit être une chaîne de caractères.',
             'iban_banque.max' => 'L\'IBAN ne peut pas dépasser :max caractères.',
             'iban_banque.regex' => 'Le format de l\'IBAN n\'est pas valide.',
-            'iban_banque.unique' => 'Cet IBAN est déjà utilisé par un autre compte bancaire.',
 
             'swift_bic_banque.string' => 'Le code SWIFT/BIC doit être une chaîne de caractères.',
             'swift_bic_banque.max' => 'Le code SWIFT/BIC ne peut pas dépasser :max caractères.',
             'swift_bic_banque.regex' => 'Le format du code SWIFT/BIC n\'est pas valide.',
-            'swift_bic_banque.unique' => 'Ce code SWIFT/BIC existe déjà.',
 
             'titulaire_compte_banque.string' => 'Le nom du titulaire doit être une chaîne de caractères.',
             'titulaire_compte_banque.max' => 'Le nom du titulaire ne peut pas dépasser :max caractères.',
@@ -134,6 +129,11 @@ class UpdateBanqueRequest extends FormRequest
         ];
     }
 
+    /**
+     * Attributs personnalisés pour les messages d'erreur.
+     *
+     * @return array<string, string>
+     */
     public function attributes(): array
     {
         return [
@@ -149,6 +149,9 @@ class UpdateBanqueRequest extends FormRequest
         ];
     }
 
+    /**
+     * Préparer les données pour la validation.
+     */
     protected function prepareForValidation(): void
     {
         if ($this->filled('iban_banque')) {
@@ -176,6 +179,12 @@ class UpdateBanqueRequest extends FormRequest
         }
     }
 
+    /**
+     * Gérer les erreurs de validation pour les requêtes AJAX.
+     *
+     * @param Validator $validator
+     * @throws HttpResponseException
+     */
     protected function failedValidation(Validator $validator): void
     {
         if ($this->expectsJson() || $this->ajax()) {

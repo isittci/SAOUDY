@@ -201,18 +201,18 @@
                 <!-- Menu Administration unique -->
                 <div>
                     <button onclick="toggleSubmenu('adminMenu','adminIcon')" type="button"
-                        class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
+                        class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*', 'sauvegardes.*']) ? 'bg-green-600' : 'hover:bg-green-600' }} rounded-lg transition-all duration-200 group">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-tools text-sm group-hover:scale-110 transition-transform"></i>
                             <span class="font-medium text-sm">Paramètres</span>
                         </div>
                         <i id="adminIcon"
-                            class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'rotate-180' : '' }}"></i>
+                            class="fas fa-chevron-down text-xs transition-transform duration-300 {{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*', 'sauvegardes.*']) ? 'rotate-180' : '' }}"></i>
                     </button>
 
                     <div id="adminMenu"
-                        class="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
-                        style="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
+                        class="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*', 'sauvegardes.*']) ? '' : 'hidden' }} ml-8 mt-1 space-y-1 border-l-2 border-green-500 pl-3 overflow-hidden"
+                        style="{{ request()->routeIs(['admin.roles.*', 'admin.permissions.*', 'admin.users.*', 'sauvegardes.*']) ? 'max-height: 500px;' : 'max-height: 0;' }}">
 
                         @can('roles.read')
                         <!-- Rôles -->
@@ -240,6 +240,14 @@
                             <span>Personnels</span>
                         </a>
                         @endcan
+
+                        @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                            <a href="{{ route('sauvegardes.index') }}"
+                                class="flex items-center space-x-3 px-3 py-2 {{ request()->routeIs('sauvegardes.*') ? 'bg-green-500' : 'hover:bg-green-600' }} rounded-lg text-sm transition-all duration-200 group">
+                                <i class="fas fa-database text-xs"></i>
+                                <span>Sauvegardes</span>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

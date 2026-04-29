@@ -151,12 +151,12 @@
                                             $isCurrent = $facture->proforma_id == $proforma->id_proforma;
                                         @endphp
                                         <option value="{{ $proforma->id_proforma }}"
-                                            data-montant="{{ $montantTTC }}"
+                                            data-montant="{{ number_format(floor($montantTTC), 0, ',', ' ') }}"
                                             data-numero="{{ $proforma->numero_proforma }}"
                                             data-date="{{ $proforma->date_proforma ? \Carbon\Carbon::parse($proforma->date_proforma)->format('d/m/Y') : 'N/A' }}"
                                             data-current="{{ $isCurrent ? '1' : '0' }}"
                                             {{ old('proforma_id', $facture->proforma_id) == $proforma->id_proforma ? 'selected' : '' }}>
-                                            {{ $proforma->numero_proforma }} - {{ number_format($montantTTC, 0, ',', ' ') }} FCFA{{ $isCurrent ? ' (actuelle)' : '' }}
+                                            {{ $proforma->numero_proforma }} - {{ number_format(floor($montantTTC), 0, ',', ' ') }} FCFA{{ $isCurrent ? ' (actuelle)' : '' }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -184,10 +184,10 @@
                                         <span class="text-indigo-600 block text-xs uppercase tracking-wide">Montant TTC</span>
                                         @php
                                             $montantProforma = $facture->proforma
-                                                ? $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma 
+                                                ? $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma
                                                 : 0;
                                         @endphp
-                                        <span id="proformaMontant" class="font-bold text-indigo-700">{{ number_format($montantProforma, 0, ',', ' ') }} FCFA</span>
+                                        <span id="proformaMontant" class="font-bold text-indigo-700">{{ number_format(floor($montantProforma), 0, ',', ' ') }} FCFA</span>
                                     </div>
                                     <div>
                                         <span class="text-indigo-600 block text-xs uppercase tracking-wide">Date</span>
@@ -325,7 +325,7 @@
                                 </div>
                                 <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                                     <span class="text-sm text-green-700">Montant payé</span>
-                                    <span class="font-semibold text-green-700">{{ number_format($facture->montant_paye, 0, ',', ' ') }} FCFA</span>
+                                    <span class="font-semibold text-green-700">{{ number_format(floor($facture->montant_paye), 0, ',', ' ') }} FCFA</span>
                                 </div>
                             @endif
                         </div>
@@ -346,7 +346,7 @@
                             </div>
                             <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
                                 <span class="text-sm text-orange-700">Montant TTC</span>
-                                <span id="resumeMontant" class="font-bold text-orange-700">{{ number_format($facture->montant_facture, 0, ',', ' ') }} FCFA</span>
+                                <span id="resumeMontant" class="font-bold text-orange-700">{{ number_format(floor($facture->montant_facture), 0, ',', ' ') }} FCFA</span>
                             </div>
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <span class="text-sm text-gray-600">Date facture</span>

@@ -150,27 +150,27 @@
                                                     <div class="bg-white/70 p-3 rounded-lg">
                                                         <p class="text-xs text-gray-500 mb-1">Montant HT</p>
                                                         <p class="font-bold text-gray-800">
-                                                            {{ number_format($version->montant_retenu_proforma, 0, ',', ' ') }}
+                                                            {{ number_format(floor($version->montant_retenu_proforma), 0, ',', ' ') }}
                                                         </p>
                                                         <p class="text-xs text-gray-400">FCFA</p>
                                                     </div>
                                                     <div class="bg-white/70 p-3 rounded-lg">
                                                         <p class="text-xs text-gray-500 mb-1">Remise</p>
                                                         <p class="font-bold text-red-600">
-                                                            -{{ number_format($version->remise_montant_proforma, 0, ',', ' ') }}
+                                                            -{{ number_format(floor($version->remise_montant_proforma), 0, ',', ' ') }}
                                                         </p>
                                                         <p class="text-xs text-gray-400">FCFA</p>
                                                     </div>
                                                     <div class="bg-white/70 p-3 rounded-lg">
                                                         <p class="text-xs text-gray-500 mb-1">TVA</p>
                                                         <p class="font-bold text-orange-600">
-                                                            +{{ number_format($version->taxe_montant, 0, ',', ' ') }}</p>
+                                                            +{{ number_format(floor($version->taxe_montant), 0, ',', ' ') }}</p>
                                                         <p class="text-xs text-gray-400">FCFA</p>
                                                     </div>
                                                     <div class="bg-white/70 p-3 rounded-lg">
                                                         <p class="text-xs text-gray-500 mb-1">Total TTC</p>
                                                         <p class="font-bold text-green-600">
-                                                            {{ number_format($version->calculerMontantTTC(), 0, ',', ' ') }}
+                                                            {{ number_format(floor($version->calculerMontantTTC()), 0, ',', ' ') }}
                                                         </p>
                                                         <p class="text-xs text-gray-400">FCFA</p>
                                                     </div>
@@ -202,7 +202,7 @@
                                                     @if ($version->creator)
                                                         <div class="flex items-center">
                                                             <i class="fas fa-user mr-1.5"></i>
-                                                            <span>Créé par: {{ $version->creator->name ?? 'N/A' }}</span>
+                                                            <span>Enregistré par: {{ $version->creator->name ?? 'N/A' }}</span>
                                                         </div>
                                                     @endif
                                                     <div class="flex items-center">
@@ -282,7 +282,7 @@
                             class="flex items-center justify-between py-4 bg-gradient-to-r from-green-500 to-green-600 -mx-6 px-6 -mb-6 rounded-b-lg">
                             <span class="text-white font-semibold">Total TTC</span>
                             <span
-                                class="text-xl font-bold text-white">{{ number_format($proforma->calculerMontantTTC(), 0, ',', ' ') }}
+                                class="text-xl font-bold text-white">{{ number_format(floor($proforma->calculerMontantTTC()), 0, ',', ' ') }}
                                 FCFA</span>
                         </div>
                     </div>
@@ -337,14 +337,14 @@
                                         <span
                                             class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-green-100 text-green-700">
                                             <i class="fas fa-arrow-up mr-1"></i>
-                                            +{{ number_format($evolution, 0, ',', ' ') }} FCFA
+                                            +{{ number_format(floor($evolution), 0, ',', ' ') }} FCFA
                                         </span>
                                         <span class="text-xs text-green-600">(+{{ $pourcentageEvolution }}%)</span>
                                     @elseif($evolution < 0)
                                         <span
                                             class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-red-100 text-red-700">
                                             <i class="fas fa-arrow-down mr-1"></i>
-                                            {{ number_format($evolution, 0, ',', ' ') }} FCFA
+                                            {{ number_format(floor($evolution), 0, ',', ' ') }} FCFA
                                         </span>
                                         <span class="text-xs text-red-600">({{ $pourcentageEvolution }}%)</span>
                                     @else

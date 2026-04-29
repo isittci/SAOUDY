@@ -125,7 +125,7 @@
                                         <p class="text-sm text-gray-600">
                                             <i class="fas fa-coins mr-1"></i>
                                             Montant global:
-                                            <strong>{{ number_format($lot->appelOffre->montant_global_appel_offre, 0, ',', ' ') }}
+                                            <strong>{{ number_format(floor($lot->appelOffre->montant_global_appel_offre), 0, ',', ' ') }}
                                                 FCFA</strong>
                                         </p>
                                     </div>

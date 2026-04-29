@@ -638,7 +638,7 @@ public function getRaisonNonCloture(): ?string
 
         if ($montantFacture > 0 && $montantPaye < $montantFacture) {
             $reste = $montantFacture - $montantPaye;
-            return "Paiements incomplets (reste " . number_format($reste, 0, ',', ' ') . " FCFA)";
+            return "Paiements incomplets (reste " . number_format(floor($reste), 0, ',', ' ') . " FCFA)";
         }
     }
 

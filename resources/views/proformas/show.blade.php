@@ -159,7 +159,7 @@
                                     <i class="fas fa-file-invoice text-blue-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-gray-900">
-                                    {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }}
+                                    {{ number_format(floor($proforma->montant_retenu_proforma), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1">FCFA</p>
                             </div>
@@ -171,7 +171,7 @@
                                     <i class="fas fa-percentage text-red-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-red-600">
-                                    -{{ number_format($proforma->remise_montant_proforma, 0, ',', ' ') }}
+                                    -{{ number_format(floor($proforma->remise_montant_proforma), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     {{ $proforma->pourcentage_remise }}% du montant HT
@@ -185,7 +185,7 @@
                                     <i class="fas fa-equals text-gray-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-gray-900">
-                                    {{ number_format($proforma->montant_ht_apres_remise, 0, ',', ' ') }}
+                                    {{ number_format(floor($proforma->montant_ht_apres_remise), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1">FCFA</p>
                             </div>
@@ -197,7 +197,7 @@
                                     <i class="fas fa-receipt text-yellow-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-yellow-600">
-                                    +{{ number_format($proforma->taxe_montant, 0, ',', ' ') }}
+                                    +{{ number_format(floor($proforma->taxe_montant), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     {{ $proforma->taux_taxe }}% du sous-total
@@ -211,7 +211,7 @@
                                 <div>
                                     <p class="text-green-100 text-sm font-medium">Montant Total TTC</p>
                                     <p class="text-4xl font-bold mt-1">
-                                        {{ number_format($proforma->montant_ttc, 0, ',', ' ') }}
+                                        {{ number_format(floor($proforma->montant_ttc), 0, ',', ' ') }}
                                         <span class="text-lg font-normal">FCFA</span>
                                     </p>
                                 </div>

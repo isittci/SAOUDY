@@ -74,7 +74,7 @@
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-sm font-semibold text-gray-700">Score obtenu</span>
                     <span class="text-2xl font-bold {{ $evaluation->pourcentage_final >= 70 ? 'text-green-600' : ($evaluation->pourcentage_final >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
-                        {{ number_format($evaluation->pourcentage_final, 1) }}%
+                        {{ number_format($evaluation->pourcentage_final, 2) }}%
                     </span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-3">

@@ -160,7 +160,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-semibold text-gray-900">
-                                        {{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }} FCFA
+                                        {{ number_format(floor($ao->montant_global_appel_offre), 0, ',', ' ') }} FCFA
                                     </div>
                                 </td>
 
@@ -184,8 +184,7 @@
                                             </span>
                                         @endif
                                         @if ($ao->isEtatEnAttente())
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                                 En attente
                                             </span>
                                         @elseif($ao->isEtatEnCours())

@@ -305,18 +305,18 @@ class SituationFinanciere extends Model
         return [
             'chiffre_affaires' => [
                 'valeur' => $this->chiffre_affaire_situation_financiere,
-                'format' => number_format($this->chiffre_affaire_situation_financiere ?? 0, 0, ',', ' ') . ' FCFA',
+                'format' => number_format(floor($this->chiffre_affaire_situation_financiere ?? 0), 0, ',', ' ') . ' FCFA',
                 'label' => 'Chiffre d\'affaires',
             ],
             'resultat_net' => [
                 'valeur' => $this->resultat_net_situation_financiere,
-                'format' => number_format($this->resultat_net_situation_financiere ?? 0, 0, ',', ' ') . ' FCFA',
+                'format' => number_format(floor($this->resultat_net_situation_financiere ?? 0), 0, ',', ' ') . ' FCFA',
                 'label' => 'Résultat net',
                 'positif' => $this->is_resultat_positif,
             ],
             'fonds_propres' => [
                 'valeur' => $this->fonds_propres_situation_financiere,
-                'format' => number_format($this->fonds_propres_situation_financiere ?? 0, 0, ',', ' ') . ' FCFA',
+                'format' => number_format(floor($this->fonds_propres_situation_financiere ?? 0), 0, ',', ' ') . ' FCFA',
                 'label' => 'Fonds propres',
             ],
             'marge_nette' => [

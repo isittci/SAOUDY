@@ -216,17 +216,17 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Montant Facture</p>
-                                <p class="text-xl font-bold text-gray-800">{{ number_format($montantFacture, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-gray-800">{{ number_format(floor($montantFacture), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-gray-500">FCFA</p>
                             </div>
                             <div class="bg-emerald-50 rounded-xl p-4 text-center">
                                 <p class="text-xs text-emerald-600 uppercase tracking-wide mb-1">Déjà Payé</p>
-                                <p class="text-xl font-bold text-emerald-700">{{ number_format($montantPaye, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-emerald-700">{{ number_format(floor($montantPaye), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-emerald-600">FCFA</p>
                             </div>
                             <div class="bg-orange-50 rounded-xl p-4 text-center {{ $montantRestant > 0 ? 'pulse-green' : '' }}">
                                 <p class="text-xs text-orange-600 uppercase tracking-wide mb-1">Reste à Payer</p>
-                                <p class="text-xl font-bold text-orange-700">{{ number_format($montantRestant, 0, ',', ' ') }}</p>
+                                <p class="text-xl font-bold text-orange-700">{{ number_format(floor($montantRestant), 0, ',', ' ') }}</p>
                                 <p class="text-xs text-orange-600">FCFA</p>
                             </div>
                         </div>
@@ -481,7 +481,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-800">{{ $prestataire->raison_sociale_prestataire }}</p>
-                                <p class="text-sm text-gray-500">{{ $prestataire->numero_identification_prestataire ?? 'N/A' }}</p>
+                                <p class="text-sm text-gray-500">{{ $prestataire->numero_cc_prestataire ?? 'N/A' }}</p>
                             </div>
                         </div>
 
@@ -518,7 +518,7 @@
                                             <i class="fas fa-user-tie text-gray-400 mr-1"></i>
                                             Représentant Légal
                                         </p>
-                                        
+
                                         <div class="space-y-2 text-sm">
                                             {{-- Nom complet --}}
                                             @if(!empty($representant['nom']) || !empty($representant['prenoms']))
@@ -604,7 +604,7 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Montant</span>
-                            <span class="detail-value text-lg font-bold text-blue-600">{{ number_format($facture->montant_facture, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-lg font-bold text-blue-600">{{ number_format(floor($facture->montant_facture), 0, ',', ' ') }} FCFA</span>
                         </div>
                     </div>
                 </div>
@@ -625,19 +625,19 @@
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Montant HT</span>
-                            <span class="detail-value">{{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value">{{ number_format(floor($proforma->montant_retenu_proforma), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">TVA</span>
-                            <span class="detail-value text-blue-600">+ {{ number_format($proforma->taxe_montant ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-blue-600">+ {{ number_format(floor($proforma->taxe_montant ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Remise</span>
-                            <span class="detail-value text-red-600">- {{ number_format($proforma->remise_montant_proforma ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-red-600">- {{ number_format(floor($proforma->remise_montant_proforma ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         <div class="detail-row border-t-2 pt-2">
                             <span class="detail-label font-semibold">Total TTC</span>
-                            <span class="detail-value text-lg font-bold text-amber-600">{{ number_format($proforma->montant_ttc ?? 0, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-lg font-bold text-amber-600">{{ number_format(floor($proforma->montant_ttc ?? 0), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @if($proforma->modalite_proforma)
                         <div class="mt-3 p-3 bg-amber-50 rounded-lg">
@@ -681,13 +681,13 @@
                         @if($attribution->montant_engage > 0)
                         <div class="detail-row">
                             <span class="detail-label">Engagé</span>
-                            <span class="detail-value">{{ number_format($attribution->montant_engage, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value">{{ number_format(floor($attribution->montant_engage), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @endif
                         @if($attribution->montant_paye > 0)
                         <div class="detail-row">
                             <span class="detail-label">Payé</span>
-                            <span class="detail-value text-green-600">{{ number_format($attribution->montant_paye, 0, ',', ' ') }} FCFA</span>
+                            <span class="detail-value text-green-600">{{ number_format(floor($attribution->montant_paye), 0, ',', ' ') }} FCFA</span>
                         </div>
                         @endif
                     </div>

@@ -113,7 +113,7 @@
                                         <p class="text-sm text-gray-600">
                                             <i class="fas fa-coins mr-1"></i>
                                             Montant global:
-                                            <strong>{{ number_format($appelOffre->montant_global_appel_offre, 2, ',', ' ') }}
+                                            <strong>{{ number_format(floor($appelOffre->montant_global_appel_offre), 0, ',', ' ') }}
                                                 FCFA</strong>
                                         </p>
                                     </div>
@@ -136,16 +136,16 @@
                             </h2>
                         </div>
 
-                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Date de démarrage prévue -->
                             <div>
                                 <label for="date_demarrage_prevue_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de démarrage prévue <span class="text-red-500">*</span></label>
+                                    Date de démarrage prévue <span class="text-red-500">*</span>
                                 </label>
                                 <input type="date"
-                                    min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}" required
-                                    onchange="verifyLivraisonDate(this)" id="date_demarrage_prevue_caracteristique_appel_offre"
+                                    {{-- min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}" required --}}
+                                    id="date_demarrage_prevue_caracteristique_appel_offre"
                                     name="date_demarrage_prevue_caracteristique_appel_offre"
                                     value="{{ old('date_demarrage_prevue_caracteristique_appel_offre') }}"
                                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent @error('date_demarrage_prevue_caracteristique_appel_offre') border-red-500 @enderror">
@@ -154,24 +154,53 @@
                                 @enderror
                             </div>
 
-                            <!-- Date de livraison prévisionnelle -->
+                            <!-- Nombre de jours -->
+                            <div>
+                                <label for="nombre_jours_caracteristique_appel_offre"
+                                    class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Nombre de jours <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number"
+                                        id="nombre_jours_caracteristique_appel_offre"
+
+                                        min="1"
+                                        value="{{ old('nombre_jours_caracteristique_appel_offre') }}"
+                                        placeholder="Ex: 30"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent @error('nombre_jours_caracteristique_appel_offre') border-red-500 @enderror">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <span class="text-gray-500 text-sm">jours</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    La date de livraison sera calculée automatiquement
+                                </p>
+                                @error('nombre_jours_caracteristique_appel_offre')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Date de livraison prévisionnelle (calculée automatiquement) -->
                             <div>
                                 <label for="date_livraison_previsionnelle_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Date de livraison prévisionnelle <span class="text-red-500">*</span></label>
+                                    Date de livraison prévisionnelle <span class="text-red-500">*</span>
+                                    <span class="text-xs font-normal text-blue-600 ml-1">(auto-calculée)</span>
                                 </label>
                                 <input type="date" id="date_livraison_previsionnelle_caracteristique_appel_offre" required
-                                    min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}"
+                                    {{-- min="{{ \Carbon\Carbon::parse($appelOffre->date_ouverture_plis_critere_appel_offre)->toDateString() }}" --}}
                                     name="date_livraison_previsionnelle_caracteristique_appel_offre"
                                     value="{{ old('date_livraison_previsionnelle_caracteristique_appel_offre') }}"
-                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent @error('date_livraison_previsionnelle_caracteristique_appel_offre') border-red-500 @enderror">
+                                    readonly
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent @error('date_livraison_previsionnelle_caracteristique_appel_offre') border-red-500 @enderror">
                                 @error('date_livraison_previsionnelle_caracteristique_appel_offre')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <!-- Durée estimée (CALCULÉE AUTOMATIQUEMENT - AFFICHAGE SEULEMENT) -->
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-3">
                                 <div
                                     class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-lg">
                                     <div class="flex items-center justify-between">
@@ -180,8 +209,7 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-700">Durée estimée (calculée
                                                     automatiquement)</p>
-                                                <p class="text-xs text-gray-500 mt-0.5">Basée sur la différence entre les deux
-                                                    dates ci-dessus</p>
+                                                <p class="text-xs text-gray-500 mt-0.5">Basée sur le nombre de jours saisi</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
@@ -193,10 +221,10 @@
                             </div>
 
                             <!-- Lieu d'exécution -->
-                            <div>
+                            <div class="md:col-span-3">
                                 <label for="lieu_execution_caracteristique_appel_offre"
                                     class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Lieu d'exécution <span class="text-red-500">*</span></label>
+                                    Lieu d'exécution <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="lieu_execution_caracteristique_appel_offre" required
                                     name="lieu_execution_caracteristique_appel_offre" maxlength="255"
@@ -252,52 +280,54 @@
     @can('caracteristiques_appels_offres.create')
         @push('scripts')
             <script>
-                const verifyLivraisonDate = (input) => {
-                    document.getElementById('date_livraison_previsionnelle_caracteristique_appel_offre').min = input.value;
-                }
-
                 document.addEventListener('DOMContentLoaded', function() {
                     const dateDebut = document.getElementById('date_demarrage_prevue_caracteristique_appel_offre');
+                    const nombreJours = document.getElementById('nombre_jours_caracteristique_appel_offre');
                     const dateFin = document.getElementById('date_livraison_previsionnelle_caracteristique_appel_offre');
                     const dureeDisplay = document.getElementById('duree_calculee_display');
 
-
-
-
-                    // Fonction pour calculer la durée en jours
-                    function calculerDuree() {
-                        if (dateDebut.value && dateFin.value) {
+                    // Fonction pour calculer la date de livraison
+                    function calculerDateLivraison() {
+                        if (dateDebut.value && nombreJours.value) {
                             const debut = new Date(dateDebut.value);
-                            const fin = new Date(dateFin.value);
+                            const jours = parseInt(nombreJours.value);
 
-                            const diffTime = fin - debut;
-                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            if (jours > 0) {
+                                // Ajouter le nombre de jours à la date de démarrage
+                                const dateLivraison = new Date(debut);
+                                dateLivraison.setDate(dateLivraison.getDate() + jours);
 
-                            if (diffDays >= 0) {
-                                dureeDisplay.textContent = diffDays;
-                                dureeDisplay.classList.remove('text-red-600');
+                                // Formater la date au format YYYY-MM-DD
+                                const year = dateLivraison.getFullYear();
+                                const month = String(dateLivraison.getMonth() + 1).padStart(2, '0');
+                                const day = String(dateLivraison.getDate()).padStart(2, '0');
+
+                                dateFin.value = `${year}-${month}-${day}`;
+
+                                // Mettre à jour l'affichage de la durée
+                                dureeDisplay.textContent = jours;
+                                dureeDisplay.classList.remove('text-red-600', 'text-gray-400');
                                 dureeDisplay.classList.add('text-blue-600');
                             } else {
-                                dureeDisplay.textContent = 'Invalide';
-                                dureeDisplay.classList.remove('text-blue-600');
-                                dureeDisplay.classList.add('text-red-600');
-
-                                alert('La date de livraison doit être postérieure à la date de démarrage');
                                 dateFin.value = '';
+                                dureeDisplay.textContent = 'Invalide';
+                                dureeDisplay.classList.remove('text-blue-600', 'text-gray-400');
+                                dureeDisplay.classList.add('text-red-600');
                             }
                         } else {
+                            dateFin.value = '';
                             dureeDisplay.textContent = '-';
                             dureeDisplay.classList.remove('text-red-600', 'text-blue-600');
                             dureeDisplay.classList.add('text-gray-400');
                         }
                     }
 
-                    // Écouter les changements de dates
-                    dateDebut.addEventListener('change', calculerDuree);
-                    dateFin.addEventListener('change', calculerDuree);
+                    // Écouter les changements
+                    dateDebut.addEventListener('change', calculerDateLivraison);
+                    nombreJours.addEventListener('input', calculerDateLivraison);
 
                     // Calcul initial si les valeurs sont présentes (en cas de retour avec old())
-                    calculerDuree();
+                    calculerDateLivraison();
                 });
             </script>
 

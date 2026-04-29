@@ -59,7 +59,7 @@
                                 </span>
                             @endif
                         </div>
-                        <p class="text-gray-600 mt-1">{{ $appelOffre->libelle_critere_appel_offre }}</p>
+                        <p class="text-gray-600 mt-1">{{ \Illuminate\Support\Str::limit($appelOffre->libelle_critere_appel_offre, 50) }}</p>
                     </div>
                 </div>
 
@@ -69,15 +69,7 @@
                     'appels_offres.delete'])
                     <!-- Actions -->
                     <div class="flex items-center space-x-2 flex-wrap gap-2">
-                        @can('appels_offres.update')
-                            @if (!$appelOffre->date_publication_critere_appel_offre)
-                                <button onclick="publier()"
-                                    class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
-                                    <i class="fas fa-paper-plane text-sm"></i>
-                                    <span class="text-sm font-medium">Publier</span>
-                                </button>
-                            @endif
-                        @endcan
+
 
                         @can('caracteristiques_appels_offres.read')
                             <a href="{{ route('caracteristiques-appels-offres.index', [$appelOffre->id_appel_offre]) }}"
@@ -123,17 +115,7 @@
                                 </button>
                             @endif
 
-                            {{-- <button
-                                onclick="toggleStatus({{ $appelOffre->statut_evaluation_critere_appel_offre ? 'true' : 'false' }})"
-                                class="px-4 py-2.5 {{ $appelOffre->statut_evaluation_critere_appel_offre
-                                    ? 'bg-white border border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400'
-                                    : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-md hover:shadow-lg' }} rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                                <i
-                                    class="fas {{ $appelOffre->statut_evaluation_critere_appel_offre ? 'fa-toggle-off' : 'fa-toggle-on' }} text-sm"></i>
-                                <span class="text-sm font-medium">
-                                    {{ $appelOffre->statut_evaluation_critere_appel_offre ? 'Désactiver' : 'Activer' }}
-                                </span>
-                            </button> --}}
+
                         @endcan
 
                         @can('appels_offres.delete')
@@ -214,7 +196,7 @@
                         <!-- Libellé -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-600 mb-2">Libellé</label>
-                            <p class="text-gray-900 font-medium">{{ $appelOffre->libelle_critere_appel_offre }}</p>
+                            <p class="text-gray-900 txt-medium">{{ $appelOffre->libelle_critere_appel_offre }}</p>
                         </div>
 
                         <!-- Montant Retenu -->
@@ -222,66 +204,19 @@
                             <label class="block text-sm font-semibold text-gray-600 mb-2">Montant Retenu</label>
                             <div class="flex items-center space-x-3">
                                 <p class="text-2xl font-bold text-gray-900">
-                                    {{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }}
+                                    {{ number_format(floor($appelOffre->montant_global_appel_offre), 0, ',', ' ') }}
                                 </p>
                                 <span class="text-sm text-gray-500">FCFA</span>
                             </div>
                         </div>
 
-                        <!-- Objet -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Objet</label>
-                            <p class="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
-                                {{ $appelOffre->objet_critere_appel_offre }}
-                            </p>
-                        </div>
 
-                        <!-- Description -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Description détaillée</label>
-                            <p class="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
-                                {{ $appelOffre->description_critere_critere_appel_offre }}
-                            </p>
-                        </div>
+
+
                     </div>
                 </div>
 
-                <!-- Dates et délais -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                            Dates et Délais
-                        </h2>
-                    </div>
 
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Date de publication -->
-                            <div class="bg-gradient-to-br from-blue-50 to-white p-5 rounded-xl border border-blue-100">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-semibold text-gray-600">Publication</span>
-                                    <i class="fas fa-paper-plane text-blue-500"></i>
-                                </div>
-                                @if ($appelOffre->date_publication_critere_appel_offre)
-                                    <p class="text-lg font-bold text-gray-900">
-                                        {{ $appelOffre->date_publication_critere_appel_offre->format('d/m/Y') }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        {{ $appelOffre->date_publication_critere_appel_offre->locale('fr')->diffForHumans() }}
-                                    </p>
-                                @else
-                                    <p class="text-sm text-gray-500">Non publié</p>
-                                @endif
-                            </div>
-
-
-
-
-
-                        </div>
-                    </div>
-                </div>
 
 
                 <!-- Planning et Dates -->
@@ -605,20 +540,20 @@
                                                                 <span class="text-gray-600">
                                                                     <i class="fas fa-file-invoice mr-1 text-orange-500"></i>
                                                                     Facture:
-                                                                    <strong>{{ number_format($montantFacture, 0, ',', ' ') }}
+                                                                    <strong>{{ number_format(floor($montantFacture), 0, ',', ' ') }}
                                                                         FCFA</strong>
                                                                 </span>
                                                                 <span class="text-emerald-600">
                                                                     <i class="fas fa-check mr-1"></i>
                                                                     Payé:
-                                                                    <strong>{{ number_format($montantPaye, 0, ',', ' ') }}
+                                                                    <strong>{{ number_format(floor($montantPaye), 0, ',', ' ') }}
                                                                         FCFA</strong>
                                                                 </span>
                                                                 @if ($resteAPayer > 0)
                                                                     <span class="text-red-600">
                                                                         <i class="fas fa-exclamation-triangle mr-1"></i>
                                                                         Reste:
-                                                                        <strong>{{ number_format($resteAPayer, 0, ',', ' ') }}
+                                                                        <strong>{{ number_format(floor($resteAPayer), 0, ',', ' ') }}
                                                                             FCFA</strong>
                                                                     </span>
                                                                 @endif
@@ -743,10 +678,10 @@
                     </h3>
 
                     <div class="space-y-4 text-sm">
-                        <!-- Créé par -->
+                        <!-- Enregistré par -->
                         @if ($appelOffre->creator)
                             <div>
-                                <p class="text-gray-600 font-medium mb-1">Créé par</p>
+                                <p class="text-gray-600 font-medium mb-1">Enregistré par</p>
                                 <p class="text-gray-900">{{ $appelOffre->creator->nom_complet }}</p>
                                 <p class="text-xs text-gray-500">{{ $appelOffre->created_at->format('d/m/Y à H:i') }}</p>
                             </div>
@@ -859,7 +794,7 @@
                                             <p class="text-sm font-semibold text-orange-800">
                                                 {{ $appelOffre->numero_appel_offre }}</p>
                                             <p class="text-xs text-orange-600 mt-0.5">
-                                                {{ Str::limit($appelOffre->libelle_critere_appel_offre, 60) }}</p>
+                                                {{ $appelOffre->libelle_critere_appel_offre }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -889,6 +824,7 @@
                                         </div>
                                     </div>
 
+
                                     <!-- Libellé - Champ principal -->
                                     <div class="group">
                                         <label for="lot_libelle"
@@ -898,10 +834,10 @@
                                             <span class="text-red-500 ml-1">*</span>
                                         </label>
                                         <div class="relative">
-                                            <input type="text" name="libelle" id="lot_libelle" required maxlength="160"
-                                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400"
-                                                placeholder="Ex: Travaux de gros œuvre" oninput="updateProgress()">
-                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                            <textarea name="libelle" id="lot_libelle" required maxlength="160" rows="3"
+                                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all duration-200 text-gray-800 placeholder-gray-400 resize-none"
+                                                placeholder="Ex: Travaux de gros œuvre" oninput="updateProgress(); updateLibelleCount();"></textarea>
+                                            <div class="absolute right-3 bottom-3 text-xs text-gray-400 bg-white px-1">
                                                 <span id="libelle_count">0</span>/160
                                             </div>
                                         </div>

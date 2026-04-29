@@ -30,8 +30,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" id="searchInput" name="search"
-                            value="{{ request('search') }}"
+                        <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
                             placeholder="Rechercher par code ou libellé..."
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent hover:border-orange-300 transition-all" />
                     </div>
@@ -101,14 +100,21 @@
                 <table class="w-full">
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Code</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Libellé</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Intervalle de valeur</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Appels d'Offre</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Code</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Libellé</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Intervalle de valeur</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Appels d'Offre</th>
                             {{-- <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Version</th> --}}
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
-                            @canany(['types_appels_offres.read', 'types_appels_offres.update', 'types_appels_offres.toggle-status', 'types_appels_offres.delete'])
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Statut</th>
+                            @canany(['types_appels_offres.read', 'types_appels_offres.update',
+                                'types_appels_offres.toggle-status', 'types_appels_offres.delete'])
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Actions</th>
                             @endcanany
                         </tr>
                     </thead>
@@ -134,10 +140,10 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-700">
                                         <div class="font-medium">
-                                            {{ number_format($type->valeur_minimuim_type_appel_offre, 0, ',', ' ') }} FCFA
+                                            {{ number_format(floor($type->valeur_minimuim_type_appel_offre), 0, ',', ' ') }} FCFA
                                         </div>
                                         <div class="text-xs text-gray-500">à
-                                            {{ number_format($type->valeur_maximuim_type_appel_offre, 0, ',', ' ') }} FCFA
+                                            {{ number_format(floor($type->valeur_maximuim_type_appel_offre), 0, ',', ' ') }} FCFA
                                         </div>
                                     </div>
                                 </td>
@@ -145,7 +151,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @php
                                         $count = $type->appel_offres_count;
-                                        $badgeClass = match(true) {
+                                        $badgeClass = match (true) {
                                             $count == 0 => 'bg-gray-100 text-gray-500',
                                             $count <= 5 => 'bg-blue-100 text-blue-800',
                                             $count <= 20 => 'bg-orange-100 text-orange-800',
@@ -154,9 +160,9 @@
                                     @endphp
 
                                     {{-- Lien vers les appels d'offres --}}
-                                    <a href="{{ $count > 0 ? route('types-appels-offres.appels-offres.index',  $type->id_type_appel_offre) : '#' }}"
-                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $badgeClass }} hover:underline"
-                                    title="{{ $count }} appel(s) d'offres">
+                                    <a href="{{ $count > 0 ? route('types-appels-offres.appels-offres.index', $type->id_type_appel_offre) : '#' }}"
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $badgeClass }} hover:underline"
+                                        title="{{ $count }} appel(s) d'offres">
                                         <i class="fas fa-file-contract mr-1"></i>
                                         {{ $count }}
                                     </a>
@@ -176,49 +182,51 @@
                                         </span>
                                     @endif
                                 </td>
-                                @canany(['types_appels_offres.read', 'types_appels_offres.update', 'types_appels_offres.toggle-status', 'types_appels_offres.delete'])
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        @can('types_appels_offres.read')
-                                            <!-- Voir détails -->
-                                            <button onclick="viewDetails('{{ $type->id_type_appel_offre }}')"
-                                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                                title="Voir détails">
-                                                <i class="fas fa-eye text-sm"></i>
-                                            </button>
-                                        @endcan
-
-                                        @can('types_appels_offres.update')
-                                            @if ($type->actif_type_appel_offre)
-                                                <!-- Modifier -->
-                                                <button onclick='openEditModal(@json($type))'
-                                                    class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                    title="Modifier">
-                                                    <i class="fas fa-edit text-sm"></i>
+                                @canany(['types_appels_offres.read', 'types_appels_offres.update',
+                                    'types_appels_offres.toggle-status', 'types_appels_offres.delete'])
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            @can('types_appels_offres.read')
+                                                <!-- Voir détails -->
+                                                <button onclick="viewDetails('{{ $type->id_type_appel_offre }}')"
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                                    title="Voir détails">
+                                                    <i class="fas fa-eye text-sm"></i>
                                                 </button>
-                                            @endif
-                                        @endcan
+                                            @endcan
 
-                                        @can('types_appels_offres.toggle-status')
-                                            <button
-                                                onclick="toggleStatus('{{ $type->id_type_appel_offre }}', {{ $type->actif_type_appel_offre ? 'true' : 'false' }})"
-                                                class="p-2 rounded-lg transition-all duration-200 {{ $type->actif_type_appel_offre ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50' }}"
-                                                title="{{ $type->actif_type_appel_offre ? 'Désactiver' : 'Activer' }}">
-                                                <i class="fas {{ $type->actif_type_appel_offre ? 'fa-toggle-on' : 'fa-toggle-off' }} text-sm"></i>
-                                            </button>
-                                        @endcan
+                                            @can('types_appels_offres.update')
+                                                @if ($type->actif_type_appel_offre)
+                                                    <!-- Modifier -->
+                                                    <button onclick='openEditModal(@json($type))'
+                                                        class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                                                        title="Modifier">
+                                                        <i class="fas fa-edit text-sm"></i>
+                                                    </button>
+                                                @endif
+                                            @endcan
 
-                                        @can('types_appels_offres.delete')
-                                            <!-- Supprimer -->
-                                            <button
-                                                onclick="confirmDelete('{{ $type->id_type_appel_offre }}', '{{ $type->libelle_type_appel_offre }}', {{ $type->appel_offres_count }})"
-                                                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                                title="Supprimer">
-                                                <i class="fas fa-trash text-sm"></i>
-                                            </button>
-                                        @endcan
-                                    </div>
-                                </td>
+                                            @can('types_appels_offres.toggle-status')
+                                                <button
+                                                    onclick="toggleStatus('{{ $type->id_type_appel_offre }}', {{ $type->actif_type_appel_offre ? 'true' : 'false' }})"
+                                                    class="p-2 rounded-lg transition-all duration-200 {{ $type->actif_type_appel_offre ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50' }}"
+                                                    title="{{ $type->actif_type_appel_offre ? 'Désactiver' : 'Activer' }}">
+                                                    <i
+                                                        class="fas {{ $type->actif_type_appel_offre ? 'fa-toggle-on' : 'fa-toggle-off' }} text-sm"></i>
+                                                </button>
+                                            @endcan
+
+                                            @can('types_appels_offres.delete')
+                                                <!-- Supprimer -->
+                                                <button
+                                                    onclick="confirmDelete('{{ $type->id_type_appel_offre }}', '{{ $type->libelle_type_appel_offre }}', {{ $type->appel_offres_count }})"
+                                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                    title="Supprimer">
+                                                    <i class="fas fa-trash text-sm"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
+                                    </td>
                                 @endcanany
                             </tr>
                         @empty
@@ -281,17 +289,6 @@
                             <div id="error_libelle" class="hidden text-red-500 text-sm mt-1"></div>
                         </div>
 
-                        <!-- Code -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Code <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text"  id="code" required readonly
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent uppercase"
-                                placeholder="Ex: AOO">
-                            <div id="error_code" class="hidden text-red-500 text-sm mt-1"></div>
-                        </div>
-
                         <!-- Valeurs -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -316,6 +313,11 @@
                                 <div id="error_valeur_max" class="hidden text-red-500 text-sm mt-1"></div>
                             </div>
                         </div>
+
+
+
+
+
 
                         <!-- Description -->
                         <div>
@@ -351,11 +353,11 @@
                             Annuler
                         </button>
                         @can('types_appels_offres.create')
-                        <button type="submit" id="submitBtn"
-                            class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
-                            <i class="fas fa-save mr-2"></i>
-                            <span id="submitText">Enregistrer</span>
-                        </button>
+                            <button type="submit" id="submitBtn"
+                                class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg">
+                                <i class="fas fa-save mr-2"></i>
+                                <span id="submitText">Enregistrer</span>
+                            </button>
                         @endcan
                     </div>
                 </form>
@@ -380,16 +382,17 @@
                             Annuler
                         </button>
                         @can('types_appels_offres.delete')
-                        <button onclick="executeDelete()"
-                            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                            Supprimer
-                        </button>
+                            <button onclick="executeDelete()"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
+                                Supprimer
+                            </button>
                         @endcan
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
     @push('scripts')
         <script>
@@ -410,7 +413,8 @@
                 // Ouvrir modal édition
                 window.openEditModal = function(type) {
                     document.getElementById('modalTitle').textContent = 'Modifier Type d\'Appel d\'Offres';
-                    document.getElementById('typeForm').action = "{{ route('types-appels-offres.show', ':id') }}".replace(':id', type.id_type_appel_offre);
+                    document.getElementById('typeForm').action = "{{ route('types-appels-offres.show', ':id') }}"
+                        .replace(':id', type.id_type_appel_offre);
                     document.getElementById('formMethod').value = 'PUT';
                     document.getElementById('typeId').value = type.id_type_appel_offre;
 
@@ -594,16 +598,7 @@
                         });
                 });
 
-                // // Recherche en temps réel
-                // let searchTimeout;
-                // document.getElementById('searchInput').addEventListener('input', function(e) {
-                //     clearTimeout(searchTimeout);
-                //     searchTimeout = setTimeout(() => {
-                //         const search = e.target.value;
-                //         const statut = document.getElementById('statutFilter').value;
-                //         window.location.href = `?search=${search}&actif=${statut}`;
-                //     }, 500);
-                // });
+                
 
                 // Recherche sur perte de focus ou touche Entrée
                 const searchInput = document.getElementById('searchInput');

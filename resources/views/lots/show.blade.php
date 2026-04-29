@@ -501,10 +501,10 @@
                     </h3>
 
                     <div class="space-y-4 text-sm">
-                        <!-- Créé par -->
+                        <!-- Enregistré par -->
                         @if ($lot->creator)
                             <div>
-                                <p class="text-gray-600 font-medium mb-1">Créé par</p>
+                                <p class="text-gray-600 font-medium mb-1">Enregistré par</p>
                                 <p class="text-gray-900">{{ $lot->creator->nom_complet }}</p>
                                 <p class="text-xs text-gray-500">{{ $lot->created_at->format('d/m/Y à H:i') }}</p>
                             </div>

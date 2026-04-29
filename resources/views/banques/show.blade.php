@@ -243,7 +243,7 @@
                                             </div>
                                             <div>
                                                 <p class="font-medium text-gray-900">
-                                                    {{ number_format($paiement->montant_net_paye_paiement, 2, ',', ' ') }}
+                                                    {{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }}
                                                     FCFA</p>
                                                 <p class="text-sm text-gray-500">
                                                     {{ $paiement->created_at->format('d/m/Y') }}</p>
@@ -256,7 +256,7 @@
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-semibold text-green-700">Montant total</span>
                                     <span
-                                        class="text-lg font-bold text-green-600">{{ number_format($stats['montant_total_paiements'], 2, ',', ' ') }}
+                                        class="text-lg font-bold text-green-600">{{ number_format(floor($stats['montant_total_paiements']), 0, ',', ' ') }}
                                         FCFA</span>
                                 </div>
                             </div>
@@ -345,14 +345,6 @@
                             </h2>
                         </div>
                         <div class="p-4 space-y-2">
-                            {{-- @can('banques_prestataires.duplicate')
-                                <button onclick="duplicate()"
-                                    class="w-full flex items-center justify-between p-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-colors group">
-                                    <span class="flex items-center"><i
-                                            class="fas fa-copy text-purple-500 mr-3"></i>Dupliquer</span>
-                                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-purple-500"></i>
-                                </button>
-                            @endcan --}}
 
                             @can('banques_prestataires.update')
                                 <button
@@ -460,28 +452,6 @@
                             closeDeleteModal();
                         });
                 }
-
-                // window.duplicate = function() {
-                //     if (confirm('Voulez-vous dupliquer cette banque ?')) {
-                //         fetch("{{ route('banques.dupliquer', [':prestataireId', ':banque']) }}".replace(':prestataireId',
-                //                 prestataireId).replace(':banque', banqueId), {
-                //                 method: 'POST',
-                //                 headers: {
-                //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                //                     'Content-Type': 'application/json',
-                //                     'Accept': 'application/json'
-                //                 }
-                //             })
-                //             .then(r => r.json())
-                //             .then(data => {
-                //                 if (data.success) window.location.href =
-                //                     "{{ route('banques.edit', [':prestataireId', ':banque']) }}".replace(':prestataireId',
-                //                         prestataireId).replace(':banque', data.data.id_banque);
-                //                 else alert(data.message || 'Erreur');
-                //             })
-                //             .catch(() => alert('Une erreur est survenue'));
-                //     }
-                // }
 
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') closeDeleteModal();

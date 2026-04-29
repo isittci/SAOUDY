@@ -529,22 +529,22 @@ class ProformaController extends Controller
 
         // Comparer le montant
         if (floatval($proforma->montant_retenu_proforma) != floatval($newData['montant_retenu_proforma'])) {
-            $ancien = number_format($proforma->montant_retenu_proforma, 2, ',', ' ');
-            $nouveau = number_format($newData['montant_retenu_proforma'], 2, ',', ' ');
+            $ancien = number_format(floor($proforma->montant_retenu_proforma), 0, ',', ' ');
+            $nouveau = number_format(floor($newData['montant_retenu_proforma']), 0, ',', ' ');
             $modifications[] = "Montant HT: {$ancien} → {$nouveau} FCFA";
         }
 
         // Comparer la remise
         if (floatval($proforma->remise_montant_proforma ?? 0) != floatval($newData['remise_montant_proforma'] ?? 0)) {
-            $ancien = number_format($proforma->remise_montant_proforma ?? 0, 2, ',', ' ');
-            $nouveau = number_format($newData['remise_montant_proforma'] ?? 0, 2, ',', ' ');
+            $ancien = number_format(floor($proforma->remise_montant_proforma ?? 0), 0, ',', ' ');
+            $nouveau = number_format(floor($newData['remise_montant_proforma'] ?? 0), 0, ',', ' ');
             $modifications[] = "Remise: {$ancien} → {$nouveau} FCFA";
         }
 
         // Comparer la taxe
         if (floatval($proforma->taxe_montant ?? 0) != floatval($newData['taxe_montant'] ?? 0)) {
-            $ancien = number_format($proforma->taxe_montant ?? 0, 2, ',', ' ');
-            $nouveau = number_format($newData['taxe_montant'] ?? 0, 2, ',', ' ');
+            $ancien = number_format(floor($proforma->taxe_montant ?? 0), 0, ',', ' ');
+            $nouveau = number_format(floor($newData['taxe_montant'] ?? 0), 0, ',', ' ');
             $modifications[] = "Taxe: {$ancien} → {$nouveau} FCFA";
         }
 

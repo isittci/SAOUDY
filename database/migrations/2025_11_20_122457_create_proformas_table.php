@@ -18,13 +18,12 @@ return new class extends Migration
             $table->string('numero_proforma',20)->comment(" Référence dans tous les documents. Généré automatiquement dans le controller");
             $table->date('date_proforma')->comment('Date de création de la proforma.');
             $table->date('date_debut_validee_proforma')->comment('Date du début valitéé.');
-            $table->date('date_redemarrage_proforma')->comment('Date de redemarrage validée.');
             $table->date('date_fin_validee_proforma')->comment('Date  de fin validée.');
             $table->decimal('montant_retenu_proforma',15,2)->default(0)->comment('');
             $table->decimal('taxe_montant',15,2)->default(0)->comment("TVA par defaut 18% du montent retenu");
             $table->decimal('remise_montant_proforma',15,2)->default( 0)->comment('La rémise (reduction)');
             $table->string('modalite_proforma')->nullable()->comment('Modalités de paiement spécifiées dans la proforma.');
-            
+
             // motif_modification
             $table->text('motif_modification_proforma')->nullable()->comment("Pourquoi cette modification (ex: Demande du maître d'ouvrage, Erreur initiale, Force majeure).");
             $table->boolean('actif_proforma')->default(true)->comment('Permet de désactiver temporairement une proforma sans la supprimer.');

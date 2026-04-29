@@ -110,7 +110,7 @@
                             @endif
 
                         </div>
-                        <p class="text-gray-600 mt-1">{{ $lot->libelle }}</p>
+                        <p class="text-gray-600 mt-1">{{ \Illuminate\Support\Str::limit($lot->libelle, 60) }}</p>
                     </div>
                 </div>
 
@@ -154,12 +154,6 @@
                                         <i class="fas fa-user-plus text-sm group-hover:scale-110 transition-transform"></i>
                                         <span class="text-sm font-medium">Attribuer</span>
                                     </button>
-                                {{-- @elseif(!$lot->attribution_lot && $lot->isRetire())
-                                    <button onclick="openAttributionModal()"
-                                        class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:from-emerald-600 hover:to-green-600 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm hover:shadow-md group">
-                                        <i class="fas fa-user-plus text-sm group-hover:scale-110 transition-transform"></i>
-                                        <span class="text-sm font-medium">Attribuer</span>
-                                    </button> --}}
                                 @endif
                             @endcan
 
@@ -201,14 +195,6 @@
                                                 Historique
                                             </a>
                                         @endcan
-
-                                        {{-- @can('lots.duplicate')
-                                            <button onclick="duplicate()"
-                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-copy mr-2 text-indigo-500"></i>
-                                                Dupliquer
-                                            </button>
-                                        @endcan --}}
 
                                         @can('lots.delete')
                                             @if (!$lot->isAttribue())
@@ -254,81 +240,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Colonne principale -->
             <div class="lg:col-span-2 space-y-6">
-
-
-
-
-                {{-- <!-- Informations principales -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
-                        <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-info-circle text-indigo-500 mr-2"></i>
-                            Informations générales
-                        </h2>
-                    </div>
-
-                    <div class="p-6 space-y-5">
-                        <!-- Appel d'offres -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-600 mb-2">Appel d'offres</label>
-                            <div class="flex items-center space-x-3">
-                                <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
-                                    {{ $lot->appelOffre->numero_appel_offre }}
-                                </span>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">
-                                        {{ $lot->appelOffre->libelle_critere_appel_offre }}</p>
-                                    <p class="text-xs text-gray-500">
-                                        <i
-                                            class="fas fa-tag mr-1"></i>{{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
-                                    </p>
-                                </div>
-                                <a href="{{ route('appels-offres.show', $lot->appelOffre->id_appel_offre) }}"
-                                    class="ml-auto p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                    title="Voir l'appel d'offres">
-                                    <i class="fas fa-external-link-alt text-sm"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Numéro et Libellé -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Numéro</label>
-                                <span
-                                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-indigo-100 text-indigo-700">
-                                    {{ $lot->numero }}
-                                </span>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Libellé</label>
-                                <p class="text-gray-900 font-medium">{{ $lot->libelle }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Description -->
-                        @if ($lot->description_critere)
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Description</label>
-                                <p class="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
-                                    {{ $lot->description_critere }}
-                                </p>
-                            </div>
-                        @endif
-
-                        <!-- Spécifications techniques -->
-                        @if ($lot->specifications_techniques)
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Spécifications
-                                    techniques</label>
-                                <p class="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-lg whitespace-pre-wrap">
-                                    {{ $lot->specifications_techniques }}
-                                </p>
-                            </div>
-                        @endif
-                    </div>
-                </div> --}}
 
                 <!-- Informations principales -->
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -400,7 +311,7 @@
                                 </p>
                             </div>
                         @endif
-                        
+
                         <!-- Budget du lot -->
                         @if ($lot->budget_lot)
                             <div>
@@ -408,7 +319,7 @@
                                 <span
                                     class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-green-100 text-green-700">
                                     <i class="fas fa-coins mr-2"></i>
-                                    {{ rtrim(rtrim(number_format($lot->budget_lot, 2, ',', ' '), '0'), ',') }} FCFA
+                                    {{ rtrim(rtrim(number_format(floor($lot->budget_lot), 0, ',', ' '), '0'), ',') }} FCFA
                                 </span>
                             </div>
                         @endif
@@ -431,8 +342,8 @@
                                             Évaluation terminée
                                         </span>
                                         <span class="text-sm text-gray-700 font-medium">
-                                            {{ number_format($sommesNotesEvaluations, 2) }} /
-                                            {{ number_format($sommesReferencesCriteresEvaluations, 2) }}
+                                            {{ number_format(floor($sommesNotesEvaluations), 0) }} /
+                                            {{ number_format(floor($sommesReferencesCriteresEvaluations), 0) }}
                                         </span>
                                     </div>
                                 @elseif ($evaluationEnCours)
@@ -444,7 +355,7 @@
                                                 Évaluation en cours
                                             </span>
                                             <span class="text-sm font-bold text-gray-700">
-                                                {{ number_format(($sommesNotesEvaluations / $sommesReferencesCriteresEvaluations) * 100, 1) }}%
+                                                {{ number_format(($sommesNotesEvaluations / $sommesReferencesCriteresEvaluations) * 100, 2) }}%
                                             </span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -453,8 +364,8 @@
                                             </div>
                                         </div>
                                         <p class="text-xs text-gray-600">
-                                            {{ number_format($sommesNotesEvaluations, 2) }} /
-                                            {{ number_format($sommesReferencesCriteresEvaluations, 2) }} points
+                                            {{ number_format(floor($sommesNotesEvaluations), 2) }} /
+                                            {{ number_format(floor($sommesReferencesCriteresEvaluations), 2) }} points
                                         </p>
                                     </div>
                                 @elseif ($evaluationNonCommencee)
@@ -493,19 +404,19 @@
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ number_format($montantFacture, 0, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($montantFacture), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Montant payé</p>
                                                 <p class="text-sm font-medium text-green-700">
-                                                    {{ number_format($montantPaye, 0, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($montantPaye), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ number_format($resteAPayer, 0, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($resteAPayer), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                         </div>
@@ -519,7 +430,7 @@
                                                 Paiement en cours
                                             </span>
                                             <span class="text-sm font-bold text-gray-700">
-                                                {{ number_format($tauxPaiement, 1) }}%
+                                                {{ number_format($tauxPaiement, 2) }}%
                                             </span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -531,19 +442,19 @@
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ number_format($montantFacture, 2, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($montantFacture), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Montant payé</p>
                                                 <p class="text-sm font-medium text-green-700">
-                                                    {{ number_format($montantPaye, 2, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($montantPaye), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
                                                 <p class="text-sm font-medium text-orange-700">
-                                                    {{ number_format($resteAPayer, 2, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($resteAPayer), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                         </div>
@@ -559,7 +470,7 @@
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Montant facturé</p>
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ number_format($montantFacture, 2, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($montantFacture), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                             <div>
@@ -571,7 +482,7 @@
                                             <div>
                                                 <p class="text-xs text-gray-500 mb-1">Reste à payer</p>
                                                 <p class="text-sm font-medium text-orange-700">
-                                                    {{ number_format($resteAPayer, 2, ',', ' ') }} FCFA
+                                                    {{ number_format(floor($resteAPayer), 0, ',', ' ') }} FCFA
                                                 </p>
                                             </div>
                                         </div>
@@ -763,10 +674,10 @@
                     </h3>
 
                     <div class="space-y-4 text-sm">
-                        <!-- Créé par -->
+                        <!-- Enregistré par -->
                         @if ($lot->creator)
                             <div>
-                                <p class="text-gray-600 font-medium mb-1">Créé par</p>
+                                <p class="text-gray-600 font-medium mb-1">Enregistré par</p>
                                 <p class="text-gray-900">{{ $lot->creator->nom_complet }}</p>
                                 <p class="text-xs text-gray-500">{{ $lot->created_at->format('d/m/Y à H:i') }}</p>
                             </div>
@@ -834,16 +745,7 @@
                                 </a>
                             @endcan
 
-                            {{-- @can('lots.duplicate')
-                                <button onclick="duplicate()"
-                                    class="w-full flex items-center space-x-3 p-3 bg-white hover:bg-purple-50 border border-purple-200 rounded-lg transition-all duration-200 group">
-                                    <div
-                                        class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                                        <i class="fas fa-copy text-purple-600"></i>
-                                    </div>
-                                    <span class="text-sm font-semibold text-gray-700">Dupliquer le lot</span>
-                                </button>
-                            @endcan --}}
+
                         </div>
                     </div>
                 @endcanany
@@ -936,7 +838,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-indigo-800">{{ $lot->numero }} -
-                                            {{ Str::limit($lot->libelle, 50) }}</p>
+                                            {{ $lot->libelle }}</p>
                                         <p class="text-xs text-indigo-600 mt-0.5">AO:
                                             {{ $lot->appelOffre->numero_appel_offre }}</p>
                                     </div>
@@ -973,9 +875,9 @@
                                             size="4">
                                             @forelse ($prestataires as $prestataire)
                                                 <option value="{{ $prestataire->id_prestataire }}"
-                                                    data-numero="{{ $prestataire->numero_identification_prestataire }}"
+                                                    data-numero="{{ $prestataire->numero_cc_prestataire }}"
                                                     data-raison="{{ $prestataire->raison_sociale_prestataire }}">
-                                                    ({{ $prestataire->numero_identification_prestataire }})
+                                                    ({{ $prestataire->numero_cc_prestataire }})
                                                     - {{ $prestataire->raison_sociale_prestataire }}
                                                 </option>
                                             @empty
@@ -1063,11 +965,6 @@
 
                                                     <div class="space-y-4">
 
-
-
-
-
-
                                                         <!-- Budget hors taxe du lot (HT) -->
                                                         <div>
                                                             <label
@@ -1091,7 +988,7 @@
                                                                             <p class="text-xs text-indigo-600 font-medium">
                                                                                 Budget du lot</p>
                                                                             <p class="text-base font-bold text-indigo-800">
-                                                                                {{ number_format($lot->budget_lot, 2, ',', ' ') }}
+                                                                                {{ number_format(floor($lot->budget_lot), 0, ',', ' ') }}
                                                                                 <span
                                                                                     class="text-sm font-semibold">FCFA</span>
                                                                             </p>
@@ -1114,6 +1011,7 @@
                                                                                     {{ $lot->appelOffre->numero_appel_offre }}
                                                                                 </span>
                                                                             </p>
+                                                                            {{-- {{ dd($lot) }} --}}
                                                                             <p
                                                                                 class="text-base font-bold text-emerald-700">
                                                                                 {{ number_format($montantRestant, 0, ',', ' ') }}
@@ -1141,18 +1039,18 @@
                                                                                 <i
                                                                                     class="fas fa-chart-pie mr-1 text-indigo-400"></i>
                                                                                 Déjà attribué : <span
-                                                                                    class="font-semibold text-indigo-700 ml-1">{{ number_format($montantUtilise, 0, ',', ' ') }}
+                                                                                    class="font-semibold text-indigo-700 ml-1">{{ number_format(floor($montantUtilise), 0, ',', ' ') }}
                                                                                     FCFA</span>
                                                                             </span>
                                                                             <span
-                                                                                class="font-bold text-indigo-600">{{ number_format($pourcentageUtilise, 1) }}%</span>
+                                                                                class="font-bold text-indigo-600">{{ number_format($pourcentageUtilise, 2) }}%</span>
                                                                         </div>
                                                                         <div
                                                                             class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                                                             <div class="h-2 rounded-full transition-all duration-500 ease-out
-                    @if ($pourcentageUtilise < 50) bg-emerald-500
-                    @elseif($pourcentageUtilise < 80) bg-amber-500
-                    @else bg-red-500 @endif"
+                                                                                @if ($pourcentageUtilise < 50) bg-emerald-500
+                                                                                @elseif($pourcentageUtilise < 80) bg-amber-500
+                                                                                @else bg-red-500 @endif"
                                                                                 style="width: {{ min($pourcentageUtilise, 100) }}%">
                                                                             </div>
                                                                         </div>
@@ -1200,7 +1098,7 @@
                                                                 <p class="text-emerald-600 flex items-center">
                                                                     <i class="fas fa-arrow-up mr-1"></i>
                                                                     Max: <span
-                                                                        class="font-semibold ml-1">{{ number_format($montantRestant, 0, ',', ' ') }}
+                                                                        class="font-semibold ml-1">{{ number_format(floor($montantRestant), 0, ',', ' ') }}
                                                                         FCFA</span>
                                                                 </p>
                                                             </div>
@@ -1306,8 +1204,6 @@
                                                             </div>
                                                         </div>
 
-
-
                                                         <!-- Total TTC -->
                                                         <div class="pt-4 border-t-2 border-emerald-200">
                                                             <div
@@ -1408,13 +1304,14 @@
                                                     max="{{ date('Y-m-d') }}"
                                                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
                                             </div>
+
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Date début
                                                     <span class="text-red-500">*</span></label>
                                                 <input type="date" name="date_debut_prevue"
+                                                    value="{{ old('date_debut_prevue', $lot->date_debut_prevue?->format('Y-m-d')) }}"
                                                     onchange="updateDateFinMin()"
-                                                    min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
-                                                    max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
+
                                                     id="date_debut_prevue" required
                                                     value="{{ old('date_debut_prevue') }}"
                                                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
@@ -1424,8 +1321,8 @@
                                                     <span class="text-red-500">*</span></label>
                                                 <input type="date" name="date_fin_prevue"
                                                     onchange="updateDateFinMin()"
-                                                    min="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_demarrage_prevue_caracteristique_appel_offre)->toDateString() }}"
-                                                    max="{{ \Carbon\Carbon::parse($lot->appelOffre?->caracteristiqueActive?->date_livraison_previsionnelle_caracteristique_appel_offre)->toDateString() }}"
+                                                    value="{{ old('date_fin_prevue', $lot->date_fin_prevue?->format('Y-m-d')) }}"
+
                                                     id="date_fin_prevue" required value="{{ old('date_fin_prevue') }}"
                                                     class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400">
                                             </div>
@@ -1547,7 +1444,7 @@
                 $prestataires->map(function ($p) {
                     return [
                         'id' => $p->id_prestataire,
-                        'numero' => $p->numero_identification_prestataire,
+                        'numero' => $p->numero_cc_prestataire,
                         'raison' => $p->raison_sociale_prestataire
                     ];
                 }));
@@ -1671,11 +1568,6 @@
             }
 
 
-
-
-
-
-
             // ==========================================
             // SOUMISSION FORMULAIRE ATTRIBUTION
             // ==========================================
@@ -1759,31 +1651,7 @@
                 }
             });
 
-            // function duplicate() {
-            //     if (confirm('Voulez-vous dupliquer ce lot ?')) {
-            //         fetch("{{ route('api.lots-appels-offres.duplicate', [':appelOffre', ':id']) }}".replace(':appelOffre',
-            //                 appelOffreId).replace(':id', lotId), {
-            //                 method: 'POST',
-            //                 headers: {
-            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            //                     'Content-Type': 'application/json',
-            //                     'Accept': 'application/json'
-            //                 }
-            //             })
-            //             .then(response => response.json())
-            //             .then(data => {
-            //                 if (data.success) {
-            //                     window.location.href = `/lots/${data.data.id_lot}/edit`;
-            //                 } else {
-            //                     alert(data.message || 'Une erreur est survenue');
-            //                 }
-            //             })
-            //             .catch(error => {
-            //                 console.error('Erreur:', error);
-            //                 alert('Une erreur est survenue');
-            //             });
-            //     }
-            // }
+
 
             function viewStatistiques() {
                 fetch("{{ route('api.lots-appels-offres.statistiques', [':appelOffre', ':id']) }}".replace(':appelOffre',

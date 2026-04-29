@@ -131,7 +131,7 @@
                                     Chiffre d'affaires (FCFA)
                                 </label>
                                 <input type="text" name="chiffre_affaire_situation_financiere" id="chiffre_affaire_situation_financiere"
-                                       value="{{ old('chiffre_affaire_situation_financiere', number_format($situation->chiffre_affaire_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('chiffre_affaire_situation_financiere', number_format(floor($situation->chiffre_affaire_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">
@@ -141,7 +141,7 @@
                                     Résultat net (FCFA)
                                 </label>
                                 <input type="text" name="resultat_net_situation_financiere" id="resultat_net_situation_financiere"
-                                       value="{{ old('resultat_net_situation_financiere', number_format($situation->resultat_net_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('resultat_net_situation_financiere', number_format(floor($situation->resultat_net_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">
@@ -164,7 +164,7 @@
                                     Fonds propres (FCFA)
                                 </label>
                                 <input type="text" name="fonds_propres_situation_financiere" id="fonds_propres_situation_financiere"
-                                       value="{{ old('fonds_propres_situation_financiere', number_format($situation->fonds_propres_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('fonds_propres_situation_financiere', number_format(floor($situation->fonds_propres_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">
@@ -174,7 +174,7 @@
                                     Capacité d'emprunt (FCFA)
                                 </label>
                                 <input type="text" name="capacite_emprunt_situation_financiere" id="capacite_emprunt_situation_financiere"
-                                       value="{{ old('capacite_emprunt_situation_financiere', number_format($situation->capacite_emprunt_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('capacite_emprunt_situation_financiere', number_format(floor($situation->capacite_emprunt_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">
@@ -233,7 +233,7 @@
                                     Total Actif (FCFA)
                                 </label>
                                 <input type="text" name="total_actif_situation_financiere" id="total_actif_situation_financiere"
-                                       value="{{ old('total_actif_situation_financiere', number_format($situation->total_actif_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('total_actif_situation_financiere', number_format(floor($situation->total_actif_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">
@@ -243,7 +243,7 @@
                                     Total Passif (FCFA)
                                 </label>
                                 <input type="text" name="total_passif_situation_financiere" id="total_passif_situation_financiere"
-                                       value="{{ old('total_passif_situation_financiere', number_format($situation->total_passif_situation_financiere ?? 0, 0, ',', ' ')) }}"
+                                       value="{{ old('total_passif_situation_financiere', number_format(floor($situation->total_passif_situation_financiere ?? 0), 0, ',', ' ')) }}"
                                        placeholder="0"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors input-amount"
                                        oninput="formatNumber(this)">

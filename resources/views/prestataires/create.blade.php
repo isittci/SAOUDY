@@ -128,22 +128,7 @@
                                 @enderror
                             </div>
 
-                            <!-- Numéro d'identification -->
-                            <div>
-                                <label for="numero_identification_prestataire"
-                                    class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Numéro d'identification <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="numero_identification_prestataire"
-                                    id="numero_identification_prestataire"
-                                    value="{{ old('numero_identification_prestataire') }}" required maxlength="25"
-                                    data-label="Numéro d'identification"
-                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_identification_prestataire') border-red-500 @enderror"
-                                    placeholder="Ex: CI-ABJ-2024-001">
-                                @error('numero_identification_prestataire')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Numéro CC -->
@@ -165,11 +150,11 @@
                                 <div>
                                     <label for="numero_rccm_prestataire"
                                         class="block text-sm font-semibold text-gray-700 mb-2">
-                                        N° RCCM <span class="text-red-500">*</span>
+                                        N° RCCM
                                     </label>
                                     <input type="text" name="numero_rccm_prestataire" id="numero_rccm_prestataire"
-                                        value="{{ old('numero_rccm_prestataire') }}" required maxlength="50"
-                                        data-label="N° RCCM"
+                                        value="{{ old('numero_rccm_prestataire') }}"  maxlength="50"
+
                                         class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('numero_rccm_prestataire') border-red-500 @enderror"
                                         placeholder="Ex: RCCM-ABJ-2024-B-12345">
                                     @error('numero_rccm_prestataire')
@@ -219,24 +204,7 @@
                         </div>
 
                         <div class="p-6 space-y-6">
-                            <!-- Email -->
-                            <div>
-                                <label for="email_prestataire" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Email <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fas fa-envelope text-gray-400"></i>
-                                    </div>
-                                    <input type="email" name="email_prestataire" id="email_prestataire"
-                                        value="{{ old('email_prestataire') }}" required maxlength="255" data-label="Email"
-                                        class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all @error('email_prestataire') border-red-500 @enderror"
-                                        placeholder="contact@entreprise.com">
-                                </div>
-                                @error('email_prestataire')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Téléphone principal -->
@@ -382,10 +350,10 @@
                                 <!-- Email représentant -->
                                 <div>
                                     <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Email <span class="text-red-500">*</span>
+                                        Email
                                     </label>
                                     <input type="email" name="email" id="email" value="{{ old('email') }}"
-                                        required maxlength="255" data-label="Email du représentant"
+                                         maxlength="255" data-label="Email du représentant"
                                         class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('email') border-red-500 @enderror"
                                         placeholder="representant@email.com">
                                     @error('email')
@@ -412,10 +380,10 @@
                                 <!-- Nationalité -->
                                 <div>
                                     <label for="nationalite" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Nationalité <span class="text-red-500">*</span>
+                                        Nationalité
                                     </label>
                                     <input type="text" name="nationalite" id="nationalite"
-                                        value="{{ old('nationalite') }}" required maxlength="50" data-label="Nationalité"
+                                        value="{{ old('nationalite') }}"  maxlength="50" data-label="Nationalité"
                                         class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('nationalite') border-red-500 @enderror"
                                         placeholder="Ex: Ivoirienne">
                                     @error('nationalite')
@@ -451,10 +419,10 @@
                             <!-- Adresse -->
                             <div>
                                 <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Adresse <span class="text-red-500">*</span>
+                                    Adresse
                                 </label>
-                                <input type="text" name="adresse" id="adresse" value="{{ old('adresse') }}" required
-                                    maxlength="255" data-label="Adresse du représentant"
+                                <input type="text" name="adresse" id="adresse" value="{{ old('adresse') }}"
+                                    maxlength="255" 
                                     class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all @error('adresse') border-red-500 @enderror"
                                     placeholder="Adresse du représentant légal">
                                 @error('adresse')
@@ -627,12 +595,10 @@
                 const requiredFieldsByStep = {
                     1: [
                         'raison_sociale_prestataire',
-                        'numero_identification_prestataire',
                         'numero_cc_prestataire',
-                        'numero_rccm_prestataire'
+                        // 'numero_rccm_prestataire'
                     ],
                     2: [
-                        'email_prestataire',
                         'telephone_principal_prestataire',
                         'adresse_prestataire',
                         'ville_prestataire',
@@ -640,11 +606,8 @@
                     ],
                     3: [
                         'nom',
-                        'email',
                         'contact',
-                        'nationalite',
                         'pays',
-                        'adresse',
                         'profession'
                     ]
                 };

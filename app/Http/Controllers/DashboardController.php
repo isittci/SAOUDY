@@ -560,7 +560,6 @@ class DashboardController extends Controller
                     'libelle_lot' => $lot->libelle,
                     'appel_offre_id' => $lot->appel_offre_id,
                     'numero_attribution' => $attribution?->numero_attribution ?? '-',
-                    'numero_prestataire' => $attribution?->prestataire?->numero_identification_prestataire ?? '-',
                     'raison_sociale_prestataire' => $attribution?->prestataire?->raison_sociale_prestataire ?? '-',
                     'attribution' => $attribution,
                     'montant_lot' => $montantLot,
@@ -598,8 +597,6 @@ class DashboardController extends Controller
                 'lotsEnCours' => $lotsEnCours,
             ], 200);
         }
-
-        // dd($lotsEnCours);
 
         return view('dashboard', compact(
             'periode',

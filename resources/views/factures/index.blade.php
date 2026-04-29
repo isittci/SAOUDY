@@ -98,7 +98,7 @@
                         <div class="min-w-0 flex-1">
                             <p class="text-orange-100 text-xs font-medium uppercase truncate">Montant Total Facturé</p>
                             <p class="text-lg sm:text-xl font-bold mt-1 truncate">
-                                {{ number_format($statistiques['montant_total'], 0, ',', ' ') }} <span
+                                {{ number_format(floor($statistiques['montant_total']), 0, ',', ' ') }} <span
                                     class="text-sm">FCFA</span></p>
                         </div>
                         <i class="fas fa-coins text-2xl sm:text-3xl text-orange-300 opacity-50 ml-2 flex-shrink-0"></i>
@@ -109,7 +109,7 @@
                         <div class="min-w-0 flex-1">
                             <p class="text-green-100 text-xs font-medium uppercase truncate">Montant Payé</p>
                             <p class="text-lg sm:text-xl font-bold mt-1 truncate">
-                                {{ number_format($statistiques['montant_paye'], 0, ',', ' ') }} <span
+                                {{ number_format(floor($statistiques['montant_paye']), 0, ',', ' ') }} <span
                                     class="text-sm">FCFA</span></p>
                         </div>
                         <i
@@ -121,7 +121,7 @@
                         <div class="min-w-0 flex-1">
                             <p class="text-red-100 text-xs font-medium uppercase truncate">Reste à Payer</p>
                             <p class="text-lg sm:text-xl font-bold mt-1 truncate">
-                                {{ number_format($statistiques['montant_restant'], 0, ',', ' ') }} <span
+                                {{ number_format(floor($statistiques['montant_restant']), 0, ',', ' ') }} <span
                                     class="text-sm">FCFA</span></p>
                         </div>
                         <i

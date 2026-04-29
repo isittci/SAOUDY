@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrestataireController;
 use App\Http\Controllers\CapaciteTechniqueController;
 use App\Http\Controllers\SituationFinanciereController;
+use App\Http\Controllers\AttributionLotPrestataireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +30,11 @@ Route::middleware(['auth'])->prefix('prestataires')->name('prestataires.')->grou
     Route::post('/{id}/duplicate', [PrestataireController::class, 'duplicate'])->name('duplicate')->middleware('can:prestataires.update');
 
 
+
 });
+
+
+
 
 
 /*

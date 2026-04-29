@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Banque;
+use Illuminate\View\View;
 use App\Models\Prestataire;
-use App\Http\Requests\StoreBanqueRequest;
-use App\Http\Requests\UpdateBanqueRequest;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreBanqueRequest;
+use App\Http\Requests\UpdateBanqueRequest;
 
 class BanqueController extends Controller
 {
@@ -149,6 +150,7 @@ class BanqueController extends Controller
 
             $data = $request->validated();
             $data['prestataire_id'] = $prestataireId;
+            $data['nom_banque'] = Str::upper($data['nom_banque']);
             $data['created_by'] = auth()->id();
             $data['actif_banque'] = $request->boolean('actif_banque', true);
 
@@ -299,6 +301,7 @@ class BanqueController extends Controller
 
             $data = $request->validated();
             $data['updated_by'] = auth()->id();
+            $data['nom_banque'] = Str::upper($data['nom_banque']);
 
             if ($request->has('actif_banque')) {
                 $data['actif_banque'] = $request->boolean('actif_banque');

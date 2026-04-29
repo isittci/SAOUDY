@@ -4,61 +4,56 @@
 
 @section('content')
     <!-- Filters Bar -->
-    <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 shadow-sm">
-        <div class="px-3 sm:px-4 lg:px-6 py-4">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <!-- Titre et bouton créer -->
                 <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
-                        <i class="fas fa-boxes text-indigo-500"></i>
+                    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                        <span class="p-2 bg-indigo-100 rounded-lg">
+                            <i class="fas fa-boxes text-indigo-600"></i>
+                        </span>
                         <span>Gestion des Lots</span>
                     </h1>
-                    @can('lots.create')
-                        <button
-                            onclick="window.location.href='{{ route('lots.create') }}{{ request('appel_offre_id') ? '?appel_offre_id=' . request('appel_offre_id') : '' }}'"
-                            class="md:hidden px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg active:scale-95 font-medium">
-                            <i class="fas fa-plus text-sm"></i>
-                            <span class="text-sm">Nouveau</span>
-                        </button>
-                    @endcan
+
                 </div>
 
-                <!-- Filtres et actions -->
-                <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Filtres -->
+                <div class="flex flex-col sm:flex-row gap-3 flex-wrap">
                     <!-- Recherche -->
-                    <div class="relative flex-1 sm:min-w-[250px]">
+                    <div class="relative flex-1 sm:min-w-[280px]">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400 text-sm"></i>
+                            <i class="fas fa-search text-gray-400"></i>
                         </div>
-                        <input type="text" id="searchInput" placeholder="Chercher par numéro, libellé..."
+                        <input type="text" id="searchInput" placeholder="Rechercher par numéro, libellé..."
                             value="{{ request('search') }}"
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent hover:border-indigo-300 transition-all" />
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
                     </div>
 
                     <!-- Filtre Appel d'offres -->
                     <select id="appelOffreFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent hover:border-indigo-300 transition-all cursor-pointer">
+                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer min-w-[200px]">
                         <option value="">Tous les appels d'offres</option>
                         @foreach ($appelsOffres as $ao)
                             <option value="{{ $ao->id_appel_offre }}"
                                 {{ request('appel_offre_id') == $ao->id_appel_offre ? 'selected' : '' }}>
-                                {{ $ao->numero_appel_offre }} - {{ Str::limit($ao->libelle_critere_appel_offre, 15) }}
+                                {{ $ao->numero_appel_offre }} - {{ Str::limit($ao->libelle_critere_appel_offre, 20) }}
                             </option>
                         @endforeach
                     </select>
 
                     <!-- Filtre Attribution -->
                     <select id="attributionFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent hover:border-indigo-300 transition-all cursor-pointer">
-                        <option value="">Tous</option>
+                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer">
+                        <option value="">Attribution</option>
                         <option value="1" {{ request('attribution') == '1' ? 'selected' : '' }}>Attribués</option>
                         <option value="0" {{ request('attribution') == '0' ? 'selected' : '' }}>Non attribués</option>
                     </select>
 
                     <!-- Filtre Statut -->
                     <select id="statutFilter"
-                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent hover:border-indigo-300 transition-all cursor-pointer">
-                        <option value="">Tous les statuts</option>
+                        class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all cursor-pointer">
+                        <option value="">Statut</option>
                         <option value="1" {{ request('statut') == '1' ? 'selected' : '' }}>Actifs</option>
                         <option value="0" {{ request('statut') == '0' ? 'selected' : '' }}>Inactifs</option>
                     </select>
@@ -67,62 +62,70 @@
         </div>
     </div>
 
-
-
-
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 lg:p-6">
-
+    <main class="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
         <!-- Messages de succès/erreur -->
         @if (session('success'))
-            <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm animate-fadeIn">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
-                    <p class="text-green-700 font-medium">{{ session('success') }}</p>
+            <div class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3 animate-fadeIn">
+                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-green-600"></i>
                 </div>
+                <div>
+                    <h4 class="font-semibold text-green-800">Succès</h4>
+                    <p class="text-green-700 text-sm">{{ session('success') }}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="ml-auto text-green-500 hover:text-green-700">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         @endif
 
         @if (session('error'))
-            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-sm animate-fadeIn">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
-                    <p class="text-red-700 font-medium">{{ session('error') }}</p>
+            <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 animate-fadeIn">
+                <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation text-red-600"></i>
                 </div>
+                <div>
+                    <h4 class="font-semibold text-red-800">Erreur</h4>
+                    <p class="text-red-700 text-sm">{{ session('error') }}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="ml-auto text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         @endif
 
-        <!-- Tableau -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <!-- Card Tableau -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <!-- En-tête du tableau -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Liste des lots (<span id="totalCount">{{ $lots->total() }}</span>)
-                    </h2>
-                    <div class="flex items-center space-x-2">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-lg font-semibold text-gray-800">Liste des lots</h2>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                            <span id="totalCount">{{ $lots->total() }}</span> résultat(s)
+                        </span>
+                    </div>
 
-                        <div class="flex items-center space-x-3">
-                            {{-- Excel --}}
-                            <a href="{{ route('exports.lots-en-cours.excel') }}"
-                                title="Télécharger la liste des lots en cours au format Excel"
-                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-                                <i class="fa fa-file-excel mr-2"></i>
-                                <span>Exporter Excel</span>
-                            </a>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Export Excel -->
+                        <a href="{{ route('exports.lots-en-cours.excel') }}" title="Exporter en Excel"
+                            class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm font-medium">
+                            <i class="fas fa-file-excel"></i>
+                            <span class="hidden sm:inline">Excel</span>
+                        </a>
 
-                            {{-- PDF --}}
-                            <a href="{{ route('exports.lots-en-cours.pdf') }}"
-                                title="Télécharger la liste des lots en cours au format PDF"
-                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-                                <i class="fa fa-file-pdf mr-2"></i>
-                                <span>Exporter PDF</span>
-                            </a>
-                        </div>
+                        <!-- Export PDF -->
+                        <a href="{{ route('exports.lots-en-cours.pdf') }}" title="Exporter en PDF"
+                            class="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all text-sm font-medium">
+                            <i class="fas fa-file-pdf"></i>
+                            <span class="hidden sm:inline">PDF</span>
+                        </a>
 
-                        <button onclick="refreshTable()"
-                            class="px-3 py-2 text-gray-600 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all duration-200">
-                            <i class="fas fa-sync-alt text-sm"></i>
+                        <!-- Rafraîchir -->
+                        <button onclick="refreshTable()" title="Rafraîchir"
+                            class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                            <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
                 </div>
@@ -130,260 +133,208 @@
 
             <!-- Table responsive -->
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Numéro</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Libellé</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Appel d'Offres</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Dates Prévues</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Attribution</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Statut</th>
-                            @canany(['lots.view-details', 'lots.update', 'attributions_lots.assign',
-                                'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
-                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Actions</th>
+                <table class="w-full min-w-[900px]">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">
+                                Numéro
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Libellé
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-44">
+                                Appel d'Offres
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-36">
+                                Période
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-36">
+                                Attribution
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">
+                                Statut
+                            </th>
+                            @canany(['lots.view-details', 'lots.update', 'attributions_lots.assign', 'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
+                                <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-28">
+                                    Actions
+                                </th>
                             @endcanany
                         </tr>
                     </thead>
 
-                    <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
+                    <tbody id="tableBody" class="divide-y divide-gray-100">
                         @forelse($lots as $lot)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold bg-indigo-100 text-indigo-700">
-                                            {{ $lot->numero }}
+                            <tr class="hover:bg-gray-50/70 transition-colors group">
+                                <!-- Numéro -->
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        {{ $lot->numero }}
+                                    </span>
+                                </td>
+
+                                <!-- Libellé -->
+                                <td class="px-4 py-3">
+                                    <div class="max-w-xs">
+                                        <p class="text-sm font-medium text-gray-900 truncate" title="{{ $lot->libelle }}">
+                                            {{ $lot->libelle }}
+                                        </p>
+                                        @if ($lot->description_critere)
+                                            <p class="text-xs text-gray-500 mt-0.5 truncate" title="{{ $lot->description_critere }}">
+                                                {{ Str::limit($lot->description_critere, 50) }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                <!-- Appel d'Offres -->
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-sm font-medium text-gray-900 whitespace-nowrap">
+                                            {{ $lot->appelOffre->numero_appel_offre }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                                            <i class="fas fa-tag text-gray-400"></i>
+                                            {{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $lot->libelle }}</div>
-                                    @if ($lot->description_critere)
-                                        <div class="text-xs text-gray-500 mt-1 line-clamp-1">
-                                            {{ Str::limit($lot->description_critere, 60) }}
-                                        </div>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ $lot->appelOffre->numero_appel_offre }}
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">
-                                        <i
-                                            class="fas fa-tag mr-1"></i>{{ $lot->appelOffre->typeAppelOffre->code_type_appel_offre }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+
+                                <!-- Dates Prévues -->
+                                <td class="px-4 py-3 text-center">
                                     @if ($lot->date_debut_prevue && $lot->date_fin_prevue)
-                                        <div class="text-xs text-gray-700 space-y-1">
-                                            <div><span class="font-medium">Début:</span>
-                                                {{ $lot->date_debut_prevue->format('d/m/Y') }}</div>
-                                            <div><span class="font-medium">Fin:</span>
-                                                {{ $lot->date_fin_prevue->format('d/m/Y') }}</div>
+                                        <div class="inline-flex flex-col items-center gap-1 text-xs">
+                                            <div class="flex items-center gap-1.5 text-gray-600">
+                                                <i class="fas fa-play text-green-500 text-[10px]"></i>
+                                                <span>{{ $lot->date_debut_prevue->format('d/m/Y') }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-gray-600">
+                                                <i class="fas fa-stop text-red-500 text-[10px]"></i>
+                                                <span>{{ $lot->date_fin_prevue->format('d/m/Y') }}</span>
+                                            </div>
                                             @if ($lot->calculerDuree())
-                                                <div class="text-indigo-600 font-semibold">
-                                                    <i class="fas fa-calendar-day mr-1"></i>{{ $lot->calculerDuree() }}
-                                                    jour(s)
-                                                </div>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-medium">
+                                                    <i class="fas fa-clock"></i>
+                                                    {{ $lot->calculerDuree() }}j
+                                                </span>
                                             @endif
                                         </div>
                                     @else
-                                        <span class="text-xs text-gray-400">Non définies</span>
+                                        <span class="text-xs text-gray-400 italic">Non défini</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
+
+                                <!-- Attribution -->
+                                <td class="px-4 py-3 text-center">
                                     @if ($lot->attribution_lot)
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i> Attribué
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                                <i class="fas fa-check-circle"></i>
+                                                Attribué
+                                            </span>
+                                            @if ($lot->attributionActive)
+                                                <span class="text-[10px] text-gray-500 max-w-[120px] truncate" title="{{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? '' }}">
+                                                    {{ Str::limit($lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A', 18) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                            <i class="fas fa-hourglass-half"></i>
+                                            En attente
                                         </span>
-                                        @if ($lot->attributionActive)
-                                            <div class="text-xs text-gray-600 mt-1">
-                                                {{ $lot->attributionActive->prestataire->raison_sociale_prestataire ?? 'N/A' }}
-                                            </div>
+                                    @endif
+                                </td>
+
+                                <!-- Statut -->
+                                <td class="px-4 py-3 text-center">
+                                    <div class="flex flex-col items-center gap-1">
+                                        @if ($lot->statut_lot)
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                                <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                                Actif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                                                Inactif
+                                            </span>
                                         @endif
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i> Non attribué
-                                        </span>
-                                    @endif
+                                        @if ($lot->isRetire())
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700">
+                                                <i class="fas fa-ban"></i>
+                                                Retiré
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    @if ($lot->statut_lot)
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                            <i class="fas fa-check-circle mr-1"></i> Actif
-                                        </span>
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                                            <i class="fas fa-times-circle mr-1"></i> Inactif
-                                        </span>
-                                    @endif
-                                    @if ($lot->isRetire())
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 mt-1">
-                                            <i class="fas fa-ban mr-1"></i> Retiré
-                                        </span>
-                                    @endif
-                                </td>
-                                @canany(['lots.view-details', 'lots.update', 'attributions_lots.assign',
-                                    'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex items-center justify-center space-x-2">
+
+                                <!-- Actions -->
+                                @canany(['lots.view-details', 'lots.update', 'attributions_lots.assign', 'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center justify-center gap-1">
                                             @can('lots.view-details')
-                                                <!-- Voir détails -->
-                                                <button
-                                                    onclick="window.location.href='{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                                    title="Voir détails">
-                                                    <i class="fas fa-eye text-sm"></i>
-                                                </button>
+                                                <a href="{{ route('lots-appels-offres.show', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Voir détails">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                             @endcan
 
                                             @can('lots.update')
-                                                @if (!$lot->attributionActive)
-                                                    <!-- Modifier -->
-                                                    <button
-                                                        onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
-                                                        class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                                                        title="Modifier">
-                                                        <i class="fas fa-edit text-sm"></i>
-                                                    </button>
-                                                @endif
+                                                {{-- @if (!$lot->attributionActive) --}}
+                                                    <a href="{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}"
+                                                        class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Modifier">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                {{-- @endif --}}
                                             @endcan
 
-
-                                            {{-- @canany(['attributions_lots.assign', 'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
-                                                <!-- Menu Actions -->
-                                                <div class="relative">
-                                                    <button onclick="toggleMenu('{{ $lot->id_lot }}')"
-                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                        title="Plus d'actions">
-                                                        <i class="fas fa-ellipsis-v text-sm"></i>
-                                                    </button>
-                                                    <div id="menu-{{ $lot->id_lot }}"
-                                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                                                        <div class="py-1">
-                                                            @can('attributions_lots.assign')
-                                                                @if (!$lot->attribution_lot)
-                                                                    <button onclick="openAttributionModal('{{ $lot->id_lot }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                        <i class="fas fa-user-check mr-2 text-green-500"></i>
-                                                                        Attribuer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-
-                                                            @can('attributions_lots.withdraw')
-                                                                @if ($lot->isAttribue() && !$lot->isRetire())
-                                                                    <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                        <i class="fas fa-ban mr-2 text-red-500"></i>
-                                                                        Retirer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-
-                                                            @can('lots.view-history')
-                                                                <button onclick="viewHistorique('{{ $lot->id_lot }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-history mr-2 text-blue-500"></i>
-                                                                    Historique
-                                                                </button>
-                                                            @endcan
-
-                                                            @can('lots.duplicate')
-                                                                <button onclick="duplicate('{{ $lot->id_lot }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                                    Dupliquer
-                                                                </button>
-                                                            @endcan
-
-                                                            @can('lots.delete')
-                                                                @if (!$lot->isAttribue())
-                                                                    <button
-                                                                        onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                                        <i class="fas fa-trash mr-2"></i>
-                                                                        Supprimer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endcanany --}}
-
-                                            @canany(['attributions_lots.assign', 'attributions_lots.withdraw',
-                                                'lots.view-history', 'lots.duplicate', 'lots.delete'])
+                                            @canany(['attributions_lots.assign', 'attributions_lots.withdraw', 'lots.view-history', 'lots.duplicate', 'lots.delete'])
                                                 <!-- Menu Actions -->
                                                 <div class="relative">
                                                     <button onclick="toggleMenu(event, '{{ $lot->id_lot }}')"
-                                                        class="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                                                        title="Plus d'actions">
-                                                        <i class="fas fa-ellipsis-v text-sm"></i>
+                                                        class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-all" title="Plus d'actions">
+                                                        <i class="fas fa-ellipsis-v"></i>
                                                     </button>
                                                     <div id="menu-{{ $lot->id_lot }}"
-                                                        class="hidden fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[9999]">
-                                                        <div class="py-1">
-                                                            @can('attributions_lots.assign')
-                                                                @if (!$lot->attribution_lot)
-                                                                    <button onclick="openAttributionModal('{{ $lot->id_lot }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                        <i class="fas fa-user-check mr-2 text-green-500"></i>
-                                                                        Attribuer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-
-                                                            @can('attributions_lots.withdraw')
-                                                                @if ($lot->isAttribue() && !$lot->isRetire())
-                                                                    <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                        <i class="fas fa-ban mr-2 text-red-500"></i>
-                                                                        Retirer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-
-                                                            @can('lots.view-history')
-                                                                <button onclick="viewHistorique('{{ $lot->id_lot }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-history mr-2 text-blue-500"></i>
-                                                                    Historique
+                                                        class="hidden fixed w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-[9999] py-1">
+                                                        @can('attributions_lots.assign')
+                                                            @if (!$lot->attribution_lot)
+                                                                <button onclick="openAttributionModal('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                                                    <i class="fas fa-user-check text-green-500 w-4"></i>
+                                                                    Attribuer
                                                                 </button>
-                                                            @endcan
+                                                            @endif
+                                                        @endcan
 
-                                                            {{-- @can('lots.duplicate')
-                                                                <button onclick="duplicate('{{ $lot->id_lot }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                                    Dupliquer
+                                                        @can('attributions_lots.withdraw')
+                                                            @if ($lot->isAttribue() && !$lot->isRetire())
+                                                                <button onclick="openRetraitModal('{{ $lot->id_lot }}')"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                                                    <i class="fas fa-ban text-red-500 w-4"></i>
+                                                                    Retirer
                                                                 </button>
-                                                            @endcan --}}
+                                                            @endif
+                                                        @endcan
 
-                                                            @can('lots.delete')
-                                                                @if (!$lot->isAttribue())
-                                                                    <button
-                                                                        onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                                                                        <i class="fas fa-trash mr-2"></i>
-                                                                        Supprimer
-                                                                    </button>
-                                                                @endif
-                                                            @endcan
-                                                        </div>
+                                                        @can('lots.view-history')
+                                                            <button onclick="viewHistorique('{{ $lot->id_lot }}')"
+                                                                class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                                                <i class="fas fa-history text-blue-500 w-4"></i>
+                                                                Historique
+                                                            </button>
+                                                        @endcan
+
+                                                        @can('lots.delete')
+                                                            @if (!$lot->isAttribue())
+                                                                <div class="border-t border-gray-100 my-1"></div>
+                                                                <button onclick="confirmDelete('{{ $lot->id_lot }}', '{{ $lot->numero }}')"
+                                                                    class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                                                    <i class="fas fa-trash w-4"></i>
+                                                                    Supprimer
+                                                                </button>
+                                                            @endif
+                                                        @endcan
                                                     </div>
                                                 </div>
                                             @endcanany
@@ -393,11 +344,20 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center justify-center space-y-3">
-                                        <i class="fas fa-inbox text-gray-300 text-5xl"></i>
-                                        <p class="text-gray-500 font-medium">Aucun lot trouvé</p>
-
+                                <td colspan="7" class="px-6 py-16">
+                                    <div class="flex flex-col items-center justify-center text-center">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                            <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                                        </div>
+                                        <h3 class="text-gray-600 font-medium mb-1">Aucun lot trouvé</h3>
+                                        <p class="text-gray-400 text-sm">Essayez de modifier vos filtres de recherche</p>
+                                        @can('lots.create')
+                                            <a href="{{ route('lots.create') }}"
+                                                class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all text-sm font-medium">
+                                                <i class="fas fa-plus"></i>
+                                                Créer un lot
+                                            </a>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -408,7 +368,7 @@
 
             <!-- Pagination -->
             @if ($lots->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
                     {{ $lots->links() }}
                 </div>
             @endif
@@ -416,28 +376,27 @@
     </main>
 
     <!-- Modal Confirmation Suppression -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                <div class="text-center">
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
-                    <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
+    <div id="deleteModal" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scaleIn">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Confirmer la suppression</h3>
+                <p id="deleteMessage" class="text-sm text-gray-600 mb-6"></p>
 
-                    <div class="flex items-center justify-center space-x-3">
-                        <button onclick="closeDeleteModal()"
-                            class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium">
-                            Annuler
+                <div class="flex items-center justify-center gap-3">
+                    <button onclick="closeDeleteModal()"
+                        class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm">
+                        Annuler
+                    </button>
+                    @can('lots.delete')
+                        <button onclick="executeDelete()"
+                            class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all font-medium text-sm">
+                            <i class="fas fa-trash mr-2"></i>
+                            Supprimer
                         </button>
-                        @can('lots.delete')
-                            <button onclick="executeDelete()"
-                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-medium">
-                                Supprimer
-                            </button>
-                        @endcan
-                    </div>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -448,34 +407,14 @@
             <script>
                 let deleteLotId = null;
 
-                // // Toggle menu
-                // window.toggleMenu = function(id) {
-                //     const menu = document.getElementById(`menu-${id}`);
-                //     const allMenus = document.querySelectorAll('[id^="menu-"]');
-
-                //     allMenus.forEach(m => {
-                //         if (m.id !== `menu-${id}`) {
-                //             m.classList.add('hidden');
-                //         }
-                //     });
-
-                //     menu.classList.toggle('hidden');
-                // }
-
-                // // Fermer les menus en cliquant ailleurs
-                // document.addEventListener('click', function(e) {
-                //     if (!e.target.closest('[onclick^="toggleMenu"]') && !e.target.closest('[id^="menu-"]')) {
-                //         document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
-                //     }
-                // });
-
-                // public/js/dropdown-menu.js
+                // Menu Actions avec positionnement intelligent
                 function toggleMenu(event, id) {
                     event.stopPropagation();
 
                     const button = event.currentTarget;
                     const menu = document.getElementById('menu-' + id);
 
+                    // Fermer tous les autres menus
                     document.querySelectorAll('[id^="menu-"]').forEach(m => {
                         if (m.id !== 'menu-' + id) m.classList.add('hidden');
                     });
@@ -484,54 +423,38 @@
 
                     if (!menu.classList.contains('hidden')) {
                         const rect = button.getBoundingClientRect();
-                        let top = rect.bottom + 8;
-                        let left = rect.right - menu.offsetWidth;
+                        const menuHeight = menu.offsetHeight || 150;
+                        const menuWidth = menu.offsetWidth || 192;
 
-                        if (top + menu.offsetHeight > window.innerHeight) {
-                            top = rect.top - menu.offsetHeight - 8;
+                        let top = rect.bottom + 8;
+                        let left = rect.right - menuWidth;
+
+                        // Ajustement vertical
+                        if (top + menuHeight > window.innerHeight - 20) {
+                            top = rect.top - menuHeight - 8;
                         }
-                        if (left < 0) left = rect.left;
+
+                        // Ajustement horizontal
+                        if (left < 20) {
+                            left = rect.left;
+                        }
 
                         menu.style.top = top + 'px';
                         menu.style.left = left + 'px';
                     }
                 }
 
+                // Fermer menus au clic extérieur
                 document.addEventListener('click', function(event) {
                     if (!event.target.closest('[id^="menu-"]') && !event.target.closest('button[onclick*="toggleMenu"]')) {
                         document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
                     }
                 });
 
+                // Fermer menus au scroll
                 document.addEventListener('scroll', function() {
                     document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
                 }, true);
-
-                // // Dupliquer
-                // window.duplicate = function(id) {
-                //     if (confirm('Voulez-vous dupliquer ce lot ?')) {
-                //         fetch(`/lots/${id}/duplicate`, {
-                //                 method: 'POST',
-                //                 headers: {
-                //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                //                     'Content-Type': 'application/json',
-                //                     'Accept': 'application/json'
-                //                 }
-                //             })
-                //             .then(response => response.json())
-                //             .then(data => {
-                //                 if (data.success) {
-                //                     window.location.href = `/lots/${data.data.id_lot}/edit`;
-                //                 } else {
-                //                     alert(data.message || 'Une erreur est survenue');
-                //                 }
-                //             })
-                //             .catch(error => {
-                //                 console.error('Erreur:', error);
-                //                 alert('Une erreur est survenue');
-                //             });
-                //     }
-                // }
 
                 // Voir historique
                 window.viewHistorique = function(id) {
@@ -543,8 +466,6 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Afficher l'historique dans une alerte simple ou rediriger
-                                alert('Historique disponible. Consultez la page de détails pour plus d\'informations.');
                                 window.location.href = `/lots/${id}`;
                             }
                         })
@@ -557,8 +478,7 @@
                 // Confirmer suppression
                 window.confirmDelete = function(id, numero) {
                     deleteLotId = id;
-                    const message = `Êtes-vous sûr de vouloir supprimer le lot "${numero}" ?`;
-                    document.getElementById('deleteMessage').textContent = message;
+                    document.getElementById('deleteMessage').textContent = `Êtes-vous sûr de vouloir supprimer le lot "${numero}" ? Cette action est irréversible.`;
                     document.getElementById('deleteModal').classList.remove('hidden');
                 }
 
@@ -601,7 +521,7 @@
                     location.reload();
                 }
 
-                // Recherche en temps réel
+                // Recherche avec debounce
                 let searchTimeout;
                 document.getElementById('searchInput').addEventListener('input', function(e) {
                     clearTimeout(searchTimeout);
@@ -638,12 +558,12 @@
                     }
                 });
 
-                // Placeholder pour modales d'attribution et retrait
+                // Attribution
                 window.openAttributionModal = function(id) {
-                    alert('Modal d\'attribution à implémenter. Redirection vers la page de détails...');
                     window.location.href = `/lots/${id}`;
                 }
 
+                // Retrait
                 window.openRetraitModal = function(id) {
                     const motif = prompt('Veuillez indiquer le motif du retrait:');
                     if (motif && motif.trim()) {
@@ -676,26 +596,50 @@
 
             <style>
                 @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
 
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
+                @keyframes scaleIn {
+                    from { opacity: 0; transform: scale(0.95); }
+                    to { opacity: 1; transform: scale(1); }
                 }
 
                 .animate-fadeIn {
                     animation: fadeIn 0.3s ease-out;
                 }
 
-                .line-clamp-1 {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 1;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
+                .animate-scaleIn {
+                    animation: scaleIn 0.2s ease-out;
+                }
+
+                /* Scrollbar personnalisée */
+                .overflow-x-auto::-webkit-scrollbar {
+                    height: 8px;
+                }
+
+                .overflow-x-auto::-webkit-scrollbar-track {
+                    background: #f1f5f9;
+                    border-radius: 4px;
+                }
+
+                .overflow-x-auto::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 4px;
+                }
+
+                .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+                    background: #94a3b8;
+                }
+
+                /* Hover effect sur les lignes */
+                tbody tr {
+                    transition: background-color 0.15s ease;
+                }
+
+                /* Amélioration du focus pour l'accessibilité */
+                input:focus, select:focus, button:focus {
+                    outline: none;
                 }
             </style>
         @endpush

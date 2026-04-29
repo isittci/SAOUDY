@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('saoudy:sauvegarde --retention=30')->weeklyOn(1, '12:30'); // Lundi
     }
 
     /**

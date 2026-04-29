@@ -106,7 +106,7 @@
                                         <option value="{{ $ao->id_appel_offre }}"
                                             data-numero="{{ $ao->numero_appel_offre }}"
                                             data-objet="{{ $ao->libelle_critere_appel_offre }}"
-                                            data-montant="{{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }}"
+                                            data-montant="{{ number_format(floor($ao->montant_global_appel_offre), 0, ',', ' ') }}"
 
 
                                             data-type="{{ $ao->typeAppelOffre->code_type_appel_offre ?? '' }}"
@@ -192,7 +192,6 @@
                                         <span class="detail-label">Date Attribution</span>
                                         <span id="infoLotDateAttrib" class="detail-value">-</span>
                                     </div>
-
                                 </div>
                             </div>
 
@@ -671,7 +670,7 @@
         if (attribution.prestataire) {
             const p = attribution.prestataire;
             document.getElementById('infoPrestaRaison').textContent = truncateText(p.raison_sociale_prestataire, 30);
-            document.getElementById('infoPrestaNumero').textContent = p.numero_identification_prestataire || '-';
+            document.getElementById('infoPrestaNumero').textContent = p.numero_cc_prestataire || '-';
             document.getElementById('infoPrestaEmail').textContent = p.email_prestataire || '-';
             document.getElementById('infoPrestaTel').textContent = p.telephone_principal_prestataire || '-';
 

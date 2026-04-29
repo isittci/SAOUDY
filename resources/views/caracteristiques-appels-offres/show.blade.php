@@ -112,7 +112,7 @@
                                 </h3>
                                 <p class="text-sm text-gray-600">
                                     <i class="fas fa-coins mr-1"></i>
-                                    Montant global: <strong>{{ number_format($appelOffre->montant_global_appel_offre, 0, ',', ' ') }} FCFA</strong>
+                                    Montant global: <strong>{{ number_format(floor($appelOffre->montant_global_appel_offre), 0, ',', ' ') }} FCFA</strong>
                                 </p>
                             </div>
                             @can('appels_offres.view-details')
@@ -231,86 +231,6 @@
                 </div>
             </div>
 
-
-
-            <!-- Modalités et Documents -->
-            {{-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-white border-b border-gray-200">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-file-contract text-purple-500 mr-2"></i>
-                        Modalités et Documents
-                    </h2>
-                </div>
-
-                <div class="p-6 space-y-6">
-                    <!-- Conditions de paiement -->
-                    <div>
-                        <div class="flex items-center space-x-2 mb-3">
-                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-money-bill-wave text-purple-600 text-sm"></i>
-                            </div>
-                            <h3 class="text-sm font-bold text-gray-800">Conditions de paiement</h3>
-                        </div>
-                        @if($caracteristique->conditions_paiement_caracteristique_appel_offre)
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm text-gray-700 whitespace-pre-line">{{ $caracteristique->conditions_paiement_caracteristique_appel_offre }}</p>
-                            </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">Non spécifiées</p>
-                        @endif
-                    </div>
-
-                    <!-- Modalités d'exécution -->
-                    <div>
-                        <div class="flex items-center space-x-2 mb-3">
-                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-tasks text-blue-600 text-sm"></i>
-                            </div>
-                            <h3 class="text-sm font-bold text-gray-800">Modalités d'exécution</h3>
-                        </div>
-                        @if($caracteristique->modalites_execution_caracteristique_appel_offre)
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm text-gray-700 whitespace-pre-line">{{ $caracteristique->modalites_execution_caracteristique_appel_offre }}</p>
-                            </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">Non spécifiées</p>
-                        @endif
-                    </div>
-
-                    <!-- Documents requis -->
-                    <div>
-                        <div class="flex items-center space-x-2 mb-3">
-                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-file-alt text-orange-600 text-sm"></i>
-                            </div>
-                            <h3 class="text-sm font-bold text-gray-800">Documents requis</h3>
-                        </div>
-                        @if($caracteristique->documents_requis_caracteristique_appel_offre)
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm text-gray-700 whitespace-pre-line">{{ $caracteristique->documents_requis_caracteristique_appel_offre }}</p>
-                            </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">Non spécifiés</p>
-                        @endif
-                    </div>
-
-                    <!-- Autres informations -->
-                    @if($caracteristique->autres_informations_caracteristique_appel_offre)
-                        <div>
-                            <div class="flex items-center space-x-2 mb-3">
-                                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-info-circle text-gray-600 text-sm"></i>
-                                </div>
-                                <h3 class="text-sm font-bold text-gray-800">Autres informations</h3>
-                            </div>
-                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                <p class="text-sm text-gray-700 whitespace-pre-line">{{ $caracteristique->autres_informations_caracteristique_appel_offre }}</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div> --}}
-
             <!-- Métadonnées -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
@@ -325,7 +245,7 @@
                         <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <i class="fas fa-user text-blue-500"></i>
                             <div>
-                                <p class="text-xs text-gray-500">Créé par</p>
+                                <p class="text-xs text-gray-500">Enregistré par</p>
                                 <p class="font-semibold text-gray-900">{{ $caracteristique->creator->nom_complet ?? 'N/A' }}</p>
                             </div>
                         </div>
@@ -333,7 +253,7 @@
                         <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <i class="fas fa-calendar text-green-500"></i>
                             <div>
-                                <p class="text-xs text-gray-500">Créé le</p>
+                                <p class="text-xs text-gray-500">Enregistré le</p>
                                 <p class="font-semibold text-gray-900">{{ $caracteristique->created_at->format('d/m/Y à H:i') }}</p>
                             </div>
                         </div>
@@ -390,7 +310,7 @@
                                 if (v.motif_modification_caracteristique_appel_offre) {
                                     message += `Motif: ${v.motif_modification_caracteristique_appel_offre}\n`;
                                 }
-                                message += `Créé par: ${v.creator?.nom_complet || 'N/A'}\n\n`;
+                                message += `Enregistré par: ${v.creator?.nom_complet || 'N/A'}\n\n`;
                             });
                             alert(message);
                         } else {

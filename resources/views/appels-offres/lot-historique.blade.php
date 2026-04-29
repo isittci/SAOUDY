@@ -154,20 +154,20 @@
                                                 <i class="fas fa-calendar text-blue-600"></i>
                                             </div>
                                             <div>
-                                                <p class="text-xs text-gray-500">Créé le</p>
+                                                <p class="text-xs text-gray-500">Enregistré le</p>
                                                 <p class="text-sm font-semibold text-gray-900">
                                                     {{ $version->created_at->format('d/m/Y à H:i') }}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <!-- Créé par -->
+                                        <!-- Enregistré par -->
                                         <div class="flex items-center space-x-3">
                                             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-user text-green-600"></i>
                                             </div>
                                             <div>
-                                                <p class="text-xs text-gray-500">Créé par</p>
+                                                <p class="text-xs text-gray-500">Enregistré par</p>
                                                 <p class="text-sm font-semibold text-gray-900">
                                                     {{ $version->creator->nom_complet ?? '-' }}
                                                 </p>

@@ -200,7 +200,7 @@
             <table class="info-table">
                 <tr>
                     <td class="label">N° Identification</td>
-                    <td>{{ $prestataire['numero_identification'] }}</td>
+                    <td>{{ $prestataire['numero_cc'] }}</td>
                     <td class="label">Email</td>
                     <td>{{ $prestataire['email'] }}</td>
                 </tr>
@@ -250,7 +250,7 @@
                     <div class="stat-label">Retirés</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">{{ number_format($statistiques['avancement_moyen'], 1) }}%</div>
+                    <div class="stat-value">{{ number_format($statistiques['avancement_moyen'], 2) }}%</div>
                     <div class="stat-label">Avancement Moyen</div>
                 </div>
             </div>
@@ -323,9 +323,9 @@
                                 </div>
                                 <span style="font-size: 7px;">{{ $lot['pourcentage_avancement'] }}%</span>
                             </td>
-                            <td class="montant">{{ number_format($lot['montant_proforma_ttc'], 0, ',', ' ') }}</td>
-                            <td class="montant montant-paye">{{ number_format($lot['montant_paye'], 0, ',', ' ') }}</td>
-                            <td class="montant {{ $lot['reste_a_payer'] > 0 ? 'montant-reste' : '' }}">{{ number_format($lot['reste_a_payer'], 0, ',', ' ') }}</td>
+                            <td class="montant">{{ number_format(floor($lot['montant_proforma_ttc']), 0, ',', ' ') }}</td>
+                            <td class="montant montant-paye">{{ number_format(floor($lot['montant_paye']), 0, ',', ' ') }}</td>
+                            <td class="montant {{ $lot['reste_a_payer'] > 0 ? 'montant-reste' : '' }}">{{ number_format(floor($lot['reste_a_payer']), 0, ',', ' ') }}</td>
                             <td class="text-center">
                                 <span class="badge {{ $statutBadge }}">{{ $lot['statut'] }}</span>
                             </td>
@@ -342,9 +342,9 @@
                     @endforelse
                     <tr class="total-row">
                         <td colspan="4" class="text-right">TOTAUX</td>
-                        <td class="montant">{{ number_format($totalMontant, 0, ',', ' ') }} FCFA</td>
-                        <td class="montant montant-paye">{{ number_format($totalPaye, 0, ',', ' ') }} FCFA</td>
-                        <td class="montant montant-reste">{{ number_format($totalReste, 0, ',', ' ') }} FCFA</td>
+                        <td class="montant">{{ number_format(floor($totalMontant), 0, ',', ' ') }} FCFA</td>
+                        <td class="montant montant-paye">{{ number_format(floor($totalPaye), 0, ',', ' ') }} FCFA</td>
+                        <td class="montant montant-reste">{{ number_format(floor($totalReste), 0, ',', ' ') }} FCFA</td>
                         <td colspan="2"></td>
 
                         <td></td>

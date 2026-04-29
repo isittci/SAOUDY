@@ -104,7 +104,7 @@
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Montant Total</p>
                         <p class="text-lg font-bold text-purple-600">
-                            {{ number_format($stats['montant_total'] ?? 0, 0, ',', ' ') }}</p>
+                            {{ number_format(floor($stats['montant_total'] ?? 0), 0, ',', ' ') }}</p>
                         <p class="text-xs text-gray-400">FCFA</p>
                     </div>
                     <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -304,7 +304,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="inline-flex flex-col items-end">
                                         <span class="text-sm font-bold text-gray-800 tabular-nums">
-                                            {{ number_format($proforma->montant_retenu_proforma, 0, ',', ' ') }}
+                                            {{ number_format(floor($proforma->montant_retenu_proforma), 0, ',', ' ') }}
                                         </span>
                                         <span class="text-[10px] text-gray-400 font-medium tracking-wide">FCFA</span>
                                     </div>
@@ -317,7 +317,7 @@
                                             class="inline-flex items-center space-x-2 bg-gradient-to-r from-red-50 to-rose-50 px-3 py-1.5 rounded-lg border border-red-100">
                                             <div class="flex flex-col items-end">
                                                 <span class="text-sm font-bold text-red-600 tabular-nums">
-                                                    -{{ number_format($proforma->remise_montant_proforma, 0, ',', ' ') }}
+                                                    -{{ number_format(floor($proforma->remise_montant_proforma), 0, ',', ' ') }}
                                                 </span>
                                             </div>
                                             <span
@@ -340,7 +340,7 @@
                                             class="inline-flex items-center space-x-2 bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-1.5 rounded-lg border border-amber-100">
                                             <div class="flex flex-col items-end">
                                                 <span class="text-sm font-bold text-amber-700 tabular-nums">
-                                                    {{ number_format($proforma->taxe_montant, 0, ',', ' ') }}
+                                                    {{ number_format(floor($proforma->taxe_montant), 0, ',', ' ') }}
                                                 </span>
                                             </div>
                                             <span
@@ -361,7 +361,7 @@
                                     <div
                                         class="inline-flex flex-col items-end bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border border-green-200 shadow-sm group-hover:shadow-md group-hover:border-green-300 transition-all duration-300">
                                         <span class="text-base font-bold text-green-700 tabular-nums">
-                                            {{ number_format($proforma->montant_ttc, 0, ',', ' ') }}
+                                            {{ number_format(floor($proforma->montant_ttc), 0, ',', ' ') }}
                                         </span>
                                         <span class="text-[10px] text-green-600 font-semibold tracking-wide">FCFA
                                             TTC</span>

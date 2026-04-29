@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\AppelOffre;
-use App\Models\TypeAppelOffre;
-use App\Models\CaracteristiqueAppelOffre;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\TypeAppelOffre;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\CaracteristiqueAppelOffre;
 use Illuminate\Support\Facades\Validator;
-use Exception;
 
 
 /**
@@ -177,13 +178,7 @@ class AppelOffreController extends Controller
                 });
             }
 
-            // Filtres de dates
-            if ($request->filled('date_debut') && $request->filled('date_fin')) {
-                $query->whereBetween('date_publication_critere_appel_offre', [
-                    $request->date_debut,
-                    $request->date_fin
-                ]);
-            }
+
 
             // Tri
             $sortBy = $request->get('sort_by', 'created_at');
@@ -358,8 +353,6 @@ class AppelOffreController extends Controller
             'libelle_critere_appel_offre' => 'required|string|max:160',
             'objet_critere_appel_offre' => 'nullable|string',
             'montant_global_appel_offre' => 'required|numeric|min:5',
-            'description_critere_critere_appel_offre' => 'required|string',
-            'date_publication_critere_appel_offre' => 'nullable|date',
             'conditions_participation_critere_appel_offre' => 'nullable|string',
             'criteres_selection_critere_appel_offre' => 'nullable|string',
         ], [
@@ -401,11 +394,9 @@ class AppelOffreController extends Controller
             $appelOffre = AppelOffre::create([
                 'type_appel_offre_id' => $request->type_appel_offre_id,
                 'numero_appel_offre' => $numeroAO,
-                'libelle_critere_appel_offre' => $request->libelle_critere_appel_offre,
+                'libelle_critere_appel_offre' => Str::upper($request->libelle_critere_appel_offre),
                 'objet_critere_appel_offre' => $request->objet_critere_appel_offre,
                 'montant_global_appel_offre' => $request->montant_global_appel_offre,
-                'description_critere_critere_appel_offre' => $request->description_critere_critere_appel_offre,
-                'date_publication_critere_appel_offre' => $request->date_publication_critere_appel_offre ?? now(),
 
                 'statut_evaluation_critere_appel_offre' => $request->get('statut_evaluation_critere_appel_offre', 1),
                 'conditions_participation_critere_appel_offre' => $request->conditions_participation_critere_appel_offre,
@@ -609,10 +600,8 @@ class AppelOffreController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'libelle_critere_appel_offre' => 'required|string|max:160',
-            'objet_critere_appel_offre' => 'required|string',
+            'objet_critere_appel_offre' => 'nullable|string',
             'montant_global_appel_offre' => 'required|numeric|min:0',
-            'description_critere_critere_appel_offre' => 'required|string',
-            'date_publication_critere_appel_offre' => 'nullable|date',
             'conditions_participation_critere_appel_offre' => 'nullable|string',
             'criteres_selection_critere_appel_offre' => 'nullable|string',
             'statut_evaluation_critere_appel_offre' => 'required|in:0,1',
@@ -642,11 +631,9 @@ class AppelOffreController extends Controller
             }
 
             $appelOffre->update([
-                'libelle_critere_appel_offre' => $request->libelle_critere_appel_offre,
+                'libelle_critere_appel_offre' => Str::upper($request->libelle_critere_appel_offre),
                 'objet_critere_appel_offre' => $request->objet_critere_appel_offre,
                 'montant_global_appel_offre' => $request->montant_global_appel_offre,
-                'description_critere_critere_appel_offre' => $request->description_critere_critere_appel_offre,
-                'date_publication_critere_appel_offre' => $request->date_publication_critere_appel_offre,
                 'statut_evaluation_critere_appel_offre' => $request->statut_evaluation_critere_appel_offre,
                 'conditions_participation_critere_appel_offre' => $request->conditions_participation_critere_appel_offre,
                 'criteres_selection_critere_appel_offre' => $request->criteres_selection_critere_appel_offre,
@@ -896,11 +883,8 @@ class AppelOffreController extends Controller
         try {
             $appelOffre = AppelOffre::findOrFail($id);
 
-            if ($appelOffre->date_publication_critere_appel_offre) {
-                throw new Exception('Cet appel d\'offres est déjà publié');
-            }
 
-            $appelOffre->date_publication_critere_appel_offre = now();
+
             $appelOffre->statut_evaluation_critere_appel_offre = 1;
             $appelOffre->updated_by = auth()->id();
             $appelOffre->save();
@@ -1330,7 +1314,6 @@ class AppelOffreController extends Controller
             // Créer une copie
             $nouveauAO = $appelOffre->replicate();
             $nouveauAO->numero_appel_offre = $numeroAO;
-            $nouveauAO->date_publication_critere_appel_offre = null;
             $nouveauAO->statut_evaluation_critere_appel_offre = 0;
             $nouveauAO->created_by = auth()->id();
             $nouveauAO->save();

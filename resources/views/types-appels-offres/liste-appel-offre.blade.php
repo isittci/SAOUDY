@@ -96,8 +96,7 @@
                                 Libellé / Type</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Montant Retenu</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Dates Clés</th>
+
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Nb Lots</th>
                             <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -131,17 +130,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-semibold text-gray-900">
-                                        {{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }} FCFA
+                                        {{ number_format(floor($ao->montant_global_appel_offre), 0, ',', ' ') }} FCFA
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-xs text-gray-700 space-y-1">
-                                        @if ($ao->date_publication_critere_appel_offre)
-                                            <div><span class="font-medium">Pub:</span>
-                                                {{ $ao->date_publication_critere_appel_offre->format('d/m/Y') }}</div>
-                                        @endif
-                                    </div>
-                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -233,13 +225,7 @@
                                                                     <i class="fas fa-thumbs-up text-indigo-500 mr-2"></i>
                                                                     Caractéristiques
                                                                 </a>
-                                                                @if (!$ao->date_publication_critere_appel_offre)
-                                                                    <button onclick="publier('{{ $ao->id_appel_offre }}')"
-                                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                        <i class="fas fa-paper-plane mr-2 text-blue-500"></i>
-                                                                        Publier
-                                                                    </button>
-                                                                @endif
+
                                                                 @if ($ao->etat_appel_offre == 3)
                                                                     <button onclick="cloturer('{{ $ao->id_appel_offre }}')"
                                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -249,13 +235,7 @@
                                                                 @endif
                                                             @endcan
 
-                                                            {{-- @can('appels_offres.duplicate')
-                                                                <button onclick="duplicate('{{ $ao->id_appel_offre }}')"
-                                                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                                    <i class="fas fa-copy mr-2 text-purple-500"></i>
-                                                                    Dupliquer
-                                                                </button>
-                                                            @endcan --}}
+
 
                                                             @can('appels_offres.delete')
                                                                 <button

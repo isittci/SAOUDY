@@ -270,12 +270,12 @@
 
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="text-gray-600">Créé le:</span>
+                                <span class="text-gray-600">Enregistré le:</span>
                                 <span
                                     class="font-semibold text-gray-900 ml-2">{{ $critere->created_at->format('d/m/Y à H:i') }}</span>
                             </div>
                             <div>
-                                <span class="text-gray-600">Créé par:</span>
+                                <span class="text-gray-600">Enregistré par:</span>
                                 <span
                                     class="font-semibold text-gray-900 ml-2">{{ $critere->creator->nom_complet ?? 'N/A' }}</span>
                             </div>

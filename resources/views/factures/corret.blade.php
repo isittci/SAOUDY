@@ -79,7 +79,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-orange-100 text-xs font-medium uppercase">Montant Total Facturé</p>
-                                <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_total'], 0, ',', ' ') }} FCFA</p>
+                                <p class="text-xl font-bold mt-1">{{ number_format(floor($statistiques['montant_total']), 0, ',', ' ') }} FCFA</p>
                             </div>
                             <i class="fas fa-coins text-3xl text-orange-300 opacity-50"></i>
                         </div>
@@ -88,7 +88,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-green-100 text-xs font-medium uppercase">Montant Payé</p>
-                                <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_paye'], 0, ',', ' ') }} FCFA</p>
+                                <p class="text-xl font-bold mt-1">{{ number_format(floor($statistiques['montant_paye']), 0, ',', ' ') }} FCFA</p>
                             </div>
                             <i class="fas fa-hand-holding-usd text-3xl text-green-300 opacity-50"></i>
                         </div>
@@ -97,7 +97,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-red-100 text-xs font-medium uppercase">Reste à Payer</p>
-                                <p class="text-xl font-bold mt-1">{{ number_format($statistiques['montant_restant'], 0, ',', ' ') }} FCFA</p>
+                                <p class="text-xl font-bold mt-1">{{ number_format(floor($statistiques['montant_restant']), 0, ',', ' ') }} FCFA</p>
                             </div>
                             <i class="fas fa-exclamation-triangle text-3xl text-red-300 opacity-50"></i>
                         </div>

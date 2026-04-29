@@ -78,6 +78,7 @@ return new class extends Migration
             $table->index(['prestataire_id', 'statut_attribution'], 'idx_prestataire_statut');
             $table->index(['prestataire_id', 'is_active'], 'idx_prestataire_active');
             $table->index('numero_attribution', 'idx_numero_attribution');
+            $table->unique('proforma_id', 'unique_proforma_attribution');
         });
 
         // Auto-relation pour traçabilité des réattributions

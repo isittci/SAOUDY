@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DisposableEmail;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,13 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'nom_complet' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email', 'max:255'],
+            'email' => [
+                'required',
+                'email:rfc,dns', // Validation RFC + vérification DNS
+                'unique:users,email',
+                'max:255',
+                new DisposableEmail(), // Règle personnalisée pour bloquer les emails jetables
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'telephone_principal' => ['nullable', 'string', 'max:20'],
             'telephone_secondaire' => ['nullable', 'string', 'max:20'],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\AppelOffre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -280,11 +281,11 @@ class CaracteristiqueAppelOffreController extends Controller
         $validator = Validator::make($request->all(), [
             'date_demarrage_prevue_caracteristique_appel_offre' => [
                     'required',
-                    'date_format:d/m/Y',
+                    'date_format:Y-m-d',
                 ],
                 'date_livraison_previsionnelle_caracteristique_appel_offre' => [
                     'required',
-                    'date_format:d/m/Y',
+                    'date_format:Y-m-d',
                     'after:date_demarrage_prevue_caracteristique_appel_offre',
                 ],
             'lieu_execution_caracteristique_appel_offre' => 'required|string|max:255',
@@ -318,8 +319,16 @@ class CaracteristiqueAppelOffreController extends Controller
             $appelOffre = AppelOffre::findOrFail($appelOffreId);
 
             // ✅ AJOUTER CES LIGNES - Convertir les dates du format français vers ISO
-            $dateDemarrage = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_demarrage_prevue_caracteristique_appel_offre)->format('Y-m-d');
-            $dateLivraison = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_livraison_previsionnelle_caracteristique_appel_offre)->format('Y-m-d');
+            // $dateDemarrage = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_demarrage_prevue_caracteristique_appel_offre)->format('Y-m-d');
+            // $dateLivraison = \Carbon\Carbon::createFromFormat('d/m/Y', $request->date_livraison_previsionnelle_caracteristique_appel_offre)->format('Y-m-d');
+
+            $dateDemarrage = Carbon::parse(
+                $request->date_demarrage_prevue_caracteristique_appel_offre
+            )->format('Y-m-d');
+
+            $dateLivraison = Carbon::parse(
+                $request->date_livraison_previsionnelle_caracteristique_appel_offre
+            )->format('Y-m-d');
 
             // Créer la caractéristique
             $caracteristique = CaracteristiqueAppelOffre::create([

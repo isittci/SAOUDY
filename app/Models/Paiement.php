@@ -302,7 +302,7 @@ class Paiement extends Model
      */
     public function getMontantFormateAttribute(): string
     {
-        return number_format($this->montant_net_paye_paiement ?? 0, 0, ',', ' ') . ' FCFA';
+        return number_format(floor($this->montant_net_paye_paiement ?? 0), 0, ',', ' ') . ' FCFA';
     }
 
     /**

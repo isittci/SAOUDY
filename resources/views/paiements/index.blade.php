@@ -26,9 +26,9 @@
                         </p>
                         <p class="text-xs text-blue-600 mt-1">
                             Prestataire : {{ $facture->proforma->getPrestataire()->raison_sociale_prestataire }}
-                            | Montant facture : {{ number_format($facture->montant_ht_facture ?? 0, 0, ',', ' ') }} FCFA
+                            | Montant facture : {{ number_format(floor($facture->montant_ht_facture ?? 0), 0, ',', ' ') }} FCFA
                             @if (method_exists($facture, 'getResteAPayer'))
-                                | Reste à payer : {{ number_format($facture->getResteAPayer(), 0, ',', ' ') }} FCFA
+                                | Reste à payer : {{ number_format(floor($facture->getResteAPayer()), 0, ',', ' ') }} FCFA
                             @endif
                         </p>
                     </div>
@@ -81,12 +81,6 @@
                         <option value="5" {{ request('statut') == '5' ? 'selected' : '' }}>Annulé</option>
                     </select>
 
-                    <!-- Boutons actions -->
-                    {{-- <button onclick="showStatistiques()"
-                        class="px-4 py-2.5 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-sm">
-                        <i class="fas fa-chart-bar text-sm"></i>
-                        <span class="text-sm font-medium">Stats</span>
-                    </button> --}}
                     @can('paiements.create')
                     <a href="{{ route('paiements.create', ['factureId' => $factureId]) }}"
                         class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 items-center space-x-2 shadow-md">
@@ -206,7 +200,7 @@
                     <div>
                         <p class="text-sm text-gray-600 font-medium">Montant Payé</p>
                         <p class="text-xl font-bold text-gray-800 mt-1">
-                            {{ number_format($stats['montant_paye'] ?? 0, 0, ',', ' ') }} F</p>
+                            {{ number_format(floor($stats['montant_paye'] ?? 0), 0, ',', ' ') }} FCFA</p>
                     </div>
                     <div class="bg-purple-100 p-3 rounded-lg">
                         <i class="fas fa-coins text-purple-600 text-xl"></i>
@@ -307,7 +301,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-bold text-gray-900">
-                                        {{ number_format($paiement->montant_net_paye_paiement, 0, ',', ' ') }}
+                                        {{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }}
                                     </div>
                                     <div class="text-xs text-gray-500">FCFA</div>
                                 </td>
@@ -328,7 +322,7 @@
                                         ];
                                         $couleur = $couleurs[$paiement->statut_paiement] ?? 'gray';
                                     @endphp
-                                    
+
                                     <span
                                         class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-{{ $couleur }}-100 text-{{ $couleur }}-800">
                                         <i class="fas {{ $paiement->statut_icone }} mr-1"></i>

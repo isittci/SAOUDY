@@ -16,8 +16,7 @@ return new class extends Migration
 
             // Informations générales
             $table->string('raison_sociale_prestataire', 255);
-            $table->string('numero_identification_prestataire', 25);
-            $table->string('email_prestataire', 255);
+            $table->string('email_prestataire', 255)->nullable();
             $table->string('numero_cc_prestataire', 50)->comment('Numéro de la carte de contribuable');
             $table->string('numero_rccm_prestataire', 50)->comment('Numéro du Registre de Commerce et du Crédit Mobilier');
             $table->string('telephone_principal_prestataire', 20)->comment('Numéro de téléphone principal du prestataire');

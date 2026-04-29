@@ -19,8 +19,7 @@ return new class extends Migration
             $table->string("libelle_critere_appel_offre",   160)->comment("Nom du lot (ex: Gros œuvre, Électricité, Plomberie).");
             $table->text("objet_critere_appel_offre")->nullable()->comment("Description officielle de ce qui est demandé.");
             $table->decimal('montant_global_appel_offre', 15, 2)->comment('Montant total estimé pour cet appel d\'offres.');
-            $table->text("description_critere_critere_appel_offre")->comment("Détail des travaux de ce critere");
-            $table->timestamp('date_publication_critere_appel_offre')->nullable()->comment('Date à laquelle l\'appel d\'offres a été publié.');
+         
             // statut_eva
             $table->enum('statut_evaluation_critere_appel_offre', [1, 0])->default(0)->comment('Statut actuel de l\'évaluation des offres. Pour savoir si actif ou non');
 

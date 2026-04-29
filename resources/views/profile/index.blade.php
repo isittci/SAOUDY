@@ -104,7 +104,8 @@
                                     <i class="fas fa-envelope text-gray-400 mr-1"></i>
                                     Adresse email <span class="text-red-500">*</span>
                                 </label>
-                                <input type="email" name="email" id="email"
+
+                                <input type="email" name="email" id="email" @if(!auth()->user()->isSuperAdmin()) readonly @endif
                                     value="{{ old('email', $user->email) }}" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all @error('email') border-red-500 @enderror"
                                     placeholder="votre@email.com">
@@ -315,7 +316,7 @@
                             <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{{ Str::limit($user->id, 8) }}...</span>
                         </div>
                         <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-500">Créé le</span>
+                            <span class="text-gray-500">Enregistré le</span>
                             <span class="text-gray-800">{{ $user->created_at?->format('d/m/Y H:i') }}</span>
                         </div>
                         <div class="flex items-center justify-between py-2 border-b border-gray-100">
@@ -324,7 +325,7 @@
                         </div>
                         @if($user->creator)
                             <div class="flex items-center justify-between py-2">
-                                <span class="text-gray-500">Créé par</span>
+                                <span class="text-gray-500">Enregistré par</span>
                                 <span class="text-gray-800">{{ $user->creator->nom_complet }}</span>
                             </div>
                         @endif

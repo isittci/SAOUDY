@@ -189,7 +189,7 @@
                     <td style="width: 15%; background: #fef3c7; font-weight: bold;">Nom du prestataire</td>
                     <td style="width: 35%;">{{ $prestataire['raison_sociale'] }}</td>
                     <td style="width: 15%; background: #fef3c7; font-weight: bold;">N° Identification</td>
-                    <td style="width: 35%;">{{ $prestataire['numero_identification'] }}</td>
+                    <td style="width: 35%;">{{ $prestataire['numero_cc'] }}</td>
                 </tr>
                 <tr>
                     <td style="background: #fef3c7; font-weight: bold;">Email</td>
@@ -273,9 +273,9 @@
                             <td class="small-text">{{ Str::limit($facture['appel_offre_complet'], 35) }}</td>
                             <td class="small-text">{{ $facture['lot_numero'] }} - {{ Str::limit($facture['lot_libelle'], 20) }}</td>
                             <td>{{ $facture['date_facture'] ? \Carbon\Carbon::parse($facture['date_facture'])->format('d/m/Y') : '' }}</td>
-                            <td class="montant">{{ number_format($facture['montant_facture'], 0, ',', ' ') }}</td>
-                            <td class="montant montant-paye">{{ number_format($paye, 0, ',', ' ') }}</td>
-                            <td class="montant {{ $reste > 0 ? 'montant-reste' : '' }}">{{ number_format($reste, 0, ',', ' ') }}</td>
+                            <td class="montant">{{ number_format(floor($facture['montant_facture']), 0, ',', ' ') }}</td>
+                            <td class="montant montant-paye">{{ number_format(floor($paye), 0, ',', ' ') }}</td>
+                            <td class="montant {{ $reste > 0 ? 'montant-reste' : '' }}">{{ number_format(floor($reste), 0, ',', ' ') }}</td>
                             <td class="text-center">
                                 @php
                                     $badgeClass = match($facture['statut_facture']) {
@@ -295,9 +295,9 @@
                     @endforelse
                     <tr class="total-row">
                         <td colspan="5" class="text-right">TOTAUX</td>
-                        <td class="montant">{{ number_format($totalMontant, 0, ',', ' ') }} FCFA</td>
-                        <td class="montant montant-paye">{{ number_format($totalPayeSum, 0, ',', ' ') }} FCFA</td>
-                        <td class="montant montant-reste">{{ number_format($totalResteSum, 0, ',', ' ') }} FCFA</td>
+                        <td class="montant">{{ number_format(floor($totalMontant), 0, ',', ' ') }} FCFA</td>
+                        <td class="montant montant-paye">{{ number_format(floor($totalPayeSum), 0, ',', ' ') }} FCFA</td>
+                        <td class="montant montant-reste">{{ number_format(floor($totalResteSum), 0, ',', ' ') }} FCFA</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -329,7 +329,7 @@
                                 <td class="small-text">{{ $paiement['appel_offre_numero'] }}</td>
                                 <td class="small-text">{{ $paiement['lot_numero'] }} - {{ Str::limit($paiement['lot_libelle'], 15) }}</td>
                                 <td>{{ $paiement['date_paiement'] ? \Carbon\Carbon::parse($paiement['date_paiement'])->format('d/m/Y') : '' }}</td>
-                                <td class="montant montant-paye">{{ number_format($paiement['montant'], 0, ',', ' ') }}</td>
+                                <td class="montant montant-paye">{{ number_format(floor($paiement['montant']), 0, ',', ' ') }}</td>
                                 <td class="text-center">
                                     @php
                                         $pBadge = match(true) {
@@ -353,7 +353,7 @@
                     @endforeach
                     <tr class="total-row">
                         <td colspan="4" class="text-right">TOTAL PAIEMENTS EFFECTUÉS</td>
-                        <td class="montant montant-paye">{{ number_format($totalPaiements, 0, ',', ' ') }} FCFA</td>
+                        <td class="montant montant-paye">{{ number_format(floor($totalPaiements), 0, ',', ' ') }} FCFA</td>
                         <td colspan="3"></td>
                     </tr>
                 </tbody>

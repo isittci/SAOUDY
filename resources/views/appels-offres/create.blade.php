@@ -88,9 +88,9 @@
                                                         {{ old('type_appel_offre_id') == $type->id_type_appel_offre || request()->get('type') == $type->id_type_appel_offre ? 'selected' : '' }}>
                                                         {{ $type->code_type_appel_offre }} -
                                                         {{ $type->libelle_type_appel_offre }}
-                                                        ({{ number_format($type->valeur_minimuim_type_appel_offre, 0, ',', ' ') }}
+                                                        ({{ number_format(floor($type->valeur_minimuim_type_appel_offre), 0, ',', ' ') }}
                                                         -
-                                                        {{ number_format($type->valeur_maximuim_type_appel_offre, 0, ',', ' ') }}
+                                                        {{ number_format(floor($type->valeur_maximuim_type_appel_offre), 0, ',', ' ') }}
                                                         FCFA)
                                                     </option>
                                                 @endforeach
@@ -115,32 +115,56 @@
                                 <!-- Libellé -->
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Libellé <span class="text-red-500">*</span>
+                                        Objet de l'Appel d'Offres <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="libelle_critere_appel_offre" id="libelle" required
-                                        maxlength="160" value="{{ old('libelle_critere_appel_offre') }}"
+
+                                        <textarea name="libelle_critere_appel_offre" id="libelle" required
+                                        maxlength="255" rows="3"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="Ex: Construction d'un immeuble administratif">
+                                        placeholder="Ex: Construction d'un immeuble administratif">{{ old('libelle_critere_appel_offre') }}</textarea>
+
                                     <div class="flex justify-between mt-1">
                                         @error('libelle_critere_appel_offre')
                                             <p class="text-red-500 text-sm">{{ $message }}</p>
                                         @enderror
-                                        <p class="text-xs text-gray-500 ml-auto"><span id="libelleCount">0</span>/160</p>
+                                        <p class="text-xs text-gray-500 ml-auto"><span id="libelleCount">0</span>/255</p>
                                     </div>
                                 </div>
 
                                 <!-- Montant Retenu -->
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    {{-- <label class="block text-sm font-semibold text-gray-700 mb-2">
                                         Budget Global (FCFA) <span class="text-red-500">*</span>
                                     </label>
                                     <input type="number" name="montant_global_appel_offre" id="montant_global" required
                                         min="0" step="0.01" value="{{ old('montant_global_appel_offre') }}"
                                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                                        placeholder="0.00">
+                                        placeholder="150 000 000,00">
                                     @error('montant_global_appel_offre')
                                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
+                                    @enderror --}}
+
+                                    <!-- Budget Global -->
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Budget Global (FCFA) <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <input type="text" id="montant_global_display"
+                                                value="{{ old('montant_global_appel_offre') ? number_format(floor(old('montant_global_appel_offre')), 2, ',', ' ') : '' }}"
+                                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                                placeholder="150 000 000,00"
+                                                inputmode="decimal">
+                                            <input type="hidden" name="montant_global_appel_offre" id="montant_global"
+                                                value="{{ old('montant_global_appel_offre') }}">
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                                <span class="text-gray-400 text-sm">FCFA</span>
+                                            </div>
+                                        </div>
+                                        @error('montant_global_appel_offre')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
 
                                     <!-- Info sur le type sélectionné automatiquement -->
                                     <div id="autoSelectInfo"
@@ -164,67 +188,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Description détaillée -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Description Détaillée <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="description_critere_critere_appel_offre" id="description" required rows="6"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                                        placeholder="Détails complets de l'appel d'offres...">{{ old('description_critere_critere_appel_offre') }}</textarea>
-                                    @error('description_critere_critere_appel_offre')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
 
-                                <!-- Objet -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        Objet de l'Appel d'Offres
-                                    </label>
-                                    <textarea name="objet_critere_appel_offre" id="objet" rows="4"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                                        placeholder="Description officielle de ce qui est demandé...">{{ old('objet_critere_appel_offre') }}</textarea>
-                                    @error('objet_critere_appel_offre')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
 
 
                             </div>
                         </div>
 
-                        <!-- Dates importantes -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-b border-gray-200">
-                                <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                                    <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>
-                                    Dates Importantes
-                                </h2>
-                            </div>
 
-                            <div class="p-6 space-y-5">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            Date de Publication <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="date" name="date_publication_critere_appel_offre"
-                                            id="date_publication" required
-                                            value="{{ old('date_publication_critere_appel_offre', date('Y-m-d')) }}"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-                                    </div>
-
-
-                                </div>
-
-                                <div id="dateInfo"
-                                    class="hidden p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    <span id="dateInfoText"></span>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="flex flex-col md:flex-row justify-center gap-4 p-4">
@@ -339,20 +309,12 @@
                             Libellé <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="libelle_type_appel_offre" id="modal_libelle" required
-                            maxlength="160"
+                            maxlength="255"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
                             placeholder="Ex: Appel d'Offres Ouvert">
                     </div>
 
-                    <!-- Code -->
-                    {{-- <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Code <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="code_type_appel_offre" id="modal_code" required maxlength="10"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent uppercase"
-                            placeholder="Ex: AOO">
-                    </div> --}}
+
 
                     <!-- Valeurs Min/Max -->
                     <div class="grid grid-cols-2 gap-4">
@@ -418,6 +380,110 @@
     @can('appels_offres.create')
         @push('scripts')
             <script>
+
+                // Formatage automatique du montant avec séparateur de milliers
+const montantDisplay = document.getElementById('montant_global_display');
+const montantHidden = document.getElementById('montant_global');
+
+// Fonction pour formater un nombre avec séparateurs de milliers
+function formatMontant(value) {
+    // Supprimer tout sauf chiffres, virgule et point
+    let cleaned = value.replace(/[^\d,\.]/g, '');
+
+    // Remplacer le point par une virgule pour uniformiser
+    cleaned = cleaned.replace('.', ',');
+
+    // Séparer partie entière et décimale
+    let parts = cleaned.split(',');
+    let entier = parts[0] || '';
+    let decimal = parts[1] !== undefined ? parts[1].substring(0, 2) : '';
+
+    // Supprimer les zéros au début
+    entier = entier.replace(/^0+/, '') || '0';
+
+    // Ajouter les séparateurs de milliers (espace)
+    entier = entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    // Reconstruire le nombre formaté
+    if (parts[1] !== undefined) {
+        return entier + ',' + decimal;
+    }
+    return entier;
+}
+
+// Fonction pour obtenir la valeur numérique
+function getNumericValue(formattedValue) {
+    // Supprimer les espaces et remplacer la virgule par un point
+    return formattedValue.replace(/\s/g, '').replace(',', '.');
+}
+
+// Écouter les événements de saisie
+montantDisplay.addEventListener('input', function(e) {
+    const cursorPosition = this.selectionStart;
+    const oldLength = this.value.length;
+
+    // Formater la valeur
+    const formatted = formatMontant(this.value);
+    this.value = formatted;
+
+    // Mettre à jour le champ caché avec la valeur numérique
+    const numericValue = getNumericValue(formatted);
+    montantHidden.value = numericValue && numericValue !== '0' ? numericValue : '';
+
+    // Ajuster la position du curseur
+    const newLength = this.value.length;
+    const diff = newLength - oldLength;
+    this.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+});
+
+// Formater au blur pour ajouter les décimales si nécessaire
+montantDisplay.addEventListener('blur', function() {
+    if (this.value && this.value !== '0') {
+        let value = this.value;
+        // Si pas de décimales, ajouter ,00
+        if (!value.includes(',')) {
+            this.value = value + ',00';
+        } else {
+            // Compléter les décimales si nécessaire
+            let parts = value.split(',');
+            if (parts[1].length === 1) {
+                this.value = parts[0] + ',' + parts[1] + '0';
+            } else if (parts[1].length === 0) {
+                this.value = parts[0] + ',00';
+            }
+        }
+        // Mettre à jour le champ caché
+        montantHidden.value = getNumericValue(this.value);
+    }
+});
+
+// Empêcher les caractères non autorisés
+montantDisplay.addEventListener('keypress', function(e) {
+    const char = String.fromCharCode(e.which);
+    // Autoriser: chiffres, virgule, point, backspace, delete, flèches
+    if (!/[\d,\.]/.test(char) && e.which !== 8 && e.which !== 46) {
+        e.preventDefault();
+    }
+    // Empêcher plusieurs virgules/points
+    if ((char === ',' || char === '.') && (this.value.includes(',') || this.value.includes('.'))) {
+        e.preventDefault();
+    }
+});
+
+// Initialiser le formatage si une valeur existe
+if (montantHidden.value) {
+    const initialValue = parseFloat(montantHidden.value);
+    if (!isNaN(initialValue)) {
+        montantDisplay.value = formatMontant(initialValue.toFixed(2).replace('.', ','));
+    }
+}
+
+
+
+
+
+
+
                 // =====================================================
                 // CONFIGURATION ET DONNÉES DES TYPES D'APPEL D'OFFRES
                 // =====================================================

@@ -225,7 +225,7 @@
                     <div class="summary-label">Reste à Payer</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-value">{{ number_format($facture['taux_paiement'], 1) }}%</div>
+                    <div class="summary-value">{{ number_format($facture['taux_paiement'], 2) }}%</div>
                     <div class="summary-label">Taux de Paiement</div>
                 </div>
             </div>
@@ -288,7 +288,7 @@
                     <td class="label">Nom du prestataire</td>
                     <td class="value"><strong>{{ $prestataire['raison_sociale'] }}</strong></td>
                     <td class="label">N° Identification</td>
-                    <td class="value">{{ $prestataire['numero_identification'] }}</td>
+                    <td class="value">{{ $prestataire['numero_cc'] }}</td>
                 </tr>
                 <tr>
                     <td class="label">Email</td>

@@ -472,9 +472,6 @@ class AttributionLotPrestataireController extends Controller
             'new_date_debut_validee.required' => 'La date de début validée est obligatoire.',
             'new_date_debut_validee.date' => 'La date de début validée doit être une date valide.',
 
-            // 'new_date_redemarrage.required' => 'La date de redémarrage est obligatoire.',
-            // 'new_date_redemarrage.date' => 'La date de redémarrage doit être une date valide.',
-            // 'new_date_redemarrage.after_or_equal' => 'La date de redémarrage doit être postérieure ou égale à la date de début.',
 
             'new_date_fin_validee.required' => 'La date de fin validée est obligatoire.',
             'new_date_fin_validee.date' => 'La date de fin validée doit être une date valide.',
@@ -483,8 +480,7 @@ class AttributionLotPrestataireController extends Controller
             // Montant retenu avec limites dynamiques
             'new_montant_retenu.required' => 'Le montant retenu est obligatoire.',
             'new_montant_retenu.numeric' => 'Le montant retenu doit être un nombre.',
-            // 'new_montant_retenu.min' => 'Le montant retenu doit être au minimum de ' . number_format($valeurMin, 0, ',', ' ') . ' FCFA.',
-            // 'new_montant_retenu.max' => 'Le montant retenu ne peut pas dépasser ' . number_format($valeurMax, 0, ',', ' ') . ' FCFA.',
+
 
             // Taux TVA
             'new_taux_tva.required' => 'Le taux de TVA est obligatoire.',
@@ -523,9 +519,6 @@ class AttributionLotPrestataireController extends Controller
 
         $validator = Validator::make($data, $rules, $messages);
 
-        // ==========================================
-        // VALIDATION PERSONNALISÉE SUPPLÉMENTAIRE date_redemarrage_proforma
-        // ==========================================
 
         $validator->after(function ($validator) use ($request) {
             // Vérifier la cohérence des calculs si nouvelle proforma
@@ -546,14 +539,14 @@ class AttributionLotPrestataireController extends Controller
                 if (abs($montantTVACalcule - $montantTVARecu) > 1) {
                     $validator->errors()->add(
                         'new_taxe_montant',
-                        'Le montant de la TVA (' . number_format($montantTVARecu, 2, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format($montantTVACalcule, 2, ',', ' ') . ' FCFA).'
+                        'Le montant de la TVA (' . number_format(floor($montantTVARecu), 0, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format(floor($montantTVACalcule), 0, ',', ' ') . ' FCFA).'
                     );
                 }
 
                 if (abs($totalTTCCalcule - $totalTTCRecu) > 1) {
                     $validator->errors()->add(
                         'new_total_ttc',
-                        'Le total TTC (' . number_format($totalTTCRecu, 2, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format($totalTTCCalcule, 2, ',', ' ') . ' FCFA).'
+                        'Le total TTC (' . number_format(floor($totalTTCRecu), 0, ',', ' ') . ' FCFA) ne correspond pas au calcul attendu (' . number_format(floor($totalTTCCalcule), 0, ',', ' ') . ' FCFA).'
                     );
                 }
             }
@@ -595,7 +588,6 @@ class AttributionLotPrestataireController extends Controller
                 $proformaData = [
                     'date_proforma' => $request->new_date_proforma,
                     'date_debut_validee_proforma' => $request->date_debut_prevue,
-                    // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
                     'date_fin_validee_proforma' => $request->date_fin_prevue,
                     'montant_retenu_proforma' => $request->new_montant_retenu,
                     'taxe_montant' => $request->new_taxe_montant ?? 0,
@@ -769,7 +761,7 @@ class AttributionLotPrestataireController extends Controller
                 ]);
             }
 
-            
+
 
             return view('attributions.show', compact('attribution', 'historiqueLot', 'statistiquesCriteres'));
         } catch (\Exception $e) {
@@ -1388,7 +1380,7 @@ class AttributionLotPrestataireController extends Controller
         $rules = [
             'prestataire_id' => 'required|uuid|exists:prestataires,id_prestataire',
             'date_attribution' => 'required|date|before_or_equal:today',
-            'date_debut_prevue' => 'required|date|after_or_equal:date_attribution',
+            'date_debut_prevue' => 'required|date',
             'date_fin_prevue' => 'required|date|after:date_debut_prevue',
             'montant_engage' => 'nullable|numeric|min:0',
             'observations' => 'nullable|string|max:2000',
@@ -1454,7 +1446,6 @@ class AttributionLotPrestataireController extends Controller
                 'numero_proforma' => $numeroProforma,
                 'date_proforma' => $request->new_date_proforma,
                 'date_debut_validee_proforma' => $request->date_debut_prevue,
-                // 'date_redemarrage_proforma' => $request->new_date_redemarrage,
                 'date_fin_validee_proforma' => $request->date_fin_prevue,
                 'montant_retenu_proforma' => $montantHT,
                 'taxe_montant' => $taxeMontant,
@@ -1849,5 +1840,174 @@ class AttributionLotPrestataireController extends Controller
             'observations.max' => 'Les observations ne peuvent pas dépasser 2000 caractères.',
             'conditions_particulieres.max' => 'Les conditions particulières ne peuvent pas dépasser 5000 caractères.',
         ];
+    }
+
+
+
+
+    /**
+     * Récupérer les lots attribués à un prestataire spécifique.
+     *
+     * @param Request $request
+     * @param string $prestataireId
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     */
+    public function lotsAttribuesPrestataire(Request $request, string $prestataireId)
+    {
+        try {
+            // Vérifier que le prestataire existe
+            $prestataire = Prestataire::findOrFail($prestataireId);
+
+            // Construire la requête de base
+            $query = AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                ->with([
+                    'lot.appelOffre',
+                    'proforma',
+                    'createdBy'
+                ]);
+
+            // Filtre par statut d'attribution
+            if ($request->filled('statut')) {
+                $query->where('statut_attribution', $request->statut);
+            }
+
+            // Filtre par attributions actives uniquement
+            if ($request->filled('is_active')) {
+                $query->where('is_active', $request->boolean('is_active'));
+            } else {
+                // Par défaut, récupérer uniquement les attributions actives avec statut "Attribué"
+                $query->where('is_active', true)
+                      ->where('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE);
+            }
+
+            // Filtre par appel d'offre
+            if ($request->filled('appel_offre_id')) {
+                $query->whereHas('lot', function ($q) use ($request) {
+                    $q->where('appel_offre_id', $request->appel_offre_id);
+                });
+            }
+
+            // Recherche textuelle
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('numero_attribution', 'like', "%{$search}%")
+                      ->orWhereHas('lot', function ($subQ) use ($search) {
+                          $subQ->where('numero', 'like', "%{$search}%")
+                               ->orWhere('libelle', 'like', "%{$search}%");
+                      });
+                });
+            }
+
+            // Tri
+            $sortBy = $request->get('sort_by', 'date_attribution');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $allowedSorts = [
+                'date_attribution',
+                'created_at',
+                'numero_attribution',
+                'pourcentage_avancement',
+                'statut_attribution',
+                'date_debut_prevue',
+                'date_fin_prevue'
+            ];
+
+            if (in_array($sortBy, $allowedSorts)) {
+                $query->orderBy($sortBy, $sortOrder);
+            }
+
+            // Pagination ou collection complète
+            if ($request->boolean('all')) {
+                $lotsAttribues = $query->get();
+            } else {
+                $lotsAttribues = $query->paginate($request->get('per_page', 15));
+            }
+
+            // Statistiques du prestataire
+            $statistiques = [
+                'total_attributions' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)->count(),
+                'lots_en_cours' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('is_active', true)
+                    ->where('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE)
+                    ->count(),
+                'lots_suspendus' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('is_active', true)
+                    ->where('statut_attribution', AttributionLotPrestataire::STATUT_SUSPENDU)
+                    ->count(),
+                'lots_termines' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('statut_attribution', AttributionLotPrestataire::STATUT_TERMINE)
+                    ->count(),
+                'lots_retires' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('statut_attribution', AttributionLotPrestataire::STATUT_RETIRE)
+                    ->count(),
+                'lots_en_retard' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('is_active', true)
+                    ->where('statut_attribution', AttributionLotPrestataire::STATUT_ATTRIBUE)
+                    ->where(function ($q) {
+                        $q->where('jours_retard', '>', 0)
+                          ->orWhere(function ($subQ) {
+                              $subQ->whereNotNull('date_fin_prevue')
+                                   ->whereNull('date_fin_reelle')
+                                   ->where('date_fin_prevue', '<', now());
+                          });
+                    })
+                    ->count(),
+                'montant_total_engage' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('is_active', true)
+                    ->sum('montant_engage'),
+                'montant_total_paye' => AttributionLotPrestataire::where('prestataire_id', $prestataireId)
+                    ->where('is_active', true)
+                    ->sum('montant_paye'),
+            ];
+
+            // Réponse JSON pour API
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'prestataire' => $prestataire,
+                        'lots_attribues' => $lotsAttribues,
+                        'statistiques' => $statistiques,
+                    ],
+                    'message' => 'Lots attribués récupérés avec succès.'
+                ]);
+            }
+
+            // Réponse Web (Vue Blade)
+            return view('attributions.lots-prestataire', compact(
+                'prestataire',
+                'lotsAttribues',
+                'statistiques'
+            ));
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::warning('Prestataire non trouvé pour lots attribués', ['prestataire_id' => $prestataireId]);
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Prestataire non trouvé.'
+                ], 404);
+            }
+
+            return back()->with('error', 'Prestataire non trouvé.');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la récupération des lots attribués au prestataire', [
+                'prestataire_id' => $prestataireId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la récupération des lots attribués.',
+                    'error' => config('app.debug') ? $e->getMessage() : 'Erreur interne'
+                ], 500);
+            }
+
+            return back()->with('error', 'Erreur lors de la récupération des lots attribués.');
+        }
     }
 }

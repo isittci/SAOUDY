@@ -279,7 +279,7 @@ class Facture extends Model
      */
     public function getMontantFormateAttribute(): string
     {
-        return number_format($this->montant_facture, 2, ',', ' ') . ' FCFA';
+        return number_format(floor($this->montant_facture), 0, ',', ' ') . ' FCFA';
     }
 
     /**

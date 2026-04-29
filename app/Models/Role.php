@@ -14,6 +14,7 @@ class Role extends Model
 {
     use HasFactory, HasUuids, SoftDeletes, Auditable;
 
+    protected $table = 'roles';
     /**
      * Niveaux hiérarchiques des rôles.
      */

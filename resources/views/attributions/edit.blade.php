@@ -126,7 +126,7 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Avancement:</span>
-                                <span class="font-medium text-gray-800">{{ number_format($attribution->pourcentage_avancement, 0) }}%</span>
+                                <span class="font-medium text-gray-800">{{ number_format($attribution->pourcentage_avancement, 2) }}%</span>
                             </div>
                         </div>
                     </div>

@@ -201,12 +201,12 @@
                                                 HT (FCFA) <span class="text-red-500">*</span></label>
                                             <input type="text" name="new_montant_retenu_display"
                                                 id="new_montant_retenu_display"
-                                                value="{{ old('new_montant_retenu', number_format($montant_reste_paiement, 0, ',', ' ')) }}"
+                                                value="{{ old('new_montant_retenu', number_format(floor($montant_reste_paiement), 0, ',', ' ')) }}"
                                                 required
                                                 class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-400"
                                                 placeholder="0">
                                             <input type="hidden" name="new_montant_retenu" id="new_montant_retenu"
-                                                value="{{ old('new_montant_retenu', $montant_reste_paiement) }}">
+                                                value="{{ number_format(floor(old('new_montant_retenu', $montant_reste_paiement), 0, ',', ' ')) }}">
                                         </div>
                                     </div>
 
@@ -401,20 +401,20 @@
                                 <div class="flex justify-between"><span class="text-gray-600">Proforma:</span><span
                                         class="font-medium">{{ $attribution->proforma->numero_proforma }}</span></div>
                                 <div class="flex justify-between"><span class="text-gray-600">Montant TTC:</span><span
-                                        class="font-medium">{{ number_format($attribution->proforma->montant_ttc ?? 0, 0, ',', ' ') }}
+                                        class="font-medium">{{ number_format(floor($attribution->proforma->montant_ttc) ?? 0, 0, ',', ' ') }}
                                         FCFA</span></div>
                             @endif
                             <hr class="border-gray-200 my-2">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Montant payé:</span>
                                 <span
-                                    class="font-semibold text-green-600">{{ number_format($montant_net_paye_paiement, 0, ',', ' ') }}
+                                    class="font-semibold text-green-600">{{ number_format(floor($montant_net_paye_paiement), 0, ',', ' ') }}
                                     FCFA</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Reste à payer:</span>
                                 <span
-                                    class="font-semibold text-orange-600">{{ number_format($montant_reste_paiement, 0, ',', ' ') }}
+                                    class="font-semibold text-orange-600">{{ number_format(floor($montant_reste_paiement), 0, ',', ' ') }}
                                     FCFA</span>
                             </div>
                         </div>
@@ -435,28 +435,6 @@
                                 avec le Total TTC de la proforma</p>
                         </div>
                     </div>
-
-                    {{-- @canany(['attributions_lots.reassign', 'attributions_lots.view-details'])
-                        <!-- Boutons -->
-                        <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl p-4 z-50">
-                            <div class="max-w-7xl mx-auto flex gap-3">
-                                @can('attributions_lots.reassign')
-                                    <button type="submit"
-                                        class="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium rounded-lg shadow-md flex items-center justify-center transition-all">
-                                        <i class="fas fa-redo mr-2"></i>Réattribuer le lot
-                                    </button>
-                                @endcan
-                                @can('attributions_lots.view-details')
-                                    <a href="{{ route('attributions.show', $attribution->id_attribution) }}"
-                                        class="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg flex items-center justify-center transition-all">
-                                        <i class="fas fa-times mr-2"></i>Annuler
-                                    </a>
-                                @endcan
-                            </div>
-                        </div>
-                        <!-- Espaceur pour éviter que le contenu soit caché par les boutons fixes -->
-                        <div class="h-20"></div>
-                    @endcanany --}}
                 </div>
             </div>
 

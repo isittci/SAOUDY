@@ -91,9 +91,6 @@
         </div>
     </div>
 
-
-
-
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 p-3 sm:p-4 lg:p-6">
 
@@ -275,14 +272,14 @@
 
                                             @can('lots.update')
                                                 <!-- Modifier -->
-                                                @if (!$lot->attribution_lot)
+                                                {{-- @if (!$lot->attribution_lot) --}}
                                                     <button
                                                         onclick="window.location.href='{{ route('lots-appels-offres.edit', [$lot->appelOffre->id_appel_offre, $lot->id_lot]) }}'"
                                                         class="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
                                                         title="Modifier">
                                                         <i class="fas fa-edit text-sm"></i>
                                                     </button>
-                                                @endif
+                                                {{-- @endif --}}
                                             @endcan
 
                                             @canany(['criteres_evaluations.read', 'attributions_lots.assign',
@@ -455,31 +452,6 @@
                 document.querySelectorAll('[id^="menu-"]').forEach(menu => menu.classList.add('hidden'));
             }, true);
 
-            // Dupliquer
-            // window.duplicate = function(id) {
-            //     if (confirm('Voulez-vous dupliquer ce lot ?')) {
-            //         fetch(`/lots/${id}/duplicate`, {
-            //                 method: 'POST',
-            //                 headers: {
-            //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            //                     'Content-Type': 'application/json',
-            //                     'Accept': 'application/json'
-            //                 }
-            //             })
-            //             .then(response => response.json())
-            //             .then(data => {
-            //                 if (data.success) {
-            //                     window.location.href = `/lots/${data.data.id_lot}/edit`;
-            //                 } else {
-            //                     alert(data.message || 'Une erreur est survenue');
-            //                 }
-            //             })
-            //             .catch(error => {
-            //                 console.error('Erreur:', error);
-            //                 alert('Une erreur est survenue');
-            //             });
-            //     }
-            // }
 
             // Voir historique
             window.viewHistorique = function(id) {

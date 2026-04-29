@@ -125,7 +125,7 @@
                         <i class="fas fa-coins text-green-600 text-sm"></i>
                     </div>
                 </div>
-                <p class="text-lg font-bold text-green-600">{{ number_format($stats['ca_total'] ?? 0, 0, ',', ' ') }}</p>
+                <p class="text-lg font-bold text-green-600">{{ number_format(floor($stats['ca_total'] ?? 0), 0, ',', ' ') }}</p>
                 <p class="text-xs text-gray-400">FCFA</p>
             </div>
 
@@ -136,7 +136,7 @@
                         <i class="fas fa-chart-bar text-purple-600 text-sm"></i>
                     </div>
                 </div>
-                <p class="text-lg font-bold text-purple-600">{{ number_format($stats['ca_moyen'] ?? 0, 0, ',', ' ') }}</p>
+                <p class="text-lg font-bold text-purple-600">{{ number_format(floor($stats['ca_moyen'] ?? 0), 0, ',', ' ') }}</p>
                 <p class="text-xs text-gray-400">FCFA/an</p>
             </div>
 
@@ -244,19 +244,19 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <span class="text-sm font-medium text-gray-800">
-                                            {{ number_format($situation->chiffre_affaire_situation_financiere ?? 0, 0, ',', ' ') }}
+                                            {{ number_format(floor($situation->chiffre_affaire_situation_financiere ?? 0), 0, ',', ' ') }}
                                         </span>
                                         <span class="text-xs text-gray-400 ml-1">FCFA</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <span class="text-sm font-medium {{ ($situation->resultat_net_situation_financiere ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ number_format($situation->resultat_net_situation_financiere ?? 0, 0, ',', ' ') }}
+                                            {{ number_format(floor($situation->resultat_net_situation_financiere ?? 0), 0, ',', ' ') }}
                                         </span>
                                         <span class="text-xs text-gray-400 ml-1">FCFA</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <span class="text-sm font-medium text-gray-800">
-                                            {{ number_format($situation->fonds_propres_situation_financiere ?? 0, 0, ',', ' ') }}
+                                            {{ number_format(floor($situation->fonds_propres_situation_financiere ?? 0), 0, ',', ' ') }}
                                         </span>
                                         <span class="text-xs text-gray-400 ml-1">FCFA</span>
                                     </td>

@@ -36,7 +36,7 @@
                             @endif
                         </div>
                         <p class="text-gray-600 mt-1">
-                            <i class="fas fa-id-card mr-1"></i>{{ $prestataire->numero_identification_prestataire }}
+                            <i class="fas fa-id-card mr-1"></i>{{ $prestataire->numero_cc_prestataire }}
                         </p>
                     </div>
                 </div>
@@ -149,14 +149,7 @@
                                 </p>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600 mb-2">Numéro
-                                    d'identification</label>
-                                <span
-                                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-100 text-orange-700">
-                                    {{ $prestataire->numero_identification_prestataire }}
-                                </span>
-                            </div>
+
                         </div>
 
                         <!-- Numéros légaux -->
@@ -267,9 +260,11 @@
                     </div>
                 </div>
 
+                {{-- {{ dd($prestataire->representant_legal_prestataire) }} --}}
+
                 <!-- Représentant légal -->
                 @php
-                    $representants = json_decode($prestataire->representant_legal_prestataire, true) ?? [];
+                    $representants = $prestataire->representant_legal_prestataire  ?? [];
                     $representantActif = collect($representants)->firstWhere('statut', 1);
                 @endphp
 
@@ -478,13 +473,13 @@
 
                     <div class="p-6 space-y-4 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-500">Créé le</span>
+                            <span class="text-gray-500">Enregistré le</span>
                             <span
                                 class="font-medium text-gray-900">{{ $prestataire->created_at->format('d/m/Y à H:i') }}</span>
                         </div>
                         @if ($prestataire->creator)
                             <div class="flex justify-between">
-                                <span class="text-gray-500">Créé par</span>
+                                <span class="text-gray-500">Enregistré par</span>
                                 <span
                                     class="font-medium text-gray-900">{{ $prestataire->creator->nom_complet ?? '-' }}</span>
                             </div>
@@ -521,13 +516,7 @@
                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-700">
                         {{ $prestataire->attributions()->count() ?? 0 }} attribution(s)
                     </span>
-                    {{-- @can('lots.read')
-                        <a href="{{ route('prestataires.lots.index', $prestataire) }}"
-                            class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            <i class="fas fa-list mr-2"></i>
-                            Voir tous les lots
-                        </a>
-                    @endcan --}}
+
                 </div>
             </div>
 
@@ -595,7 +584,7 @@
                                                 {{-- Bouton Retirer --}}
                                                 @if ($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_ATTRIBUE)
                                                     <button type="button"
-                                                        onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                        onclick='confirmerRetrait(@json($attribution->id_attribution), @json($attribution->lot->libelle ?? "ce lot"))'
                                                         class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                         title="Retirer l'attribution">
                                                         <i class="fas fa-times-circle"></i>
@@ -646,7 +635,7 @@
                                                             <hr class="my-1 border-gray-100">
                                                             @can('attributions_lots.suspend')
                                                                 <button
-                                                                    onclick="confirmerSuspension('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                                    onclick="confirmerSuspension('{{ $attribution->prestataire_id }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
                                                                     class="w-full flex items-center px-4 py-2 text-sm text-amber-700 hover:bg-amber-50">
                                                                     <i class="fas fa-pause-circle mr-3 text-amber-500"></i>
                                                                     Suspendre
@@ -655,7 +644,7 @@
 
                                                             @can('attributions_lots.withdraw')
                                                                 <button
-                                                                    onclick="confirmerRetrait('{{ $attribution->id_prestataire }}', '{{ $attribution->lot->libelle ?? 'ce lot' }}')"
+                                                                    onclick='confirmerRetrait(@json($attribution->id_attribution), @json($attribution->lot->libelle ?? "ce lot"))'
                                                                     class="w-full flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50">
                                                                     <i class="fas fa-times-circle mr-3 text-red-500"></i>
                                                                     Retirer
@@ -666,7 +655,7 @@
                                                         @can('attributions_lots.assign')
                                                             @if ($attribution->statut_attribution === \App\Models\AttributionLotPrestataire::STATUT_SUSPENDU)
                                                                 <button
-                                                                    onclick="confirmerReactivation('{{ $attribution->id_prestataire }}')"
+                                                                    onclick="confirmerReactivation('{{ $attribution->prestataire_id }}')"
                                                                     class="w-full flex items-center px-4 py-2 text-sm text-green-700 hover:bg-green-50">
                                                                     <i class="fas fa-play-circle mr-3 text-green-500"></i>
                                                                     Réactiver
@@ -685,7 +674,7 @@
 
                     @if ($prestataire->attributions()->count() > 5)
                         <div class="mt-4 text-center">
-                            <a @can('attributions_lots.read') href="{{ route('prestataires.lots.index', $prestataire) }}" @endcan
+                            <a @can('attributions_lots.read') href="{{ route('prestataires.attributions', $prestataire) }}" @endcan
                                 class="inline-flex items-center px-4 py-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-colors">
                                 Voir tout l'historique ({{ $prestataire->attributions()->count() - 5 }} de plus)
                                 <i class="fas fa-arrow-right ml-2"></i>

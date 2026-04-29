@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use App\Models\Permission;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 
 trait HasPermissions

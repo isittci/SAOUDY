@@ -96,7 +96,7 @@
                             </div>
                             <div class="bg-purple-50 rounded-xl p-4 text-center">
                                 <p class="text-xs text-purple-600 uppercase font-semibold">Progression</p>
-                                <p class="text-2xl font-bold text-purple-700">{{ number_format($pourcentageGlobal, 1) }}%
+                                <p class="text-2xl font-bold text-purple-700">{{ number_format($pourcentageGlobal, 2) }}%
                                 </p>
                             </div>
                         </div>

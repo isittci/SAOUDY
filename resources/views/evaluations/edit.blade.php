@@ -345,7 +345,7 @@
                             </div>
                             <div class="p-6 space-y-3 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Créé le</span>
+                                    <span class="text-gray-500">Enregistré le</span>
                                     <span class="text-gray-900">{{ $evaluation->created_at->format('d/m/Y H:i') }}</span>
                                 </div>
                                 @if($evaluation->creator)

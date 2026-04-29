@@ -241,13 +241,13 @@
                             <div class="p-4 bg-green-50 rounded-xl flex-1 mr-4">
                                 <p class="text-sm font-bold text-gray-500 mb-1">Montant payé</p>
                                 <p class="text-2xl font-bold text-green-600">
-                                    {{ number_format($statistiquesPaiements['montant_total_paye'], 0, ',', ' ') }} FCFA
+                                    {{ number_format(floor($statistiquesPaiements['montant_total_paye']), 0, ',', ' ') }} FCFA
                                 </p>
                             </div>
                             <div class="p-4 bg-red-50 rounded-xl flex-1">
                                 <p class="text-sm font-bold text-gray-500 mb-1 text-right">Reste à payer</p>
                                 <p class="text-2xl font-bold text-red-600 text-right">
-                                    {{ number_format($statistiquesPaiements['montant_restant'], 0, ',', ' ') }} FCFA
+                                    {{ number_format(floor($statistiquesPaiements['montant_restant']), 0, ',', ' ') }} FCFA
                                 </p>
                             </div>
                         </div>
@@ -842,17 +842,17 @@
                             </div>
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                                 <span class="text-sm font-bold text-gray-600">Montant HT</span>
-                                <span class="font-bold text-gray-900">{{ number_format($facture->proforma->montant_ht_apres_remise, 0, ',', ' ') }} FCFA</span>
+                                <span class="font-bold text-gray-900">{{ number_format(floor($facture->proforma->montant_ht_apres_remise), 0, ',', ' ') }} FCFA</span>
                             </div>
                             @if($facture->proforma->remise_montant_proforma > 0)
                                 <div class="flex justify-between items-center p-3 bg-green-50 rounded-xl">
                                     <span class="text-sm font-bold text-gray-600">Remise ({{ $facture->proforma?->pourcentage_remise ?? 0 }}%)</span>
-                                    <span class="font-bold text-green-600">-{{ number_format($facture->proforma->remise_montant_proforma, 0, ',', ' ') }} FCFA</span>
+                                    <span class="font-bold text-green-600">-{{ number_format(floor($facture->proforma->remise_montant_proforma), 0, ',', ' ') }} FCFA</span>
                                 </div>
                             @endif
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                                 <span class="text-sm font-bold text-gray-600">TVA ({{ $facture->proforma?->taux_taxe ?? 0 }}%)</span>
-                                <span class="font-bold text-gray-900">{{ number_format($facture->proforma->taxe_montant, 0, ',', ' ') }} FCFA</span>
+                                <span class="font-bold text-gray-900">{{ number_format(floor($facture->proforma->taxe_montant), 0, ',', ' ') }} FCFA</span>
                             </div>
 
                             <div class="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
@@ -860,7 +860,7 @@
                                 @php
                                     $montantTTC = $facture->proforma->montant_retenu_proforma + $facture->proforma->taxe_montant - $facture->proforma->remise_montant_proforma ;
                                 @endphp
-                                <span class="font-bold text-lg text-indigo-600">{{ number_format($montantTTC, 0, ',', ' ') }} FCFA</span>
+                                <span class="font-bold text-lg text-indigo-600">{{ number_format(floor($montantTTC), 0, ',', ' ') }} FCFA</span>
                             </div>
 
                             @can('proformas.view-details')
@@ -926,12 +926,12 @@
                     </div>
                     <div class="p-6 space-y-3">
                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                            <span class="text-sm font-bold text-gray-500">Créé le</span>
+                            <span class="text-sm font-bold text-gray-500">Enregistré le</span>
                             <span class="font-bold text-gray-900">{{ $facture->created_at->format('d/m/Y H:i') }}</span>
                         </div>
                         @if($facture->createur)
                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                                <span class="text-sm font-bold text-gray-500">Créé par</span>
+                                <span class="text-sm font-bold text-gray-500">Enregistré par</span>
                                 <span class="font-bold text-gray-900">{{ $facture->createur->nom_complet ?? 'N/A' }}</span>
                             </div>
                         @endif

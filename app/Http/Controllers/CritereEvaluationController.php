@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Lot;
-use App\Models\CritereEvaluation;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\CritereEvaluation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -234,7 +235,7 @@ class CritereEvaluationController extends Controller
             $critere = CritereEvaluation::create([
                 'lot_id' => $lotId,
                 'numero_critere_evaluation' => $numero,
-                'libelle_critere_evaluation' => $request->libelle_critere_evaluation,
+                'libelle_critere_evaluation' => Str::upper($request->libelle_critere_evaluation),
                 'description_critere_evaluation' => $request->description_critere_evaluation,
                 'note_reference_critere_evaluation' => $request->note_reference_critere_evaluation,
                 'ordre_execution_critere_evaluation' => $request->ordre_execution_critere_evaluation,
@@ -475,7 +476,7 @@ class CritereEvaluationController extends Controller
 
             // Mettre à jour le critère
             $critere->update([
-                'libelle_critere_evaluation' => $request->libelle_critere_evaluation,
+                'libelle_critere_evaluation' => Str::upper($request->libelle_critere_evaluation),
                 'description_critere_evaluation' => $request->description_critere_evaluation,
                 'note_reference_critere_evaluation' => $request->note_reference_critere_evaluation,
                 'ordre_execution_critere_evaluation' => $request->ordre_execution_critere_evaluation,

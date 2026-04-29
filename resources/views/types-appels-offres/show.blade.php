@@ -165,7 +165,7 @@
                                     <i class="fas fa-arrow-down text-blue-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-gray-900">
-                                    {{ number_format($typeAO->valeur_minimuim_type_appel_offre, 0, ',', ' ') }}
+                                    {{ number_format(floor($typeAO->valeur_minimuim_type_appel_offre), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-sm text-gray-500 mt-1">FCFA</p>
                             </div>
@@ -177,7 +177,7 @@
                                     <i class="fas fa-arrow-up text-green-500"></i>
                                 </div>
                                 <p class="text-2xl font-bold text-gray-900">
-                                    {{ number_format($typeAO->valeur_maximuim_type_appel_offre, 0, ',', ' ') }}
+                                    {{ number_format(floor($typeAO->valeur_maximuim_type_appel_offre), 0, ',', ' ') }}
                                 </p>
                                 <p class="text-sm text-gray-500 mt-1">FCFA</p>
                             </div>
@@ -195,9 +195,9 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                    <span>{{ number_format($typeAO->valeur_minimuim_type_appel_offre, 0, ',', ' ') }}
+                                    <span>{{ number_format(floor($typeAO->valeur_minimuim_type_appel_offre), 0, ',', ' ') }}
                                         FCFA</span>
-                                    <span>{{ number_format($typeAO->valeur_maximuim_type_appel_offre, 0, ',', ' ') }}
+                                    <span>{{ number_format(floor($typeAO->valeur_maximuim_type_appel_offre), 0, ',', ' ') }}
                                         FCFA</span>
                                 </div>
                             </div>
@@ -237,7 +237,7 @@
                                             </div>
                                             <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                                                 <span><i
-                                                        class="fas fa-coins mr-1"></i>{{ number_format($ao->montant_global_appel_offre, 0, ',', ' ') }}
+                                                        class="fas fa-coins mr-1"></i>{{ number_format(floor($ao->montant_global_appel_offre), 0, ',', ' ') }}
                                                     FCFA</span>
                                                 <span><i
                                                         class="fas fa-calendar mr-1"></i>{{ $ao->created_at->format('d/m/Y') }}</span>
@@ -303,7 +303,7 @@
                                 <div>
                                     <p class="text-sm text-gray-600 font-medium">Montant moyen</p>
                                     <p class="text-xl font-bold text-gray-900">
-                                        {{ number_format($typeAO->appelOffres->avg('montant_global_appel_offre'), 0, ',', ' ') }}
+                                        {{ number_format(floor($typeAO->appelOffres->avg('montant_global_appel_offre')), 0, ',', ' ') }}
                                     </p>
                                     <p class="text-xs text-gray-500">FCFA</p>
                                 </div>
@@ -320,11 +320,11 @@
                             <div class="space-y-1">
                                 <p class="text-sm text-gray-700">
                                     <span class="font-semibold">Min:</span>
-                                    {{ number_format($typeAO->valeur_minimuim_type_appel_offre, 0, ',', ' ') }} FCFA
+                                    {{ number_format(floor($typeAO->valeur_minimuim_type_appel_offre), 0, ',', ' ') }} FCFA
                                 </p>
                                 <p class="text-sm text-gray-700">
                                     <span class="font-semibold">Max:</span>
-                                    {{ number_format($typeAO->valeur_maximuim_type_appel_offre, 0, ',', ' ') }} FCFA
+                                    {{ number_format(floor($typeAO->valeur_maximuim_type_appel_offre), 0, ',', ' ') }} FCFA
                                 </p>
                             </div>
                         </div>
@@ -339,10 +339,10 @@
                     </h3>
 
                     <div class="space-y-4 text-sm">
-                        <!-- Créé par -->
+                        <!-- Enregistré par -->
                         @if ($typeAO->creator)
                             <div>
-                                <p class="text-gray-600 font-medium mb-1">Créé par</p>
+                                <p class="text-gray-600 font-medium mb-1">Enregistré par</p>
                                 <p class="text-gray-900">{{ $typeAO->creator->nom_complet }}</p>
                                 <p class="text-xs text-gray-500">{{ $typeAO->created_at->format('d/m/Y à H:i') }}</p>
                             </div>

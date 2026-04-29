@@ -226,7 +226,7 @@
                                 </span>
                             </div>
                             <div class="info-row">
-                                <span class="text-gray-500 text-sm">Créé le</span>
+                                <span class="text-gray-500 text-sm">Enregistré le</span>
                                 <span class="font-medium text-gray-800">{{ $document->created_at->format('d/m/Y à H:i') }}</span>
                             </div>
                             @if($document->updated_at != $document->created_at)

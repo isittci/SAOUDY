@@ -92,7 +92,7 @@
                                     {{ $paiement->reference_paiement }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">
-                                    {{ number_format($paiement->montant_net_paye_paiement, 0, ',', ' ') }} FCFA
+                                    {{ number_format(floor($paiement->montant_net_paye_paiement), 0, ',', ' ') }} FCFA
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-900">
                                     {{ $paiement->banque->nom_banque ?? 'N/A' }}
